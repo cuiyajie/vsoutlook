@@ -14,7 +14,7 @@ jobs:
 
       - name: Docker login
         run: |
-          docker login ${{ secrets.A_REGISTRY_HOST }} -u ${{ secrets.A_REGISTRY_PWD }}
+          docker login -u ${{ secrets.A_REGISTRY_PWD }} ${{ secrets.A_REGISTRY_HOST }}
 
       - name: Add SHORT_SHA env property with commit short sha
         run: echo "SHORT_SHA=`echo ${{ github.sha }} | cut -c1-8`" >> $GITHUB_ENV
