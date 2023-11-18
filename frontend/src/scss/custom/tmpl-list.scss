@@ -1,0 +1,210 @@
+.tmpl-list {
+  .plain-list {
+    .collapse-wrap {
+      display: none !important;
+    }
+
+    li > a {
+      margin-inline-start: 24px;
+    }
+  }
+
+  li {
+    height: 36px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    border-inline-start: 2px solid transparent;
+    cursor: pointer;
+
+    &.is-active {
+      a {
+        font-weight: 500;
+        color: var(--primary);
+      }
+
+      > a {
+        font-weight: 600;
+      }
+    }
+
+    > a.router-link-exact-active {
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    &.has-children {
+      .is-submenu.router-link-exact-active {
+        font-weight: 500;
+        color: var(--primary);
+      }
+    }
+
+    &.has-children {
+      display: block;
+      height: unset;
+      min-height: 36px;
+      margin-top: 12px;
+
+      &.active {
+        .collapse-wrap > a {
+          color: var(--dark-text);
+          font-weight: 600;
+
+          svg {
+            transform: rotate(calc(var(--transform-direction) * 90deg)) !important;
+          }
+        }
+      }
+
+      &:hover {
+        .collapse-wrap > a {
+          color: var(--dark-text);
+        }
+      }
+
+      &.is-flex {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .tag {
+          margin-inline-start: auto;
+          margin-inline-end: 20px;
+          border-radius: 100px;
+          background: var(--danger);
+          color: var(--white);
+          font-size: 0.8rem;
+          font-weight: 600;
+        }
+      }
+
+      .collapse-wrap {
+        display: flex;
+        align-items: stretch;
+        height: 100%;
+        min-height: 36px;
+
+        > a {
+          font-family: var(--font-alt);
+          display: flex;
+          align-items: center;
+          font-size: 0.9rem;
+          font-weight: 500;
+          color: var(--light-text);
+          svg {
+            position: relative;
+            height: 18px;
+            width: 18px;
+            margin-inline-start: auto;
+            transform: rotate(0);
+            color: var(--light-text);
+            transition:
+              color 0.3s,
+              background-color 0.3s,
+              border-color 0.3s,
+              height 0.3s,
+              width 0.3s,
+              transform 0.3s;
+          }
+        }
+      }
+
+      ul {
+        padding: 0;
+        overflow: hidden;
+
+        li {
+          height: 32px;
+          font-family: var(--font);
+
+          &.is-active,
+          .router-link-exact-active {
+            .is-submenu {
+              font-weight: 500;
+              svg {
+                display: block;
+              }
+            }
+          }
+
+          .is-submenu {
+            display: flex;
+            font-weight: 400;
+            font-family: var(--font);
+            align-items: center;
+            padding-inline-start: 30px;
+            font-size: 0.9rem;
+
+            &.is-active,
+            .router-link-exact-active {
+              font-weight: 500;
+              color: var(--primary);
+            }
+
+            .lnil,
+            .lnir {
+              font-size: 1.2rem;
+              margin-inline-end: 10px;
+            }
+
+            > span {
+              font-family: var(--font);
+            }
+
+            svg {
+              display: none;
+              height: 8px;
+              width: 8px;
+              max-width: 8px;
+              min-width: 8px;
+              stroke-width: 2px;
+              margin-inline-end: 8px;
+
+              &.is-auto {
+                margin-inline-start: auto;
+                height: 15px;
+                width: 15px;
+                max-width: 15px;
+                min-width: 15px;
+                stroke-width: 2px;
+                margin-inline-end: 4px;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    a {
+      font-family: var(--font);
+      display: block;
+      width: 100%;
+      font-size: 0.95rem;
+      color: var(--light-text);
+
+      &:hover,
+      &:focus {
+        color: var(--dark-text);
+      }
+
+      .tag {
+        line-height: 1.8;
+        height: 1.8em;
+        font-size: 0.7rem;
+        margin-inline-start: 0.25rem;
+      }
+    }
+
+    > a {
+      font-family: var(--font-alt);
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--light-text);
+    }
+  }
+
+  .action-area {
+    margin-top: 24px;
+  }
+}

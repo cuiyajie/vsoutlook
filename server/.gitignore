@@ -1,0 +1,14 @@
+application.yml
+archive/
+.idea
+/bin
+/tmp
+yunfan-server
+bin/
+data/
+assets/
+play/
+.vscode
+vendor/
+/.cache/
+/compare/

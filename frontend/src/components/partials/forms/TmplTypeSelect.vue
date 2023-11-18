@@ -1,0 +1,65 @@
+<script setup lang="ts">
+import { useTemplateType } from "/@src/stores/templateType";
+
+const tmplTypeStore = useTemplateType();
+
+const modalValue = defineModel<any>('modelValue', {
+  default: "",
+  local: true,
+});
+
+defineProps<{
+  validate?: boolean;
+  formId?: string;
+  label?: string;
+}>();
+</script>
+<template>
+  <VField
+    :id="formId"
+    v-slot="{ field }"
+    :label="label"
+    class="is-image-select"
+  >
+    <VControl>
+      <Multiselect
+        v-model="modalValue"
+        placeholder="选择应用类型"
+        value-prop="id"
+        label="name"
+        :max-height="145"
+        :options="tmplTypeStore.tmplTypes"
+        @change="(val) => field?.setValue(val)"
+      >
+        <template #singlelabel="{ value }">
+          <div class="multiselect-single-label">
+            <img
+              class="select-label-icon"
+              :src="value.icon"
+              alt=""
+            >
+            <span class="select-label-text">
+              {{ value.name }}
+            </span>
+          </div>
+        </template>
+        <template #option="{ option }">
+          <img
+            class="select-option-icon"
+            :src="option.icon"
+            alt=""
+          >
+          <span class="select-label-text">
+            {{ option.name }}
+          </span>
+        </template>
+      </Multiselect>
+      <p
+        v-if="field?.errorMessage"
+        class="help is-danger"
+      >
+        {{ field.errorMessage }}
+      </p>
+    </VControl>
+  </VField>
+</template>

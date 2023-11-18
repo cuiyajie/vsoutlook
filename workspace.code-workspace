@@ -1,0 +1,25 @@
+{
+  "folders": [
+    {
+      "path": "frontend"
+    },
+    {
+      "path": "server"
+    }
+  ],
+  "settings": {
+    "gopls": {
+      "analyses": {
+        "composites": false
+      }
+    },
+    "workbench.colorCustomizations": {
+      "tab.activeBorderTop": "#0A84FF"
+    },
+    "i18n-ally.localesPaths": [
+      "src/locales",
+      "public/shiki/languages"
+    ],
+    "vue3snippets.enable-compile-vue-file-on-did-save-code": true
+  }
+}
