@@ -11,7 +11,7 @@ chmod +x upx
 
 cd ..
 docker build -t app-server -f Dockerfile .
-registry=registry.cn-hongkong.aliyuncs.com/jinghai/app-server
+registry=dockerproxy.com/cuiyajie/vsoutlook
 
 docker tag app-server $registry:latest
 docker push $registry:latest
