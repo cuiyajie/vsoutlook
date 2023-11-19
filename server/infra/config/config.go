@@ -12,8 +12,8 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-var AppDir = "/home/dell/vsoutlook-app"
-var AppDataDir = "/home/dell/vsoutlook-app/data"
+var AppDir = "/home/vsoutlook/vsoutlook-app"
+var AppDataDir = "/home/vsoutlook/vsoutlook-app/data"
 var Dev = false
 var Testing = false
 var DBLogLevel = logger.Warn
