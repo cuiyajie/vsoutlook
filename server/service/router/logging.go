@@ -35,7 +35,8 @@ func logger(c *gin.Context) {
 
 	var info utils.Map
 	ctype := c.Request.Header["Content-Type"]
-	if len(ctype) == 1 && strings.Contains(ctype[0], "json") {
+	path := c.Request.URL.Path
+	if strings.HasPrefix(path, "api") && len(ctype) == 1 && strings.Contains(ctype[0], "json") {
 		if err := json.Unmarshal(body, &info); err != nil {
 			log.Printf("unmarshal body err: %s body: %s", err, body)
 		}
@@ -46,7 +47,7 @@ func logger(c *gin.Context) {
 		data = data[:1000]
 	}
 
-	if !strings.Contains(data, `"password"`) {
+	if strings.HasPrefix(path, "api") && !strings.Contains(data, `"password"`) {
 		log.Println("body raw:", data)
 		c.Set("bodyPreview", data)
 	}
