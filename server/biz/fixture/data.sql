@@ -1,5 +1,5 @@
 INSERT INTO "public"."users" ("id", "name", "password", "role") VALUES
-('12345678', 'admin', '', 1)
+('q07MT8wx', 'admin', '', 1)
 
 UPDATE users SET created_at = NOW() - interval '1 hour', updated_at = NOW();
 

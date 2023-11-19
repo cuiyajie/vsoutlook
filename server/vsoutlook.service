@@ -1,0 +1,13 @@
+[Unit]
+Description=Visual Outlook Application
+After=network.target
+
+[Service]
+ExecStart=/home/vsoutlook/vsoutlook-app/server/linux-vsoutlook-server
+WorkingDirectory=/home/vsoutlook/vsoutlook-app/server
+Restart=always
+User=vsoutlook
+Group=vsoutlook
+
+[Install]
+WantedBy=multi-user.target
