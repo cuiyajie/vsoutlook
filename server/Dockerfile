@@ -24,8 +24,8 @@ RUN apk add -U --no-cache ca-certificates
 FROM busybox AS runtime
 COPY --from=alpine /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
-WORKDIR /home/dell/vsoutlook-app
-COPY --from=build-server /tmp/server /home/dell/vsoutlook-app
+WORKDIR /app
+COPY --from=build-server /tmp/server /app/server
 
 ENV GIN_MODE release
-CMD ["/home/dell/vsoutlook-app/server"]
+CMD ["/app/server"]
