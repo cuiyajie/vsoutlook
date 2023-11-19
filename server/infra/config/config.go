@@ -12,9 +12,8 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-var AppDir = "/app"
-var AppDataDir = "/app/data"
-var Mode = "app" // "cmd"
+var AppDir = "/home/dell/vsoutlook-app"
+var AppDataDir = "/home/dell/vsoutlook-app/data"
 var Dev = false
 var Testing = false
 var DBLogLevel = logger.Warn
@@ -23,8 +22,6 @@ var ClusterID = ""
 
 // 仅用于 log，用于兼容旧 log 格式
 var LogSite = ""
-
-var AppSiteDir = "/app/site"
 
 func LoadConfig(filePath string) {
 

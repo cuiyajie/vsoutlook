@@ -1,4 +1,5 @@
 application.yml
+config.yaml
 archive/
 .idea
 /bin
