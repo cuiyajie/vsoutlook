@@ -1,25 +1,30 @@
 <script setup lang="ts">
-import { type Config2, formatMap } from "./Consts";
+import { type SwitchOutputParamsType, formatMap, formatKeys, v_protocols } from './Consts';
+import { useFormat, useProtocolDC } from './Utils';
 
-const mv = defineModel<Config2>({
-  default: {},
+const mv = defineModel<SwitchOutputParamsType>({
+  default: {} as SwitchOutputParamsType,
   local: true,
 });
-
-const props = defineProps<{
-  title: string,
-  toggleTitle?: string,
-  isLast?: boolean,
-  format: string,
-  useBackup: boolean
-}>()
 
 const OPEN = defineModel('OPEN', {
   default: false,
   local: true
 })
 
+const props = defineProps<{
+  title: string,
+  toggleTitle?: string,
+  isLast?: boolean,
+  useBackup: boolean,
+  m_local_ip: string,
+  b_local_ip: string
+}>()
+
 const opened = ref(false)
+
+const format = useFormat(mv.value, formatKeys[2]);
+useProtocolDC(mv.value)
 
 const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value))
 </script>
@@ -67,40 +72,67 @@ const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value)
             <h5>IP流参数</h5>
           </div>
           <div class="columns is-multiline">
-            <div class="column is-4">
+            <div class="column is-6">
               <VField>
                 <VLabel>视频流协议</VLabel>
                 <VControl>
                   <VSelect
-                    v-model="mv.V_Protocol"
+                    v-model="mv.v_protocol"
                     class="is-rounded"
                   >
-                    <VOption value="ST2110-20">
-                      ST2110-20
-                    </VOption>
-                    <VOption value="ST2110-22">
-                      ST2110-22
+                    <VOption
+                      v-for="vp in v_protocols"
+                      :key="vp"
+                      :value="vp"
+                    >
+                      {{ vp }}
                     </VOption>
                   </VSelect>
                 </VControl>
               </VField>
             </div>
-            <div class="column is-4">
+            <div class="column is-6" />
+            <div class="column is-6">
               <VField>
-                <VLabel>主视频流组播地址（含端口）</VLabel>
+                <VLabel>主视频流组播源IP（含端口）</VLabel>
                 <VControl>
                   <VInput
-                    v-model="mv.V_M_Address"
+                    v-model="mv.ipstream_master.v_src_address"
                   />
                 </VControl>
               </VField>
             </div>
-            <div class="column is-4">
+            <div class="column is-6">
               <VField>
-                <VLabel>主音频流组播地址（含端口）</VLabel>
+                <VLabel>主视频流组播目标IP（含端口）</VLabel>
+                <AddrAddon
+                  v-model="mv.ipstream_master.v_dst_address"
+                  :host="m_local_ip"
+                />
+              </VField>
+            </div>
+            <div class="column is-6">
+              <VField>
+                <VLabel>主视频流p4交换机输入端口</VLabel>
                 <VControl>
-                  <VInput
-                    v-model="mv.A_M_Address"
+                  <VInputNumber
+                    v-model="mv.ipstream_master.v_p4inport"
+                    centered
+                    :min="0"
+                    :step="1"
+                  />
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-6">
+              <VField>
+                <VLabel>主视频流p4交换机输出端口</VLabel>
+                <VControl>
+                  <VInputNumber
+                    v-model="mv.ipstream_master.v_p4outport"
+                    centered
+                    :min="0"
+                    :step="1"
                   />
                 </VControl>
               </VField>
@@ -108,13 +140,13 @@ const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value)
             <Transition name="fade-slow">
               <div
                 v-if="useBackup"
-                class="column is-4"
+                class="column is-6"
               >
                 <VField>
-                  <VLabel>备视频流组播地址（含端口）</VLabel>
+                  <VLabel>备视频流组播源IP（含端口）</VLabel>
                   <VControl>
                     <VInput
-                      v-model="mv.V_B_Address"
+                      v-model="mv.ipstream_backup.v_src_address"
                     />
                   </VControl>
                 </VField>
@@ -123,13 +155,48 @@ const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value)
             <Transition name="fade-slow">
               <div
                 v-if="useBackup"
-                class="column is-4"
+                class="column is-6"
               >
                 <VField>
-                  <VLabel>备音频流组播地址（含端口）</VLabel>
+                  <VLabel>备视频流组播目标IP（含端口）</VLabel>
+                  <AddrAddon
+                    v-model="mv.ipstream_backup.v_dst_address"
+                    :host="b_local_ip"
+                  />
+                </VField>
+              </div>
+            </Transition>
+            <Transition name="fade-slow">
+              <div
+                v-if="useBackup"
+                class="column is-6"
+              >
+                <VField>
+                  <VLabel>备视频流P4交换机输入端口</VLabel>
                   <VControl>
-                    <VInput
-                      v-model="mv.A_B_Address"
+                    <VInputNumber
+                      v-model="mv.ipstream_backup.v_p4inport"
+                      centered
+                      :min="0"
+                      :step="1"
+                    />
+                  </VControl>
+                </VField>
+              </div>
+            </Transition>
+            <Transition name="fade-slow">
+              <div
+                v-if="useBackup"
+                class="column is-6"
+              >
+                <VField>
+                  <VLabel>备视频流P4交换机输入端口</VLabel>
+                  <VControl>
+                    <VInputNumber
+                      v-model="mv.ipstream_backup.v_p4outport"
+                      centered
+                      :min="0"
+                      :step="1"
                     />
                   </VControl>
                 </VField>
@@ -154,7 +221,7 @@ const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value)
                 <VLabel>视频格式</VLabel>
                 <VControl>
                   <VInput
-                    v-model="formatMap[format]"
+                    :model-value="formatMap[format]"
                     readonly
                   />
                 </VControl>
@@ -179,7 +246,7 @@ const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value)
                 <VLabel>编码格式</VLabel>
                 <VControl>
                   <VInput
-                    v-model="mv.V_DecFormat"
+                    v-model="mv.videoformat.v_compression_format"
                     readonly
                   />
                 </VControl>
@@ -190,67 +257,7 @@ const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value)
                 <VLabel>压缩比</VLabel>
                 <VControl>
                   <VInput
-                    v-model="mv.V_CompressionRatio"
-                    readonly
-                  />
-                </VControl>
-              </VField>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Transition>
-    <Transition name="fade-slow">
-      <div
-        v-if="isOpen"
-        class="form-fieldset-nested is-tail"
-      >
-        <div class="form-fieldset">
-          <div class="fieldset-heading">
-            <h5>音频参数</h5>
-          </div>
-          <div class="columns is-multiline">
-            <div class="column is-4">
-              <VField>
-                <VLabel>声道数</VLabel>
-                <VControl>
-                  <VInputNumber
-                    v-model="mv.A_Channels_Number"
-                    centered
-                    :min="0"
-                    :max="64"
-                    :step="1"
-                  />
-                </VControl>
-              </VField>
-            </div>
-            <div class="column is-4">
-              <VField>
-                <VLabel>量化比特</VLabel>
-                <VControl>
-                  <VSelect
-                    v-model="mv.A_Bits"
-                    class="is-rounded"
-                  >
-                    <VOption :value="16">
-                      16
-                    </VOption>
-                    <VOption :value="24">
-                      24
-                    </VOption>
-                    <VOption :value="32">
-                      32
-                    </VOption>
-                  </VSelect>
-                </VControl>
-              </VField>
-            </div>
-            <div class="column is-4">
-              <VField>
-                <VLabel>采样率</VLabel>
-                <VControl>
-                  <VInput
-                    v-model="mv.A_Frequency"
+                    v-model="mv.videoformat.v_compression_ratio"
                     readonly
                   />
                 </VControl>

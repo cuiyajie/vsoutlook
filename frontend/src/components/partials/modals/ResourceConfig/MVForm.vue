@@ -1,53 +1,71 @@
 <script setup lang="ts">
-import { videoConfig, audioConfig, screenConfig, videoConfig2 } from './Consts';
+import { def_mv_input_params, def_mv_output_params, global_config } from './Consts';
+import { unwrap } from "./Utils";
+import pick from 'lodash-es/pick'
+import mvData from '/@src/data/vscomponent/mv.json'
 
-const mv = defineModel<any>({
+const mv = defineModel<{
+  moudle: string,
+  input_number: number,
+  output_number: number,
+  tally_port: number,
+  tally_ip: string,
+  nmos_devname: string,
+  "2110-7_m_local_ip": string,
+  "2110-7_b_local_ip": string
+}>({
   default: {
-    Module: "MV",
-    Input_Number: 10,
-    Output_Number: 1,
-    Tally_Port: 6001,
-    NMOS_DevName: "",
-    "IN_G_2022-7": true,
-    "OUT_G_2022-7": true
+    moudle: "mv",
+    input_number: 10,
+    output_number: 1,
+    tally_port: 6001,
+    tally_ip: '',
+    nmos_devname: "",
+    "2110-7_m_local_ip": "",
+    "2110-7_b_local_ip": ""
   },
   local: true,
 });
 
+mv.value = pick(mvData, ['moudle', 'input_number', 'output_number', 'tally_port', 'tally_ip', 'nmos_devname', '2110-7_m_local_ip', '2110-7_b_local_ip'])
 const moduleName = ref('多画面')
 
+const ipData = unwrap(mvData.input, 'in_')
+const input = ref<{ "g_2022-7": boolean }>({ "g_2022-7": false });
+input.value = pick(ipData, ['g_2022-7'])
 const inputs = ref<any[]>([]);
-watch(() => mv.value.Input_Number, (nv) => {
+watch(() => mv.value.input_number, (nv) => {
   const len = inputs.value.length
   if (nv < len) {
     inputs.value = inputs.value.slice(0, nv);
   } else if (nv > len) {
     inputs.value = inputs.value.concat(
-      Array.from({ length: nv - len }, (_, i) => ({
-        index: len + i + 1,
-        value: ref({
-          ...audioConfig,
-          ...videoConfig,
-        })
-      }))
+      Array.from({ length: nv - len }, (_, i) => {
+        return {
+          index: len + i + 1,
+          value: ipData.input_params[len + i] ? ref(ipData.input_params[len + i]) : ref(def_mv_input_params())
+        }
+      })
     );
   }
 }, { immediate: true });
 
+const opData = unwrap(mvData.output, 'out_')
+const output = ref<any>({ ...global_config });
+output.value = pick(opData, Object.keys(global_config))
 const outputs = ref<any[]>([]);
-watch(() => mv.value.Output_Number, (nv) => {
+watch(() => mv.value.output_number, (nv) => {
   const len = outputs.value.length
   if (nv < len) {
     outputs.value = outputs.value.slice(0, nv);
   } else if (nv > len) {
     outputs.value = outputs.value.concat(
-      Array.from({ length: nv - len }, (_, i) => ({
-        index: len + i + 1,
-        value: ref({
-          ...videoConfig2,
-          ...screenConfig
-        })
-      }))
+      Array.from({ length: nv - len }, (_, i) => {
+        return {
+          index: len + i + 1,
+          value: opData.params[len + i] ? ref(opData.params[len + i]) : ref(def_mv_output_params())
+        }
+      })
     );
   }
 }, { immediate: true });
@@ -75,7 +93,7 @@ watch(() => mv.value.Output_Number, (nv) => {
           </div>
 
           <div class="columns is-multiline">
-            <div class="column is-3">
+            <div class="column is-4">
               <VField>
                 <VLabel>模块名称</VLabel>
                 <VControl>
@@ -86,12 +104,12 @@ watch(() => mv.value.Output_Number, (nv) => {
                 </VControl>
               </VField>
             </div>
-            <div class="column is-3">
+            <div class="column is-4">
               <VField>
                 <VLabel>输入信号数量</VLabel>
                 <VControl>
                   <VInputNumber
-                    v-model="mv.Input_Number"
+                    v-model="mv.input_number"
                     centered
                     :min="0"
                     :max="10"
@@ -100,12 +118,12 @@ watch(() => mv.value.Output_Number, (nv) => {
                 </VControl>
               </VField>
             </div>
-            <div class="column is-3">
+            <div class="column is-4">
               <VField>
                 <VLabel>输出信号数量</VLabel>
                 <VControl>
                   <VSelect
-                    v-model="mv.Output_Number"
+                    v-model="mv.output_number"
                     class="is-rounded"
                   >
                     <VOption :value="1">
@@ -118,15 +136,55 @@ watch(() => mv.value.Output_Number, (nv) => {
                 </VControl>
               </VField>
             </div>
+            <div class="column is-6">
+              <VField>
+                <VLabel>nmos注册设备名称</VLabel>
+                <VControl>
+                  <VInput
+                    v-model="mv.nmos_devname"
+                  />
+                </VControl>
+              </VField>
+            </div>
             <div class="column is-3">
               <VField>
-                <VLabel>Tally服务端口</VLabel>
+                <VLabel>tally服务IP地址</VLabel>
+                <VControl>
+                  <VInput
+                    v-model="mv.tally_ip"
+                  />
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-3">
+              <VField>
+                <VLabel>tally服务端口</VLabel>
                 <VControl>
                   <VInputNumber
-                    v-model="mv.Tally_Port"
+                    v-model="mv.tally_port"
                     centered
                     :min="0"
                     :max="65535"
+                  />
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-6">
+              <VField>
+                <VLabel>2022-7主路收发网口IP</VLabel>
+                <VControl>
+                  <VInput
+                    v-model="mv['2110-7_m_local_ip']"
+                  />
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-6">
+              <VField>
+                <VLabel>2022-7备路收发网口IP</VLabel>
+                <VControl>
+                  <VInput
+                    v-model="mv['2110-7_b_local_ip']"
                   />
                 </VControl>
               </VField>
@@ -155,7 +213,7 @@ watch(() => mv.value.Output_Number, (nv) => {
                     <VLabel>启用2022-7备份</VLabel>
                     <VControl>
                       <VSwitchBlock
-                        v-model="mv['IN_G_2022-7']"
+                        v-model="input['g_2022-7']"
                         color="primary"
                       />
                     </VControl>
@@ -163,13 +221,13 @@ watch(() => mv.value.Output_Number, (nv) => {
                 </div>
               </div>
             </div>
-            <MultiScreenInput
+            <MVInput
               v-for="(ipt, idx) in inputs"
               :key="ipt.index"
               v-model="ipt.value"
               :index="ipt.index"
               :is-last="idx === inputs.length - 1"
-              :use-backup="mv['IN_G_2022-7']"
+              :use-backup="input['g_2022-7']"
             />
           </div>
         </div>
@@ -189,26 +247,53 @@ watch(() => mv.value.Output_Number, (nv) => {
                 <h4>全局参数</h4>
               </div>
               <div class="columns is-multiline">
-                <div class="column is-12">
-                  <VField horizontal>
+                <div class="column is-4">
+                  <VField>
                     <VLabel>启用2022-7备份</VLabel>
                     <VControl>
                       <VSwitchBlock
-                        v-model="mv['OUT_G_2022-7']"
+                        v-model="output['g_2022-7']"
                         color="primary"
                       />
                     </VControl>
                   </VField>
                 </div>
+                <div class="column is-4">
+                  <VField>
+                    <VLabel>2022-7主路输出网口IP</VLabel>
+                    <VControl>
+                      <VInput
+                        v-model="output['g_local_ip1']"
+                      />
+                    </VControl>
+                  </VField>
+                </div>
+                <Transition name="fade-slow">
+                  <div
+                    v-if="output['g_2022-7']"
+                    class="column is-4"
+                  >
+                    <VField>
+                      <VLabel>2022-7备路输出网口IP</VLabel>
+                      <VControl>
+                        <VInput
+                          v-model="output['g_local_ip2']"
+                        />
+                      </VControl>
+                    </VField>
+                  </div>
+                </Transition>
               </div>
             </div>
-            <MultiScreenOutput
+            <MVOutput
               v-for="(opt, idx) in outputs"
               :key="opt.index"
               v-model="opt.value"
               :index="opt.index"
               :is-last="idx === outputs.length - 1"
-              :use-backup="mv['OUT_G_2022-7']"
+              :use-backup="output['g_2022-7']"
+              :m_local_ip="mv['2110-7_m_local_ip']"
+              :b_local_ip="mv['2110-7_b_local_ip']"
             />
           </div>
         </div>

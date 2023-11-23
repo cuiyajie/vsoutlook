@@ -1,7 +1,7 @@
 export const formats = [
-  { key: "1920_1080_隔行_25_SDR_BT709", value: "1920*1080 50I(SDR/BT709)" },
-  { key: "1920_1080_逐行_50_HLG_BT2020", value: "1920*1080 50P(HDR/BT2020)" },
-  { key: "3804_2160_逐行_50_HLG_BT2020", value: "3840*2160 50I(HDR/BT2020)" },
+  { key: "1920_1080_1_25_sdr_bt709", value: "1920*1080 50i(sdr/bt709)" },
+  { key: "1920_1080_0_50_hlg_bt2020", value: "1920*1080 50p(hdr/bt2020)" },
+  { key: "3840_2160_0_50_hlg_bt2020", value: "3840*2160 50i(hdr/bt2020)" },
 ];
 
 export const formatKeys = formats.map(f => f.key)
@@ -11,72 +11,190 @@ export const formatMap = formats.reduce((acc, cur) => {
   return acc;
 }, {} as Record<string, string>);
 
-export const vProtocols = ["ST2110-20", "ST2110-22"];
+export const v_protocols = ["st2110-20", "st2110-22"];
+export const v_compression_format = "jpeg-xs"
+export const v_width = ["1920", "3840"]
+export const v_compression_ratio = ["5:1", "8:1"]
+export const val_codec = ["encoder", "decoder"]
+export const val_udx = ["upscale", "downscale"]
 
 export const defs = {
   format: formatKeys[0],
-  vProtocol: vProtocols[0],
-  aProtocol: "ST2110-30",
+  v_protocol: v_protocols[0],
+  a_protocol: "st2110-30",
 }
 
-export const videoConfig1 = {
-  V_Protocol: defs.format,
-  V_M_Address: "",
-  V_B_Address: "",
-  V_Width: "",
-  V_Height: "",
-  V_Interlaced: "",
-  V_FPS: "",
-  V_Gamma: "",
-  V_ColorGamut: "",
+export const base_config = {
+  "g_2022-7": true,
+  v_protocol: defs.v_protocol,
 }
 
-export const videoConfig2 = {
-  ...videoConfig1,
-  V_DecFormat: "",
-  V_CompressionRatio: ""
-};
-
-export const videoConfig3 = {
-  V_M_Address: '',
-  V_M_P4_Port: 0,
-  V_B_Address: '',
-  V_B_P4_Port: 0,
-  SW_Index: 0,
-  SW_DisPlayName: ''
+export const global_config = {
+  "g_2022-7": true,
+  g_local_ip1: "",
+  g_local_ip2: "",
 }
 
-export const videoConfig = {
-  ...videoConfig2,
-  A_M_Address: "",
-  A_B_Address: ""
+export const ipstream_video = {
+  v_src_address: "",
+  v_dst_address: "",
+}
+
+export const ipstream = {
+  ...ipstream_video,
+  a_src_address: "",
+  a_dst_address: ""
+}
+
+export const compression_format = {
+  v_compression_format: null,
+  v_compression_ratio: null
+}
+
+export const base_video_format = {
+  v_width: "",
+  v_height: "",
+  v_interlaced: "",
+  v_fps: "",
+  v_gamma: "",
+  v_gamut: "",
+}
+
+export const videoformat = {
+  ...base_video_format,
+  ...compression_format
+}
+
+export const audioformat = {
+  a_channels_number: 16,
+  a_bits: 24,
+  a_frequency: 48000
 };
 
-export const audioConfig = {
-  A_Protocol: defs.aProtocol,
-  A_Channels_Number: 16,
-  A_Bits: 24,
-  A_Frequency: 48000
+export const mv_config = {
+  mv_template: '',
+  pips_number: 4
 };
 
-export const screenConfig = {
-  MV_Template: '',
-  PIPs_Number: 4
+export const pip_params = {
+  pip_name: '',
+  pip_video_index: 0
 };
 
-export const screenPipConfig = {
-  Name: '',
-  Video_Index: 0
-};
+export const switch_key_params = {
+  ...ipstream_video,
+  Key_P4_port: 1
+}
 
-export type Config1 = { '2022-7': boolean } & typeof videoConfig & typeof audioConfig
+export const switch_fill_params = {
+  ...ipstream_video,
+  fill_P4_port: 3
+}
 
-export type Config2 = typeof videoConfig & typeof audioConfig
+export const switch_video_params = {
+  in_sw_index: 1,
+  in_sw_displayname: "cam1"
+}
 
-export type Config3 = typeof videoConfig1 & typeof screenConfig
+export const switch_out_params = {
+  ...ipstream_video,
+  v_p4inport: 1,
+  v_p4outport: 2
+}
 
-export type Config4 = { '2022-7': boolean } & typeof videoConfig2
+export const def_codec_input = () => ({
+  ...base_config,
+  ipstream_master: { ...ipstream },
+  ipstream_backup: { ...ipstream },
+  videoformat: { ...videoformat },
+  audioformat: { ...audioformat },
+})
 
-export type Config5 = typeof videoConfig3
+export const def_codec_output = () => ({
+  ...global_config,
+  params: {
+    v_protocol: "",
+    ipstream_master: { ...ipstream },
+    ipstream_backup: { ...ipstream },
+    videoformat: { ...videoformat },
+    audioformat: { ...audioformat },
+  }
+})
 
-export type Config6 = typeof videoConfig
+export const def_udx_input = () => ({
+  ...base_config,
+  ipstream_master: { ...ipstream },
+  ipstream_backup: { ...ipstream },
+  videoformat: { ...videoformat },
+  audioformat: { ...audioformat },
+})
+
+export const def_udx_output_params = () => ({
+  v_protocol: "",
+  ipstream_master: { ...ipstream },
+  ipstream_backup: { ...ipstream },
+  videoformat: { ...videoformat },
+  audioformat: { ...audioformat },
+})
+
+export const def_mv_input_params = () => ({
+  v_protocol: "",
+  ipstream_master: { ...ipstream },
+  ipstream_backup: { ...ipstream },
+  videoformat: { ...videoformat },
+  audioformat: { ...audioformat },
+})
+
+export const def_mv_output_params = () => ({
+  ...mv_config,
+  v_protocol: v_protocols[0],
+  pip_params: [],
+  ipstream_master: { ...ipstream_video },
+  ipstream_backup: { ...ipstream_video },
+  videoformat: { ...base_video_format }
+})
+
+export const def_switch_input_params = () => ({
+  ...base_config,
+  videoformat: { ...videoformat },
+  input_key_params: {
+    ipstream_master: { ...switch_key_params },
+    ipstream_backup: { ...switch_key_params },
+  },
+  input_fill_params: {
+    ipstream_master: { ...switch_fill_params },
+    ipstream_backup: { ...switch_fill_params },
+  },
+  input_video_params: []
+})
+
+export const def_switch_input_video_params = () => ({
+  ipstream_master: { ...ipstream_video, v_P4_port: 1 },
+  ipstream_backup: { ...ipstream_video, v_P4_port: 2 },
+  ...switch_video_params
+})
+
+export const def_switch_input_bus_params = () => ({
+  video_bus_master: { ...ipstream_video, v_P4_port: 1 },
+  video_bus_backup: { ...ipstream_video, v_P4_port: 2 },
+  keyfill_bus_master: { ...switch_key_params, ...switch_fill_params },
+  keyfill_bus_backup: { ...switch_key_params, ...switch_fill_params }
+})
+
+export const def_switch_output_params = () => ({
+  v_protocol: "",
+  ipstream_master: { ...switch_out_params },
+  ipstream_backup: { ...switch_out_params },
+  videoformat: { ...videoformat },
+})
+
+export type CodecInputType = ReturnType<typeof def_codec_input>
+export type CodecOutputType = ReturnType<typeof def_codec_output>
+export type UdxInputType = ReturnType<typeof def_udx_input>
+export type UdxOutputParamsType = ReturnType<typeof def_udx_output_params>
+export type MVInputParamsType = ReturnType<typeof def_mv_input_params>
+export type MVOutputParamsType = ReturnType<typeof def_mv_output_params>
+export type SwitchInputParamsType = ReturnType<typeof def_switch_input_params>
+export type SwitchInputBusParamsType = ReturnType<typeof def_switch_input_bus_params>
+export type SwitchInputVideoParamsType = ReturnType<typeof def_switch_input_video_params>
+export type SwitchOutputParamsType = ReturnType<typeof def_switch_output_params>

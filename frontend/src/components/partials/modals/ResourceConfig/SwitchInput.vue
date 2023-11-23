@@ -1,15 +1,17 @@
 <script setup lang="ts">
-import { type Config5 } from "./Consts";
+import { type SwitchInputVideoParamsType } from "./Consts";
 
-const mv = defineModel<Config5>({
-  default: {} as any,
+const mv = defineModel<SwitchInputVideoParamsType>({
+  default: {} as SwitchInputVideoParamsType,
   local: true,
 });
+
 defineProps<{
   index: number,
   isLast: boolean,
   useBackup: boolean
 }>()
+
 const opened = ref(false)
 </script>
 <template>
@@ -25,7 +27,7 @@ const opened = ref(false)
       @keydown.space.prevent="opened = !opened"
       @click.prevent="opened = !opened"
     >
-      <h4>第{{ index }}路输入参数</h4>
+      <h4>第{{ index }}路视频输入参数</h4>
       <div class="collapse-icon">
         <VIcon icon="feather:chevron-down" />
       </div>
@@ -40,22 +42,32 @@ const opened = ref(false)
             <h5>IP流参数</h5>
           </div>
           <div class="columns is-multiline">
-            <div class="column is-8">
+            <div class="column is-6">
               <VField>
-                <VLabel>主视频流组播地址（含端口）</VLabel>
+                <VLabel>主视频流组播源IP（含端口）</VLabel>
                 <VControl>
                   <VInput
-                    v-model="mv.V_M_Address"
+                    v-model="mv.ipstream_master.v_src_address"
                   />
                 </VControl>
               </VField>
             </div>
-            <div class="column is-4">
+            <div class="column is-6">
               <VField>
-                <VLabel>主视频流P4交换机输入端口</VLabel>
+                <VLabel>主视频流组播目标IP（含端口）</VLabel>
+                <VControl>
+                  <VInput
+                    v-model="mv.ipstream_master.v_dst_address"
+                  />
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-6">
+              <VField>
+                <VLabel>主视频流p4交换机输入端口</VLabel>
                 <VControl>
                   <VInputNumber
-                    v-model="mv.V_M_P4_Port"
+                    v-model="mv.ipstream_master.v_P4_port"
                     centered
                     :min="0"
                     :step="1"
@@ -63,16 +75,17 @@ const opened = ref(false)
                 </VControl>
               </VField>
             </div>
+            <div class="column is-6" />
             <Transition name="fade-slow">
               <div
                 v-if="useBackup"
-                class="column is-8"
+                class="column is-6"
               >
                 <VField>
-                  <VLabel>备视频流组播地址（含端口）</VLabel>
+                  <VLabel>备视频流组播源IP（含端口）</VLabel>
                   <VControl>
                     <VInput
-                      v-model="mv.V_B_Address"
+                      v-model="mv.ipstream_backup.v_src_address"
                     />
                   </VControl>
                 </VField>
@@ -81,13 +94,28 @@ const opened = ref(false)
             <Transition name="fade-slow">
               <div
                 v-if="useBackup"
-                class="column is-4"
+                class="column is-6"
+              >
+                <VField>
+                  <VLabel>备视频流组播目标IP（含端口）</VLabel>
+                  <VControl>
+                    <VInput
+                      v-model="mv.ipstream_backup.v_dst_address"
+                    />
+                  </VControl>
+                </VField>
+              </div>
+            </Transition>
+            <Transition name="fade-slow">
+              <div
+                v-if="useBackup"
+                class="column is-6"
               >
                 <VField>
                   <VLabel>备视频流P4交换机输入端口</VLabel>
                   <VControl>
                     <VInputNumber
-                      v-model="mv.V_B_P4_Port"
+                      v-model="mv.ipstream_backup.v_P4_port"
                       centered
                       :min="0"
                       :step="1"
@@ -115,7 +143,7 @@ const opened = ref(false)
                 <VLabel>切换台输入序号</VLabel>
                 <VControl>
                   <VInputNumber
-                    v-model="mv.SW_Index"
+                    v-model="mv.in_sw_index"
                     centered
                     :min="0"
                     :step="1"
@@ -128,7 +156,7 @@ const opened = ref(false)
                 <VLabel>切换台显示名称</VLabel>
                 <VControl>
                   <VInput
-                    v-model="mv.SW_DisPlayName"
+                    v-model="mv.in_sw_displayname"
                   />
                 </VControl>
               </VField>

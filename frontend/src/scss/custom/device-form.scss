@@ -104,6 +104,30 @@
       }
     }
   }
+
+  .field.has-addons {
+    .field-addon-body {
+      .control:first-child {
+        flex-grow: 1;
+
+        button {
+          width: 100%;
+          justify-content: flex-end;
+
+          &::after {
+            content: ':';
+            font-weight: bold;
+            margin-inline-start: 8px;
+            transform: translateY(-1px);
+          }
+        }
+      }
+
+      .control:last-child {
+        flex-basis: 80px;
+      }
+    }
+  }
 }
 
 .is-dark {

@@ -1,55 +1,64 @@
 <script setup lang="ts">
-import { useFormat, watchInput } from './Utils'
-import { videoConfig, audioConfig, defs, vProtocols } from './Consts';
+import { getFormat, unwrap, useFormat, watchInput, wrap } from './Utils'
+import { def_codec_input, def_codec_output, v_protocols, val_codec } from './Consts';
+import pick from 'lodash-es/pick'
+import codecData from '/@src/data/vscomponent/codec.json'
 
 const mv = defineModel<{
-  Module: string;
-  Mode: string;
-  NMOS_DevName: string;
+  moudle: string;
+  mode: string;
+  nmos_devname: string;
+  "2110-7_m_local_ip": string;
+  "2110-7_b_local_ip": string;
 }>({
   default: {
-    Module: "EnCoder/Decoder",
-    Mode: "Encoder",
-    NMOS_DevName: ""
+    moudle: "codec",
+    mode: val_codec[0],
+    nmos_devname: "",
+    "2110-7_m_local_ip": "",
+    "2110-7_b_local_ip": ""
   },
   local: true,
 });
 
-const moduleName = ref('编解码器')
-const input = ref<any>({
-  '2022-7': true,
-  ...videoConfig,
-  ...audioConfig,
-  V_Protocol: defs.vProtocol,
-});
-const inputFormat = useFormat(input)
+mv.value = pick(codecData, ['moudle', 'mode', 'nmos_devname', '2110-7_m_local_ip', '2110-7_b_local_ip'])
 
-const output = ref<any>({
-  '2022-7': true,
-  ...videoConfig,
-  ...audioConfig,
-  V_Protocol: vProtocols[1],
-});
-const outputFormat = useFormat(output)
+const moduleName = ref('编解码器')
+const input = ref(def_codec_input());
+input.value = unwrap(codecData.input, 'in_')
+const inputFormat = useFormat(input.value, getFormat(input.value))
+
+const output = ref(def_codec_output());
+output.value = unwrap(codecData.output, 'out_')
+const outputFormat = useFormat(output.value.params, getFormat(output.value.params))
+
 watch(inputFormat, nv => {
   outputFormat.value = nv
 }, { immediate: true })
 
-watchInput([
-  'A_Channels_Number',
-  'A_Bits',
-  'A_Frequency'
-], input, [output])
+watchInput('audioformat', input.value, [output.value.params], { deep: true })
 
-watch(() => mv.value.Mode, () => {
-  if (mv.value.Mode === 'Encoder') {
-    input.value.V_Protocol = vProtocols[0]
-    output.value.V_Protocol = vProtocols[1]
+watch(() => mv.value.mode, () => {
+  if (mv.value.mode === val_codec[0]) {
+    input.value.v_protocol = v_protocols[0]
+    output.value.params.v_protocol = v_protocols[1]
   } else {
-    input.value.V_Protocol = vProtocols[1]
-    output.value.V_Protocol = vProtocols[0]
+    input.value.v_protocol = v_protocols[1]
+    output.value.params.v_protocol = v_protocols[0]
   }
 }, { immediate: true })
+
+function getValue() {
+  return {
+    ...mv.value,
+    input: wrap(input.value, 'in_'),
+    output: wrap(output.value, 'out_')
+  }
+}
+
+defineExpose({
+  getValue
+})
 </script>
 <template>
   <!-- prettier-ignore -->
@@ -90,13 +99,13 @@ watch(() => mv.value.Mode, () => {
                 <VLabel>工作模式</VLabel>
                 <VControl>
                   <VSelect
-                    v-model="mv.Mode"
+                    v-model="mv.mode"
                     class="is-rounded"
                   >
-                    <VOption value="Encoder">
+                    <VOption :value="val_codec[0]">
                       编码器
                     </VOption>
-                    <VOption value="Decoder">
+                    <VOption :value="val_codec[1]">
                       解码器
                     </VOption>
                   </VSelect>
@@ -108,7 +117,27 @@ watch(() => mv.value.Mode, () => {
                 <VLabel>NMOS注册设备名称</VLabel>
                 <VControl>
                   <VInput
-                    v-model="mv.NMOS_DevName"
+                    v-model="mv.nmos_devname"
+                  />
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-6">
+              <VField>
+                <VLabel>2022-7主路收发网口IP</VLabel>
+                <VControl>
+                  <VInput
+                    v-model="mv['2110-7_m_local_ip']"
+                  />
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-6">
+              <VField>
+                <VLabel>2022-7备路收发网口IP</VLabel>
+                <VControl>
+                  <VInput
+                    v-model="mv['2110-7_b_local_ip']"
                   />
                 </VControl>
               </VField>
@@ -124,7 +153,7 @@ watch(() => mv.value.Mode, () => {
               </div>
             </div>
           </div>
-          <DecoderInput
+          <CodecInput
             v-model="input"
             v-model:format="inputFormat"
           />
@@ -138,9 +167,11 @@ watch(() => mv.value.Mode, () => {
               </div>
             </div>
           </div>
-          <DecoderOutput
+          <CodecOutput
             v-model="output"
             v-model:format="outputFormat"
+            :m_local_ip="mv['2110-7_m_local_ip']"
+            :b_local_ip="mv['2110-7_b_local_ip']"
           />
         </div>
       </div>

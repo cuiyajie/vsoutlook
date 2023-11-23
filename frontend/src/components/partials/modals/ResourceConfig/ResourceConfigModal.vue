@@ -3,9 +3,13 @@ import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
 import { z } from "zod";
 import { useNotyf } from "/@src/composable/useNotyf";
+import CodecForm from "./CodecForm.vue";
+import UdxForm from "./UdxForm.vue";
+import MVForm from "./MVForm.vue";
+import SwitchForm from "./SwitchForm.vue";
 
 const notyf = useNotyf();
-const opened = ref(false);
+const opened = ref(true);
 
 useListener(Signal.OpenResourceConfig, (p: { tmpl: TemplateData, nodeName: string }) => {
   opened.value = true;
@@ -27,7 +31,8 @@ const { handleSubmit } = useForm({ validationSchema });
 
 const loading = ref(false)
 const addInstance = handleSubmit(async () => {
-  if (loading.value) return;
+  console.log(compRef.value?.getValue())
+  if (true || loading.value) return;
 
   loading.value = true;
   // TODO: add instance
@@ -38,9 +43,23 @@ const addInstance = handleSubmit(async () => {
   }
 });
 
-function isTmplType(name: string) {
-  return tmpl.value?.typeName === name
-}
+const compRef = ref<InstanceType<typeof CodecForm> | null>(null)
+const TmplComponent = computed(() => {
+  const b = "切换台"
+  switch (b) {
+  // switch (tmpl.value?.typeName) {
+    case "编解码":
+      return CodecForm;
+    case "上下变换":
+      return UdxForm;
+    case "多画面":
+      return MVForm;
+    case "切换台":
+      return SwitchForm;
+    default:
+      return CodecForm;
+  }
+})
 </script>
 <template>
   <VModal
@@ -82,10 +101,7 @@ function isTmplType(name: string) {
             </Transition>
           </VControl>
         </VField>
-        <DecoderForm v-if="isTmplType('编解码')" />
-        <UpDownSwitchForm v-if="isTmplType('上下变换')" />
-        <MultiScreenForm v-if="isTmplType('多画面')" />
-        <!-- <SwitchStageForm v-if="isTmplType('切换台')" /> -->
+        <TmplComponent ref="compRef" />
       </div>
     </template>
     <template #action>

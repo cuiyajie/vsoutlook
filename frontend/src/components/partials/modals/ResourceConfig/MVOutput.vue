@@ -1,36 +1,43 @@
+<!-- eslint-disable vue/prop-name-casing -->
 <script setup lang="ts">
-import { useFormat } from './Utils';
-import { type Config3, screenPipConfig, formatMap } from './Consts';
+import { useFormat, getFormat } from './Utils';
+import { formatMap, type MVOutputParamsType, pip_params } from './Consts';
 
-const mv = defineModel<Config3>({
-  default: {} as any,
+const mv = defineModel<MVOutputParamsType>({
+  default: {} as MVOutputParamsType,
   local: true,
 });
 
 defineProps<{
   index: number,
   isLast: boolean,
-  useBackup: boolean
+  useBackup: boolean,
+  m_local_ip: string,
+  b_local_ip: string,
 }>()
 
 const opened = ref(false)
 
-const V_Format = useFormat(mv);
+const format = useFormat(mv.value, getFormat(mv.value));
 
-const pips = ref<any[]>([]);
-watch(() => mv.value.PIPs_Number, (nv) => {
+const pips = ref<Array<{
+  index: number,
+  value: Ref<typeof pip_params>
+}>>([]);
+
+watch(() => mv.value.pips_number, (nv) => {
   const len = pips.value.length
+  const params: any[] = mv.value.pip_params
   if (nv < len) {
     pips.value = pips.value.slice(0, nv);
   } else if (nv > len) {
-    pips.value = pips.value.concat(
-      Array.from({ length: nv - len }, (_, i) => ({
+    pips.value = [
+      ...pips.value,
+      ...Array.from({ length: nv - len }, (_, i) => ({
         index: len + i + 1,
-        value: ref({
-          ...screenPipConfig
-        })
+        value: params[len + i] ? ref(params[len + i]) : ref({ ...pip_params })
       }))
-    );
+    ]
   }
 }, { immediate: true });
 </script>
@@ -79,7 +86,7 @@ watch(() => mv.value.PIPs_Number, (nv) => {
                         </span>
                         <span class="file-label"> 选择文件 </span>
                       </span>
-                      <span class="file-name light-text"> 未选择文件 </span>
+                      <span class="file-name light-text"> {{ mv.mv_template }} </span>
                     </label>
                   </div>
                 </VControl>
@@ -90,7 +97,7 @@ watch(() => mv.value.PIPs_Number, (nv) => {
                 <VLabel>窗口数量</VLabel>
                 <VControl>
                   <VSelect
-                    v-model="mv.PIPs_Number"
+                    v-model="mv.pips_number"
                     class="is-rounded"
                   >
                     <VOption :value="4">
@@ -116,7 +123,7 @@ watch(() => mv.value.PIPs_Number, (nv) => {
               <VField>
                 <VLabel>窗口{{ pip.index }}名称</VLabel>
                 <VInput
-                  v-model="pip.name"
+                  v-model="pip.value.pip_name"
                 />
               </VField>
             </div>
@@ -124,7 +131,7 @@ watch(() => mv.value.PIPs_Number, (nv) => {
               <VField>
                 <VLabel>窗口{{ pip.index }}关联输入视频序号</VLabel>
                 <VInputNumber
-                  v-model="pip.Video_Index"
+                  v-model="pip.value.pip_video_index"
                   centered
                   :min="0"
                   :step="1"
@@ -145,39 +152,63 @@ watch(() => mv.value.PIPs_Number, (nv) => {
             <h5>IP流参数</h5>
           </div>
           <div class="columns is-multiline">
-            <div class="column is-4">
+            <div class="column is-6">
               <VField>
                 <VLabel>视频流协议</VLabel>
                 <VControl>
                   <VInput
-                    v-model="mv.V_Protocol"
+                    v-model="mv.v_protocol"
                     readonly
                   />
                 </VControl>
               </VField>
             </div>
-            <div class="column is-4">
+            <div class="column is-6" />
+            <div class="column is-6">
               <VField>
-                <VLabel>主视频流组播地址（含端口）</VLabel>
+                <VLabel>主视频流组播源IP（含端口）</VLabel>
                 <VControl>
                   <VInput
-                    v-model="mv.V_M_Address"
+                    v-model="mv.ipstream_master.v_src_address"
                   />
                 </VControl>
+              </VField>
+            </div>
+            <div class="column is-6">
+              <VField>
+                <VLabel>主视频流组播目标IP（含端口）</VLabel>
+                <AddrAddon
+                  v-model="mv.ipstream_master.v_dst_address"
+                  :host="m_local_ip"
+                />
               </VField>
             </div>
             <Transition name="fade-slow">
               <div
                 v-if="useBackup"
-                class="column is-4"
+                class="column is-6"
               >
                 <VField>
-                  <VLabel>备视频流组播地址（含端口）</VLabel>
+                  <VLabel>备视频流组播源IP（含端口）</VLabel>
                   <VControl>
                     <VInput
-                      v-model="mv.V_B_Address"
+                      v-model="mv.ipstream_backup.v_src_address"
                     />
                   </VControl>
+                </VField>
+              </div>
+            </Transition>
+            <Transition name="fade-slow">
+              <div
+                v-if="useBackup"
+                class="column is-6"
+              >
+                <VField>
+                  <VLabel>备视频流组播目标IP（含端口）</VLabel>
+                  <AddrAddon
+                    v-model="mv.ipstream_backup.v_dst_address"
+                    :host="b_local_ip"
+                  />
                 </VField>
               </div>
             </Transition>
@@ -200,7 +231,7 @@ watch(() => mv.value.PIPs_Number, (nv) => {
                 <VLabel>视频格式</VLabel>
                 <VControl>
                   <VInput
-                    :model-value="formatMap[V_Format]"
+                    v-model="formatMap[format]"
                     readonly
                   />
                 </VControl>

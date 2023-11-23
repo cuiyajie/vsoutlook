@@ -1,8 +1,10 @@
+<!-- eslint-disable vue/prop-name-casing -->
 <script setup lang="ts">
-import { type Config1, formatMap, formatKeys } from './Consts';
+import { type CodecOutputType, formatMap, formatKeys } from './Consts';
+import { useProtocolDC } from "./Utils";
 
-const mv = defineModel<Config1>({
-  default: {} as any,
+const mv = defineModel<CodecOutputType>({
+  default: {} as CodecOutputType,
   local: true,
 });
 
@@ -11,6 +13,13 @@ const format = defineModel('format', {
   local: true,
   required: true
 })
+
+useProtocolDC(mv.value.params)
+
+defineProps<{
+  m_local_ip: string,
+  b_local_ip: string,
+}>()
 </script>
 <template>
   <div class="form-body">
@@ -19,58 +28,76 @@ const format = defineModel('format', {
         <h5>IP流参数</h5>
       </div>
       <div class="columns is-multiline">
+        <div class="column is-6">
+          <VField>
+            <VLabel>启用2022-7备份</VLabel>
+            <VControl>
+              <VSwitchBlock
+                v-model="mv['g_2022-7']"
+                color="primary"
+              />
+            </VControl>
+          </VField>
+        </div>
         <div class="column is-4">
           <VField>
             <VLabel>视频流协议</VLabel>
             <VControl>
               <VInput
-                v-model="mv.V_Protocol"
+                v-model="mv.params.v_protocol"
                 readonly
               />
             </VControl>
           </VField>
         </div>
-        <div class="column is-4">
+        <div class="column is-6">
           <VField>
-            <VLabel>音频流协议</VLabel>
+            <VLabel>主视频流组播源IP（含端口）</VLabel>
             <VControl>
               <VInput
-                v-model="mv.A_Protocol"
-                readonly
+                v-model="mv.params.ipstream_master.v_src_address"
               />
             </VControl>
           </VField>
         </div>
-        <div class="column is-4">
+        <div class="column is-6">
           <VField>
-            <VLabel>主视频流组播地址（含端口）</VLabel>
+            <VLabel>主视频流组播目标IP（含端口）</VLabel>
+            <AddrAddon
+              v-model="mv.params.ipstream_master.v_dst_address"
+              :host="m_local_ip"
+            />
+          </VField>
+        </div>
+        <div class="column is-6">
+          <VField>
+            <VLabel>主音频流组播源IP（含端口）</VLabel>
             <VControl>
               <VInput
-                v-model="mv.V_M_Address"
+                v-model="mv.params.ipstream_master.a_src_address"
               />
             </VControl>
           </VField>
         </div>
-        <div class="column is-4">
+        <div class="column is-6">
           <VField>
-            <VLabel>主音频流组播地址（含端口）</VLabel>
-            <VControl>
-              <VInput
-                v-model="mv.A_M_Address"
-              />
-            </VControl>
+            <VLabel>主音频流组播目标IP（含端口）</VLabel>
+            <AddrAddon
+              v-model="mv.params.ipstream_master.a_dst_address"
+              :host="m_local_ip"
+            />
           </VField>
         </div>
         <Transition name="fade-slow">
           <div
-            v-if="mv['2022-7']"
-            class="column is-4"
+            v-if="mv['g_2022-7']"
+            class="column is-6"
           >
             <VField>
-              <VLabel>备视频流组播地址（含端口）</VLabel>
+              <VLabel>备视频流组播源IP（含端口）</VLabel>
               <VControl>
                 <VInput
-                  v-model="mv.V_B_Address"
+                  v-model="mv.params.ipstream_backup.v_src_address"
                 />
               </VControl>
             </VField>
@@ -78,16 +105,44 @@ const format = defineModel('format', {
         </Transition>
         <Transition name="fade-slow">
           <div
-            v-if="mv['2022-7']"
-            class="column is-4"
+            v-if="mv['g_2022-7']"
+            class="column is-6"
           >
             <VField>
-              <VLabel>备音频流组播地址（含端口）</VLabel>
+              <VLabel>备视频流组播目标IP（含端口）</VLabel>
+              <AddrAddon
+                v-model="mv.params.ipstream_backup.v_dst_address"
+                :host="b_local_ip"
+              />
+            </VField>
+          </div>
+        </Transition>
+        <Transition name="fade-slow">
+          <div
+            v-if="mv['g_2022-7']"
+            class="column is-6"
+          >
+            <VField>
+              <VLabel>备音频流组播源IP（含端口）</VLabel>
               <VControl>
                 <VInput
-                  v-model="mv.A_B_Address"
+                  v-model="mv.params.ipstream_backup.a_src_address"
                 />
               </VControl>
+            </VField>
+          </div>
+        </Transition>
+        <Transition name="fade-slow">
+          <div
+            v-if="mv['g_2022-7']"
+            class="column is-6"
+          >
+            <VField>
+              <VLabel>备音频流组播目标IP（含端口）</VLabel>
+              <AddrAddon
+                v-model="mv.params.ipstream_backup.a_dst_address"
+                :host="b_local_ip"
+              />
             </VField>
           </div>
         </Transition>
@@ -121,7 +176,7 @@ const format = defineModel('format', {
             <VLabel>编码格式</VLabel>
             <VControl>
               <VInput
-                v-model="mv.V_DecFormat"
+                v-model="mv.params.videoformat.v_compression_format"
                 readonly
               />
             </VControl>
@@ -132,7 +187,7 @@ const format = defineModel('format', {
             <VLabel>压缩比</VLabel>
             <VControl>
               <VInput
-                v-model="mv.V_CompressionRatio"
+                v-model="mv.params.videoformat.v_compression_ratio"
                 readonly
               />
             </VControl>
@@ -150,7 +205,7 @@ const format = defineModel('format', {
             <VLabel>声道数</VLabel>
             <VControl>
               <VInput
-                v-model="mv.A_Channels_Number"
+                v-model="mv.params.audioformat.a_channels_number"
                 readonly
               />
             </VControl>
@@ -161,7 +216,7 @@ const format = defineModel('format', {
             <VLabel>量化比特</VLabel>
             <VControl>
               <VInput
-                v-model="mv.A_Bits"
+                v-model="mv.params.audioformat.a_bits"
                 readonly
               />
             </VControl>
@@ -172,7 +227,7 @@ const format = defineModel('format', {
             <VLabel>采样率</VLabel>
             <VControl>
               <VInput
-                v-model="mv.A_Frequency"
+                v-model="mv.params.audioformat.a_frequency"
                 readonly
               />
             </VControl>

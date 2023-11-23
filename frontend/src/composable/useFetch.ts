@@ -29,3 +29,12 @@ export function useFetch() {
     },
   })
 }
+
+export function useClusterFetch() {
+  return ofetch.create({
+    baseURL: 'http://172.16.0.200:8080',
+    onRequest: ({ options, request }) => {
+      console.log(options, request)
+    }
+  })
+}

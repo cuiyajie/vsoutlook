@@ -51,7 +51,7 @@ func startServer() {
 	defer stop()
 
 	srv := &http.Server{
-		Addr:    fmt.Sprintf("localhost:%v", config.Get("HTTP_PORT")),
+		Addr:    fmt.Sprintf("0.0.0.0:%v", config.Get("HTTP_PORT")),
 		Handler: router.SetupRouter(),
 	}
 
