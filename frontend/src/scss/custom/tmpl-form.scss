@@ -8,3 +8,15 @@
     max-width: none;
   }
 }
+
+.icon-wrap.is-small.is-tt-icon {
+  img {
+    max-width: 60% !important;
+  }
+}
+
+.icon-wrap.is-medium.is-tt-icon {
+  img {
+    max-width: 50% !important;
+  }
+}

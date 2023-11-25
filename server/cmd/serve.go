@@ -50,8 +50,13 @@ func startServer() {
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
+	addrFmt := "0.0.0.0:%v"
+	if config.Dev {
+		addrFmt = "localhost:%v"
+	}
+
 	srv := &http.Server{
-		Addr:    fmt.Sprintf("0.0.0.0:%v", config.Get("HTTP_PORT")),
+		Addr:    fmt.Sprintf(addrFmt, config.Get("HTTP_PORT")),
 		Handler: router.SetupRouter(),
 	}
 

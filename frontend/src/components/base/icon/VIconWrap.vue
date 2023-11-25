@@ -2,7 +2,7 @@
 import { onceImageErrored } from '/@src/utils/via-placeholder'
 
 export type VIconWrapDark = '1' | '2' | '3' | '4' | '5' | '6'
-export type VIconWrapSize = 'small' | 'medium' | 'large'
+export type VIconWrapSize = 'tiny' | 'small' | 'medium' | 'large'
 export type VIconWrapColor =
   | 'white'
   | 'black'
@@ -96,6 +96,17 @@ const isIconify = computed(() => {
 
   &.has-large-icon {
     font-size: 1.3rem;
+  }
+
+  &.is-tiny {
+    font-size: 0.6rem;
+    height: 18px;
+    width: 18px;
+    min-width: 18px;
+
+    &.has-large-icon {
+      font-size: 0.75rem;
+    }
   }
 
   &.is-small {

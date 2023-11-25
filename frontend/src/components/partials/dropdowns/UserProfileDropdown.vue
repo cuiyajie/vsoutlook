@@ -30,7 +30,7 @@ async function logout() {
         @keydown.space.prevent="toggle"
         @click="toggle"
       >
-        <VAvatar picture="/images/avatars/svg/vuero-1.svg" />
+        <VAvatar picture="/images/avatars/placeholder.jpg" />
       </a>
     </template>
 
@@ -38,7 +38,7 @@ async function logout() {
       <div class="dropdown-head">
         <VAvatar
           size="large"
-          picture="/images/avatars/svg/vuero-1.svg"
+          picture="/images/avatars/placeholder.jpg"
         />
 
         <div class="meta">

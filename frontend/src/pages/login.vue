@@ -51,27 +51,16 @@ useHead({
   <div class="auth-wrapper-inner is-single">
     <!--Fake navigation-->
     <div class="auth-nav">
-      <div class="left" />
       <div class="center">
-        <RouterLink to="/" class="header-item">
-          <AnimatedLogo width="38px" height="38px" />
-        </RouterLink>
-      </div>
-      <div class="right">
-        <label
-          class="dark-mode ml-auto"
-          tabindex="0"
-          role="button"
-          @keydown.space.prevent="(e) => (e.target as HTMLLabelElement).click()"
+        <RouterLink
+          to="/"
+          class="header-item"
         >
-          <input
-            data-cy="dark-mode-toggle"
-            type="checkbox"
-            :checked="!darkmode.isDark"
-            @change="darkmode.onChange"
+          <Logo
+            width="38"
+            height="38"
           />
-          <span />
-        </label>
+        </RouterLink>
       </div>
     </div>
 
@@ -81,30 +70,36 @@ useHead({
         <!--Form Title-->
         <div class="auth-head">
           <h2>欢迎访问维视远景</h2>
-          <p class="mt-2">请登录您的帐户</p>
+          <p class="mt-2">
+            请登录您的帐户
+          </p>
         </div>
 
         <!--Form-->
         <div class="form-card">
-          <form method="post" novalidate @submit.prevent="handleLogin">
+          <form
+            method="post"
+            novalidate
+            @submit.prevent="handleLogin"
+          >
             <div class="login-form">
               <VField>
                 <VControl icon="feather:user">
                   <VInput
+                    v-model="username"
                     type="text"
                     placeholder="用户名"
                     autocomplete="username"
-                    v-model="username"
                   />
                 </VControl>
               </VField>
               <VField>
                 <VControl icon="feather:lock">
                   <VInput
+                    v-model="password"
                     type="password"
                     placeholder="密码"
                     autocomplete="current-password"
-                    v-model="password"
                   />
                 </VControl>
               </VField>
@@ -296,7 +291,7 @@ useHead({
 
 .auth-nav {
   position: absolute;
-  top: 0;
+  top: 60px;
   inset-inline-start: 0;
   height: 80px;
   width: 100%;

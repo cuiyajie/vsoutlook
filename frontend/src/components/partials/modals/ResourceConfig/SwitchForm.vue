@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { def_switch_input_params, def_switch_output_params, def_switch_input_video_params, type SwitchInputParamsType, global_config, def_switch_input_bus_params, type SwitchInputBusParamsType } from './Consts';
-import { unwrap } from "./Utils";
+import { unwrap, wrap } from "./Utils";
 import pick from 'lodash-es/pick'
 import switchData from '/@src/data/vscomponent/switch.json'
 
@@ -72,6 +72,34 @@ const outputs = Array.from({ length: 3 }, (_, i) => {
 });
 const OUT_3_OPEN = ref(false)
 OUT_3_OPEN.value = opData.clean_params.clean_is_open
+
+
+function getValue() {
+  const mip = mv.value['2110-7_m_local_ip']
+  const bip = mv.value['2110-7_b_local_ip']
+  const useb = output.value['g_2022-7']
+  return {
+    ...mv.value,
+    input: {
+      ...wrap(input.value, 'in_', input.value['g_2022-7']),
+      input_params: inputs.value.map(ipt => wrap(ipt.value, 'in_', input.value['g_2022-7'], true, mip, bip))
+    },
+    bus: wrap(inputBus.value, 'bus_in_', input.value['g_2022-7']),
+    output: {
+      ...wrap(output.value, 'out_'),
+      out_pgm_params: wrap(outputs[0].value, 'out_', useb, false, mip, bip),
+      out_pvw_params: wrap(outputs[1].value, 'out_', useb, false, mip, bip),
+      out_clean_params: {
+        out_clean_is_open: OUT_3_OPEN.value,
+        ...(OUT_3_OPEN.value ? wrap(outputs[2].value, 'out_', useb, false, mip, bip) : {})
+      },
+    }
+  }
+}
+
+defineExpose({
+  getValue
+})
 </script>
 <template>
   <!-- prettier-ignore -->

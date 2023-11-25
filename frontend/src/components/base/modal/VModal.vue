@@ -19,7 +19,8 @@ export interface VModalProps {
   noscroll?: boolean
   noclose?: boolean
   tabs?: boolean
-  cancelLabel?: string
+  cancelLabel?: string,
+  dialogClass?: string,
 }
 
 defineOptions({
@@ -32,6 +33,7 @@ const props = withDefaults(defineProps<VModalProps>(), {
   size: undefined,
   actions: undefined,
   cancelLabel: undefined,
+  dialogClass: ""
 })
 
 const { t } = useI18n()
@@ -70,7 +72,7 @@ onUnmounted(() => {
         :is="is"
         role="dialog"
         aria-modal="true"
-        :class="[open && 'is-active', size && `is-${size}`]"
+        :class="[open && 'is-active', size && `is-${size}`, dialogClass]"
         class="modal v-modal"
         v-bind="$attrs"
       >

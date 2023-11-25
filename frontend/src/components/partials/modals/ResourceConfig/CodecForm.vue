@@ -49,10 +49,12 @@ watch(() => mv.value.mode, () => {
 }, { immediate: true })
 
 function getValue() {
+  const mip = mv.value['2110-7_m_local_ip']
+  const bip = mv.value['2110-7_b_local_ip']
   return {
     ...mv.value,
-    input: wrap(input.value, 'in_'),
-    output: wrap(output.value, 'out_')
+    input: wrap(input.value, 'in_', input.value['g_2022-7']),
+    output: wrap(output.value, 'out_', output.value['g_2022-7'], false, mip, bip)
   }
 }
 

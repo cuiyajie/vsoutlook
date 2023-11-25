@@ -236,6 +236,7 @@
     .multiselect-dropdown {
       background-color: var(--dark-sidebar-dark-2);
       border-color: var(--dark-sidebar-light-4);
+      max-height: 20rem;
 
       .multiselect-option {
         color: var(--light-text);

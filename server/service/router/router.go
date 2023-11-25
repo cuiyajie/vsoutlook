@@ -9,6 +9,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"vsoutlook.com/vsoutlook/infra/track"
+	"vsoutlook.com/vsoutlook/service/device"
 	"vsoutlook.com/vsoutlook/service/site"
 	"vsoutlook.com/vsoutlook/service/svcinfra"
 	"vsoutlook.com/vsoutlook/service/tmpl"
@@ -54,6 +55,9 @@ func SetupRouter() *gin.Engine {
 		post(member, "tmpl/update", tmpl.UpdateTmpl)
 		post(member, "tmpl/delete", tmpl.DeleteTmpl)
 		post(member, "tmpl/listed", tmpl.SetTmplListed)
+		post(member, "device/list", device.GetDeviceList)
+		post(member, "device/create", device.CreateDevice)
+		post(member, "device/delete", device.DeleteDevice)
 	}
 
 	router.NoRoute(h(site.FallbackHandler))

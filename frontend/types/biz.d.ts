@@ -65,6 +65,23 @@ interface DeviceVerbose extends DeviceInfo {
   ptpInfo: StatusInfo
 }
 
+interface DeviceDetail {
+	id: string,
+	name: string,
+	tmplID: string,
+	tmplName: string,
+	tmplTypeID: string,
+	tmplTypeName: string,
+  tmplTypeIcon: string,
+  nodeName: string,
+	revision: string,
+	chartVersion: string,
+	appVersion: string,
+	status: string,
+  statusInfo: any,
+  updatedAt: string
+}
+
 interface SystemInfo {
   id: string,
   name: string,
@@ -79,4 +96,10 @@ interface UserData {
   id: string,
   name: string,
   role: number
+}
+
+interface ClustNode {
+  id: string,
+  ip: string,
+  info: any
 }

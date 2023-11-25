@@ -61,7 +61,10 @@ watch(
       <div v-if="activeValue === 'all'">
         <div class="tmpl-list">
           <ul>
-            <VCollapseLinks class="plain-list" open>
+            <VCollapseLinks
+              class="plain-list"
+              open
+            >
               <slot
                 v-for="tmpl in tmplList"
                 :key="tmpl.id"
@@ -85,7 +88,11 @@ watch(
               v-model:open="open[type.id]"
             >
               <template #header>
-                <VIconWrap size="small" :picture="type.icon" class="mr-2" />
+                <VIconWrap
+                  size="small"
+                  :picture="type.icon"
+                  class="mr-2 is-tt-icon"
+                />
                 {{ type.name }}
                 <i
                   aria-hidden="true"
@@ -104,7 +111,10 @@ watch(
                 name="listItem"
                 v-bind="{ tmpl, isSubmenu: true }"
               >
-                <RouterLink :to="`/app/template/${tmpl.id}`" class="is-submenu">
+                <RouterLink
+                  :to="`/app/template/${tmpl.id}`"
+                  class="is-submenu"
+                >
                   <span>{{ tmpl.name }}</span>
                 </RouterLink>
               </slot>

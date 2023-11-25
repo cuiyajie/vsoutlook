@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { watchInput, useFormat, watchFormat2, unwrap, getFormat } from './Utils';
+import { watchInput, useFormat, watchFormat2, unwrap, getFormat, wrap } from './Utils';
 import { formatKeys, type UdxInputType, def_udx_output_params, val_udx, def_udx_input, global_config } from './Consts';
 import pick from 'lodash-es/pick'
 import udxData from '/@src/data/vscomponent/udx.json'
@@ -50,6 +50,24 @@ watch(() => mv.value.mode, () => {
     outputFormat.value = formatKeys[1]
   }
 }, { immediate: true })
+
+function getValue() {
+  const mip = mv.value['2110-7_m_local_ip']
+  const bip = mv.value['2110-7_b_local_ip']
+  const useb = output.value['g_2022-7']
+  return {
+    ...mv.value,
+    input: wrap(input.value, 'in_', input.value['g_2022-7']),
+    output: {
+      ...wrap(output.value, 'out_'),
+      out_params: outputs.map(o => wrap(o.value, 'out_', useb, false, mip, bip)).slice(0, OUT_2_OPEN.value ? 2 : 1)
+    }
+  }
+}
+
+defineExpose({
+  getValue
+})
 </script>
 <template>
   <!-- prettier-ignore -->

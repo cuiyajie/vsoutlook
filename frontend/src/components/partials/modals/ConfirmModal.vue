@@ -30,16 +30,33 @@ function handleConfirm() {
     size="small"
     :title="dopts.title"
     :cancel-label="dopts.cancelText"
+    dialog-class="confirm-dialog"
     @close="opened = false"
   >
     <template #content>
-      <div v-if="dopts.html" v-html="dopts.html" />
-      <h3 v-else>{{ dopts.content }}</h3>
+      <div
+        v-if="dopts.html"
+        v-html="dopts.html"
+      />
+      <h3 v-else>
+        {{ dopts.content }}
+      </h3>
     </template>
     <template #action>
-      <VButton color="primary" raised @click="handleConfirm">
+      <VButton
+        color="primary"
+        raised
+        @click="handleConfirm"
+      >
         {{ dopts.confirmText }}
       </VButton>
     </template>
   </VModal>
 </template>
+<style lang="scss">
+.modal.v-modal {
+  &.confirm-dialog {
+    z-index: 1000 !important;
+  }
+}
+</style>

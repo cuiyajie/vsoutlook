@@ -63,9 +63,9 @@ watch(
           to="/"
           class="navbar-item is-brand"
         >
-          <AnimatedLogo
-            width="38px"
-            height="38px"
+          <Logo
+            width="38"
+            height="38"
           />
         </RouterLink>
 

@@ -22,7 +22,10 @@ export const useTemplateType = defineStore('templateType', () => {
   async function $fetchList() {
     const res = await $fetch('/api/tmpl_type/list')
     if (res.types) {
-      tmplTypes.value = res.types
+      tmplTypes.value = res.types.map((v: any) => {
+        v.icon = `/images/tmpl/${v.icon}`
+        return v
+      })
     }
   }
 

@@ -11,12 +11,16 @@ const props = defineProps<{
   title?: string
   content?: string,
   link?: string,
-  color: VCardColor,
+  color?: VCardColor,
 }>()
 </script>
 
 <template>
-  <RouterLink class="hub-card" :to="link" :class="[props.color && `is-${props.color}`]">
+  <RouterLink
+    class="hub-card"
+    :to="link"
+    :class="[props.color && `is-${props.color}`]"
+  >
     <div class="hub-card-body">
       <slot name="icon" />
       <div class="inner-content">

@@ -395,6 +395,12 @@
           font-size: 0.9rem;
           font-weight: 500;
           color: var(--light-text);
+          letter-spacing: 0.12em;
+
+          .fas {
+            text-align: center;
+            width: 14px;
+          }
         }
       }
 

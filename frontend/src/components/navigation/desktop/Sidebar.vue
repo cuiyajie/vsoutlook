@@ -45,7 +45,10 @@ const themeClasses = computed(() => {
   >
     <div class="sidebar-brand">
       <RouterLink to="/">
-        <AnimatedLogo width="36px" />
+        <Logo
+          width="36"
+          height="36"
+        />
       </RouterLink>
     </div>
     <div class="sidebar-inner">

@@ -7,6 +7,10 @@
     li > a {
       margin-inline-start: 24px;
     }
+
+    li + li {
+      margin-top: 6px;
+    }
   }
 
   li {

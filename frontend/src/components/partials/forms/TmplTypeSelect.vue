@@ -19,7 +19,7 @@ defineProps<{
     :id="formId"
     v-slot="{ field }"
     :label="label"
-    class="is-image-select"
+    class="is-image-select is-tt-select"
   >
     <VControl>
       <Multiselect
@@ -63,3 +63,12 @@ defineProps<{
     </VControl>
   </VField>
 </template>
+<style lang="scss">
+.is-image-select.is-tt-select {
+  .multiselect .select-option-icon {
+    margin-inline-end: 10px;
+    height: 18px;
+    min-width: 18px;
+  }
+}
+</style>

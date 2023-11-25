@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { def_mv_input_params, def_mv_output_params, global_config } from './Consts';
-import { unwrap } from "./Utils";
+import { unwrap, wrap } from "./Utils";
 import pick from 'lodash-es/pick'
 import mvData from '/@src/data/vscomponent/mv.json'
 
@@ -69,6 +69,27 @@ watch(() => mv.value.output_number, (nv) => {
     );
   }
 }, { immediate: true });
+
+function getValue() {
+  const mip = mv.value['2110-7_m_local_ip']
+  const bip = mv.value['2110-7_b_local_ip']
+  const useb = output.value['g_2022-7']
+  return {
+    ...mv.value,
+    input: {
+      ...wrap(input.value, 'in_', input.value['g_2022-7']),
+      input_params: inputs.value.map(ipt => wrap(ipt.value, 'in_', input.value['g_2022-7'], true, mip, bip))
+    },
+    output: {
+      ...wrap(output.value, 'out_'),
+      out_params: outputs.value.map(o => wrap(o.value, 'out_', useb, false, mip, bip))
+    }
+  }
+}
+
+defineExpose({
+  getValue
+})
 </script>
 <template>
   <!-- prettier-ignore -->

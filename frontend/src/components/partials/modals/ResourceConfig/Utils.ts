@@ -1,22 +1,28 @@
 import type { WatchSource, WatchOptions } from "vue";
 import { defs, formats, v_compression_format, v_compression_ratio, v_protocols, v_width, val_udx } from './Consts';
+import omit from 'lodash-es/omit';
+
+function setFormat(dst: any, tokens: string[]) {
+  Object.assign(dst, {
+    'v_width': +tokens[0],
+    'v_height': +tokens[1],
+    'v_interlaced': Boolean(+tokens[2]),
+    'v_fps': +tokens[3],
+    'v_gamma': tokens[4],
+    'v_gamut': tokens[5],
+  });
+}
 
 export function watchFormat(format: WatchSource<string>, mv: any) {
   watch(
     format,
     (nv) => {
       const tokens = nv.split("_");
-      if (!mv) {
-        debugger
+      if (mv) {
+        setFormat(mv.videoformat, tokens);
+      } else {
+        mv.videoformat = omit(mv.videoformat, 'v_width', 'v_height', 'v_interlaced', 'v_fps', 'v_gamma', 'v_gamut');
       }
-      Object.assign(mv.videoformat, {
-        'v_width': tokens[0],
-        'v_height': tokens[1],
-        'v_interlaced': tokens[2],
-        'v_fps': tokens[3],
-        'v_gamma': tokens[4],
-        'v_color_gamut': tokens[5],
-      });
     },
     { immediate: true }
   );
@@ -33,14 +39,11 @@ export function watchFormat2(format: WatchSource<string>, mvs: any[]) {
     (nv) => {
       const tokens = nv.split("_");
       mvs.forEach(m => {
-        Object.assign(m.videoformat, {
-          'v_width': tokens[0],
-          'v_height': tokens[1],
-          'v_interlaced': tokens[2],
-          'v_fps': tokens[3],
-          'v_gamma': tokens[4],
-          'v_color_gamut': tokens[5],
-        });
+        if (m) {
+          setFormat(m.videoformat, tokens);
+        } else {
+          m.videoformat = omit(m.videoformat, 'v_width', 'v_height', 'v_interlaced', 'v_fps', 'v_gamma', 'v_gamut');
+        }
       })
     },
     { immediate: true }
@@ -115,16 +118,40 @@ export function watchModeVFormat(
   );
 }
 
-export function wrap(src: any, prefix: string) {
+export function wrap(src: any, prefix: string, useBackup?: boolean, isBackup?: boolean, m_local_ip?: string, b_local_ip?: string) {
   const dst: any = {}
   for (const key in src) {
-    const wrapKey = `${prefix}${key}`;
+    let wrapKey = `${prefix}${key}`;
+    if ([
+      'ipstream_master', 'ipstream_backup', 'videoformat', 'audioformat', 'pip_params',
+      'input_key_params', 'input_fill_params', 'input_video_params',
+      'video_bus_master', 'video_bus_backup', 'keyfill_bus_master', 'keyfill_bus_backup',
+    ].includes(key)) {
+      wrapKey = key
+    }
     if (src[key] instanceof Array) {
-      dst[wrapKey] = src[key].map((v: any) => wrap(v, prefix));
+      const isBackup = key.endsWith('backup')
+      if (isBackup && !useBackup) {
+        continue
+      } else {
+        dst[wrapKey] = src[key].map((v: any) => wrap(v, prefix, useBackup, isBackup, m_local_ip, b_local_ip));
+      }
     } else if (typeof src[key] === 'object') {
-      dst[wrapKey] = wrap(src[key], prefix);
+      const isBackup = key.endsWith('backup')
+      if (isBackup && !useBackup) {
+        continue
+      } else {
+        dst[wrapKey] = wrap(src[key], prefix, useBackup, isBackup, m_local_ip, b_local_ip);
+      }
+      if (Object.keys(dst[wrapKey]).length === 0) {
+        dst[wrapKey] = null;
+      }
     } else {
-      dst[wrapKey] = src[key];
+      if (prefix === 'out_' && key.endsWith('dst_address') && isBackup !== undefined) {
+        dst[wrapKey] = `${isBackup ? b_local_ip : m_local_ip}:${src[key]}`;
+      } else {
+        dst[wrapKey] = src[key];
+      }
     }
   }
   return dst
@@ -141,7 +168,6 @@ export function unwrap(src: any, prefix: string) {
     } else {
       if (prefix === 'out_' && key.endsWith('dst_address')) {
         dst[unwrapKey] = src[key].split(':')?.[1] || '';
-        continue;
       } else {
         dst[unwrapKey] = src[key];
       }

@@ -9,7 +9,7 @@ export function signature(body: string, path: string, timestamp: string) {
 export const tz = String(new Date().getTimezoneOffset());
 export function useFetch() {
   return ofetch.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8090',
+    baseURL: process.env.NODE_ENV === 'production' ? '' : (import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8090'),
     // We set an interceptor for each request to
     // include Bearer token to the request if user is logged in
     onRequest: ({ options, request }) => {
@@ -19,22 +19,18 @@ export function useFetch() {
       if (!options.method) {
         options.method = 'POST'
       }
-      options.mode = 'cors'
-      options.credentials = 'include'
+      if (process.env.NODE_ENV === 'production') {
+        options.mode = 'same-origin'
+        options.credentials = 'same-origin'
+      } else {
+        options.mode = 'cors'
+        options.credentials = 'include'
+      }
       options.headers = {
         ...options.headers,
         'Content-Type': 'application/json',
         'X-Signature': `${timestamp},${sig}`,
       }
     },
-  })
-}
-
-export function useClusterFetch() {
-  return ofetch.create({
-    baseURL: 'http://172.16.0.200:8080',
-    onRequest: ({ options, request }) => {
-      console.log(options, request)
-    }
   })
 }

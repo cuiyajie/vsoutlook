@@ -6,33 +6,35 @@ import type {
 import { useDevices } from '/@src/stores/device'
 
 const deviceStore = useDevices()
+const devices = computed(() => deviceStore.devices)
+const loading = ref(false)
 
-const nameSorter: VFlexTableWrapperSortFunction<DeviceVerbose> = ({ order, a, b }) => {
+const nameSorter: VFlexTableWrapperSortFunction<DeviceDetail> = ({ order, a, b }) => {
   if (order === 'asc') {
-    return a.tmpl.name.localeCompare(b.tmpl.name)
+    return a.tmplName.localeCompare(b.tmplName)
   } else if (order === 'desc') {
-    return b.tmpl.name.localeCompare(a.tmpl.name)
+    return b.tmplName.localeCompare(a.tmplName)
   }
   return 0
 }
 
-const tmplSorter: VFlexTableWrapperSortFunction<DeviceVerbose> = ({ order, a, b }) => {
+const tmplSorter: VFlexTableWrapperSortFunction<DeviceDetail> = ({ order, a, b }) => {
   if (order === 'asc') {
-    return a.tmpl.tmplType.name.localeCompare(b.tmpl.name)
+    return a.tmplTypeName.localeCompare(b.tmplTypeName)
   } else if (order === 'desc') {
-    return b.tmpl.tmplType.name.localeCompare(a.tmpl.name)
+    return b.tmplTypeName.localeCompare(a.tmplTypeName)
   }
   return 0
 }
 
-const tmplNameFilter: VFlexTableWrapperFilterFunction<DeviceVerbose> = ({ searchTerm, row }) => {
+const tmplNameFilter: VFlexTableWrapperFilterFunction<DeviceDetail> = ({ searchTerm, row }) => {
   if (!searchTerm) return true
-  return row.tmpl.name.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
+  return row.tmplName.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
 }
 
-const tmplTypeFilter: VFlexTableWrapperFilterFunction<DeviceVerbose> = ({ searchTerm, row }) => {
+const nodeNameFilter: VFlexTableWrapperFilterFunction<DeviceDetail> = ({ searchTerm, row }) => {
   if (!searchTerm) return true
-  return row.tmpl.tmplType.name.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
+  return row.nodeName.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
 }
 
 const columns = {
@@ -40,9 +42,16 @@ const columns = {
     label: '图标',
     align: 'center'
   },
+  nodeName: {
+    label: '设备名称',
+    grow: true,
+    searchable: true,
+    sortable: false,
+    filter: nodeNameFilter
+  },
   name: {
-    label: '名称',
-    grow: false,
+    label: '应用名称',
+    grow: true,
     searchable: true,
     sortable: true,
     sort: nameSorter,
@@ -52,8 +61,13 @@ const columns = {
     label: '类型',
     sortable: true,
     searchable: true,
-    sorter: tmplSorter,
-    filter: tmplTypeFilter
+    sorter: tmplSorter
+  },
+  updated: {
+    label: '更新时间',
+    grow: true,
+    sortable: true,
+    align: 'center'
   },
   status: {
     label: '状态',
@@ -61,36 +75,45 @@ const columns = {
     searchable: true,
     align: 'center'
   },
-  input: {
-    label: '入信号',
-    sortable: true,
-    searchable: true,
-    align: 'center'
-  },
-  output: {
-    label: '出信号',
-    sortable: true,
-    searchable: true,
-    align: 'center'
-  },
-  ptp: {
-    label: 'PTP',
-    sortable: true,
-    searchable: true,
-    align: 'center'
-  },
+  // input: {
+  //   label: '入信号',
+  //   sortable: true,
+  //   searchable: true,
+  //   align: 'center'
+  // },
+  // output: {
+  //   label: '出信号',
+  //   sortable: true,
+  //   searchable: true,
+  //   align: 'center'
+  // },
+  // ptp: {
+  //   label: 'PTP',
+  //   sortable: true,
+  //   searchable: true,
+  //   align: 'center'
+  // },
   action: {
     label: '操作',
     align: 'center'
   }
 } as const
+
+async function refresh () {
+  loading.value = true
+  await deviceStore.$fetchList()
+  loading.value = false
+}
+
+refresh()
+
 </script>
 
 <template>
   <VFlexTableWrapper
     class="devices-flex-table"
     :columns="columns"
-    :data="deviceStore.devices"
+    :data="devices"
   >
     <!--
       Here we retrieve the internal wrapperState.
@@ -117,6 +140,7 @@ const columns = {
             <VButton
               color="primary"
               raised
+              @click="refresh"
             >
               <span class="icon">
                 <i
@@ -126,7 +150,7 @@ const columns = {
               </span>
               <span>刷新列表</span>
             </VButton>
-            <VButton
+            <!-- <VButton
               color="primary"
               raised
             >
@@ -138,38 +162,49 @@ const columns = {
               </span>
               <span>全部删除</span>
             </VButton>
-          </VButtons>
+          </VButtons> -->
+          </vbuttons>
         </template>
       </VFlexTableToolbar>
 
-      <!--
+      <VLoader
+        size="small"
+        translucent
+        :active="loading"
+      >
+        <!--
         The VFlexTable "data" and "columns" props
         will be inherited from parent VFlexTableWrapper
       -->
-      <VFlexTable>
-        <!-- Custom "name" cell content -->
-        <template #body-cell="{ row, column }">
-          <VIconWrap
-            v-if="column.key === 'icon'"
-            size="medium"
-            :picture="row.tmpl.tmplType.icon"
-          />
-          <span
-            v-else-if="column.key === 'name'"
-            class="dark-text"
-          >{{ row.tmpl.name }}</span>
-          <span
-            v-else-if="column.key === 'tmplType'"
-            class="dark-text"
-          >{{ row.tmpl.tmplType.name }}</span>
-          <VTag
-            v-else-if="column.key === 'status'"
-            rounded
-            :color="row.statusInfo.color"
-          >
-            {{ row.statusInfo.text }}
-          </VTag>
-          <VTag
+        <VFlexTable>
+          <!-- Custom "name" cell content -->
+          <template #body-cell="{ row, column }">
+            <VIconWrap
+              v-if="column.key === 'icon'"
+              size="medium"
+              class="is-tt-icon"
+              :picture="`/images/tmpl/${row.tmplTypeIcon}`"
+            />
+            <span
+              v-else-if="column.key === 'name'"
+              class="dark-text"
+            >{{ row.tmplName }}</span>
+            <span
+              v-else-if="column.key === 'tmplType'"
+              class="dark-text"
+            >{{ row.tmplTypeName }}</span>
+            <span
+              v-else-if="column.key === 'updated'"
+              class="dark-text"
+            >{{ row.updated }}</span>
+            <VTag
+              v-else-if="column.key === 'status'"
+              rounded
+              :color="row.statusInfo.color"
+            >
+              {{ row.statusInfo.text }}
+            </VTag>
+            <!-- <VTag
             v-else-if="column.key === 'input'"
             rounded
             :color="row.inputInfo.color"
@@ -189,13 +224,16 @@ const columns = {
             :color="row.ptpInfo.color"
           >
             {{ row.ptpInfo.text }}
-          </VTag>
-          <DeviceListDropdown
-            v-else-if="column.key === 'action'"
-            :device="row"
-          />
-        </template>
-      </VFlexTable>
+          </VTag> -->
+            <DeviceListDropdown
+              v-else-if="column.key === 'action'"
+              :device="row"
+            />
+          </template>
+        </VFlexTable>
+        <!-- content ... --->
+      </VLoader>
+
 
       <VPlaceholderPage
         :class="[wrapperState.data.length !== 0 && 'is-hidden']"
@@ -223,6 +261,10 @@ const columns = {
   border: none;
   border-radius: 0;
   background: none;
+
+  .v-loader-wrapper {
+    min-height: 300px;
+  }
 
   .flex-table {
     border: 1px solid var(--fade-grey);
@@ -257,18 +299,19 @@ const columns = {
 
     .flex-table-header span:nth-child(3),
     .flex-table-item .flex-table-cell:nth-child(3) {
-      flex: 0 0 120px;
     }
 
-    @for $i from 4 through 7 {
-      .flex-table-header span:nth-child(#{$i}),
-      .flex-table-item .flex-table-cell:nth-child(#{$i}) {
-        flex: 0 0 100px;
-      }
+    .flex-table-header span:nth-child(4),
+    .flex-table-item .flex-table-cell:nth-child(4) {
     }
 
-    .flex-table-header span:nth-child(8),
-    .flex-table-item .flex-table-cell:nth-child(8) {
+    .flex-table-header span:nth-child(6),
+    .flex-table-item .flex-table-cell:nth-child(6) {
+      flex: 0 0 100px;
+    }
+
+    .flex-table-header span:nth-child(7),
+    .flex-table-item .flex-table-cell:nth-child(7) {
       flex: 0 0 80px;
     }
   }

@@ -1,6 +1,12 @@
 <script lang="ts" setup>
 import { useTmplDragging } from "/@src/stores/tmplDragging";
+import { useClustNode } from "/@src/stores/node";
+
 const dragContext = useTmplDragging();
+const nodeStore = useClustNode();
+
+const nodes = computed(() => nodeStore.nodes)
+const loading = ref(false)
 
 function onDragEnter(event: DragEvent) {
   const target = event.target as HTMLElement;
@@ -42,74 +48,95 @@ function onDrop(event: DragEvent) {
   if (!data.id) return;
   const target = event.target as HTMLElement;
   if (!target) return
+  const nid = target.closest("[role=dropzone]")?.getAttribute('data-id');
   bus.trigger(Signal.OpenResourceConfig, {
     tmpl: data,
-    container: target.closest("[role=dropzone]")?.getAttribute('data-name'),
+    node: nodes.value.find(n => n.id === nid),
   });
 }
+
+(async () => {
+  loading.value = true
+  await nodeStore.$fetchList()
+  loading.value = false
+  // nodeStore.$startQuery()
+})()
+
+onUnmounted(() => {
+  nodeStore.$stopQuery()
+})
 </script>
 <template>
+  <VPlaceloadWrap
+    v-if="loading"
+    class="columns is-multiline pt-2"
+  >
+    <div class="column is-12 mt-4">
+      <VPlaceload
+        height="72px"
+        width="100%"
+      />
+    </div>
+    <div class="column is-12 mt-4">
+      <VPlaceload
+        height="72px"
+        width="100%"
+      />
+    </div>
+    <div class="column is-12 mt-4">
+      <VPlaceload
+        height="72px"
+        width="100%"
+      />
+    </div>
+  </VPlaceloadWrap>
   <!-- eslint-disable vuejs-accessibility/aria-role -->
-  <div class="container-list">
+  <TransitionGroup
+    v-if="!loading"
+    name="list"
+    tag="div"
+    class="container-list"
+  >
     <VCard
+      v-for="node in nodes"
+      :key="node.id"
       role="dropzone"
       radius="rounded"
-      data-id="c1"
-      data-name="刀箱1"
+      :data-id="node.id"
       @dragenter="onDragEnter"
       @dragleave="onDragLeave"
       @dragover="onDragover"
       @drop="onDrop"
     >
-      <h3>刀箱1</h3>
+      <div class="block-meta">
+        <h5>{{ node.id }}</h5>
+        <span>{{ node.ip }}</span>
+      </div>
     </VCard>
-    <VCard
-      role="dropzone"
-      radius="rounded"
-      data-id="c2"
-      data-name="刀箱2"
-      @dragenter="onDragEnter"
-      @dragleave="onDragLeave"
-      @dragover="onDragover"
-      @drop="onDrop"
-    >
-      <h3>刀箱2</h3>
-    </VCard>
-    <VCard
-      role="dropzone"
-      radius="rounded"
-      data-id="c3"
-      data-name="刀箱3"
-      @dragenter="onDragEnter"
-      @dragleave="onDragLeave"
-      @dragover="onDragover"
-      @drop="onDrop"
-    >
-      <h3>刀箱3</h3>
-    </VCard>
-    <VCard
-      role="dropzone"
-      radius="rounded"
-      data-id="c4"
-      data-name="刀箱4"
-      @dragenter="onDragEnter"
-      @dragleave="onDragLeave"
-      @dragover="onDragover"
-      @drop="onDrop"
-    >
-      <h3>刀箱4</h3>
-    </VCard>
-  </div>
+  </TransitionGroup>
 </template>
 <style lang="scss">
 .container-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 16px;
-  padding-top: 16px;
+  padding-top: 8px;
 
   .l-card {
     width: auto;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    margin-top: 16px;
+
+    .block-meta {
+      h5 {
+        font-size: 1.2rem;
+        font-weight: 600;
+      }
+
+      span {
+        font-size: 0.9rem;
+        color: var(--dark-dark-text);
+      }
+    }
 
     &.drag-over {
       background-color: var(--fade-grey-light-2);

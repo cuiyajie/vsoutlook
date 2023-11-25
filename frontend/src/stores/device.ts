@@ -9,37 +9,36 @@
 
 import { ref } from 'vue'
 import { acceptHMRUpdate, defineStore } from 'pinia'
-import * as data from '/@src/data/device-templates'
 import { useNotyf } from "/@src/composable/useNotyf"
-import { useTemplateType } from './templateType';
-import { useTemplate } from './template'
-import * as dic from '/@src/utils/enums-dic'
+import { useFetch } from "/@src/composable/useFetch"
+import * as dic from "/@src/utils/enums-dic"
 
 export const useDevices = defineStore('device', () => {
-  const devices = ref<DeviceVerbose[]>([])
-  const tmplTypeStore = useTemplateType()
-  const tmplStore = useTemplate()
+  const devices = ref<DeviceDetail[]>([])
   const notyf = useNotyf()
+  const $fetch  = useFetch()
 
-  watchEffect(() => {
-    devices.value = data.devices.map(d => {
-      const tmpl = tmplStore.getById(d.tmplId) as TemplateDataVerbose
-      if (!tmpl) return null
-      const tmplType = tmplTypeStore.getById(tmpl.type) as TemplateType
-      if (!tmpl) return null
-      return {
-        ...d,
-        tmpl: {
-          ...tmpl,
-          type: tmplType
-        },
-        statusInfo: dic.DeviceStatusDic[d.status],
-        inputInfo: dic.InputSignalDic[d.input],
-        outputInfo: dic.OutputSignalDic[d.output],
-        ptpInfo: dic.PtpStatusDic[d.ptp]
-      }
-    }).filter(d => d)
-  })
+  async function $fetchList() {
+    const res = await $fetch('/api/device/list')
+    if (res && res.devices) {
+      devices.value = res.devices.map((d: any) => {
+        d.updated = new Date(d.updated).toLocaleString('zh')
+        d.statusInfo = dic.DeviceStatusDic[d.status]
+        return d
+      })
+    }
+  }
+
+  async function $deploy(name: string, tmpl: string, body: any) {
+    const res = await $fetch('/api/device/create', {
+      body: { name, tmpl, body: JSON.stringify(body) }
+    })
+    if (res && res.device) {
+      return { result: 'success' }
+    } else {
+      return { result: 'error', message: res.message }
+    }
+  }
 
   function config() {
     notyf.dismissAll()
@@ -83,7 +82,9 @@ export const useDevices = defineStore('device', () => {
     start,
     remove,
     refresh,
-    getById
+    getById,
+    $fetchList,
+    $deploy
   } as const
 })
 
@@ -96,4 +97,8 @@ export const useDevices = defineStore('device', () => {
  */
 if (import.meta.hot) {
   import.meta.hot.accept(acceptHMRUpdate(useDevices, import.meta.hot))
+}
+
+function useClustFetch() {
+throw new Error("Function not implemented.");
 }

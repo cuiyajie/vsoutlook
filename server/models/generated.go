@@ -47,6 +47,18 @@ func (Tmpl) TableName() string {
 	return "tmpls"
 }
 
+var GetDevice = Get[Device]
+var ActiveDevice = Active[Device]
+var DeviceBy = QueryOne[Device]
+var DevicesBy = QueryMulti[Device]
+var DevicesBy3 = QueryMulti3[Device]
+var DevicesBy4 = QueryMulti4[Device]
+var DevicesByIDs = ByIDs[Device]
+
+func (Device) TableName() string {
+	return "devices"
+}
+
 // for gorm
 func (d TmplRequirement) Value() (driver.Value, error) {
 	return json.Marshal(d)

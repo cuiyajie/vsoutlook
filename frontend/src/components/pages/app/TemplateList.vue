@@ -186,7 +186,7 @@ function listTmpl(tmpl: TemplateData) {
                   <VIconWrap
                     size="small"
                     :picture="tmplTypeMap[item.type]?.icon"
-                    class="mr-2"
+                    class="mr-2 is-tt-icon"
                   />
                   {{ tmplTypeMap[item.type]?.name }}
                 </div>

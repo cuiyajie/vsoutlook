@@ -1,9 +1,15 @@
-import { DeviceStatus, InputSignal, OutputSignal, PtpStatus } from "./enums"
+import { InputSignal, OutputSignal, PtpStatus } from "./enums"
+
 
 export const DeviceStatusDic = {
-  [DeviceStatus.Normal]: { text: '正常', color: 'primary' },
-  [DeviceStatus.Shutdown]: { text: '关机', color: 'solid' }
+  'deployed': { text: '已部署', color: 'primary' },
+  'running': { text: '运行中', color: 'solid' }
 }
+
+// export const DeviceStatusDic = {
+//   [DeviceStatus.Normal]: { text: '正常', color: 'primary' },
+//   [DeviceStatus.Shutdown]: { text: '关机', color: 'solid' }
+// }
 
 export const InputSignalDic = {
   [InputSignal.Normal]: { text: '正常', color: 'blue' },
@@ -21,7 +27,7 @@ export const PtpStatusDic = {
 }
 
 export const DeviceStatusList =
-  Object.keys(DeviceStatusDic).map(key => ({ key: Number(key), value: DeviceStatusDic[Number(key) as DeviceStatus] }))
+  Object.keys(DeviceStatusDic).map(key => ({ key, value: DeviceStatusDic[key] }))
 
 export const InputSignalList =
   Object.keys(InputSignalDic).map(key => ({ key: Number(key), value: InputSignalDic[Number(key) as InputSignal] }))

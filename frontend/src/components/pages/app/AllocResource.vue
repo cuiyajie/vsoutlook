@@ -39,7 +39,9 @@ tmplStore.$fetchList();
         </VCard>
       </div>
       <div class="column is-9">
-        <VCard radius="rounded">
+        <VCard
+          radius="rounded"
+        >
           <h3 class="title is-5 mb-4">
             容器平台
           </h3>
@@ -54,6 +56,27 @@ tmplStore.$fetchList();
 .resource-page {
   .column {
     padding: 0.25rem;
+  }
+
+  .tmpl-list {
+    .plain-list {
+      li > a {
+        margin-inline-start: 12px;
+        padding: 8px 12px;
+        height: 32px;
+      }
+    }
+
+    li.has-children ul li .is-submenu {
+      margin-inline-start: 17px;
+      padding: 7px 12px;
+    }
+  }
+}
+
+.is-dark .resource-page {
+  .column > .l-card {
+    background-color: var(--dark-sidebar-light-2);
   }
 }
 </style>
