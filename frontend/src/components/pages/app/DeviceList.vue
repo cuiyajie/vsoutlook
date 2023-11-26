@@ -32,9 +32,9 @@ const tmplNameFilter: VFlexTableWrapperFilterFunction<DeviceDetail> = ({ searchT
   return row.tmplName.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
 }
 
-const nodeNameFilter: VFlexTableWrapperFilterFunction<DeviceDetail> = ({ searchTerm, row }) => {
+const releaseFilter: VFlexTableWrapperFilterFunction<DeviceDetail> = ({ searchTerm, row }) => {
   if (!searchTerm) return true
-  return row.nodeName.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
+  return row.release.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
 }
 
 const columns = {
@@ -42,12 +42,12 @@ const columns = {
     label: '图标',
     align: 'center'
   },
-  nodeName: {
+  release: {
     label: '设备名称',
     grow: true,
     searchable: true,
     sortable: false,
-    filter: nodeNameFilter
+    filter: releaseFilter
   },
   name: {
     label: '应用名称',

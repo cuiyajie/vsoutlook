@@ -75,7 +75,7 @@ interface DeviceDetail {
 	tmplTypeID: string,
 	tmplTypeName: string,
   tmplTypeIcon: string,
-  nodeName: string,
+  release: string,
 	revision: string,
 	chartVersion: string,
 	appVersion: string,
@@ -112,5 +112,6 @@ interface ClustNode {
 
 interface ClustDevice {
   id: string,
-  node: string
+  node: string,
+  release: string
 }

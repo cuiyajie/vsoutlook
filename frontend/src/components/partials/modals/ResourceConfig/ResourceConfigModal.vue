@@ -29,8 +29,8 @@ useListener(Signal.OpenResourceConfig, (p: { tmpl: TemplateData, node: ClustNode
   tmpl.value = p.tmpl;
   node.value = p.node;
   device.value = p.device;
-  if (p.device?.node) {
-    deviceName.value = p.device.node
+  if (p.device?.release) {
+    deviceName.value = p.device?.release
   } else {
     deviceName.value = ""
   }
@@ -54,10 +54,11 @@ const dgi = computed(() => {
   return {
     created: isCreated,
     confirmTitle: isCreated ? "更新设备配置" : "部署设备",
-    confirmContent: isCreated ? `确定要更新设备 ${device.value?.node} 的配置吗？` : `确定要将设备 ${tmpl.value?.name} 部署到 ${node.value?.id}(${node.value?.ip}) 吗？`,
+    confirmContent: isCreated ? `确定要更新设备 ${device.value?.release} 的配置吗？` : `确定要将应用 ${tmpl.value?.name} 部署到 ${node.value?.id}(${node.value?.ip}) 吗？`,
     confirmMsg: isCreated ? "更新设备配置成功" : "部署设备成功",
     title: isCreated ? "更新设备配置" : "启动设备",
     submitText: isCreated ? "更新" : "启动",
+    nodeName: isCreated ? device.value?.node : node.value?.id,
   };
 })
 
@@ -69,7 +70,7 @@ async function prepareParams() {
     params.cpu = +tmplRes.requirement.cpuNum || 1
     params.memory = +tmplRes.requirement.memory || 1
     params.hugepage = +tmplRes.requirement.hugePage || 6
-    params.nodeName = deviceName.value
+    params.nodeName = dgi.value.nodeName
     params.cpucore = tmplRes.requirement.cpuCore
     params.localip0 = val!['2110-7_m_local_ip']
     params.localip1 = val!['2110-7_b_local_ip']

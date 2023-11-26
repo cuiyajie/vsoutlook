@@ -13,6 +13,7 @@ import { useNotyf } from "/@src/composable/useNotyf"
 import { useFetch } from "/@src/composable/useFetch"
 import * as dic from "/@src/utils/enums-dic"
 import { useRlsFetch } from "../composable/useRlsFetch"
+import { valert } from "../utils/dialog"
 
 export const useDevices = defineStore('device', () => {
   const devices = ref<DeviceDetail[]>([])
@@ -25,7 +26,7 @@ export const useDevices = defineStore('device', () => {
     if (res && res.devices) {
       devices.value = res.devices.map((d: any) => {
         d.updated = new Date(Date.parse(d.updated)).toLocaleString('zh')
-        d.statusInfo = dic.DeviceStatusDic[d.phase]
+        d.statusInfo = dic.DeviceStatusDic[d.phase || 'Unavailable']
         return d
       })
     }
@@ -65,6 +66,24 @@ export const useDevices = defineStore('device', () => {
     return await $fetch('/api/device/delete', {
       body: { id }
     })
+  }
+
+  async function $showContainer(device: DeviceDetail) {
+    const res = await $rfetch(`/api/namespaces/default/releases/${device.name}/podPhase`, {
+      method: 'GET',
+    })
+    if (res && res.code === 0) {
+      if (typeof res.data === 'object') {
+        const podKey = Object.keys(res.data).find(k => k.includes(device.name))
+        console.log(podKey)
+        if (podKey) {
+          valert({
+            title: '容器信息',
+            content: podKey
+          })
+        }
+      }
+    }
   }
 
   async function $reboot(device: DeviceDetail) {
@@ -120,7 +139,8 @@ export const useDevices = defineStore('device', () => {
     $deploy,
     $updateConfig,
     $remove,
-    $reboot
+    $reboot,
+    $showContainer
   } as const
 })
 

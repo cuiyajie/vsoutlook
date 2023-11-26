@@ -10,6 +10,7 @@ declare module 'vue' {
     AbilityComponent: typeof import('./../src/components/partials/panels/AbilityComponent.vue')['default']
     AbilityFlow: typeof import('./../src/components/partials/panels/AbilityFlow.vue')['default']
     AddrAddon: typeof import('./../src/components/partials/modals/ResourceConfig/AddrAddon.vue')['default']
+    AlertModal: typeof import('./../src/components/partials/modals/AlertModal.vue')['default']
     AllocResource: typeof import('./../src/components/pages/app/AllocResource.vue')['default']
     AppLayout: typeof import('./../src/layouts/AppLayout.vue')['default']
     AuthLayout: typeof import('./../src/layouts/AuthLayout.vue')['default']

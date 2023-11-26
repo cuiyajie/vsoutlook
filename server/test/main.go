@@ -22,7 +22,7 @@ func main() {
 	}
 	// Create query parameters
 	// queryParams := url.Values{}
-	// queryParams.Set("chart", "local/foo")
+	// queryParams.Set("chart",, config.Get("CHART_PKG"))
 	// // Add query parameters to the URL
 	// apiURL.RawQuery = queryParams.Encode()
 

@@ -4,7 +4,8 @@ export enum Signal {
   OpenTemplateImport,
   OpenNewSystem,
   OpenConfirmDialog,
-  OpenResourceConfig
+  OpenResourceConfig,
+  OpenAlertDialog
 }
 
 export enum DeviceStatus {

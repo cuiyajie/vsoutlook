@@ -49,8 +49,12 @@ function reboot() {
   });
 }
 
+function viewContainer() {
+  deviceStore.$showContainer(props.device)
+}
+
 function config() {
-  const { tmplID, tmplName, tmplTypeName, id, nodeName } = props.device
+  const { tmplID, tmplName, tmplTypeName, id, release } = props.device
   bus.trigger(Signal.OpenResourceConfig, {
     tmpl: {
       id: tmplID,
@@ -59,7 +63,7 @@ function config() {
     },
     device: {
       id,
-      node: nodeName,
+      release,
     },
     callbacks: {
       success: () => {
@@ -95,8 +99,24 @@ function config() {
         </div>
       </a>
 
+      <hr class="dropdown-divider">
+      <a
+        href="#"
+        role="menuitem"
+        class="dropdown-item is-media"
+        @click="close(); viewContainer()"
+      >
+        <div class="icon"><i
+          class="iconify"
+          data-icon="feather:package"
+          aria-hidden="true"
+        />
+        </div>
+        <div class="meta">
+          <span>查看容器</span>
+        </div>
+      </a>
       <template v-if="device.phase === 'Running'">
-        <hr class="dropdown-divider">
         <a
           href="#"
           role="menuitem"
@@ -161,7 +181,7 @@ function config() {
 <style lang="scss">
 .dropdown.is-spaced.device-list-dropdown {
   .dropdown-menu {
-    min-width: 110px;
+    min-width: 140px;
   }
 }
 </style>

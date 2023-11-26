@@ -39,7 +39,7 @@ type ClustRelease struct {
 
 type DeviceAsRelease struct {
 	models.DeviceAsBasic
-	NodeName     string `json:"nodeName"`
+	Release      string `json:"release"`
 	Revision     string `json:"revision"`
 	ChartVersion string `json:"chartVersion"`
 	AppVersion   string `json:"appVersion"`
@@ -116,7 +116,7 @@ func GetDeviceList(c *svcinfra.Context) {
 		if release, ok := releaseMap[device.Name]; ok {
 			fmt.Println("release:", release)
 			copier.Copy(&dr, &device)
-			dr.NodeName = release.Name
+			dr.Release = release.Name
 			dr.Revision = release.Revision
 			dr.Status = release.Status
 			dr.ChartVersion = release.ChartVersion
@@ -229,7 +229,7 @@ func CreateDevice(c *svcinfra.Context) {
 	}
 	// Create query parameters
 	queryParams := url.Values{}
-	queryParams.Set("chart", "local/foo")
+	queryParams.Set("chart", config.Get("CHART_PKG"))
 	// Add query parameters to the URL
 	apiURL.RawQuery = queryParams.Encode()
 
@@ -310,7 +310,7 @@ func UpdateDevice(c *svcinfra.Context) {
 	}
 	// Create query parameters
 	queryParams := url.Values{}
-	queryParams.Set("chart", "local/foo")
+	queryParams.Set("chart", config.Get("CHART_PKG"))
 	// Add query parameters to the URL
 	apiURL.RawQuery = queryParams.Encode()
 

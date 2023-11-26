@@ -14,5 +14,6 @@ meta:
       </Transition>
     </RouterView>
     <ConfirmModal />
+    <AlertModal />
   </AppLayout>
 </template>
