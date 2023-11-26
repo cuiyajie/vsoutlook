@@ -53,39 +53,39 @@ defineProps<{
         <div class="column is-6">
           <VField>
             <VLabel>主视频流组播源IP（含端口）</VLabel>
-            <VControl>
-              <VInput
-                v-model="mv.params.ipstream_master.v_src_address"
-              />
-            </VControl>
+            <AddrAddon
+              v-model="mv.params.ipstream_master.v_src_address"
+              :host="m_local_ip"
+            />
           </VField>
         </div>
         <div class="column is-6">
           <VField>
             <VLabel>主视频流组播目标IP（含端口）</VLabel>
-            <AddrAddon
-              v-model="mv.params.ipstream_master.v_dst_address"
-              :host="m_local_ip"
-            />
-          </VField>
-        </div>
-        <div class="column is-6">
-          <VField>
-            <VLabel>主音频流组播源IP（含端口）</VLabel>
             <VControl>
               <VInput
-                v-model="mv.params.ipstream_master.a_src_address"
+                v-model="mv.params.ipstream_master.v_dst_address"
               />
             </VControl>
           </VField>
         </div>
         <div class="column is-6">
           <VField>
-            <VLabel>主音频流组播目标IP（含端口）</VLabel>
+            <VLabel>主音频流组播源IP（含端口）</VLabel>
             <AddrAddon
-              v-model="mv.params.ipstream_master.a_dst_address"
+              v-model="mv.params.ipstream_master.a_src_address"
               :host="m_local_ip"
             />
+          </VField>
+        </div>
+        <div class="column is-6">
+          <VField>
+            <VLabel>主音频流组播目标IP（含端口）</VLabel>
+            <VControl>
+              <VInput
+                v-model="mv.params.ipstream_master.a_dst_address"
+              />
+            </VControl>
           </VField>
         </div>
         <Transition name="fade-slow">
@@ -95,11 +95,10 @@ defineProps<{
           >
             <VField>
               <VLabel>备视频流组播源IP（含端口）</VLabel>
-              <VControl>
-                <VInput
-                  v-model="mv.params.ipstream_backup.v_src_address"
-                />
-              </VControl>
+              <AddrAddon
+                v-model="mv.params.ipstream_backup.v_src_address"
+                :host="b_local_ip"
+              />
             </VField>
           </div>
         </Transition>
@@ -110,23 +109,9 @@ defineProps<{
           >
             <VField>
               <VLabel>备视频流组播目标IP（含端口）</VLabel>
-              <AddrAddon
-                v-model="mv.params.ipstream_backup.v_dst_address"
-                :host="b_local_ip"
-              />
-            </VField>
-          </div>
-        </Transition>
-        <Transition name="fade-slow">
-          <div
-            v-if="mv['g_2022-7']"
-            class="column is-6"
-          >
-            <VField>
-              <VLabel>备音频流组播源IP（含端口）</VLabel>
               <VControl>
                 <VInput
-                  v-model="mv.params.ipstream_backup.a_src_address"
+                  v-model="mv.params.ipstream_backup.v_dst_address"
                 />
               </VControl>
             </VField>
@@ -138,11 +123,26 @@ defineProps<{
             class="column is-6"
           >
             <VField>
-              <VLabel>备音频流组播目标IP（含端口）</VLabel>
+              <VLabel>备音频流组播源IP（含端口）</VLabel>
               <AddrAddon
-                v-model="mv.params.ipstream_backup.a_dst_address"
+                v-model="mv.params.ipstream_backup.a_src_address"
                 :host="b_local_ip"
               />
+            </VField>
+          </div>
+        </Transition>
+        <Transition name="fade-slow">
+          <div
+            v-if="mv['g_2022-7']"
+            class="column is-6"
+          >
+            <VField>
+              <VLabel>备音频流组播目标IP（含端口）</VLabel>
+              <VControl>
+                <VInput
+                  v-model="mv.params.ipstream_backup.a_dst_address"
+                />
+              </VControl>
             </VField>
           </div>
         </Transition>

@@ -72,7 +72,7 @@ useProtocolDC(mv.value)
         </div>
         <div class="column is-6">
           <VField>
-            <VLabel>主音频流组播目标IP（含端口）</VLabel>
+            <VLabel>主视频流组播目标IP（含端口）</VLabel>
             <VControl>
               <VInput
                 v-model="mv.ipstream_master.v_dst_address"
@@ -121,7 +121,7 @@ useProtocolDC(mv.value)
             class="column is-6"
           >
             <VField>
-              <VLabel>备音频流组播目标IP（含端口）</VLabel>
+              <VLabel>备视频流组播目标IP（含端口）</VLabel>
               <VControl>
                 <VInput
                   v-model="mv.ipstream_backup.v_dst_address"

@@ -147,7 +147,7 @@ export function wrap(src: any, prefix: string, useBackup?: boolean, isBackup?: b
         dst[wrapKey] = null;
       }
     } else {
-      if (prefix === 'out_' && key.endsWith('dst_address') && isBackup !== undefined) {
+      if (prefix === 'out_' && key.endsWith('src_address') && isBackup !== undefined) {
         dst[wrapKey] = `${isBackup ? b_local_ip : m_local_ip}:${src[key]}`;
       } else {
         dst[wrapKey] = src[key];
@@ -166,7 +166,7 @@ export function unwrap(src: any, prefix: string) {
     } else if (typeof src[key] === 'object') {
       dst[unwrapKey] = unwrap(src[key], prefix);
     } else {
-      if (prefix === 'out_' && key.endsWith('dst_address')) {
+      if (prefix === 'out_' && key.endsWith('src_address')) {
         dst[unwrapKey] = src[key].split(':')?.[1] || '';
       } else {
         dst[unwrapKey] = src[key];
