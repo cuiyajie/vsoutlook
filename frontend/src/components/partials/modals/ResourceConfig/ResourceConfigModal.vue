@@ -15,15 +15,28 @@ const deviceStore = useDevices()
 const notyf = useNotyf();
 const opened = ref(false);
 
-useListener(Signal.OpenResourceConfig, (p: { tmpl: TemplateData, node: ClustNode }) => {
+const deviceName = ref("");
+const deviceInput = ref<any>(null);
+const tmpl = ref<TemplateData | null>(null)
+const node = ref<ClustNode | null>(null)
+const device = ref<ClustDevice | null>(null)
+let callbacks: any = {}
+
+useListener(Signal.OpenResourceConfig, (p: { tmpl: TemplateData, node: ClustNode, device: ClustDevice, callbacks: any }) => {
   opened.value = true;
   tmpl.value = p.tmpl;
   node.value = p.node;
+  device.value = p.device;
+  if (p.device?.node) {
+    deviceName.value = p.device.node
+  } else {
+    deviceName.value = ""
+  }
+  callbacks = p.callbacks || {}
+  nextTick(() => {
+    deviceInput.value?.field?.setValue(deviceName.value)
+  })
 });
-
-const deviceName = ref("");
-const tmpl = ref<TemplateData | null>(null)
-const node = ref<ClustNode | null>(null)
 
 const zodSchema = z.object({
   deviceName: z.string({
@@ -34,23 +47,42 @@ const zodSchema = z.object({
 const validationSchema = toTypedSchema(zodSchema);
 const { handleSubmit } = useForm({ validationSchema });
 
+const dgi = computed(() => {
+  const isCreated = device.value != null;
+  return {
+    created: isCreated,
+    confirmTitle: isCreated ? "更新设备配置" : "部署设备",
+    confirmContent: isCreated ? `确定要更新设备 ${device.value?.node} 的配置吗？` : `确定要将设备 ${tmpl.value?.name} 部署到 ${node.value?.id}(${node.value?.ip}) 吗？`,
+    confirmMsg: isCreated ? "更新设备配置成功" : "部署设备成功",
+    title: isCreated ? "更新设备配置" : "启动设备",
+    submitText: isCreated ? "更新" : "启动",
+  };
+})
+
 const loading = ref(false)
 const addInstance = handleSubmit(async () => {
   if (loading.value) return;
   confirm({
-    title: "部署应用",
-    content: `确定要将应用 ${tmpl.value?.name} 部署到 ${node.value?.id}(${node.value?.ip}) 吗？`,
+    title: dgi.value.confirmTitle,
+    content: dgi.value.confirmContent,
     onConfirm: async (hide) => {
       hide()
       const val = compRef.value?.getValue()
       loading.value = true;
-      const res = await deviceStore.$deploy(deviceName.value, tmpl.value!.id, val)
+      let pro: Promise<any>
+      if (dgi.value.created) {
+        pro = deviceStore.$updateConfig(deviceName.value, device.value!.id, val)
+      } else {
+        pro = deviceStore.$deploy(deviceName.value, tmpl.value!.id, val)
+      }
+      const res = await pro
       loading.value = false;
       if (res.result === 'error') {
         notyf.error(res.message);
       } else {
         opened.value = false;
-        notyf.success("部署应用成功");
+        notyf.success(dgi.value.confirmMsg);
+        callbacks.success?.()
       }
     },
   });
@@ -81,7 +113,7 @@ const TmplComponent = computed(() => {
     noclose
     size="big"
     :open="opened"
-    title="启动设备"
+    :title="dgi.title"
     actions="right"
     cancel-label="取消"
     @submit.prevent="opened = false"
@@ -91,6 +123,7 @@ const TmplComponent = computed(() => {
       <div class="modal-form">
         <VField
           id="deviceName"
+          ref="deviceInput"
           v-slot="{ field }"
           label="设备名称*"
           horizontal
@@ -101,11 +134,12 @@ const TmplComponent = computed(() => {
               v-model="deviceName"
               type="text"
               placeholder="设备名称"
+              :readonly="dgi.created"
             />
             <Transition name="fade-slow">
               <p
                 v-if="field?.errorMessage"
-                class="help is-danger mt-2"
+                class="help is-danger mt-3"
               >
                 {{ field.errorMessage }}
               </p>
@@ -123,7 +157,7 @@ const TmplComponent = computed(() => {
         :loading="loading"
         @click="addInstance"
       >
-        启动
+        {{ dgi.submitText }}
       </VButton>
     </template>
   </VModal>

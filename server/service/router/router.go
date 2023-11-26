@@ -57,6 +57,7 @@ func SetupRouter() *gin.Engine {
 		post(member, "tmpl/listed", tmpl.SetTmplListed)
 		post(member, "device/list", device.GetDeviceList)
 		post(member, "device/create", device.CreateDevice)
+		post(member, "device/update", device.UpdateDevice)
 		post(member, "device/delete", device.DeleteDevice)
 	}
 

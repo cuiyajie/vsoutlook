@@ -228,6 +228,7 @@ refresh()
             <DeviceListDropdown
               v-else-if="column.key === 'action'"
               :device="row"
+              @refresh="refresh"
             />
           </template>
         </VFlexTable>
@@ -236,7 +237,7 @@ refresh()
 
 
       <VPlaceholderPage
-        :class="[wrapperState.data.length !== 0 && 'is-hidden']"
+        :class="[(wrapperState.data.length !== 0 || loading) && 'is-hidden']"
         title="没有找到符合搜索条件的设备"
         subtitle="很遗憾，看起来我们无法找到与您输入的搜索词或条件匹配的设备。请尝试不同的搜索词或条件。"
         larger
@@ -244,7 +245,7 @@ refresh()
 
       <!-- Table Pagination with wrapperState.page binded-->
       <VFlexPagination
-        v-if="wrapperState.data.length > 0"
+        v-if="wrapperState.data.length > 0 && !loading"
         v-model:currentPage="wrapperState.page"
         class="mt-6"
         :item-per-page="wrapperState.limit"
@@ -254,6 +255,7 @@ refresh()
       />
     </template>
   </VFlexTableWrapper>
+  <ResourceConfigModal />
 </template>
 <style lang="scss">
 .flex-table-wrapper.devices-flex-table {

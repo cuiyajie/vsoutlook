@@ -48,7 +48,22 @@ type DeviceAsRelease struct {
 func GetDeviceList(c *svcinfra.Context) {
 	var clustDevices []DeviceAsRelease
 	clustPath := config.Get("CLUST_HOST")
-	clustReq, err := http.NewRequest("GET", clustPath+"/api/namespaces/default/releases", nil)
+	baseURL := clustPath + "/api/namespaces/default/releases"
+	// Create a new URL with the base URL
+	apiURL, err := url.Parse(baseURL)
+	if err != nil {
+		fmt.Println("Error parsing URL:", err)
+		return
+	}
+	// Create query parameters
+	queryParams := url.Values{}
+	queryParams.Set("release_status", "true")
+	// Add query parameters to the URL
+	apiURL.RawQuery = queryParams.Encode()
+
+	fmt.Println("URL:", apiURL.String())
+
+	clustReq, err := http.NewRequest("GET", apiURL.String(), nil)
 	if err != nil {
 		fmt.Printf("failed to create request: %v", err)
 		c.Bye(gin.H{"devices": clustDevices})
@@ -130,10 +145,40 @@ func DeleteDevice(c *svcinfra.Context) {
 		c.Bye(gin.H{"result": "ok"})
 		return
 	}
+
+	clustPath := config.Get("CLUST_HOST")
+	baseUrl := clustPath + "/api/namespaces/default/releases/" + device.Name
+	clustReq, err := http.NewRequest("Delete", baseUrl, nil)
+	if err != nil {
+		fmt.Printf("failed to delete request: %v", err)
+		c.GeneralError("创建删除请求失败")
+		return
+	}
+	client := &http.Client{}
+	resp, err := client.Do(clustReq)
+	if err != nil {
+		fmt.Printf("failed to make request: %v", err)
+		c.GeneralError("发送删除请求失败")
+		return
+	}
+
+	defer resp.Body.Close()
+
+	d, _ := io.ReadAll(resp.Body)
+	fmt.Println("cluster node response:", string(d))
+	var resp2 ClustResp
+	json.Unmarshal(d, &resp2)
+	if resp2.Code != 0 {
+		fmt.Printf("failed to make request: %v", resp2.Error)
+		c.GeneralError("删除设备失败")
+		return
+	}
+
 	device.Deleted = def.SelfDeleted
 	if !c.Save(&device) {
 		return
 	}
+
 	c.Bye(gin.H{"result": "ok"})
 }
 
@@ -214,9 +259,82 @@ func CreateDevice(c *svcinfra.Context) {
 
 	result := models.Create(&newDevice)
 	if result.Error != nil {
-		c.GeneralError("创建应用失败")
+		c.GeneralError("部署设备失败")
 		return
 	}
 
 	c.Bye(gin.H{"device": newDevice.AsBasic()})
+}
+
+func UpdateDevice(c *svcinfra.Context) {
+	var req struct {
+		Name     string `json:"name"`
+		DeviceId string `json:"deviceId"`
+		Body     string `json:"body"`
+	}
+
+	c.ShouldBindJSON(&req)
+	if len(req.Name) == 0 {
+		c.GeneralError("设备名称不能为空")
+		return
+	}
+
+	device := models.ActiveDevice(req.DeviceId)
+
+	if req.Name != device.Name {
+		c.GeneralError("设备不存在")
+		return
+	}
+
+	clustPath := config.Get("CLUST_HOST")
+	baseURL := clustPath + "/api/namespaces/default/releases/" + device.Name
+
+	// Create a new URL with the base URL
+	apiURL, err := url.Parse(baseURL)
+	if err != nil {
+		fmt.Println("Error parsing URL:", err)
+		return
+	}
+	// Create query parameters
+	queryParams := url.Values{}
+	queryParams.Set("chart", "local/foo")
+	// Add query parameters to the URL
+	apiURL.RawQuery = queryParams.Encode()
+
+	fmt.Println("URL:", apiURL.String())
+
+	clustReq, err := http.NewRequest("PUT", apiURL.String(), strings.NewReader(req.Body))
+	if err != nil {
+		fmt.Printf("failed to create update request: %v", err)
+		c.GeneralError("创建更新设备请求失败")
+		return
+	}
+	clustReq.Header.Set("Content-Type", "application/json")
+	client := &http.Client{}
+	resp, err := client.Do(clustReq)
+	if err != nil {
+		fmt.Printf("failed to make update request: %v", err)
+		c.GeneralError("发送更新设备请求失败")
+		return
+	}
+
+	defer resp.Body.Close()
+
+	d, _ := io.ReadAll(resp.Body)
+	fmt.Println("cluster node response:", string(d))
+	var resp2 ClustResp
+	err = json.Unmarshal(d, &resp2)
+	if err != nil {
+		fmt.Printf("failed to parse response: %v", err)
+		c.GeneralError("更新设备返回数据格式错误")
+		return
+	}
+	if len(resp2.Error) > 0 {
+		fmt.Printf("failed to update device: %v", resp2.Error)
+		c.GeneralError("更新设备失败")
+		return
+	}
+
+	models.Save(&device)
+	c.Bye(gin.H{"device": device.AsBasic()})
 }

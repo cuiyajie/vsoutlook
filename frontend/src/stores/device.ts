@@ -22,7 +22,7 @@ export const useDevices = defineStore('device', () => {
     const res = await $fetch('/api/device/list')
     if (res && res.devices) {
       devices.value = res.devices.map((d: any) => {
-        d.updated = new Date(d.updated).toLocaleString('zh')
+        d.updated = new Date(Date.parse(d.updated)).toLocaleString('zh')
         d.statusInfo = dic.DeviceStatusDic[d.status]
         return d
       })
@@ -38,6 +38,23 @@ export const useDevices = defineStore('device', () => {
     } else {
       return { result: 'error', message: res.message }
     }
+  }
+
+  async function $updateConfig(name: string, deviceId: string, body: any) {
+    const res = await $fetch('/api/device/update', {
+      body: { name, deviceId, body: JSON.stringify(body) }
+    })
+    if (res && res.device) {
+      return { result: 'success' }
+    } else {
+      return { result: 'error', message: res.message }
+    }
+  }
+
+  async function $remove(id: string) {
+    return await $fetch('/api/device/delete', {
+      body: { id }
+    })
   }
 
   function config() {
@@ -60,11 +77,6 @@ export const useDevices = defineStore('device', () => {
     notyf.info('即将支持，敬请期待')
   }
 
-  function remove() {
-    notyf.dismissAll()
-    notyf.info('即将支持，敬请期待')
-  }
-
   function refresh() {
     notyf.dismissAll()
     notyf.info('即将支持，敬请期待')
@@ -80,11 +92,12 @@ export const useDevices = defineStore('device', () => {
     restart,
     shutdown,
     start,
-    remove,
     refresh,
     getById,
     $fetchList,
-    $deploy
+    $deploy,
+    $updateConfig,
+    $remove
   } as const
 })
 
@@ -97,8 +110,4 @@ export const useDevices = defineStore('device', () => {
  */
 if (import.meta.hot) {
   import.meta.hot.accept(acceptHMRUpdate(useDevices, import.meta.hot))
-}
-
-function useClustFetch() {
-throw new Error("Function not implemented.");
 }

@@ -1,8 +1,56 @@
 <script lang="ts" setup>
-import { DeviceStatus } from '/@src/utils/enums'
-defineProps<{
-  device: DeviceVerbose
+// import { DeviceStatus } from '/@src/utils/enums'
+import { confirm } from "/@src/utils/dialog";
+import { useNotyf } from "/@src/composable/useNotyf";
+import { useDevices } from '/@src/stores/device'
+
+const props = defineProps<{
+  device: DeviceDetail
 }>()
+
+const emit = defineEmits<{
+  refresh: []
+}>()
+
+const notyf = useNotyf();
+const deviceStore = useDevices();
+
+function remove() {
+  confirm({
+    title: "删除设备",
+    content: "确定要删除该设备吗？",
+    onConfirm: async (hide) => {
+      const res = await deviceStore.$remove(props.device.id);
+      hide();
+      if (res && res.result === "ok") {
+        notyf.success("删除成功");
+        emit('refresh')
+      } else if (res.message) {
+        notyf.error(res.message)
+      }
+    },
+  });
+}
+
+function config() {
+  const { tmplID, tmplName, tmplTypeName, id, nodeName } = props.device
+  bus.trigger(Signal.OpenResourceConfig, {
+    tmpl: {
+      id: tmplID,
+      name: tmplName,
+      typeName: tmplTypeName
+    },
+    device: {
+      id,
+      node: nodeName,
+    },
+    callbacks: {
+      success: () => {
+        emit('refresh')
+      }
+    }
+  })
+}
 </script>
 <template>
   <VDropdown
@@ -16,7 +64,7 @@ defineProps<{
         href="#"
         role="menuitem"
         class="dropdown-item is-media"
-        @click="close()"
+        @click="close(); config()"
       >
         <div class="icon">
           <i
@@ -30,7 +78,7 @@ defineProps<{
         </div>
       </a>
 
-      <hr class="dropdown-divider">
+      <!-- <hr class="dropdown-divider">
 
       <a
         href="#"
@@ -48,7 +96,7 @@ defineProps<{
         <div class="meta">
           <span>{{ device.status === DeviceStatus.Normal ? '关闭' : '开启' }}</span>
         </div>
-      </a>
+      </a> -->
 
       <hr class="dropdown-divider">
 
@@ -56,7 +104,7 @@ defineProps<{
         href="#"
         role="menuitem"
         class="dropdown-item is-media"
-        @click="close()"
+        @click="close(); emit('refresh')"
       >
         <div class="icon">
           <i
@@ -76,7 +124,7 @@ defineProps<{
         href="#"
         role="menuitem"
         class="dropdown-item is-media"
-        @click="close()"
+        @click="close(); remove()"
       >
         <div class="icon">
           <i

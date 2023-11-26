@@ -103,3 +103,8 @@ interface ClustNode {
   ip: string,
   info: any
 }
+
+interface ClustDevice {
+  id: string,
+  node: string
+}
