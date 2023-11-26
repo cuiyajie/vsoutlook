@@ -29,7 +29,6 @@ const specsData = reactive({
   cpuNum: '',
   cpuCore: '',
   hugePage: '',
-  image: '',
   memory: '',
   disk: '',
   gpu: '',

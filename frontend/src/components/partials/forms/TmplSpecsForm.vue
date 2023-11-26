@@ -5,7 +5,6 @@ const modelValue = defineModel<any>({
     cpuNum: "",
     cpuCore: '',
     hugePage: '',
-    image: '',
     memory: "",
     disk: "",
     gpu: "",
@@ -72,18 +71,6 @@ const modelValue = defineModel<any>({
                 <VControl>
                   <VInput
                     v-model="modelValue.hugePage"
-                    type="text"
-                    placeholder=""
-                  />
-                </VControl>
-              </VField>
-            </div>
-            <div class="column is-4">
-              <VField>
-                <VLabel>镜像名称</VLabel>
-                <VControl>
-                  <VInput
-                    v-model="modelValue.image"
                     type="text"
                     placeholder=""
                   />

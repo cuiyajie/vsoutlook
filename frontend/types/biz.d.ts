@@ -9,7 +9,6 @@ interface TmplRequirement {
   cpuNum: string,
   cpuCore: string,
   hugePage: string,
-  image: string,
   memory: string,
   disk: string,
   gpu: string,

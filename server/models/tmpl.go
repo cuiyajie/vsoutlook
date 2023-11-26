@@ -23,7 +23,6 @@ type TmplRequirement struct {
 	CpuNum     string `json:"cpuNum,omitempty"`
 	CpuCore    string `json:"cpuCore,omitempty"`
 	HugePage   string `json:"hugePage,omitempty"`
-	Image      string `json:"image,omitempty"`
 	Memory     string `json:"memory,omitempty"`
 	Disk       string `json:"disk,omitempty"`
 	Gpu        string `json:"gpu,omitempty"`
