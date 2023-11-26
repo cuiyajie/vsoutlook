@@ -26,7 +26,7 @@ export const useDevices = defineStore('device', () => {
     if (res && res.devices) {
       devices.value = res.devices.map((d: any) => {
         d.updated = new Date(Date.parse(d.updated)).toLocaleString('zh')
-        d.statusInfo = dic.DeviceStatusDic[d.phase || 'Unavailable']
+        d.statusInfo = dic.DeviceStatusDic[d.phase] || dic.DeviceStatusDic['Unavailable']
         return d
       })
     }

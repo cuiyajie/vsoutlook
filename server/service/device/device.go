@@ -213,12 +213,14 @@ func CreateDevice(c *svcinfra.Context) {
 		return
 	}
 
+	tmpl := models.ActiveTmpl(req.Tmpl)
 	newDevice := models.Device{
 		Name: req.Name,
 		Tmpl: req.Tmpl,
 	}
 
 	clustPath := config.Get("CLUST_HOST")
+
 	baseURL := clustPath + "/api/namespaces/default/releases/" + newDevice.Name
 
 	// Create a new URL with the base URL
@@ -229,7 +231,11 @@ func CreateDevice(c *svcinfra.Context) {
 	}
 	// Create query parameters
 	queryParams := url.Values{}
-	queryParams.Set("chart", config.Get("CHART_PKG"))
+	chart := config.Get("CHART_PKG")
+	if len(tmpl.Requirement.Chart) > 0 {
+		chart = tmpl.Requirement.Chart
+	}
+	queryParams.Set("chart", chart)
 	// Add query parameters to the URL
 	apiURL.RawQuery = queryParams.Encode()
 
@@ -293,6 +299,7 @@ func UpdateDevice(c *svcinfra.Context) {
 	}
 
 	device := models.ActiveDevice(req.DeviceId)
+	tmpl := models.ActiveTmpl(device.Tmpl)
 
 	if req.Name != device.Name {
 		c.GeneralError("设备不存在")
@@ -310,7 +317,11 @@ func UpdateDevice(c *svcinfra.Context) {
 	}
 	// Create query parameters
 	queryParams := url.Values{}
-	queryParams.Set("chart", config.Get("CHART_PKG"))
+	chart := config.Get("CHART_PKG")
+	if len(tmpl.Requirement.Chart) > 0 {
+		chart = tmpl.Requirement.Chart
+	}
+	queryParams.Set("chart", chart)
 	// Add query parameters to the URL
 	apiURL.RawQuery = queryParams.Encode()
 

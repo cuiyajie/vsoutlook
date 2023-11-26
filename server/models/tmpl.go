@@ -29,6 +29,7 @@ type TmplRequirement struct {
 	InputBand  string `json:"inputBand,omitempty"`
 	OutputBand string `json:"outputBand,omitempty"`
 	Network    string `json:"network,omitempty"`
+	Chart      string `json:"chart,omitempty"`
 }
 
 type TmplAsBasic struct {

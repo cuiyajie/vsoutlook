@@ -79,6 +79,14 @@ function viewTmpl() {
           {{ tmpld.requirement.hugePage || '无' }}
         </span>
       </div>
+      <div class="info-block-line">
+        <h4 class="dark-inverted">
+          Chart包名
+        </h4>
+        <span>
+          {{ tmpld.requirement.chart || '无' }}
+        </span>
+      </div>
       <div class="info-block-line multi">
         <h4 class="dark-inverted">
           说明

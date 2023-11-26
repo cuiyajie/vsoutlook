@@ -11,6 +11,7 @@ const modelValue = defineModel<any>({
     inputBand: "",
     outputBand: "",
     network: "",
+    chart: "",
     description: "",
   },
   local: true,
@@ -143,6 +144,18 @@ const modelValue = defineModel<any>({
                 <VControl>
                   <VInput
                     v-model="modelValue.network"
+                    type="text"
+                    placeholder=""
+                  />
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-4">
+              <VField>
+                <VLabel>Chart包名</VLabel>
+                <VControl>
+                  <VInput
+                    v-model="modelValue.chart"
                     type="text"
                     placeholder=""
                   />

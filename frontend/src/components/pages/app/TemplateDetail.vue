@@ -35,6 +35,7 @@ const specsData = ref({
   inputBand: '',
   outputBand: '',
   network: '',
+  chart: '',
   description: ''
 })
 

@@ -14,7 +14,8 @@ interface TmplRequirement {
   gpu: string,
   inputBand: string,
   outputBand: string,
-  network: string
+  network: string,
+  chart: string
 }
 
 interface TemplateData {

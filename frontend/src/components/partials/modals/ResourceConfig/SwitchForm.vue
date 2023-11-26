@@ -160,7 +160,7 @@ defineExpose({
             </div>
             <div class="column is-6">
               <VField>
-                <VLabel>P4 交换机通讯地址</VLabel>
+                <VLabel>IO通讯地址</VLabel>
                 <VControl>
                   <VInput
                     v-model="mv.p4server_url"
@@ -184,6 +184,26 @@ defineExpose({
                 <VControl>
                   <VInput
                     v-model="mv.nmos_devname"
+                  />
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-6">
+              <VField>
+                <VLabel>拉流物理网卡端口0IP</VLabel>
+                <VControl>
+                  <VInput
+                    v-model="mv.physic_nic_port0_IP"
+                  />
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-6">
+              <VField>
+                <VLabel>拉流物理网卡端口1IP</VLabel>
+                <VControl>
+                  <VInput
+                    v-model="mv.physic_nic_port1_IP"
                   />
                 </VControl>
               </VField>
