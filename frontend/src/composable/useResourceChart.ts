@@ -1,59 +1,62 @@
 import { useThemeColors } from '/@src/composable/useThemeColors'
 
-export function useResourceCharts() {
-  const themeColors = useThemeColors()
-  const usageOptions = shallowRef({
-    series: [57],
-    chart: {
-      height: 120,
-      type: 'radialBar',
-      offsetY: -10,
-    },
-    colors: [themeColors.primary],
-    plotOptions: {
-      radialBar: {
-        startAngle: -135,
-        endAngle: 135,
-        inverseOrder: true,
-        dataLabels: {
+const baseOptions = (themeColors: ReturnType<typeof useThemeColors>) => ({
+  chart: {
+    height: 180,
+    type: 'radialBar',
+    offsetY: 0,
+  },
+  plotOptions: {
+    radialBar: {
+      startAngle: -135,
+      endAngle: 135,
+      inverseOrder: true,
+      dataLabels: {
+        show: true,
+        name: {
           show: true,
-          name: {
-            show: true,
-            fontSize: '14px',
-            fontWeight: 500,
-            offsetY: -10,
-          },
-          value: {
-            show: true,
-            fontWeight: 600,
-            color: themeColors.lightText,
-            fontSize: '16px',
-            offsetY: -5,
-          },
-          total: {
-            show: true,
-            fontSize: '14px',
-            fontWeight: 500,
-            color: themeColors.lightText,
-          },
+          fontSize: '12px',
+          fontWeight: 500,
+          offsetY: -10,
         },
-        hollow: {
-          margin: 15,
-          size: '75%',
-        },
-        track: {
-          strokeWidth: '300%',
-        },
+        value: {
+          show: true,
+          fontWeight: 900,
+          color: themeColors.lightText,
+          fontSize: '18px',
+          offsetY: 0,
+        }
+      },
+      hollow: {
+        margin: 15,
+        size: '60%',
+      },
+      track: {
+        strokeWidth: '100%',
       },
     },
+  },
+  stroke: {
+    lineCap: 'round',
+  }
+})
 
-    stroke: {
-      lineCap: 'round',
-    },
-    labels: ['Productivity'],
+export function useResourceCharts() {
+  const themeColors = useThemeColors()
+  const cpuOptions = shallowRef({
+    ...baseOptions(themeColors),
+    colors: [themeColors.primary],
+    labels: ['CPU Usage'],
+  })
+
+  const memoryOptions = shallowRef({
+    ...baseOptions(themeColors),
+    colors: [themeColors.accent],
+    labels: ['Memory'],
   })
 
   return {
-    usageOptions,
+    cpuOptions,
+    memoryOptions,
   }
 }

@@ -76,7 +76,6 @@ async function prepareParams() {
     params.image = tmplRes.requirement.image
     params.configFile = JSON.stringify(compRef.value?.getValue())
     params.configFilePath = '/opt/vsomediasoftware/config/vsompconfiginfo.json'
-    params.command = '/opt/vfio-stat/vfio.sh add && /opt/vfio-stat/vsok.json.sh && cd /opt/vsomediasoftware/bin && ./vsompinstance'
     return params
   } else {
     return { error: "模板不存在" }

@@ -36,7 +36,7 @@ export const useDevices = defineStore('device', () => {
       body: {
         name,
         tmpl,
-        body: JSON.stringify(body)
+        body: JSON.stringify({ params: body })
       }
     })
     if (res && res.device) {
@@ -51,7 +51,7 @@ export const useDevices = defineStore('device', () => {
       body: {
         name,
         deviceId,
-        body: JSON.stringify(body)
+        body: JSON.stringify({ params: body })
       }
     })
     if (res && res.device) {

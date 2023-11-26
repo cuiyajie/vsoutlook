@@ -9,6 +9,12 @@
   }
 }
 
+.icon-wrap.is-tt-icon {
+  img {
+    border-radius: none;
+  }
+}
+
 .icon-wrap.is-small.is-tt-icon {
   img {
     max-width: 60% !important;

@@ -233,8 +233,7 @@ func CreateDevice(c *svcinfra.Context) {
 	// Add query parameters to the URL
 	apiURL.RawQuery = queryParams.Encode()
 
-	fmt.Println("Create URL:", apiURL.String())
-
+	fmt.Println("Create URL:", apiURL.String(), req.Body)
 	clustReq, err := http.NewRequest("POST", apiURL.String(), strings.NewReader(req.Body))
 	if err != nil {
 		fmt.Printf("failed to create request: %v", err)

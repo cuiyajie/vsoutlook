@@ -10,7 +10,7 @@
 import { ref } from 'vue'
 import { acceptHMRUpdate, defineStore } from 'pinia'
 import { useRlsFetch } from "/@src/composable/useRlsFetch";
-import * as nodeMock from "/@src/data/node-mock"
+// import * as nodeMock from "/@src/data/node-mock"
 
 const Timeout = 15 * 1000
 export const useClustNode = defineStore('clustNode', () => {
@@ -42,12 +42,11 @@ export const useClustNode = defineStore('clustNode', () => {
           return {
             id,
             ip,
-            info: res1.data.allocatable
+            info: res1.data
           }
         }
         return { id, ip, info: null }
       }))
-      console.log(nodes.value)
     }
   }
 

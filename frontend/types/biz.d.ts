@@ -105,7 +105,10 @@ interface UserData {
 interface ClustNode {
   id: string,
   ip: string,
-  info: any
+  info: {
+    allocatable: { cpu: { value: string }, memory: { value: string } },
+    current: { cpu: { value: string }, memory: { value: string } },
+  }
 }
 
 interface ClustDevice {

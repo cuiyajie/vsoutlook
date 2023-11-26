@@ -52,26 +52,40 @@ function viewTmpl() {
           CPU
         </h4>
         <span>
-          {{ tmpld.requirement.cpu || tmpld.requirement.cpuNum ? `${tmpld.requirement.cpuNum ? ' ' : ''}${tmpld.requirement.cpu}${tmpld.requirement.cpuNum ? `${tmpld.requirement.cpuNum}核` : ''}` : '无' }}
+          {{ tmpld.requirement.cpuNum || '无' }}
         </span>
       </div>
       <div class="info-block-line">
         <h4 class="dark-inverted">
           内存
         </h4>
-        <span>{{ tmpld.requirement.memory || '无' }}</span>
+        <span>
+          {{ tmpld.requirement.memory || '无' }}
+        </span>
       </div>
       <div class="info-block-line">
         <h4 class="dark-inverted">
-          GPU
+          CPU核心
         </h4>
-        <span>{{ tmpld.requirement.gpu || '无' }}</span>
+        <span>
+          {{ tmpld.requirement.cpuCore || '无' }}
+        </span>
       </div>
       <div class="info-block-line">
         <h4 class="dark-inverted">
-          硬盘
+          大页数 (Huge Page)
         </h4>
-        <span>{{ tmpld.requirement.disk || '无' }}</span>
+        <span>
+          {{ tmpld.requirement.hugePage || '无' }}
+        </span>
+      </div>
+      <div class="info-block-line">
+        <h4 class="dark-inverted">
+          镜像名称
+        </h4>
+        <span>
+          {{ tmpld.requirement.image || '无' }}
+        </span>
       </div>
       <div class="info-block-line multi">
         <h4 class="dark-inverted">

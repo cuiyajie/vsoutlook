@@ -6,7 +6,7 @@ import ApexChart from 'vue3-apexcharts'
 
 const dragContext = useTmplDragging();
 const nodeStore = useClustNode();
-const { usageOptions } = useResourceCharts()
+const { cpuOptions, memoryOptions } = useResourceCharts()
 
 const nodes = computed(() => nodeStore.nodes)
 const loading = ref(false)
@@ -58,11 +58,19 @@ function onDrop(event: DragEvent) {
   });
 }
 
+function parseCpu(info: ClustNode['info']) {
+  return [Math.round((parseInt(info.current?.cpu?.value) || 0) * 100 / (parseInt(info.allocatable?.cpu?.value) || 1)) ]
+}
+
+function parseMemory(info: ClustNode['info']) {
+  return [Math.round((parseInt(info.current?.memory?.value) || 0) * 100 / (parseInt(info.allocatable?.memory?.value) || 1)) ]
+}
+
 (async () => {
   loading.value = true
   await nodeStore.$fetchList()
   loading.value = false
-  // nodeStore.$startQuery()
+  nodeStore.$startQuery()
 })()
 
 onUnmounted(() => {
@@ -111,22 +119,30 @@ onUnmounted(() => {
       @dragover="onDragover"
       @drop="onDrop"
     >
+      <VIconWrap
+        size="large"
+        picture="/images/cluster.svg"
+      />
       <div class="block-meta">
         <h5>{{ node.id }}</h5>
-        <span>{{ node.ip }}</span>
+        <span>IP: {{ node.ip }}</span>
       </div>
-      <ApexChart
-        :height="usageOptions.chart.height"
-        :type="usageOptions.chart.type"
-        :series="usageOptions.series"
-        :options="usageOptions"
-      />
-      <ApexChart
-        :height="usageOptions.chart.height"
-        :type="usageOptions.chart.type"
-        :series="usageOptions.series"
-        :options="usageOptions"
-      />
+      <div class="chart-wrap ml-6">
+        <ApexChart
+          :height="cpuOptions.chart.height"
+          :type="cpuOptions.chart.type"
+          :series="parseCpu(node.info)"
+          :options="cpuOptions"
+        />
+      </div>
+      <div class="chart-wrap">
+        <ApexChart
+          :height="memoryOptions.chart.height"
+          :type="memoryOptions.chart.type"
+          :series="parseMemory(node.info)"
+          :options="memoryOptions"
+        />
+      </div>
     </VCard>
   </TransitionGroup>
 </template>
@@ -136,21 +152,38 @@ onUnmounted(() => {
 
   .l-card {
     width: auto;
-    padding: 12px;
+    padding: 8px 20px;
     display: flex;
     align-items: center;
     margin-top: 16px;
 
     .block-meta {
+      margin-left: 16px;
+
       h5 {
         font-size: 1.2rem;
         font-weight: 600;
+        margin-bottom: 4px;
       }
 
       span {
         font-size: 0.9rem;
         color: var(--dark-dark-text);
       }
+    }
+
+    .icon-wrap.is-large {
+      border-radius: 10px;
+
+      img {
+        width: 60%;
+        border-radius: 0 !important;
+      }
+    }
+
+    .chart-wrap {
+      width: 200px;
+      transform: translateY(-8px);
     }
 
     &.drag-over {
