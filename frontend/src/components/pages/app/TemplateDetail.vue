@@ -24,7 +24,7 @@ function tabChange(tab: string) {
   }
 }
 
-const specsData = reactive({
+const specsData = ref({
   cpu: '',
   cpuNum: '',
   cpuCore: '',
@@ -45,7 +45,7 @@ watch(() => route.params?.id, async (nv, ov) => {
   if (nv && nv !== ov) {
     tmpl.value = await tmplStore.$getTmplById(nv)
     if (tmpl.value) {
-      Object.assign(specsData, tmpl.value.requirement, { description: tmpl.value.description })
+      specsData.value = Object.assign({}, tmpl.value.requirement, { description: tmpl.value.description })
       if (tmpl.value.flow) {
         flowObject.value = JSON.parse(tmpl.value.flow)
       }
@@ -55,7 +55,7 @@ watch(() => route.params?.id, async (nv, ov) => {
 
 async function save() {
   if (tmpl.value?.id) {
-    const { description, ...requirement } = specsData
+    const { description, ...requirement } = specsData.value
     flowObject.value = toObject()
     const res = await tmplStore.$updateTmpl(tmpl.value.id, {
       flow: JSON.stringify(flowObject.value),

@@ -28,8 +28,7 @@ temp:
 deploy-prod:
 	sh scripts/deploy-prod.sh
 
-deploy:
-	build-linux
+deploy: build-linux
 	rsync -avz bin/linux-vsoutlook-server vso2:/home/vsoutlook/vsoutlook-app/server
 
 update-service:
