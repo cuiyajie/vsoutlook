@@ -113,7 +113,7 @@ const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value)
             </div>
             <div class="column is-6">
               <VField>
-                <VLabel>主视频流p4交换机输入端口</VLabel>
+                <VLabel>主视频流IO输入端口</VLabel>
                 <VControl>
                   <VInputNumber
                     v-model="mv.ipstream_master.v_p4inport"
@@ -126,7 +126,7 @@ const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value)
             </div>
             <div class="column is-6">
               <VField>
-                <VLabel>主视频流p4交换机输出端口</VLabel>
+                <VLabel>主视频流IO输出端口</VLabel>
                 <VControl>
                   <VInputNumber
                     v-model="mv.ipstream_master.v_p4outport"
@@ -172,7 +172,7 @@ const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value)
                 class="column is-6"
               >
                 <VField>
-                  <VLabel>备视频流P4交换机输入端口</VLabel>
+                  <VLabel>备视频流IO输入端口</VLabel>
                   <VControl>
                     <VInputNumber
                       v-model="mv.ipstream_backup.v_p4inport"
@@ -190,7 +190,7 @@ const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value)
                 class="column is-6"
               >
                 <VField>
-                  <VLabel>备视频流P4交换机输入端口</VLabel>
+                  <VLabel>备视频流IO输入端口</VLabel>
                   <VControl>
                     <VInputNumber
                       v-model="mv.ipstream_backup.v_p4outport"
