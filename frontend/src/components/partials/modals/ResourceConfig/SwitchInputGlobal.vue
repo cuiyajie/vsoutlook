@@ -207,14 +207,14 @@ const fill_opened = ref(false)
   </div>
   <div
     class="form-fieldset collapse-form seperator"
-    :open="key_opened || undefined"
+    :open="fill_opened || undefined"
   >
     <div
       class="fieldset-heading collapse-header"
       tabindex="0"
       role="button"
-      @keydown.space.prevent="key_opened = !key_opened"
-      @click.prevent="key_opened = !key_opened"
+      @keydown.space.prevent="fill_opened = !fill_opened"
+      @click.prevent="fill_opened = !fill_opened"
     >
       <h4>第1路fill输入参数</h4>
       <div class="collapse-icon">

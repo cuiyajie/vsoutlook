@@ -27,7 +27,6 @@ declare module 'vue' {
     DeviceInfo: typeof import('./../src/components/partials/panels/DeviceInfo.vue')['default']
     DeviceList: typeof import('./../src/components/pages/app/DeviceList.vue')['default']
     DeviceListDropdown: typeof import('./../src/components/partials/dropdowns/DeviceListDropdown.vue')['default']
-    DeviceManage: typeof import('./../src/components/pages/app/DeviceManage.vue')['default']
     GeneralConfig: typeof import('./../src/components/partials/forms/GeneralConfig.vue')['default']
     HubCard: typeof import('./../src/components/partials/panels/HubCard.vue')['default']
     LandingLayout: typeof import('./../src/layouts/LandingLayout.vue')['default']

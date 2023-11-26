@@ -9,7 +9,9 @@ import MVForm from "./MVForm.vue";
 import SwitchForm from "./SwitchForm.vue";
 import { confirm } from "/@src/utils/dialog";
 import { useDevices } from '/@src/stores/device'
+import { useTemplate } from "/@src/stores/template";
 
+const tmplStore = useTemplate();
 const deviceStore = useDevices()
 
 const notyf = useNotyf();
@@ -59,6 +61,28 @@ const dgi = computed(() => {
   };
 })
 
+async function prepareParams() {
+  const tmplRes: TemplateData = await tmplStore.$getTmplById(tmpl.value!.id)
+  if (tmplRes.id) {
+    const val = compRef.value?.getValue()
+    const params: any = {}
+    params.cpu = +tmplRes.requirement.cpuNum || 1
+    params.memory = +tmplRes.requirement.memory || 1
+    params.hugepage = +tmplRes.requirement.hugePage || 6
+    params.nodeName = deviceName.value
+    params.cpucore = tmplRes.requirement.cpuCore
+    params.localip0 = val!['2110-7_m_local_ip']
+    params.localip1 = val!['2110-7_b_local_ip']
+    params.image = tmplRes.requirement.image
+    params.configFile = JSON.stringify(compRef.value?.getValue())
+    params.configFilePath = '/opt/vsomediasoftware/config/vsompconfiginfo.json'
+    params.command = '/opt/vfio-stat/vfio.sh add && /opt/vfio-stat/vsok.json.sh && cd /opt/vsomediasoftware/bin && ./vsompinstance'
+    return params
+  } else {
+    return { error: "模板不存在" }
+  }
+}
+
 const loading = ref(false)
 const addInstance = handleSubmit(async () => {
   if (loading.value) return;
@@ -67,13 +91,18 @@ const addInstance = handleSubmit(async () => {
     content: dgi.value.confirmContent,
     onConfirm: async (hide) => {
       hide()
-      const val = compRef.value?.getValue()
       loading.value = true;
+      const params = await prepareParams()
+      if (params.error) {
+        loading.value = false;
+        notyf.error(params.error);
+        return
+      }
       let pro: Promise<any>
       if (dgi.value.created) {
-        pro = deviceStore.$updateConfig(deviceName.value, device.value!.id, val)
+        pro = deviceStore.$updateConfig(deviceName.value, device.value!.id, params)
       } else {
-        pro = deviceStore.$deploy(deviceName.value, tmpl.value!.id, val)
+        pro = deviceStore.$deploy(deviceName.value, tmpl.value!.id, params)
       }
       const res = await pro
       loading.value = false;

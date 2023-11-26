@@ -1,9 +1,12 @@
 <script lang="ts" setup>
 import { useTmplDragging } from "/@src/stores/tmplDragging";
 import { useClustNode } from "/@src/stores/node";
+import { useResourceCharts } from "/@src/composable/useResourceChart";
+import ApexChart from 'vue3-apexcharts'
 
 const dragContext = useTmplDragging();
 const nodeStore = useClustNode();
+const { usageOptions } = useResourceCharts()
 
 const nodes = computed(() => nodeStore.nodes)
 const loading = ref(false)
@@ -112,6 +115,18 @@ onUnmounted(() => {
         <h5>{{ node.id }}</h5>
         <span>{{ node.ip }}</span>
       </div>
+      <ApexChart
+        :height="usageOptions.chart.height"
+        :type="usageOptions.chart.type"
+        :series="usageOptions.series"
+        :options="usageOptions"
+      />
+      <ApexChart
+        :height="usageOptions.chart.height"
+        :type="usageOptions.chart.type"
+        :series="usageOptions.series"
+        :options="usageOptions"
+      />
     </VCard>
   </TransitionGroup>
 </template>

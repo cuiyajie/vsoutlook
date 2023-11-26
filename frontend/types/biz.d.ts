@@ -7,6 +7,9 @@ interface TemplateType {
 interface TmplRequirement {
   cpu: string,
   cpuNum: string,
+  cpuCore: string,
+  hugePage: string,
+  image: string,
   memory: string,
   disk: string,
   gpu: string,
@@ -79,7 +82,8 @@ interface DeviceDetail {
 	appVersion: string,
 	status: string,
   statusInfo: any,
-  updatedAt: string
+  updated: string,
+  phase: string
 }
 
 interface SystemInfo {

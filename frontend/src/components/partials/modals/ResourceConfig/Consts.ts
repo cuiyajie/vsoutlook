@@ -102,6 +102,15 @@ export const switch_out_params = {
   v_p4outport: 2
 }
 
+export const switch_keyfill_params = {
+  key_src_address: "",
+  key_dst_address: "",
+  key_p4_port: 1,
+  fill_src_address: "",
+  fill_dst_address: "",
+  fill_p4_port: 1
+}
+
 export const def_codec_input = () => ({
   ...base_config,
   ipstream_master: { ...ipstream },
@@ -175,10 +184,14 @@ export const def_switch_input_video_params = () => ({
 })
 
 export const def_switch_input_bus_params = () => ({
-  video_bus_master: { ...ipstream_video, v_P4_port: 1 },
-  video_bus_backup: { ...ipstream_video, v_P4_port: 2 },
-  keyfill_bus_master: { ...switch_key_params, ...switch_fill_params },
-  keyfill_bus_backup: { ...switch_key_params, ...switch_fill_params }
+  video_bus_master: [{ ...ipstream_video, v_P4_port: 1 }, { ...ipstream_video, v_P4_port: 1 }],
+  video_bus_backup: [{ ...ipstream_video, v_P4_port: 2 }, { ...ipstream_video, v_P4_port: 2 }],
+  keyfill_bus_master: {
+    ...switch_keyfill_params
+  },
+  keyfill_bus_backup: {
+    ...switch_keyfill_params
+  }
 })
 
 export const def_switch_output_params = () => ({

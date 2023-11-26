@@ -10,20 +10,20 @@ defineProps<{
   useBackup: boolean
 }>()
 
-const key_opened = ref(false)
-const fill_opened = ref(false)
+const video_opened = ref(false)
+const keyfill_opened = ref(false)
 </script>
 <template>
   <div
-    class="form-fieldset collapse-form"
-    :open="key_opened || undefined"
+    class="form-fieldset collapse-form seperator"
+    :open="video_opened || undefined"
   >
     <div
       class="fieldset-heading collapse-header"
       tabindex="0"
       role="button"
-      @keydown.space.prevent="key_opened = !key_opened"
-      @click.prevent="key_opened = !key_opened"
+      @keydown.space.prevent="video_opened = !video_opened"
+      @click.prevent="video_opened = !video_opened"
     >
       <h4>视频输入母线</h4>
       <div class="collapse-icon">
@@ -32,8 +32,8 @@ const fill_opened = ref(false)
     </div>
     <Transition name="fade-show">
       <div
-        v-show="key_opened"
-        class="form-fieldset seperator"
+        v-show="video_opened"
+        class="form-fieldset"
       >
         <div class="columns is-multiline">
           <div class="column is-4">
@@ -41,7 +41,7 @@ const fill_opened = ref(false)
               <VLabel>主视频母线a组播源IP（含端口）</VLabel>
               <VControl>
                 <VInput
-                  v-model="mv.video_bus_master.v_src_address"
+                  v-model="mv.video_bus_master[0].v_src_address"
                 />
               </VControl>
             </VField>
@@ -51,7 +51,7 @@ const fill_opened = ref(false)
               <VLabel>主视频母线a组播目标IP（含端口）</VLabel>
               <VControl>
                 <VInput
-                  v-model="mv.video_bus_master.v_dst_address"
+                  v-model="mv.video_bus_master[0].v_dst_address"
                 />
               </VControl>
             </VField>
@@ -61,7 +61,7 @@ const fill_opened = ref(false)
               <VLabel>主视频母线a使用的p4输出端口</VLabel>
               <VControl>
                 <VInputNumber
-                  v-model="mv.video_bus_master.v_P4_port"
+                  v-model="mv.video_bus_master[0].v_P4_port"
                   centered
                   :min="0"
                   :step="1"
@@ -74,7 +74,7 @@ const fill_opened = ref(false)
               <VLabel>主视频母线b组播源IP（含端口）</VLabel>
               <VControl>
                 <VInput
-                  v-model="mv.video_bus_master.v_src_address"
+                  v-model="mv.video_bus_master[1].v_src_address"
                 />
               </VControl>
             </VField>
@@ -84,7 +84,7 @@ const fill_opened = ref(false)
               <VLabel>主视频母线b组播目标IP（含端口）</VLabel>
               <VControl>
                 <VInput
-                  v-model="mv.video_bus_master.v_dst_address"
+                  v-model="mv.video_bus_master[1].v_dst_address"
                 />
               </VControl>
             </VField>
@@ -94,7 +94,7 @@ const fill_opened = ref(false)
               <VLabel>主视频母线b使用的p4输出端口</VLabel>
               <VControl>
                 <VInputNumber
-                  v-model="mv.video_bus_master.v_P4_port"
+                  v-model="mv.video_bus_master[1].v_P4_port"
                   centered
                   :min="0"
                   :step="1"
@@ -111,7 +111,7 @@ const fill_opened = ref(false)
                 <VLabel>备视频母线a组播源IP（含端口）</VLabel>
                 <VControl>
                   <VInput
-                    v-model="mv.video_bus_backup.v_src_address"
+                    v-model="mv.video_bus_backup[0].v_src_address"
                   />
                 </VControl>
               </VField>
@@ -126,7 +126,7 @@ const fill_opened = ref(false)
                 <VLabel>备视频母线a组播目标IP（含端口）</VLabel>
                 <VControl>
                   <VInput
-                    v-model="mv.video_bus_backup.v_dst_address"
+                    v-model="mv.video_bus_backup[0].v_dst_address"
                   />
                 </VControl>
               </VField>
@@ -141,7 +141,7 @@ const fill_opened = ref(false)
                 <VLabel>备视频母线a使用的p4输出端口</VLabel>
                 <VControl>
                   <VInputNumber
-                    v-model="mv.video_bus_backup.v_P4_port"
+                    v-model="mv.video_bus_backup[0].v_P4_port"
                     centered
                     :min="0"
                     :step="1"
@@ -159,7 +159,7 @@ const fill_opened = ref(false)
                 <VLabel>备视频母线b组播源IP（含端口）</VLabel>
                 <VControl>
                   <VInput
-                    v-model="mv.video_bus_backup.v_src_address"
+                    v-model="mv.video_bus_backup[1].v_src_address"
                   />
                 </VControl>
               </VField>
@@ -174,7 +174,7 @@ const fill_opened = ref(false)
                 <VLabel>备视频母线b组播目标IP（含端口）</VLabel>
                 <VControl>
                   <VInput
-                    v-model="mv.video_bus_backup.v_dst_address"
+                    v-model="mv.video_bus_backup[1].v_dst_address"
                   />
                 </VControl>
               </VField>
@@ -189,7 +189,7 @@ const fill_opened = ref(false)
                 <VLabel>备视频母线b使用的p4输出端口</VLabel>
                 <VControl>
                   <VInputNumber
-                    v-model="mv.video_bus_backup.v_P4_port"
+                    v-model="mv.video_bus_backup[1].v_P4_port"
                     centered
                     :min="0"
                     :step="1"
@@ -204,14 +204,14 @@ const fill_opened = ref(false)
   </div>
   <div
     class="form-fieldset collapse-form"
-    :open="fill_opened || undefined"
+    :open="keyfill_opened || undefined"
   >
     <div
       class="fieldset-heading collapse-header"
       tabindex="0"
       role="button"
-      @keydown.space.prevent="fill_opened = !fill_opened"
-      @click.prevent="fill_opened = !fill_opened"
+      @keydown.space.prevent="keyfill_opened = !keyfill_opened"
+      @click.prevent="keyfill_opened = !keyfill_opened"
     >
       <h4>键输入母线</h4>
       <div class="collapse-icon">
@@ -220,8 +220,8 @@ const fill_opened = ref(false)
     </div>
     <Transition name="fade-show">
       <div
-        v-show="fill_opened"
-        class="form-fieldset seperator"
+        v-show="keyfill_opened"
+        class="form-fieldset"
       >
         <div class="columns is-multiline">
           <div class="column is-4">
@@ -229,7 +229,7 @@ const fill_opened = ref(false)
               <VLabel>主key母线组播源IP（含端口）</VLabel>
               <VControl>
                 <VInput
-                  v-model="mv.video_bus_master.v_src_address"
+                  v-model="mv.keyfill_bus_master.key_src_address"
                 />
               </VControl>
             </VField>
@@ -239,7 +239,7 @@ const fill_opened = ref(false)
               <VLabel>主key母线组播目标IP（含端口）</VLabel>
               <VControl>
                 <VInput
-                  v-model="mv.video_bus_master.v_dst_address"
+                  v-model="mv.keyfill_bus_master.key_dst_address"
                 />
               </VControl>
             </VField>
@@ -249,7 +249,7 @@ const fill_opened = ref(false)
               <VLabel>主key母线使用的p4输出端口</VLabel>
               <VControl>
                 <VInputNumber
-                  v-model="mv.video_bus_master.v_P4_port"
+                  v-model="mv.keyfill_bus_master.key_p4_port"
                   centered
                   :min="0"
                   :step="1"
@@ -262,7 +262,7 @@ const fill_opened = ref(false)
               <VLabel>主fill母线组播源IP（含端口）</VLabel>
               <VControl>
                 <VInput
-                  v-model="mv.video_bus_master.v_src_address"
+                  v-model="mv.keyfill_bus_master.fill_src_address"
                 />
               </VControl>
             </VField>
@@ -272,7 +272,7 @@ const fill_opened = ref(false)
               <VLabel>主fill母线组播目标IP（含端口）</VLabel>
               <VControl>
                 <VInput
-                  v-model="mv.video_bus_master.v_dst_address"
+                  v-model="mv.keyfill_bus_master.fill_dst_address"
                 />
               </VControl>
             </VField>
@@ -282,7 +282,7 @@ const fill_opened = ref(false)
               <VLabel>主fill母线使用的p4输出端口</VLabel>
               <VControl>
                 <VInputNumber
-                  v-model="mv.video_bus_master.v_P4_port"
+                  v-model="mv.keyfill_bus_master.fill_p4_port"
                   centered
                   :min="0"
                   :step="1"
@@ -299,7 +299,7 @@ const fill_opened = ref(false)
                 <VLabel>备key母线组播源IP（含端口）</VLabel>
                 <VControl>
                   <VInput
-                    v-model="mv.video_bus_backup.v_src_address"
+                    v-model="mv.keyfill_bus_backup.key_src_address"
                   />
                 </VControl>
               </VField>
@@ -314,7 +314,7 @@ const fill_opened = ref(false)
                 <VLabel>备key母线组播目标IP（含端口）</VLabel>
                 <VControl>
                   <VInput
-                    v-model="mv.video_bus_backup.v_dst_address"
+                    v-model="mv.keyfill_bus_backup.key_dst_address"
                   />
                 </VControl>
               </VField>
@@ -329,7 +329,7 @@ const fill_opened = ref(false)
                 <VLabel>备key母线使用的p4输出端口</VLabel>
                 <VControl>
                   <VInputNumber
-                    v-model="mv.video_bus_backup.v_P4_port"
+                    v-model="mv.keyfill_bus_backup.key_p4_port"
                     centered
                     :min="0"
                     :step="1"
@@ -347,7 +347,7 @@ const fill_opened = ref(false)
                 <VLabel>备fill母线组播源IP（含端口）</VLabel>
                 <VControl>
                   <VInput
-                    v-model="mv.video_bus_backup.v_src_address"
+                    v-model="mv.keyfill_bus_backup.fill_src_address"
                   />
                 </VControl>
               </VField>
@@ -362,7 +362,7 @@ const fill_opened = ref(false)
                 <VLabel>备fill母线组播目标IP（含端口）</VLabel>
                 <VControl>
                   <VInput
-                    v-model="mv.video_bus_backup.v_dst_address"
+                    v-model="mv.keyfill_bus_backup.fill_dst_address"
                   />
                 </VControl>
               </VField>
@@ -377,7 +377,7 @@ const fill_opened = ref(false)
                 <VLabel>备fill母线使用的p4输出端口</VLabel>
                 <VControl>
                   <VInputNumber
-                    v-model="mv.video_bus_backup.v_P4_port"
+                    v-model="mv.keyfill_bus_backup.fill_p4_port"
                     centered
                     :min="0"
                     :step="1"

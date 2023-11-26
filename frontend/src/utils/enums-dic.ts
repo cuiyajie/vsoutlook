@@ -2,8 +2,9 @@ import { InputSignal, OutputSignal, PtpStatus } from "./enums"
 
 
 export const DeviceStatusDic: Record<string, { text: string, color: string }> = {
-  'deployed': { text: '已部署', color: 'primary' },
-  'running': { text: '运行中', color: 'solid' }
+  'Running': { text: '运行中', color: 'primary' },
+  'Pending': { text: '创建中', color: 'blue' },
+  'Terminating': { text: '删除中', color: 'danger' },
 }
 
 // export const DeviceStatusDic = {

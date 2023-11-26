@@ -32,6 +32,23 @@ function remove() {
   });
 }
 
+function reboot() {
+  confirm({
+    title: "重启设备",
+    content: "确定要重启该设备吗？",
+    onConfirm: async (hide) => {
+      const res = await deviceStore.$reboot(props.device);
+      hide();
+      if (res && res.result === "success") {
+        notyf.success("重启成功");
+        emit('refresh')
+      } else if (res?.result === "error") {
+        notyf.error(res.message)
+      }
+    },
+  });
+}
+
 function config() {
   const { tmplID, tmplName, tmplTypeName, id, nodeName } = props.device
   bus.trigger(Signal.OpenResourceConfig, {
@@ -78,25 +95,26 @@ function config() {
         </div>
       </a>
 
-      <!-- <hr class="dropdown-divider">
-
-      <a
-        href="#"
-        role="menuitem"
-        class="dropdown-item is-media"
-        @click="close()"
-      >
-        <div class="icon">
-          <i
-            class="iconify"
-            :data-icon="`feather:${device.status === DeviceStatus.Normal ? 'stop-circle' : 'arrow-right-circle'}`"
-            aria-hidden="true"
-          />
-        </div>
-        <div class="meta">
-          <span>{{ device.status === DeviceStatus.Normal ? '关闭' : '开启' }}</span>
-        </div>
-      </a> -->
+      <template v-if="device.phase === 'Running'">
+        <hr class="dropdown-divider">
+        <a
+          href="#"
+          role="menuitem"
+          class="dropdown-item is-media"
+          @click="close(); reboot()"
+        >
+          <div class="icon">
+            <i
+              class="iconify"
+              data-icon="feather:arrow-right-circle"
+              aria-hidden="true"
+            />
+          </div>
+          <div class="meta">
+            <span>重启</span>
+          </div>
+        </a>
+      </template>
 
       <hr class="dropdown-divider">
 

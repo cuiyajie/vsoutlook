@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"sort"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -21,7 +22,7 @@ import (
 type ClustResp struct {
 	Code  int8        `json:"code"`
 	Data  interface{} `json:"data"`
-	Error string      `json:"error"`
+	Error string      `json:"error,omitempty"`
 }
 
 type ClustRelease struct {
@@ -33,6 +34,7 @@ type ClustRelease struct {
 	Chart        string `json:"chart"`
 	ChartVersion string `json:"chart_version"`
 	AppVersion   string `json:"app_version"`
+	Phase        string `json:"phase"`
 }
 
 type DeviceAsRelease struct {
@@ -43,6 +45,7 @@ type DeviceAsRelease struct {
 	AppVersion   string `json:"appVersion"`
 	Status       string `json:"status"`
 	Updated      string `json:"updated"`
+	Phase        string `json:"phase"`
 }
 
 func GetDeviceList(c *svcinfra.Context) {
@@ -61,7 +64,7 @@ func GetDeviceList(c *svcinfra.Context) {
 	// Add query parameters to the URL
 	apiURL.RawQuery = queryParams.Encode()
 
-	fmt.Println("URL:", apiURL.String())
+	fmt.Println("Fetch URL:", apiURL.String())
 
 	clustReq, err := http.NewRequest("GET", apiURL.String(), nil)
 	if err != nil {
@@ -119,9 +122,14 @@ func GetDeviceList(c *svcinfra.Context) {
 			dr.ChartVersion = release.ChartVersion
 			dr.AppVersion = release.AppVersion
 			dr.Updated = release.Updated
+			dr.Phase = release.Phase
 			clustDevices = append(clustDevices, dr)
 		}
 	}
+
+	sort.Slice(clustDevices, func(i, j int) bool {
+		return clustDevices[i].Updated > clustDevices[j].Updated
+	})
 
 	c.Bye(gin.H{"devices": clustDevices})
 }
@@ -148,7 +156,8 @@ func DeleteDevice(c *svcinfra.Context) {
 
 	clustPath := config.Get("CLUST_HOST")
 	baseUrl := clustPath + "/api/namespaces/default/releases/" + device.Name
-	clustReq, err := http.NewRequest("Delete", baseUrl, nil)
+	fmt.Println("Delete URL:", baseUrl)
+	clustReq, err := http.NewRequest("DELETE", baseUrl, nil)
 	if err != nil {
 		fmt.Printf("failed to delete request: %v", err)
 		c.GeneralError("创建删除请求失败")
@@ -167,8 +176,13 @@ func DeleteDevice(c *svcinfra.Context) {
 	d, _ := io.ReadAll(resp.Body)
 	fmt.Println("cluster node response:", string(d))
 	var resp2 ClustResp
-	json.Unmarshal(d, &resp2)
-	if resp2.Code != 0 {
+	err = json.Unmarshal(d, &resp2)
+	if err != nil {
+		fmt.Printf("failed to parse request: %v", err)
+		c.GeneralError("请求删除设备失败")
+		return
+	}
+	if resp2.Code != 0 && len(resp2.Error) > 0 && !strings.HasSuffix(resp2.Error, "not found") {
 		fmt.Printf("failed to make request: %v", resp2.Error)
 		c.GeneralError("删除设备失败")
 		return
@@ -219,7 +233,7 @@ func CreateDevice(c *svcinfra.Context) {
 	// Add query parameters to the URL
 	apiURL.RawQuery = queryParams.Encode()
 
-	fmt.Println("URL:", apiURL.String())
+	fmt.Println("Create URL:", apiURL.String())
 
 	clustReq, err := http.NewRequest("POST", apiURL.String(), strings.NewReader(req.Body))
 	if err != nil {
@@ -301,7 +315,7 @@ func UpdateDevice(c *svcinfra.Context) {
 	// Add query parameters to the URL
 	apiURL.RawQuery = queryParams.Encode()
 
-	fmt.Println("URL:", apiURL.String())
+	fmt.Println("Update URL:", apiURL.String())
 
 	clustReq, err := http.NewRequest("PUT", apiURL.String(), strings.NewReader(req.Body))
 	if err != nil {

@@ -3,6 +3,9 @@ const modelValue = defineModel<any>({
   default: {
     cpu: "",
     cpuNum: "",
+    cpuCore: '',
+    hugePage: '',
+    image: '',
     memory: "",
     disk: "",
     gpu: "",
@@ -16,7 +19,12 @@ const modelValue = defineModel<any>({
 </script>
 
 <template>
-  <form method="post" novalidate class="form-layout" @submit.prevent="">
+  <form
+    method="post"
+    novalidate
+    class="form-layout"
+    @submit.prevent=""
+  >
     <div class="form-outer">
       <div class="form-body">
         <!--Fieldset-->
@@ -26,7 +34,11 @@ const modelValue = defineModel<any>({
               <VField>
                 <VLabel>CPU主频</VLabel>
                 <VControl>
-                  <VInput v-model="modelValue.cpu" type="text" placeholder="" />
+                  <VInput
+                    v-model="modelValue.cpu"
+                    type="text"
+                    placeholder=""
+                  />
                 </VControl>
               </VField>
             </div>
@@ -34,7 +46,47 @@ const modelValue = defineModel<any>({
               <VField>
                 <VLabel>CPU核数</VLabel>
                 <VControl>
-                  <VInput v-model="modelValue.cpuNum" type="text" placeholder="" />
+                  <VInput
+                    v-model="modelValue.cpuNum"
+                    type="text"
+                    placeholder=""
+                  />
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-4">
+              <VField>
+                <VLabel>CPU核心</VLabel>
+                <VControl>
+                  <VInput
+                    v-model="modelValue.cpuCore"
+                    type="text"
+                    placeholder=""
+                  />
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-4">
+              <VField>
+                <VLabel>大页数(Huge Page)</VLabel>
+                <VControl>
+                  <VInput
+                    v-model="modelValue.hugePage"
+                    type="text"
+                    placeholder=""
+                  />
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-4">
+              <VField>
+                <VLabel>镜像名称</VLabel>
+                <VControl>
+                  <VInput
+                    v-model="modelValue.image"
+                    type="text"
+                    placeholder=""
+                  />
                 </VControl>
               </VField>
             </div>
@@ -42,7 +94,11 @@ const modelValue = defineModel<any>({
               <VField>
                 <VLabel>内存</VLabel>
                 <VControl>
-                  <VInput v-model="modelValue.memory" type="text" placeholder="" />
+                  <VInput
+                    v-model="modelValue.memory"
+                    type="text"
+                    placeholder=""
+                  />
                 </VControl>
               </VField>
             </div>
@@ -50,7 +106,11 @@ const modelValue = defineModel<any>({
               <VField>
                 <VLabel>GPU</VLabel>
                 <VControl>
-                  <VInput v-model="modelValue.gpu" type="text" placeholder="" />
+                  <VInput
+                    v-model="modelValue.gpu"
+                    type="text"
+                    placeholder=""
+                  />
                 </VControl>
               </VField>
             </div>
@@ -58,7 +118,11 @@ const modelValue = defineModel<any>({
               <VField>
                 <VLabel>硬盘</VLabel>
                 <VControl>
-                  <VInput v-model="modelValue.disk" type="text" placeholder="" />
+                  <VInput
+                    v-model="modelValue.disk"
+                    type="text"
+                    placeholder=""
+                  />
                 </VControl>
               </VField>
             </div>
@@ -66,7 +130,11 @@ const modelValue = defineModel<any>({
               <VField>
                 <VLabel>信号输入宽带</VLabel>
                 <VControl>
-                  <VInput v-model="modelValue.inputBand" type="text" placeholder="" />
+                  <VInput
+                    v-model="modelValue.inputBand"
+                    type="text"
+                    placeholder=""
+                  />
                 </VControl>
               </VField>
             </div>
@@ -74,7 +142,11 @@ const modelValue = defineModel<any>({
               <VField>
                 <VLabel>信号输出宽带</VLabel>
                 <VControl>
-                  <VInput v-model="modelValue.outputBand" type="text" placeholder="" />
+                  <VInput
+                    v-model="modelValue.outputBand"
+                    type="text"
+                    placeholder=""
+                  />
                 </VControl>
               </VField>
             </div>
@@ -82,7 +154,11 @@ const modelValue = defineModel<any>({
               <VField>
                 <VLabel>光纤网卡端口数</VLabel>
                 <VControl>
-                  <VInput v-model="modelValue.network" type="text" placeholder="" />
+                  <VInput
+                    v-model="modelValue.network"
+                    type="text"
+                    placeholder=""
+                  />
                 </VControl>
               </VField>
             </div>

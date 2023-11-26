@@ -15,7 +15,7 @@ import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 
 useHead({
-  title: `${t('pages.not-found.page-title')} - Vuero`,
+  title: `${t('pages.not-found.page-title')} - ${__SITE_NAME__}`,
   meta: [
     {
       name: 'robots',
@@ -30,22 +30,32 @@ useHead({
     <div class="error-container">
       <div class="error-wrapper">
         <div class="error-inner has-text-centered">
-          <div class="bg-number">
+          <div class="bg-number dark-inverted">
             404
           </div>
-          <SVGErrorPlaceholder />
-
-          <h3>{{ t('pages.not-found.page-heading') }}</h3>
+          <img
+            class="light-image"
+            src="/@src/assets/placeholders/error.svg"
+            alt=""
+          >
+          <img
+            class="dark-image"
+            src="/@src/assets/placeholders/error-dark.svg"
+            alt=""
+          >
+          <h3 class="dark-inverted mt-6">
+            我们找不到那个页面
+          </h3>
           <p>
-            {{ t('pages.not-found.page-body') }}
+            看起来我们找不到那个页面。如果问题仍然存在，请再试一次或联系管理员。
           </p>
           <div class="button-wrap">
             <VButton
               color="primary"
               elevated
-              to="/"
+              @click="$router.go(-1)"
             >
-              {{ t('pages.not-found.page-button') }}
+              返回
             </VButton>
           </div>
         </div>
@@ -56,6 +66,19 @@ useHead({
 
 <style lang="scss">
 .error-container {
+  width: 100vw;
+  min-height: 100vh;
+
+  .error-nav {
+    .dark-mode {
+      position: absolute;
+      inset-inline-end: 0;
+      top: 0;
+      display: inline-block;
+      transform: scale(0.5);
+    }
+  }
+
   .error-wrapper {
     max-width: 840px;
     margin: 0 auto;

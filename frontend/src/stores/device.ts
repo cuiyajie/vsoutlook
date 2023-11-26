@@ -12,18 +12,20 @@ import { acceptHMRUpdate, defineStore } from 'pinia'
 import { useNotyf } from "/@src/composable/useNotyf"
 import { useFetch } from "/@src/composable/useFetch"
 import * as dic from "/@src/utils/enums-dic"
+import { useRlsFetch } from "../composable/useRlsFetch"
 
 export const useDevices = defineStore('device', () => {
   const devices = ref<DeviceDetail[]>([])
   const notyf = useNotyf()
   const $fetch  = useFetch()
+  const $rfetch = useRlsFetch()
 
   async function $fetchList() {
     const res = await $fetch('/api/device/list')
     if (res && res.devices) {
       devices.value = res.devices.map((d: any) => {
         d.updated = new Date(Date.parse(d.updated)).toLocaleString('zh')
-        d.statusInfo = dic.DeviceStatusDic[d.status]
+        d.statusInfo = dic.DeviceStatusDic[d.phase]
         return d
       })
     }
@@ -31,7 +33,11 @@ export const useDevices = defineStore('device', () => {
 
   async function $deploy(name: string, tmpl: string, body: any) {
     const res = await $fetch('/api/device/create', {
-      body: { name, tmpl, body: JSON.stringify(body) }
+      body: {
+        name,
+        tmpl,
+        body: JSON.stringify(body)
+      }
     })
     if (res && res.device) {
       return { result: 'success' }
@@ -42,7 +48,11 @@ export const useDevices = defineStore('device', () => {
 
   async function $updateConfig(name: string, deviceId: string, body: any) {
     const res = await $fetch('/api/device/update', {
-      body: { name, deviceId, body: JSON.stringify(body) }
+      body: {
+        name,
+        deviceId,
+        body: JSON.stringify(body)
+      }
     })
     if (res && res.device) {
       return { result: 'success' }
@@ -57,14 +67,34 @@ export const useDevices = defineStore('device', () => {
     })
   }
 
-  function config() {
-    notyf.dismissAll()
-    notyf.info('即将支持，敬请期待')
-  }
-
-  function restart() {
-    notyf.dismissAll()
-    notyf.info('即将支持，敬请期待')
+  async function $reboot(device: DeviceDetail) {
+    const res = await $rfetch(`/api/namespaces/default/releases/${device.name}/podPhase`, {
+      method: 'GET',
+    })
+    if (res && res.code === 0) {
+      if (typeof res.data === 'object') {
+        const podKey = Object.keys(res.data).find(k => k.includes(device.name))
+        if (podKey) {
+          const pod = res.data[podKey]
+          if (pod === 'Running') {
+            const res = await $rfetch(`/api/namespaces/default/pods/${podKey}/delete`, {
+              method: 'GET',
+            }).catch(() => {
+              return { code: 500, error: "重启设备失败" }
+            })
+            if (res && res.code === 0) {
+              return { result: 'success' }
+            } else {
+              return { result: 'error', message: res.error }
+            }
+          } else {
+            return { result: 'error', message: '设备不在线' }
+          }
+        }
+      }
+    } else {
+      return { result: 'error', message: res.error }
+    }
   }
 
   function shutdown() {
@@ -77,27 +107,20 @@ export const useDevices = defineStore('device', () => {
     notyf.info('即将支持，敬请期待')
   }
 
-  function refresh() {
-    notyf.dismissAll()
-    notyf.info('即将支持，敬请期待')
-  }
-
   function getById(id: string) {
     return devices.value.find(d => d.id === id)
   }
 
   return {
     devices,
-    config,
-    restart,
     shutdown,
     start,
-    refresh,
     getById,
     $fetchList,
     $deploy,
     $updateConfig,
-    $remove
+    $remove,
+    $reboot
   } as const
 })
 

@@ -133,6 +133,7 @@ export default defineConfig({
       'unified',
       'workbox-window',
       'textarea-markdown-editor/dist/esm/bootstrap',
+      'vue3-apexcharts'
     ],
     // disabled: false,
   },
