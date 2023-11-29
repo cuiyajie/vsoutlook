@@ -76,6 +76,7 @@ async function prepareParams() {
     params.localip1 = val!['2110-7_b_local_ip']
     params.configFile = JSON.stringify(compRef.value?.getValue())
     params.configFilePath = '/opt/vsomediasoftware/config/vsompconfiginfo-web.json'
+    params.hostNetwork = val?.moudle === 'switch'
     return params
   } else {
     return { error: "模板不存在" }
