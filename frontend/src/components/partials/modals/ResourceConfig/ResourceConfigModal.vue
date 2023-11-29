@@ -10,6 +10,7 @@ import SwitchForm from "./SwitchForm.vue";
 import { confirm } from "/@src/utils/dialog";
 import { useDevices } from '/@src/stores/device'
 import { useTemplate } from "/@src/stores/template";
+import downloadJsonFile from '/@src/utils/download-json'
 
 const tmplStore = useTemplate();
 const deviceStore = useDevices()
@@ -117,6 +118,14 @@ const addInstance = handleSubmit(async () => {
   });
 });
 
+function saveSetting() {
+  const val = compRef.value?.getValue()
+  if (val) {
+    downloadJsonFile(val, `${val.moudle}.json`)
+    notyf.success("保存成功");
+  }
+}
+
 const compRef = ref<InstanceType<typeof CodecForm> | null>(null)
 const TmplComponent = computed(() => {
   switch (tmpl.value?.typeName) {
@@ -179,6 +188,12 @@ const TmplComponent = computed(() => {
       </div>
     </template>
     <template #action>
+      <VButton
+        raised
+        @click="saveSetting"
+      >
+        保存配置
+      </VButton>
       <VButton
         type="submit"
         color="primary"

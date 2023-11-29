@@ -80,7 +80,19 @@ func SetupEnv() {
 		log.SetFlags(log.LstdFlags | log.Lshortfile)
 	}
 
-	fname := filepath.Join(AppDataDir, "config.yaml")
+	ext, err := os.Executable()
+	var fname string
+	if err == nil {
+		maybeAppDir := filepath.Dir(ext)
+		maybeAppDataDir := filepath.Join(maybeAppDir, "../data")
+		configPath := filepath.Join(maybeAppDataDir, "config.yaml")
+		if fileExists(configPath) {
+			fname = configPath
+		}
+	}
+	if len(fname) == 0 {
+		fname = filepath.Join(AppDataDir, "config.yaml")
+	}
 
 	if fileExists(fname) {
 		LoadConfig(fname)
