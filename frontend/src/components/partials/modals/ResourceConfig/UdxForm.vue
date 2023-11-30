@@ -65,8 +65,23 @@ function getValue() {
   }
 }
 
+function setValue(data: typeof udxData) {
+  mv.value = pick(data, ['moudle', 'mode', 'nmos_devname', '2110-7_m_local_ip', '2110-7_b_local_ip'])
+  input.value = unwrap(data.input, 'in_')
+  inputFormat.value = getFormat(input.value)
+
+  const _opData = unwrap(data.output, 'out_')
+  output.value = pick(_opData, ['g_2022-7', 'g_local_ip1', 'g_local_ip2'])
+  OUT_2_OPEN.value = _opData.params.length > 1
+  outputs.forEach((o, i) => {
+    o.value = _opData.params[i]
+  })
+  outputFormat.value = getFormat(_opData.params[0])
+}
+
 defineExpose({
-  getValue
+  getValue,
+  setValue
 })
 </script>
 <template>

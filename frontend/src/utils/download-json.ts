@@ -1,6 +1,6 @@
 export default function downloadJsonFile(jsonData: any, fileName: string) {
   // Convert the JSON data to a Blob
-  const blobData = new Blob([JSON.stringify(jsonData)], { type: 'application/json' });
+  const blobData = new Blob([JSON.stringify(jsonData, null, 2)], { type: 'application/json' });
 
   // Create a download URL for the Blob
   const url = URL.createObjectURL(blobData);

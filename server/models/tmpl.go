@@ -19,17 +19,22 @@ type Tmpl struct {
 }
 
 type TmplRequirement struct {
-	Cpu        string `json:"cpu,omitempty"`
-	CpuNum     string `json:"cpuNum,omitempty"`
-	CpuCore    string `json:"cpuCore,omitempty"`
-	HugePage   string `json:"hugePage,omitempty"`
-	Memory     string `json:"memory,omitempty"`
-	Disk       string `json:"disk,omitempty"`
-	Gpu        string `json:"gpu,omitempty"`
-	InputBand  string `json:"inputBand,omitempty"`
-	OutputBand string `json:"outputBand,omitempty"`
-	Network    string `json:"network,omitempty"`
-	Chart      string `json:"chart,omitempty"`
+	Cpu             string `json:"cpu,omitempty"`
+	CpuNum          string `json:"cpuNum,omitempty"`
+	CpuCore         string `json:"cpuCore,omitempty"`
+	HugePage        string `json:"hugePage,omitempty"`
+	Memory          string `json:"memory,omitempty"`
+	Disk            string `json:"disk,omitempty"`
+	Gpu             string `json:"gpu,omitempty"`
+	InputBand       string `json:"inputBand,omitempty"`
+	OutputBand      string `json:"outputBand,omitempty"`
+	Network         string `json:"network,omitempty"`
+	Chart           string `json:"chart,omitempty"`
+	ClientLogLevel  uint8  `json:"ClientLogLevel"`
+	ServiceLogLevel uint8  `json:"ServiceLogLevel"`
+	RepairRecvFrame bool   `json:"RepairRecvFrame"`
+	RepairSendFrame bool   `json:"RepairSendFrame"`
+	DMAList         string `json:"DMAList,omitempty"`
 }
 
 type TmplAsBasic struct {

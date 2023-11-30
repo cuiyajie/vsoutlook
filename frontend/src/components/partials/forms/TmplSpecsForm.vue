@@ -13,16 +13,23 @@ const modelValue = defineModel<any>({
     network: "",
     chart: "",
     description: "",
+    ClientLogLevel: 0,
+    ServiceLogLevel: 0,
+    RepairRecvFrame: true,
+    RepairSendFrame: true,
+    DMAList: ""
   },
   local: true,
 });
+
+const opened = ref(false)
 </script>
 
 <template>
   <form
     method="post"
     novalidate
-    class="form-layout"
+    class="form-layout specs-form"
     @submit.prevent=""
   >
     <div class="form-outer">
@@ -179,6 +186,94 @@ const modelValue = defineModel<any>({
             </div>
           </div>
         </div>
+        <div
+          class="form-fieldset collapse-form"
+          :open="opened || undefined"
+        >
+          <div
+            class="fieldset-heading collapse-header"
+            tabindex="0"
+            role="button"
+            @keydown.space.prevent="opened = !opened"
+            @click.prevent="opened = !opened"
+          >
+            <h4>Debug配置</h4>
+            <div class="collapse-icon">
+              <VIcon icon="feather:chevron-down" />
+            </div>
+          </div>
+          <Transition name="fade-slow">
+            <div
+              v-show="opened"
+              class="form-fieldset"
+            >
+              <div class="columns is-multiline">
+                <div class="column is-6">
+                  <VField>
+                    <VLabel>IPClient日志级别</VLabel>
+                    <VControl>
+                      <VInputNumber
+                        v-model="modelValue.ClientLogLevel"
+                        centered
+                        :min="0"
+                        :max="5"
+                        :step="1"
+                      />
+                    </VControl>
+                  </VField>
+                </div>
+                <div class="column is-6">
+                  <VField>
+                    <VLabel>IPService日志级别</VLabel>
+                    <VControl>
+                      <VInputNumber
+                        v-model="modelValue.ServiceLogLevel"
+                        centered
+                        :min="0"
+                        :max="5"
+                        :step="1"
+                      />
+                    </VControl>
+                  </VField>
+                </div>
+                <div class="column is-3">
+                  <VField>
+                    <VLabel>FR-In</VLabel>
+                    <VControl>
+                      <VSwitchBlock
+                        v-model="modelValue.RepairRecvFrame"
+                        color="primary"
+                      />
+                    </VControl>
+                  </VField>
+                </div>
+                <div class="column is-3">
+                  <VField>
+                    <VLabel>FR-Out</VLabel>
+                    <VControl>
+                      <VSwitchBlock
+                        v-model="modelValue.RepairSendFrame"
+                        color="primary"
+                      />
+                    </VControl>
+                  </VField>
+                </div>
+                <div class="column is-6">
+                  <VField>
+                    <VLabel>DMA List</VLabel>
+                    <VControl>
+                      <VInput
+                        v-model="modelValue.DMAList"
+                        type="text"
+                        placeholder=""
+                      />
+                    </VControl>
+                  </VField>
+                </div>
+              </div>
+            </div>
+          </Transition>
+        </div>
       </div>
     </div>
   </form>
@@ -188,7 +283,7 @@ const modelValue = defineModel<any>({
 @import "/@src/scss/abstracts/all";
 @import "/@src/scss/components/forms-outer";
 
-.form-layout {
+.specs-form.form-layout {
   max-width: 740px;
   margin: 0 auto;
 
@@ -198,6 +293,83 @@ const modelValue = defineModel<any>({
 
   .form-fieldset {
     padding: 10px 0;
+  }
+
+  .collapse-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+
+    .collapse-icon {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 30px;
+      width: 30px;
+      background: var(--white);
+      border-radius: var(--radius-rounded);
+      border: 1px solid transparent;
+      transition: all 0.3s; // transition-all test
+
+      > span {
+        display: block;
+        height: 16px;
+        width: 16px;
+      }
+
+      svg {
+        height: 16px;
+        width: 16px;
+        color: var(--light-text);
+      }
+    }
+  }
+
+  .collapse-form {
+    .fieldset-heading {
+      margin-bottom: 0 !important;
+      transition: 0.3s ease-in-out;
+    }
+
+    &[open] {
+      .collapse-header {
+        .collapse-icon {
+          transform: rotate(calc(var(--transform-direction) * 180deg));
+        }
+      }
+
+      .fieldset-heading {
+        margin-bottom: 20px !important;
+      }
+    }
+
+    &[open] {
+      .collapse-icon {
+        border-color: var(--fade-grey-dark-3) !important;
+        box-shadow: var(--light-box-shadow);
+      }
+    }
+  }
+}
+
+.is-dark {
+  .collapse-form {
+    &[open] {
+      .collapse-header {
+        .collapse-icon {
+          background: var(--dark-sidebar-light-2);
+          border-color: var(--dark-sidebar-light-4) !important;
+        }
+      }
+    }
+
+    .collapse-header {
+      .collapse-icon {
+        background: var(--dark-sidebar-light-6);
+        border-color: var(--dark-sidebar-light-6);
+      }
+    }
   }
 }
 </style>

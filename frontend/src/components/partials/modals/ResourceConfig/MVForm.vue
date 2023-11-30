@@ -54,6 +54,7 @@ const opData = unwrap(mvData.output, 'out_')
 const output = ref<any>({ ...global_config });
 output.value = pick(opData, Object.keys(global_config))
 const outputs = ref<any[]>([]);
+const outputRefs = ref<any[]>([]);
 watch(() => mv.value.output_number, (nv) => {
   const len = outputs.value.length
   if (nv < len) {
@@ -82,13 +83,40 @@ function getValue() {
     },
     output: {
       ...wrap(output.value, 'out_'),
-      out_params: outputs.value.map(o => wrap(o.value, 'out_', useb, false, mip, bip))
+      out_params: outputs.value.map((o, i) => {
+        let v = o.value
+        const optRef = outputRefs.value[i]
+        if (optRef?.getValue) {
+          v = optRef.getValue()
+        }
+        return wrap(v, 'out_', useb, false, mip, bip)
+      })
     }
   }
 }
 
+function setValue(data: typeof mvData) {
+  mv.value = pick(data, ['moudle', 'input_number', 'output_number', 'tally_port', 'tally_ip', 'nmos_devname', '2110-7_m_local_ip', '2110-7_b_local_ip'])
+  const _ipData = unwrap(data.input, 'in_')
+  input.value = pick(_ipData, ['g_2022-7'])
+  nextTick(() => {
+    inputs.value.forEach((iptv, idx) => {
+      iptv.value = _ipData.input_params[idx]
+    })
+  })
+
+  const _opData = unwrap(data.output, 'out_')
+  output.value = pick(_opData, Object.keys(global_config))
+  nextTick(() => {
+    outputs.value.forEach((optv, idx) => {
+      optv.value = _opData.params[idx]
+    })
+  })
+}
+
 defineExpose({
-  getValue
+  getValue,
+  setValue
 })
 </script>
 <template>
@@ -308,6 +336,7 @@ defineExpose({
             </div>
             <MVOutput
               v-for="(opt, idx) in outputs"
+              ref="outputRefs"
               :key="opt.index"
               v-model="opt.value"
               :index="opt.index"

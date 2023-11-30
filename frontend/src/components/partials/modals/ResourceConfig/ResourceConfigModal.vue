@@ -23,6 +23,7 @@ const deviceInput = ref<any>(null);
 const tmpl = ref<TemplateData | null>(null)
 const node = ref<ClustNode | null>(null)
 const device = ref<ClustDevice | null>(null)
+const fileInput = ref<HTMLInputElement | null>(null)
 let callbacks: any = {}
 
 useListener(Signal.OpenResourceConfig, (p: { tmpl: TemplateData, node: ClustNode, device: ClustDevice, callbacks: any }) => {
@@ -68,16 +69,22 @@ async function prepareParams() {
   if (tmplRes.id) {
     const val = compRef.value?.getValue()
     const params: any = {}
-    params.cpu = +tmplRes.requirement.cpuNum || 1
-    params.memory = +tmplRes.requirement.memory || 1
-    params.hugepage = +tmplRes.requirement.hugePage || 6
+    const rq = tmplRes.requirement
+    params.cpu = +rq.cpuNum || 1
+    params.memory = +rq.memory || 1
+    params.hugepage = +rq.hugePage || 6
     params.nodeName = dgi.value.nodeName
-    params.cpucore = tmplRes.requirement.cpuCore
+    params.cpucore = rq.cpuCore
     params.localip0 = val!['2110-7_m_local_ip']
     params.localip1 = val!['2110-7_b_local_ip']
     params.configFile = JSON.stringify(compRef.value?.getValue())
     params.configFilePath = '/opt/vsomediasoftware/config/vsompconfiginfo-web.json'
     params.hostNetwork = val?.moudle === 'switch'
+    params.ClientLogLevel = rq.ClientLogLevel
+    params.ServiceLogLevel = rq.ServiceLogLevel
+    params.RepairRecvFrame = +rq.RepairRecvFrame
+    params.RepairSendFrame = +rq.RepairSendFrame
+    params.DMAList = rq.DMAList
     return params
   } else {
     return { error: "模板不存在" }
@@ -117,6 +124,34 @@ const addInstance = handleSubmit(async () => {
     },
   });
 });
+
+function importSetting() {
+  fileInput.value?.click()
+}
+
+function onFileImported(e: Event) {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (file) {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const res = e.target?.result
+      if (res) {
+        try {
+          const val = JSON.parse(res as string)
+          compRef.value?.setValue(val)
+        } catch {
+          notyf.error("解析文件格式错误");
+        }
+        return
+      } else {
+        notyf.error("导入配置失败");
+      }
+    }
+    reader.readAsText(file)
+  } else {
+    notyf.error("导入配置失败");
+  }
+}
 
 function saveSetting() {
   const val = compRef.value?.getValue()
@@ -185,10 +220,27 @@ const TmplComponent = computed(() => {
           </VControl>
         </VField>
         <TmplComponent ref="compRef" />
+        <input
+          ref="fileInput"
+          type="file"
+          accept=".json"
+          style="display: none;"
+          @change="onFileImported"
+        >
       </div>
     </template>
     <template #action>
       <VButton
+        class="btn-setting-import"
+        color="primary"
+        raised
+        @click="importSetting"
+      >
+        导入配置
+      </VButton>
+      <VButton
+        class="btn-setting-save"
+        color="primary"
         raised
         @click="saveSetting"
       >
@@ -213,6 +265,21 @@ const TmplComponent = computed(() => {
     font-weight: 600;
     text-align: left;
     margin-left: 20px;
+  }
+}
+
+.v-modal {
+  .btn-setting-import,
+  .btn-setting-save {
+    position: absolute;
+  }
+
+  .btn-setting-import {
+    left: 20px;
+  }
+
+  .btn-setting-save {
+    left: 138px;
   }
 }
 </style>

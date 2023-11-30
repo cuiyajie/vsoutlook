@@ -164,7 +164,11 @@ export function unwrap(src: any, prefix: string) {
     if (src[key] instanceof Array) {
       dst[unwrapKey] = src[key].map((v: any) => unwrap(v, prefix));
     } else if (typeof src[key] === 'object') {
-      dst[unwrapKey] = unwrap(src[key], prefix);
+      if (src[key] === null) {
+        dst[unwrapKey] = null
+      } else {
+        dst[unwrapKey] = unwrap(src[key], prefix);
+      }
     } else {
       if (prefix === 'out_' && key.endsWith('src_address')) {
         dst[unwrapKey] = src[key].split(':')?.[1] || '';

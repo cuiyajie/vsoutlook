@@ -25,7 +25,10 @@ const pips = ref<Array<{
   value: Ref<typeof pip_params>
 }>>([]);
 
-watch(() => mv.value.pips_number, (nv) => {
+watch([
+  () => mv.value.pips_number,
+  () => mv.value.pip_params
+], ([nv]) => {
   const len = pips.value.length
   const params: any[] = mv.value.pip_params
   if (nv < len) {
@@ -40,6 +43,15 @@ watch(() => mv.value.pips_number, (nv) => {
     ]
   }
 }, { immediate: true });
+
+defineExpose({
+  getValue() {
+    return {
+      ...mv.value,
+      pip_params: pips.value.map(v => v.value)
+    }
+  }
+})
 </script>
 <template>
   <div

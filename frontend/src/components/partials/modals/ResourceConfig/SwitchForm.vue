@@ -97,8 +97,29 @@ function getValue() {
   }
 }
 
+function setValue(data: typeof switchData) {
+  mv.value = pick(data, ['moudle', 'input_number', 'tallyserver_url', 'p4server_url', 'hw_panel_url', 'nmos_devname', 'physic_nic_port0_IP', 'physic_nic_port1_IP', '2110-7_m_local_ip', '2110-7_b_local_ip'])
+  const _ipData = unwrap(data.input, 'in_')
+  input.value = _ipData
+  inputBus.value = unwrap(data.bus, 'bus_in_')
+  nextTick(() => {
+    const params = _ipData.input_video_params
+    inputs.value.forEach((iptv, idx) => {
+      iptv.value = params[idx]
+    })
+  })
+
+  const _opData = unwrap(data.output, 'out_')
+  output.value = pick(_opData, Object.keys(global_config))
+  outputs[0].value = _opData.pgm_params
+  outputs[1].value = _opData.pvw_params
+  outputs[2].value = _opData.clean_params
+  OUT_3_OPEN.value = _opData.clean_params.clean_is_open
+}
+
 defineExpose({
-  getValue
+  getValue,
+  setValue
 })
 </script>
 <template>

@@ -36,7 +36,12 @@ const specsData = ref({
   outputBand: '',
   network: '',
   chart: '',
-  description: ''
+  description: '',
+  ClientLogLevel: 0,
+  ServiceLogLevel: 0,
+  RepairRecvFrame: true,
+  RepairSendFrame: true,
+  DMAList: ""
 })
 
 tmplTypeStore.$fetchList();
