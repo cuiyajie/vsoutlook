@@ -1,0 +1,315 @@
+{
+  "moudle": "switch",
+  "input_number": 10,
+  "2110-7_m_local_ip": "192.168.1.1",
+  "2110-7_b_local_ip": "192.168.1.2",
+  "tallyserver_url": "192.168.1.1:10001",
+  "p4server_url": "192.168.1.1:10002",
+  "hw_panel_url": "192.168.1.1:10003",
+  "physic_nic_port0_IP": "192.168.1.1",
+  "physic_nic_port1_IP": "192.168.1.2",
+  "nmos_devname": "devname",
+  "input": {
+    "in_g_2022-7": true,
+    "in_v_protocol": "st2110-20",
+    "videoformat": {
+      "in_v_width": 1920,
+      "in_v_height": 1080,
+      "in_v_interlaced": false,
+      "in_v_fps": 50,
+      "in_v_gamma": "hlg",
+      "in_v_gamut": "bt2020",
+      "in_v_compression_format": null,
+      "in_v_compression_ratio": null
+    },
+    "input_key_params": {
+      "ipstream_master": {
+        "in_v_src_address": "238.0.0.1:5004",
+        "in_v_dst_address": "239.0.0.1:5004",
+        "in_Key_P4_port": 1
+      },
+      "ipstream_backup": {
+        "in_v_src_address": "238.0.10.1:5004",
+        "in_v_dst_address": "239.0.10.1:5004",
+        "in_Key_P4_port": 2
+      }
+    },
+    "input_fill_params": {
+      "ipstream_master": {
+        "in_v_src_address": "238.0.1.1:5004",
+        "in_v_dst_address": "239.0.1.1:5004",
+        "in_fill_P4_port": 3
+      },
+      "ipstream_backup": {
+        "in_v_src_address": "238.0.11.1:5004",
+        "in_v_dst_address": "239.0.11.1:5004",
+        "in_fill_P4_port": 4
+      }
+    },
+    "input_video_params": [
+      {
+        "ipstream_master": {
+          "in_v_src_address": "238.0.0.1:5004",
+          "in_v_dst_address": "239.0.0.1:5004",
+          "in_v_P4_port": 5
+        },
+        "ipstream_backup": {
+          "in_v_src_address": "238.0.0.1:5004",
+          "in_v_dst_address": "239.0.0.1:5004",
+          "in_v_P4_port": 6
+        },
+        "in_sw_index": 1,
+        "in_sw_displayname": "cam1"
+      },
+      {
+        "ipstream_master": {
+          "in_v_src_address": "238.0.0.1:5004",
+          "in_v_dst_address": "239.0.0.1:5004",
+          "in_v_P4_port": 5
+        },
+        "ipstream_backup": {
+          "in_v_src_address": "238.0.0.1:5004",
+          "in_v_dst_address": "239.0.0.1:5004",
+          "in_v_P4_port": 6
+        },
+        "in_sw_index": 1,
+        "in_sw_displayname": "cam2"
+      },
+      {
+        "ipstream_master": {
+          "in_v_src_address": "238.0.0.1:5004",
+          "in_v_dst_address": "239.0.0.1:5004",
+          "in_v_P4_port": 5
+        },
+        "ipstream_backup": {
+          "in_v_src_address": "238.0.0.1:5004",
+          "in_v_dst_address": "239.0.0.1:5004",
+          "in_v_P4_port": 6
+        },
+        "in_sw_index": 1,
+        "in_sw_displayname": "cam3"
+      },
+      {
+        "ipstream_master": {
+          "in_v_src_address": "238.0.0.1:5004",
+          "in_v_dst_address": "239.0.0.1:5004",
+          "in_v_P4_port": 5
+        },
+        "ipstream_backup": {
+          "in_v_src_address": "238.0.0.1:5004",
+          "in_v_dst_address": "239.0.0.1:5004",
+          "in_v_P4_port": 6
+        },
+        "in_sw_index": 1,
+        "in_sw_displayname": "cam4"
+      },
+      {
+        "ipstream_master": {
+          "in_v_src_address": "238.0.0.1:5004",
+          "in_v_dst_address": "239.0.0.1:5004",
+          "in_v_P4_port": 5
+        },
+        "ipstream_backup": {
+          "in_v_src_address": "238.0.0.1:5004",
+          "in_v_dst_address": "239.0.0.1:5004",
+          "in_v_P4_port": 6
+        },
+        "in_sw_index": 1,
+        "in_sw_displayname": "cam5"
+      },
+      {
+        "ipstream_master": {
+          "in_v_src_address": "238.0.0.1:5004",
+          "in_v_dst_address": "239.0.0.1:5004",
+          "in_v_P4_port": 5
+        },
+        "ipstream_backup": {
+          "in_v_src_address": "238.0.0.1:5004",
+          "in_v_dst_address": "239.0.0.1:5004",
+          "in_v_P4_port": 6
+        },
+        "in_sw_index": 1,
+        "in_sw_displayname": "cam6"
+      },
+      {
+        "ipstream_master": {
+          "in_v_src_address": "238.0.0.1:5004",
+          "in_v_dst_address": "239.0.0.1:5004",
+          "in_v_P4_port": 5
+        },
+        "ipstream_backup": {
+          "in_v_src_address": "238.0.0.1:5004",
+          "in_v_dst_address": "239.0.0.1:5004",
+          "in_v_P4_port": 6
+        },
+        "in_sw_index": 1,
+        "in_sw_displayname": "cam7"
+      },
+      {
+        "ipstream_master": {
+          "in_v_src_address": "238.0.0.1:5004",
+          "in_v_dst_address": "239.0.0.1:5004",
+          "in_v_P4_port": 5
+        },
+        "ipstream_backup": {
+          "in_v_src_address": "238.0.0.1:5004",
+          "in_v_dst_address": "239.0.0.1:5004",
+          "in_v_P4_port": 6
+        },
+        "in_sw_index": 1,
+        "in_sw_displayname": "cam8"
+      },
+      {
+        "ipstream_master": {
+          "in_v_src_address": "238.0.0.1:5004",
+          "in_v_dst_address": "239.0.0.1:5004",
+          "in_v_P4_port": 5
+        },
+        "ipstream_backup": {
+          "in_v_src_address": "238.0.0.1:5004",
+          "in_v_dst_address": "239.0.0.1:5004",
+          "in_v_P4_port": 6
+        },
+        "in_sw_index": 1,
+        "in_sw_displayname": "cam9"
+      },
+      {
+        "ipstream_master": {
+          "in_v_src_address": "238.0.0.1:5004",
+          "in_v_dst_address": "239.0.0.1:5004",
+          "in_v_P4_port": 5
+        },
+        "ipstream_backup": {
+          "in_v_src_address": "238.0.0.1:5004",
+          "in_v_dst_address": "239.0.0.1:5004",
+          "in_v_P4_port": 6
+        },
+        "in_sw_index": 1,
+        "in_sw_displayname": "cam10"
+      }
+    ]
+  },
+  "bus": {
+    "video_bus_master": [
+      {
+        "bus_in_v_src_address": "238.0.0.1:5004",
+        "bus_in_v_dst_address": "238.0.0.1:5004",
+        "bus_in_v_p4_port": 1
+      },
+      {
+        "bus_in_v_src_address": "238.0.0.1:5004",
+        "bus_in_v_dst_address": "238.0.0.1:5004",
+        "bus_in_v_p4_port": 1
+      }
+    ],
+    "video_bus_backup": [
+      {
+        "bus_in_v_src_address": "238.0.0.1:5004",
+        "bus_in_v_dst_address": "238.0.0.1:5004",
+        "bus_in_v_p4_port": 1
+      },
+      {
+        "bus_in_v_src_address": "238.0.0.1:5004",
+        "bus_in_v_dst_address": "238.0.0.1:5004",
+        "bus_in_v_p4_port": 1
+      }
+    ],
+    "keyfill_bus_master": {
+      "bus_in_key_src_address": "238.0.0.1:5004",
+      "bus_in_key_dst_address": "238.0.0.1:5004",
+      "bus_in_key_p4_port": 1,
+      "bus_in_fill_src_address": "238.0.0.1:5004",
+      "bus_in_fill_dst_address": "238.0.0.1:5004",
+      "bus_in_fill_p4_port": 1
+    },
+    "keyfill_bus_backup": {
+      "bus_in_key_src_address": "238.0.0.1:5004",
+      "bus_in_key_dst_address": "238.0.0.1:5004",
+      "bus_in_key_p4_port": 1,
+      "bus_in_fill_src_address": "238.0.0.1:5004",
+      "bus_in_fill_dst_address": "238.0.0.1:5004",
+      "bus_in_fill_p4_port": 1
+    }
+  },
+  "output": {
+    "out_g_2022-7": true,
+    "out_g_local_ip1": "192.168.1.1",
+    "out_g_local_ip2": "192.168.1.2",
+    "out_pgm_params": {
+      "out_v_protocol": "st2110-20",
+      "ipstream_master": {
+        "out_v_src_address": "238.0.0.11:5004",
+        "out_v_dst_address": "239.0.0.11:5004",
+        "out_v_p4inport": 1,
+        "out_v_p4outport": 2
+      },
+      "ipstream_backup": {
+        "out_v_src_address": "238.0.10.11:5004",
+        "out_v_dst_address": "239.0.10.11:5004",
+        "out_v_p4inport": 1,
+        "out_v_p4outport": 2
+      },
+      "videoformat": {
+        "out_v_width": 3840,
+        "out_v_height": 2160,
+        "out_v_interlaced": false,
+        "out_v_fps": 50,
+        "out_v_gamma": "hlg",
+        "out_v_gamut": "bt2020",
+        "out_v_compression_format": null,
+        "out_v_compression_ratio": null
+      }
+    },
+    "out_pvw_params": {
+      "out_v_protocol": "st2110-20",
+      "ipstream_master": {
+        "out_v_src_address": "238.0.0.11:5004",
+        "out_v_dst_address": "239.0.0.11:5004",
+        "out_v_p4inport": 1,
+        "out_v_p4outport": 2
+      },
+      "ipstream_backup": {
+        "out_v_src_address": "238.0.10.11:5004",
+        "out_v_dst_address": "239.0.10.11:5004",
+        "out_v_p4inport": 1,
+        "out_v_p4outport": 2
+      },
+      "videoformat": {
+        "out_v_width": 3840,
+        "out_v_height": 2160,
+        "out_v_interlaced": false,
+        "out_v_fps": 50,
+        "out_v_gamma": "hlg",
+        "out_v_gamut": "bt2020",
+        "out_v_compression_format": null,
+        "out_v_compression_ratio": null
+      }
+    },
+    "out_clean_params": {
+      "out_clean_is_open": true,
+      "out_v_protocol": "st2110-20",
+      "ipstream_master": {
+        "out_v_src_address": "238.0.0.11:5004",
+        "out_v_dst_address": "239.0.0.11:5004",
+        "out_v_p4inport": 1,
+        "out_v_p4outport": 2
+      },
+      "ipstream_backup": {
+        "out_v_src_address": "238.0.10.11:5004",
+        "out_v_dst_address": "239.0.10.11:5004",
+        "out_v_p4inport": 1,
+        "out_v_p4outport": 2
+      },
+      "videoformat": {
+        "out_v_width": 3840,
+        "out_v_height": 2160,
+        "out_v_interlaced": false,
+        "out_v_fps": 50,
+        "out_v_gamma": "hlg",
+        "out_v_gamut": "bt2020",
+        "out_v_compression_format": null,
+        "out_v_compression_ratio": null
+      }
+    }
+  }
+}
