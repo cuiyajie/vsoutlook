@@ -2,6 +2,7 @@
 import { def_switch_input_params, def_switch_output_params, def_switch_input_video_params, type SwitchInputParamsType, global_config, def_switch_input_bus_params, type SwitchInputBusParamsType } from './Consts';
 import { unwrap, wrap } from "./Utils";
 import pick from 'lodash-es/pick'
+import merge from 'lodash-es/merge'
 import switchData from '/@src/data/vscomponent/switch.json'
 
 const mv = defineModel<{
@@ -100,21 +101,21 @@ function getValue() {
 function setValue(data: typeof switchData) {
   mv.value = pick(data, ['moudle', 'input_number', 'tallyserver_url', 'p4server_url', 'hw_panel_url', 'nmos_devname', 'physic_nic_port0_IP', 'physic_nic_port1_IP', '2110-7_m_local_ip', '2110-7_b_local_ip'])
   const _ipData = unwrap(data.input, 'in_')
-  input.value = _ipData
-  inputBus.value = unwrap(data.bus, 'bus_in_')
+  input.value = merge(def_switch_input_params(), _ipData)
+  inputBus.value = merge(def_switch_input_bus_params(), unwrap(data.bus, 'bus_in_'))
   nextTick(() => {
     const params = _ipData.input_video_params
     inputs.value.forEach((iptv, idx) => {
-      iptv.value = params[idx]
+      iptv.value = merge(def_switch_input_video_params(), params[idx])
     })
   })
 
   const _opData = unwrap(data.output, 'out_')
   output.value = pick(_opData, Object.keys(global_config))
-  outputs[0].value = _opData.pgm_params
-  outputs[1].value = _opData.pvw_params
-  outputs[2].value = _opData.clean_params
+  outputs[0].value = merge(def_switch_output_params(), _opData.pgm_params)
+  outputs[1].value = merge(def_switch_output_params(), _opData.pvw_params)
   OUT_3_OPEN.value = _opData.clean_params.clean_is_open
+  outputs[2].value = merge(def_switch_output_params(), _opData.clean_oarams)
 }
 
 defineExpose({

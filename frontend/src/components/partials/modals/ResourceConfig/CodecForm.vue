@@ -2,6 +2,7 @@
 import { getFormat, unwrap, useFormat, watchInput, wrap } from './Utils'
 import { def_codec_input, def_codec_output, v_protocols, val_codec } from './Consts';
 import pick from 'lodash-es/pick'
+import merge from 'lodash-es/merge'
 import codecData from '/@src/data/vscomponent/codec.json'
 
 const mv = defineModel<{
@@ -60,8 +61,8 @@ function getValue() {
 
 function setValue(data: typeof codecData) {
   mv.value = pick(data, ['moudle', 'mode', 'nmos_devname', '2110-7_m_local_ip', '2110-7_b_local_ip'])
-  input.value = unwrap(data.input, 'in_')
-  output.value = unwrap(data.output, 'out_')
+  input.value = merge(def_codec_input(), unwrap(data.input, 'in_'))
+  output.value = merge(def_codec_output(), unwrap(data.output, 'out_'))
   inputFormat.value = getFormat(input.value)
   outputFormat.value = getFormat(output.value.params)
 }

@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { watchInput, useFormat, watchFormat2, unwrap, getFormat, wrap } from './Utils';
+import { watchInput, useFormat, unwrap, getFormat, wrap } from './Utils';
 import { formatKeys, type UdxInputType, def_udx_output_params, val_udx, def_udx_input, global_config } from './Consts';
 import pick from 'lodash-es/pick'
+import merge from 'lodash-es/merge'
 import udxData from '/@src/data/vscomponent/udx.json'
 
 const mv = defineModel<{
@@ -33,13 +34,14 @@ const output = ref<typeof global_config>({ ...global_config })
 const opData = unwrap(udxData.output, 'out_')
 output.value = pick(opData, ['g_2022-7', 'g_local_ip1', 'g_local_ip2'])
 OUT_2_OPEN.value = opData.params.length > 1
-const outputs = Array.from({ length: 2 }, (_, i) => {
+const outputs = ref<any[]>([])
+outputs.value = Array.from({ length: 2 }, (_, i) => {
   return opData.params[i] ? ref(opData.params[i]) : ref(def_udx_output_params())
 });
-const output1Format = useFormat(outputs[0].value, getFormat(opData.params[0]))
-const output2Format = useFormat(outputs[1].value, getFormat(opData.params[1]))
+const output1Format = useFormat(outputs.value[0].value, getFormat(opData.params[0]))
+const output2Format = useFormat(outputs.value[1].value, getFormat(opData.params[1]))
 
-watchInput('audioformat', input.value, outputs.map(o => o.value), { deep: true })
+watchInput('audioformat', input.value, outputs.value.map(o => o.value), { deep: true })
 
 watch(() => mv.value.mode, () => {
   if (mv.value.mode === val_udx[0]) {
@@ -61,24 +63,24 @@ function getValue() {
     input: wrap(input.value, 'in_', input.value['g_2022-7']),
     output: {
       ...wrap(output.value, 'out_'),
-      out_params: outputs.map(o => wrap(o.value, 'out_', useb, false, mip, bip)).slice(0, OUT_2_OPEN.value ? 2 : 1)
+      out_params: outputs.value.map(o => wrap(o.value, 'out_', useb, false, mip, bip)).slice(0, OUT_2_OPEN.value ? 2 : 1)
     }
   }
 }
 
 function setValue(data: typeof udxData) {
   mv.value = pick(data, ['moudle', 'mode', 'nmos_devname', '2110-7_m_local_ip', '2110-7_b_local_ip'])
-  input.value = unwrap(data.input, 'in_')
+  input.value = merge(def_udx_input(), unwrap(data.input, 'in_'))
   inputFormat.value = getFormat(input.value)
 
   const _opData = unwrap(data.output, 'out_')
   output.value = pick(_opData, ['g_2022-7', 'g_local_ip1', 'g_local_ip2'])
   OUT_2_OPEN.value = _opData.params.length > 1
-  outputs.forEach((o, i) => {
-    o.value = _opData.params[i]
+  outputs.value.forEach((o, i) => {
+    o.value = merge(def_udx_output_params(), _opData.params[i])
   })
-  output1Format.value = getFormat(_opData.params[0])
-  output2Format.value = getFormat(_opData.params[1])
+  output1Format.value = getFormat(outputs.value[0].value)
+  output2Format.value = getFormat(outputs.value[1].value)
 }
 
 defineExpose({

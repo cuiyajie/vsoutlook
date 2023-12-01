@@ -139,7 +139,9 @@ function onFileImported(e: Event) {
         try {
           const val = JSON.parse(res as string)
           compRef.value?.setValue(val)
-        } catch {
+          notyf.success("导入配置成功");
+        } catch (err) {
+          console.log(err)
           notyf.error("解析文件格式错误");
         }
         return

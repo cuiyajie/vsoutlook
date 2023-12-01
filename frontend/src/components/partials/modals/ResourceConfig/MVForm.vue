@@ -2,6 +2,7 @@
 import { def_mv_input_params, def_mv_output_params, global_config } from './Consts';
 import { unwrap, wrap } from "./Utils";
 import pick from 'lodash-es/pick'
+import merge from 'lodash-es/merge'
 import mvData from '/@src/data/vscomponent/mv.json'
 
 const mv = defineModel<{
@@ -101,7 +102,7 @@ function setValue(data: typeof mvData) {
   input.value = pick(_ipData, ['g_2022-7'])
   nextTick(() => {
     inputs.value.forEach((iptv, idx) => {
-      iptv.value = _ipData.input_params[idx]
+      iptv.value = merge(def_mv_input_params(), _ipData.input_params[idx])
     })
   })
 
@@ -109,7 +110,7 @@ function setValue(data: typeof mvData) {
   output.value = pick(_opData, Object.keys(global_config))
   nextTick(() => {
     outputs.value.forEach((optv, idx) => {
-      optv.value = _opData.params[idx]
+      optv.value = merge(def_mv_output_params(), _opData.params[idx])
     })
   })
 }
