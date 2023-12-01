@@ -85,22 +85,9 @@ defineExpose({
               <VField>
                 <VLabel>布局模板</VLabel>
                 <VControl>
-                  <div class="file has-name vso-form-upload">
-                    <label class="file-label">
-                      <input
-                        class="file-input"
-                        type="file"
-                        name="resume"
-                      >
-                      <span class="file-cta">
-                        <span class="file-icon">
-                          <i class="fas fa-cloud-upload-alt" />
-                        </span>
-                        <span class="file-label"> 选择文件 </span>
-                      </span>
-                      <span class="file-name light-text"> {{ mv.mv_template }} </span>
-                    </label>
-                  </div>
+                  <VInput
+                    v-model="mv.mv_template"
+                  />
                 </VControl>
               </VField>
             </div>

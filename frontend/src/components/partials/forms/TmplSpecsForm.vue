@@ -209,7 +209,7 @@ const opened = ref(false)
               class="form-fieldset"
             >
               <div class="columns is-multiline">
-                <div class="column is-6">
+                <div class="column is-4">
                   <VField>
                     <VLabel>日志级别</VLabel>
                     <VControl>
@@ -223,7 +223,19 @@ const opened = ref(false)
                     </VControl>
                   </VField>
                 </div>
-                <div class="column is-2">
+                <div class="column is-4">
+                  <VField>
+                    <VLabel>UTC Offset</VLabel>
+                    <VControl>
+                      <VInputNumber
+                        v-model="modelValue.utfOffset"
+                        centered
+                        :step="1"
+                      />
+                    </VControl>
+                  </VField>
+                </div>
+                <div class="column is-4 pl-6">
                   <VField>
                     <VLabel>共享主机网络</VLabel>
                     <VControl>
@@ -234,23 +246,23 @@ const opened = ref(false)
                     </VControl>
                   </VField>
                 </div>
-                <div class="column is-2">
+                <div class="column is-3">
                   <VField>
                     <VLabel>FR-In</VLabel>
                     <VControl>
                       <VSwitchBlock
-                        v-model="modelValue.RepairRecvFrame"
+                        v-model="modelValue.repairRecvFrame"
                         color="primary"
                       />
                     </VControl>
                   </VField>
                 </div>
-                <div class="column is-2">
+                <div class="column is-3">
                   <VField>
                     <VLabel>FR-Out</VLabel>
                     <VControl>
                       <VSwitchBlock
-                        v-model="modelValue.RepairSendFrame"
+                        v-model="modelValue.repairSendFrame"
                         color="primary"
                       />
                     </VControl>
@@ -261,21 +273,9 @@ const opened = ref(false)
                     <VLabel>DMA List</VLabel>
                     <VControl>
                       <VInput
-                        v-model="modelValue.DMAList"
+                        v-model="modelValue.dmaList"
                         type="text"
                         placeholder=""
-                      />
-                    </VControl>
-                  </VField>
-                </div>
-                <div class="column is-6">
-                  <VField>
-                    <VLabel>UTC Offset</VLabel>
-                    <VControl>
-                      <VInputNumber
-                        v-model="modelValue.utfOffset"
-                        centered
-                        :step="1"
                       />
                     </VControl>
                   </VField>

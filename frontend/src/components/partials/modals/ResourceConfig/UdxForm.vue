@@ -36,19 +36,20 @@ OUT_2_OPEN.value = opData.params.length > 1
 const outputs = Array.from({ length: 2 }, (_, i) => {
   return opData.params[i] ? ref(opData.params[i]) : ref(def_udx_output_params())
 });
-const outputFormat = ref(getFormat(opData.params[0]))
-watchFormat2(outputFormat, outputs.map(o => o.value))
+const output1Format = useFormat(outputs[0].value, getFormat(opData.params[0]))
+const output2Format = useFormat(outputs[1].value, getFormat(opData.params[1]))
 
 watchInput('audioformat', input.value, outputs.map(o => o.value), { deep: true })
 
 watch(() => mv.value.mode, () => {
   if (mv.value.mode === val_udx[0]) {
     inputFormat.value = inputFormat.value !== formatKeys[2] ? inputFormat.value : formatKeys[0]
-    outputFormat.value = formatKeys[2]
+    output1Format.value = formatKeys[2]
   } else {
     inputFormat.value = formatKeys[2]
-    outputFormat.value = formatKeys[1]
+    output1Format.value = formatKeys[1]
   }
+  output2Format.value = formatKeys[1]
 }, { immediate: true })
 
 function getValue() {
@@ -76,7 +77,8 @@ function setValue(data: typeof udxData) {
   outputs.forEach((o, i) => {
     o.value = _opData.params[i]
   })
-  outputFormat.value = getFormat(_opData.params[0])
+  output1Format.value = getFormat(_opData.params[0])
+  output2Format.value = getFormat(_opData.params[1])
 }
 
 defineExpose({
@@ -240,7 +242,7 @@ defineExpose({
             <UdxOutput
               v-model="outputs[0]"
               title="第一路输出参数"
-              :format="outputFormat"
+              :format="output1Format"
               :use-backup="output['g_2022-7']"
               :m_local_ip="mv['2110-7_m_local_ip']"
               :b_local_ip="mv['2110-7_b_local_ip']"
@@ -251,7 +253,7 @@ defineExpose({
               title="第二路输出参数"
               toggle-title="是否启用第二路输出"
               is-last
-              :format="outputFormat"
+              :format="output2Format"
               :use-backup="output['g_2022-7']"
               :m_local_ip="mv['2110-7_m_local_ip']"
               :b_local_ip="mv['2110-7_b_local_ip']"
