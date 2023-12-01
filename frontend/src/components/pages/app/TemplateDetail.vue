@@ -37,11 +37,12 @@ const specsData = ref({
   network: '',
   chart: '',
   description: '',
-  ClientLogLevel: 0,
-  ServiceLogLevel: 0,
-  RepairRecvFrame: true,
-  RepairSendFrame: true,
-  DMAList: ""
+  logLevel: 0,
+  repairRecvFrame: true,
+  repairSendFrame: true,
+  dmaList: "",
+  hostNetwork: false,
+  utfOffset: 37
 })
 
 tmplTypeStore.$fetchList();

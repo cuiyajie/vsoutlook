@@ -30,11 +30,12 @@ type TmplRequirement struct {
 	OutputBand      string `json:"outputBand,omitempty"`
 	Network         string `json:"network,omitempty"`
 	Chart           string `json:"chart,omitempty"`
-	ClientLogLevel  uint8  `json:"ClientLogLevel"`
-	ServiceLogLevel uint8  `json:"ServiceLogLevel"`
-	RepairRecvFrame bool   `json:"RepairRecvFrame"`
-	RepairSendFrame bool   `json:"RepairSendFrame"`
-	DMAList         string `json:"DMAList,omitempty"`
+	LogLevel        uint8  `json:"logLevel"`
+	RepairRecvFrame bool   `json:"repairRecvFrame"`
+	RepairSendFrame bool   `json:"repairSendFrame"`
+	DMAList         string `json:"dmaList,omitempty"`
+	HostNetwork     bool   `json:"hostNetwork"`
+	UtfOffset       uint8  `json:"utfOffset"`
 }
 
 type TmplAsBasic struct {

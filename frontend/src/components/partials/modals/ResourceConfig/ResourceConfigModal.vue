@@ -79,12 +79,12 @@ async function prepareParams() {
     params.localip1 = val!['2110-7_b_local_ip']
     params.configFile = JSON.stringify(compRef.value?.getValue())
     params.configFilePath = '/opt/vsomediasoftware/config/vsompconfiginfo-web.json'
-    params.hostNetwork = val?.moudle === 'switch'
-    params.ClientLogLevel = rq.ClientLogLevel
-    params.ServiceLogLevel = rq.ServiceLogLevel
-    params.RepairRecvFrame = +rq.RepairRecvFrame
-    params.RepairSendFrame = +rq.RepairSendFrame
-    params.DMAList = rq.DMAList
+    params.hostNetwork = rq.hostNetwork
+    params.logLevel = rq.logLevel
+    params.repairRecvFrame = +rq.repairRecvFrame
+    params.repairSendFrame = +rq.repairSendFrame
+    params.dmaList = rq.dmaList || ""
+    params.utfOffset = rq.utfOffset
     return params
   } else {
     return { error: "模板不存在" }

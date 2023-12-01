@@ -13,11 +13,12 @@ const modelValue = defineModel<any>({
     network: "",
     chart: "",
     description: "",
-    ClientLogLevel: 0,
-    ServiceLogLevel: 0,
-    RepairRecvFrame: true,
-    RepairSendFrame: true,
-    DMAList: ""
+    logLevel: 0,
+    repairRecvFrame: true,
+    repairSendFrame: true,
+    dmaList: "",
+    hostNetwork: false,
+    utfOffset: 37
   },
   local: true,
 });
@@ -210,10 +211,10 @@ const opened = ref(false)
               <div class="columns is-multiline">
                 <div class="column is-6">
                   <VField>
-                    <VLabel>IPClient日志级别</VLabel>
+                    <VLabel>日志级别</VLabel>
                     <VControl>
                       <VInputNumber
-                        v-model="modelValue.ClientLogLevel"
+                        v-model="modelValue.logLevel"
                         centered
                         :min="0"
                         :max="5"
@@ -222,21 +223,18 @@ const opened = ref(false)
                     </VControl>
                   </VField>
                 </div>
-                <div class="column is-6">
+                <div class="column is-2">
                   <VField>
-                    <VLabel>IPService日志级别</VLabel>
+                    <VLabel>共享主机网络</VLabel>
                     <VControl>
-                      <VInputNumber
-                        v-model="modelValue.ServiceLogLevel"
-                        centered
-                        :min="0"
-                        :max="5"
-                        :step="1"
+                      <VSwitchBlock
+                        v-model="modelValue.hostNetwork"
+                        color="primary"
                       />
                     </VControl>
                   </VField>
                 </div>
-                <div class="column is-3">
+                <div class="column is-2">
                   <VField>
                     <VLabel>FR-In</VLabel>
                     <VControl>
@@ -247,7 +245,7 @@ const opened = ref(false)
                     </VControl>
                   </VField>
                 </div>
-                <div class="column is-3">
+                <div class="column is-2">
                   <VField>
                     <VLabel>FR-Out</VLabel>
                     <VControl>
@@ -266,6 +264,18 @@ const opened = ref(false)
                         v-model="modelValue.DMAList"
                         type="text"
                         placeholder=""
+                      />
+                    </VControl>
+                  </VField>
+                </div>
+                <div class="column is-6">
+                  <VField>
+                    <VLabel>UTC Offset</VLabel>
+                    <VControl>
+                      <VInputNumber
+                        v-model="modelValue.utfOffset"
+                        centered
+                        :step="1"
                       />
                     </VControl>
                   </VField>

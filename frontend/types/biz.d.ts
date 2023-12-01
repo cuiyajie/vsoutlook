@@ -16,11 +16,12 @@ interface TmplRequirement {
   outputBand: string,
   network: string,
   chart: string,
-  ClientLogLevel: number,
-  ServiceLogLevel: number,
-  RepairRecvFrame: boolean,
-  RepairSendFrame: boolean,
-  DMAList: string
+  logLevel: number,
+  repairRecvFrame: boolean,
+  repairSendFrame: boolean,
+  dmaList: string,
+  hostNetwork: boolean,
+  utfOffset: number
 }
 
 interface TemplateData {
