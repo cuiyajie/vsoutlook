@@ -63,7 +63,7 @@ function getValue() {
     input: wrap(input.value, 'in_', input.value['g_2022-7']),
     output: {
       ...wrap(output.value, 'out_'),
-      out_params: outputs.value.map(o => wrap(o.value, 'out_', useb, false, mip, bip)).slice(0, OUT_2_OPEN.value ? 2 : 1)
+      out_params: outputs.value.map(o => wrap(unref(o), 'out_', useb, false, mip, bip)).slice(0, OUT_2_OPEN.value ? 2 : 1)
     }
   }
 }
