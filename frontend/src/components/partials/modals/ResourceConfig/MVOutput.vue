@@ -106,6 +106,12 @@ defineExpose({
                     <VOption :value="4">
                       4
                     </VOption>
+                    <VOption :value="6">
+                      6
+                    </VOption>
+                    <VOption :value="8">
+                      8
+                    </VOption>
                     <VOption :value="9">
                       9
                     </VOption>
