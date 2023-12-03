@@ -19,8 +19,8 @@ const modelValue = defineModel<any>({
     dmaList: "",
     hostNetwork: false,
     utfOffset: 37,
-    recvAVErameNodeCount: 2,
-    sendAVErameNodeCount: 2,
+    recvAVFrameNodeCount: 2,
+    sendAVFrameNodeCount: 2,
     recvframeCnt: 2,
     maxRateMbpsByCore: 0
   },
@@ -286,10 +286,10 @@ const opened = ref(false)
                 </div>
                 <div class="column is-4">
                   <VField>
-                    <VLabel>RecvAVErameNodeCount</VLabel>
+                    <VLabel>RecvAVFrameNodeCount</VLabel>
                     <VControl>
                       <VInputNumber
-                        v-model="modelValue.recvAVErameNodeCount"
+                        v-model="modelValue.recvAVFrameNodeCount"
                         centered
                         :min="0"
                         :step="1"
@@ -299,10 +299,10 @@ const opened = ref(false)
                 </div>
                 <div class="column is-4">
                   <VField>
-                    <VLabel>SendAVErameNodeCount</VLabel>
+                    <VLabel>SendAVFrameNodeCount</VLabel>
                     <VControl>
                       <VInputNumber
-                        v-model="modelValue.sendAVErameNodeCount"
+                        v-model="modelValue.sendAVFrameNodeCount"
                         centered
                         :min="0"
                         :step="1"

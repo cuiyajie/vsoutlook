@@ -36,8 +36,8 @@ type TmplRequirement struct {
 	DMAList              string `json:"dmaList,omitempty"`
 	HostNetwork          bool   `json:"hostNetwork"`
 	UtfOffset            uint8  `json:"utfOffset"`
-	RecvAVErameNodeCount int    `json:"recvAVErameNodeCount"`
-	SendAVErameNodeCount int    `json:"sendAVErameNodeCount"`
+	RecvAVFrameNodeCount int    `json:"recvAVFrameNodeCount"`
+	SendAVFrameNodeCount int    `json:"sendAVFrameNodeCount"`
 	RecvframeCnt         int    `json:"recvframeCnt"`
 	MaxRateMbpsByCore    int    `json:"maxRateMbpsByCore"`
 }

@@ -43,8 +43,8 @@ const specsData = ref({
   dmaList: "",
   hostNetwork: false,
   utfOffset: 37,
-  recvAVErameNodeCount: 2,
-  sendAVErameNodeCount: 2,
+  recvAVFrameNodeCount: 2,
+  sendAVFrameNodeCount: 2,
   recvframeCnt: 2,
   maxRateMbpsByCore: 0
 })

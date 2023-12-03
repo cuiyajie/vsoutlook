@@ -85,8 +85,8 @@ async function prepareParams() {
     params.repairSendFrame = +rq.repairSendFrame
     params.dmaList = rq.dmaList || ""
     params.utfOffset = rq.utfOffset
-    params.recvAVErameNodeCount = rq.recvAVErameNodeCount
-    params.sendAVErameNodeCount = rq.sendAVErameNodeCount
+    params.recvAVFrameNodeCount = rq.recvAVFrameNodeCount
+    params.sendAVFrameNodeCount = rq.sendAVFrameNodeCount
     params.recvframeCnt = rq.recvframeCnt
     return params
   } else {

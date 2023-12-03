@@ -22,8 +22,8 @@ interface TmplRequirement {
   dmaList: string,
   hostNetwork: boolean,
   utfOffset: number,
-	recvAVErameNodeCount: number,
-	sendAVErameNodeCount: number,
+	recvAVFrameNodeCount: number,
+	sendAVFrameNodeCount: number,
 	recvframeCnt: number,
   maxRateMbpsByCore: number
 }
