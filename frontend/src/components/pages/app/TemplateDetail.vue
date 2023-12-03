@@ -46,6 +46,7 @@ const specsData = ref({
   recvAVErameNodeCount: 2,
   sendAVErameNodeCount: 2,
   recvframeCnt: 2,
+  maxRateMbpsByCore: 0
 })
 
 tmplTypeStore.$fetchList();

@@ -24,7 +24,8 @@ interface TmplRequirement {
   utfOffset: number,
 	recvAVErameNodeCount: number,
 	sendAVErameNodeCount: number,
-	recvframeCnt: number
+	recvframeCnt: number,
+  maxRateMbpsByCore: number
 }
 
 interface TemplateData {

@@ -39,6 +39,7 @@ type TmplRequirement struct {
 	RecvAVErameNodeCount int    `json:"recvAVErameNodeCount"`
 	SendAVErameNodeCount int    `json:"sendAVErameNodeCount"`
 	RecvframeCnt         int    `json:"recvframeCnt"`
+	MaxRateMbpsByCore    int    `json:"maxRateMbpsByCore"`
 }
 
 type TmplAsBasic struct {

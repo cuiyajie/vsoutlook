@@ -22,6 +22,7 @@ const modelValue = defineModel<any>({
     recvAVErameNodeCount: 2,
     sendAVErameNodeCount: 2,
     recvframeCnt: 2,
+    maxRateMbpsByCore: 0
   },
   local: true,
 });
@@ -315,6 +316,19 @@ const opened = ref(false)
                     <VControl>
                       <VInputNumber
                         v-model="modelValue.recvframeCnt"
+                        centered
+                        :min="0"
+                        :step="1"
+                      />
+                    </VControl>
+                  </VField>
+                </div>
+                <div class="column is-4">
+                  <VField>
+                    <VLabel>MaxRateMbpsByCore</VLabel>
+                    <VControl>
+                      <VInputNumber
+                        v-model="modelValue.maxRateMbpsByCore"
                         centered
                         :min="0"
                         :step="1"
