@@ -18,7 +18,10 @@ const modelValue = defineModel<any>({
     repairSendFrame: true,
     dmaList: "",
     hostNetwork: false,
-    utfOffset: 37
+    utfOffset: 37,
+    recvAVErameNodeCount: 2,
+    sendAVErameNodeCount: 2,
+    recvframeCnt: 2,
   },
   local: true,
 });
@@ -276,6 +279,45 @@ const opened = ref(false)
                         v-model="modelValue.dmaList"
                         type="text"
                         placeholder=""
+                      />
+                    </VControl>
+                  </VField>
+                </div>
+                <div class="column is-4">
+                  <VField>
+                    <VLabel>RecvAVErameNodeCount</VLabel>
+                    <VControl>
+                      <VInputNumber
+                        v-model="modelValue.recvAVErameNodeCount"
+                        centered
+                        :min="0"
+                        :step="1"
+                      />
+                    </VControl>
+                  </VField>
+                </div>
+                <div class="column is-4">
+                  <VField>
+                    <VLabel>SendAVErameNodeCount</VLabel>
+                    <VControl>
+                      <VInputNumber
+                        v-model="modelValue.sendAVErameNodeCount"
+                        centered
+                        :min="0"
+                        :step="1"
+                      />
+                    </VControl>
+                  </VField>
+                </div>
+                <div class="column is-4">
+                  <VField>
+                    <VLabel>Recvframe Cnt</VLabel>
+                    <VControl>
+                      <VInputNumber
+                        v-model="modelValue.recvframeCnt"
+                        centered
+                        :min="0"
+                        :step="1"
                       />
                     </VControl>
                   </VField>

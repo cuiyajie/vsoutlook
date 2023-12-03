@@ -85,6 +85,9 @@ async function prepareParams() {
     params.repairSendFrame = +rq.repairSendFrame
     params.dmaList = rq.dmaList || ""
     params.utfOffset = rq.utfOffset
+    params.recvAVErameNodeCount = rq.recvAVErameNodeCount
+    params.sendAVErameNodeCount = rq.sendAVErameNodeCount
+    params.recvframeCnt = rq.recvframeCnt
     return params
   } else {
     return { error: "模板不存在" }

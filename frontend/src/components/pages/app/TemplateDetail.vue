@@ -42,7 +42,10 @@ const specsData = ref({
   repairSendFrame: true,
   dmaList: "",
   hostNetwork: false,
-  utfOffset: 37
+  utfOffset: 37,
+  recvAVErameNodeCount: 2,
+  sendAVErameNodeCount: 2,
+  recvframeCnt: 2,
 })
 
 tmplTypeStore.$fetchList();

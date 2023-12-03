@@ -19,23 +19,26 @@ type Tmpl struct {
 }
 
 type TmplRequirement struct {
-	Cpu             string `json:"cpu,omitempty"`
-	CpuNum          string `json:"cpuNum,omitempty"`
-	CpuCore         string `json:"cpuCore,omitempty"`
-	HugePage        string `json:"hugePage,omitempty"`
-	Memory          string `json:"memory,omitempty"`
-	Disk            string `json:"disk,omitempty"`
-	Gpu             string `json:"gpu,omitempty"`
-	InputBand       string `json:"inputBand,omitempty"`
-	OutputBand      string `json:"outputBand,omitempty"`
-	Network         string `json:"network,omitempty"`
-	Chart           string `json:"chart,omitempty"`
-	LogLevel        uint8  `json:"logLevel"`
-	RepairRecvFrame bool   `json:"repairRecvFrame"`
-	RepairSendFrame bool   `json:"repairSendFrame"`
-	DMAList         string `json:"dmaList,omitempty"`
-	HostNetwork     bool   `json:"hostNetwork"`
-	UtfOffset       uint8  `json:"utfOffset"`
+	Cpu                  string `json:"cpu,omitempty"`
+	CpuNum               string `json:"cpuNum,omitempty"`
+	CpuCore              string `json:"cpuCore,omitempty"`
+	HugePage             string `json:"hugePage,omitempty"`
+	Memory               string `json:"memory,omitempty"`
+	Disk                 string `json:"disk,omitempty"`
+	Gpu                  string `json:"gpu,omitempty"`
+	InputBand            string `json:"inputBand,omitempty"`
+	OutputBand           string `json:"outputBand,omitempty"`
+	Network              string `json:"network,omitempty"`
+	Chart                string `json:"chart,omitempty"`
+	LogLevel             uint8  `json:"logLevel"`
+	RepairRecvFrame      bool   `json:"repairRecvFrame"`
+	RepairSendFrame      bool   `json:"repairSendFrame"`
+	DMAList              string `json:"dmaList,omitempty"`
+	HostNetwork          bool   `json:"hostNetwork"`
+	UtfOffset            uint8  `json:"utfOffset"`
+	RecvAVErameNodeCount int    `json:"recvAVErameNodeCount"`
+	SendAVErameNodeCount int    `json:"sendAVErameNodeCount"`
+	RecvframeCnt         int    `json:"recvframeCnt"`
 }
 
 type TmplAsBasic struct {

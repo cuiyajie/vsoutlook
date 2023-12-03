@@ -21,7 +21,10 @@ interface TmplRequirement {
   repairSendFrame: boolean,
   dmaList: string,
   hostNetwork: boolean,
-  utfOffset: number
+  utfOffset: number,
+	recvAVErameNodeCount: number,
+	sendAVErameNodeCount: number,
+	recvframeCnt: number
 }
 
 interface TemplateData {
