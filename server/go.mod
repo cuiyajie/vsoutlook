@@ -8,7 +8,6 @@ require (
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-gonic/gin v1.7.4
 	github.com/go-gormigrate/gormigrate/v2 v2.0.0
-	github.com/go-playground/webhooks/v6 v6.0.0-rc.1
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/google/subcommands v1.2.0
 	github.com/gorilla/securecookie v1.1.1

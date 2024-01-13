@@ -12,14 +12,12 @@ import { acceptHMRUpdate, defineStore } from 'pinia'
 import { useNotyf } from "/@src/composable/useNotyf"
 import { useFetch } from "/@src/composable/useFetch"
 import * as dic from "/@src/utils/enums-dic"
-import { useRlsFetch } from "../composable/useRlsFetch"
 import { valert } from "../utils/dialog"
 
 export const useDevices = defineStore('device', () => {
   const devices = ref<DeviceDetail[]>([])
   const notyf = useNotyf()
   const $fetch  = useFetch()
-  const $rfetch = useRlsFetch()
 
   async function $fetchList() {
     const res = await $fetch('/api/device/list')
@@ -69,8 +67,8 @@ export const useDevices = defineStore('device', () => {
   }
 
   async function $showContainer(device: DeviceDetail) {
-    const res = await $rfetch(`/api/namespaces/default/releases/${device.name}/podPhase`, {
-      method: 'GET',
+    const res = await $fetch('/api/cluster/podPhase', {
+      body: { device: device.name }
     })
     if (res && res.code === 0) {
       if (typeof res.data === 'object') {
@@ -87,8 +85,8 @@ export const useDevices = defineStore('device', () => {
   }
 
   async function $reboot(device: DeviceDetail) {
-    const res = await $rfetch(`/api/namespaces/default/releases/${device.name}/podPhase`, {
-      method: 'GET',
+    const res = await $fetch('/api/cluster/podPhase', {
+      body: { device: device.name }
     })
     if (res && res.code === 0) {
       if (typeof res.data === 'object') {
@@ -96,8 +94,10 @@ export const useDevices = defineStore('device', () => {
         if (podKey) {
           const pod = res.data[podKey]
           if (pod === 'Running') {
-            const res = await $rfetch(`/api/namespaces/default/pods/${podKey}/delete`, {
-              method: 'GET',
+            const res = await $fetch('/api/cluster/pod.delete', {
+              body: {
+                pod: podKey
+              }
             }).catch(() => {
               return { code: 500, error: "重启设备失败" }
             })

@@ -83,16 +83,23 @@ func GetDeviceList(c *svcinfra.Context) {
 
 	defer resp.Body.Close()
 
-	d, _ := io.ReadAll(resp.Body)
+	d, err := io.ReadAll(resp.Body)
 	fmt.Println("cluster node response:", string(d))
+	if err != nil {
+		fmt.Printf("failed to response: %v", err)
+		c.Bye(gin.H{"devices": clustDevices})
+		return
+	}
 	var resp2 ClustResp
 	json.Unmarshal(d, &resp2)
-	if resp2.Code != 0 {
+
+	if resp2 == (ClustResp{}) || resp2.Code != 0 {
 		fmt.Printf("failed to make request: %v", resp2.Error)
 		c.Bye(gin.H{"devices": clustDevices})
 		return
 	}
 
+	fmt.Printf("failed to make request: %v", resp2)
 	data := resp2.Data.([]interface{})
 	clustRelease := make([]ClustRelease, 0, len(data))
 	for _, v := range data {

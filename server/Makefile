@@ -29,15 +29,15 @@ deploy-prod:
 	sh scripts/deploy-prod.sh
 
 deploy: build-linux
-	rsync -avz bin/linux-vsoutlook-server vso2:/home/vsoutlook/vsoutlook-app/server
+	rsync -avz bin/linux-vsoutlook-server vso1:/home/vsoutlook/vsoutlook-app/server
 
 deploy2: build-linux
-	rsync -avz bin/linux-vsoutlook-server vso2:/home/vsoutlook/vsoutlook-app-2/server
+	rsync -avz bin/linux-vsoutlook-server vso1:/home/vsoutlook/vsoutlook-app-2/server
 
 update-service:
-	rsync -avz vsoutlook.service vso2:/home/vsoutlook/vsoutlook-app
-	rsync -avz config.yaml vso2:/home/vsoutlook/vsoutlook-app/data
+	rsync -avz vsoutlook.service vso1:/home/vsoutlook/vsoutlook-app
+	rsync -avz config.yaml vso1:/home/vsoutlook/vsoutlook-app/data
 
 update-service2:
-	rsync -avz vsoutlook2.service vso2:/home/vsoutlook/vsoutlook-app-2/vsoutlook.service
-	rsync -avz config-2.yaml vso2:/home/vsoutlook/vsoutlook-app-2/data/config.yaml
+	rsync -avz vsoutlook2.service vso1:/home/vsoutlook/vsoutlook-app-2/vsoutlook.service
+	rsync -avz config-2.yaml vso1:/home/vsoutlook/vsoutlook-app-2/data/config.yaml

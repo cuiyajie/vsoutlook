@@ -46,18 +46,6 @@ export default defineConfig({
   // development server configuration
   server: {
     host: '0.0.0.0',
-    proxy: {
-      '/api/nodes': {
-        secure: false,
-        target: 'http://172.16.0.200:8080/',
-        changeOrigin: true,
-      },
-      '/api/namespaces': {
-        secure: false,
-        target: 'http://172.16.0.200:8080/',
-        changeOrigin: true,
-      }
-    },
     // Vite 4 defaults to 5173, but you can override it with the port option.
     port: 3000,
   },

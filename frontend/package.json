@@ -40,9 +40,9 @@
     "dev:json-server": "json-server --read-only --routes ./json-server/routes.json --port 8090 --watch ./json-server/db.json",
     "build": "run-s build:*",
     "build:update-bulma-colors": "bulma-css-vars",
-    "build:vite": "cross-env NODE_ENV=production VITE_CLUST_API=http://172.16.0.200:8080 vite build",
+    "build:vite": "cross-env NODE_ENV=production vite build",
     "build-2": "run-s build:update-bulma-colors build-2:*",
-    "build-2:vite": "cross-env NODE_ENV=production VITE_CLUST_API=http://192.168.1.67:8080 vite build",
+    "build-2:vite": "cross-env NODE_ENV=production vite build",
     "ssr:build": "run-s build:update-bulma-colors ssr:build:*",
     "ssr:build:client": "cross-env NODE_ENV=production vite build --ssrManifest --outDir dist/client",
     "ssr:build:server": "cross-env NODE_ENV=production vite build --ssr src/entry-server.ts --outDir dist/server",
@@ -70,9 +70,9 @@
     "test:e2e": "cypress run",
     "test:unit": "echo \"[warning] no unit test implemented yet\"",
     "cypress": "cypress",
-    "rsync": "rsync -avz dist/ vso2:/home/vsoutlook/vsoutlook-app/frontend",
+    "rsync": "rsync -avz dist/ vso1:/home/vsoutlook/vsoutlook-app/frontend",
     "deploy": "run-s build rsync",
-    "rsync2": "rsync -avz dist/ vso2:/home/vsoutlook/vsoutlook-app-2/frontend",
+    "rsync2": "rsync -avz dist/ vso1:/home/vsoutlook/vsoutlook-app-2/frontend",
     "deploy2": "run-s build-2 rsync2"
   },
   "dependencies": {

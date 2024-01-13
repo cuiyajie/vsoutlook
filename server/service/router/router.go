@@ -9,6 +9,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"vsoutlook.com/vsoutlook/infra/track"
+	"vsoutlook.com/vsoutlook/service/cluster"
 	"vsoutlook.com/vsoutlook/service/device"
 	"vsoutlook.com/vsoutlook/service/site"
 	"vsoutlook.com/vsoutlook/service/svcinfra"
@@ -59,6 +60,14 @@ func SetupRouter() *gin.Engine {
 		post(member, "device/create", device.CreateDevice)
 		post(member, "device/update", device.UpdateDevice)
 		post(member, "device/delete", device.DeleteDevice)
+	}
+
+	{
+		member := group(root, "api", authenticated)
+		post(member, "cluster/podPhase", cluster.GetPodsPhase)
+		post(member, "cluster/pod.delete", cluster.DeletePod)
+		post(member, "cluster/nodes", cluster.GetNodes)
+		post(member, "cluster/node.detail", cluster.GetNodeDetail)
 	}
 
 	router.NoRoute(h(site.FallbackHandler))

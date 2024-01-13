@@ -24,7 +24,7 @@ func NewCookieStore(keyPairs ...[]byte) *sessions.CookieStore {
 		//     when we call api with cors in local frontend development mode
 		// not that needed for production
 		// https://stackoverflow.com/a/67001424
-		Secure:   false,
+		Secure:   true,
 		HttpOnly: true,
 	}
 	if config.Dev {

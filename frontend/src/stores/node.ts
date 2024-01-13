@@ -9,13 +9,13 @@
 
 import { ref } from 'vue'
 import { acceptHMRUpdate, defineStore } from 'pinia'
-import { useRlsFetch } from "/@src/composable/useRlsFetch";
+import { useFetch } from "/@src/composable/useFetch";
 // import * as nodeMock from "/@src/data/node-mock"
 
 const Timeout = 15 * 1000
 export const useClustNode = defineStore('clustNode', () => {
   const nodes = ref<ClustNode[]>([])
-  const $fetch = useRlsFetch()
+  const $fetch = useFetch()
   let timer: any = null
 
   function $startQuery() {
@@ -33,11 +33,13 @@ export const useClustNode = defineStore('clustNode', () => {
 
   async function $fetchList() {
     // nodes.value =  nodeMock.nodes
-    const res = await $fetch('/api/nodes')
+    const res = await $fetch('/api/cluster/nodes')
     if (res && res.code === 0) {
       nodes.value = await Promise.all(Object.keys(res.data).map(async id => {
         const ip = res.data[id]
-        const res1 = await $fetch(`/api/nodes/${id}`)
+        const res1 = await $fetch('/api/cluster/node.detail', {
+          body: { id }
+        })
         if (res1 && res1.code === 0) {
           return {
             id,
