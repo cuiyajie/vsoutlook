@@ -34,6 +34,9 @@ deploy: build-linux
 deploy2: build-linux
 	rsync -avz bin/linux-vsoutlook-server vso1:/home/vsoutlook/vsoutlook-app-2/server
 
+deploy-local: build-linux
+	rsync -avz bin/linux-vsoutlook-server ~/Downloads/vsoutlook-app/server
+
 update-service:
 	rsync -avz vsoutlook.service vso1:/home/vsoutlook/vsoutlook-app
 	rsync -avz config.yaml vso1:/home/vsoutlook/vsoutlook-app/data
@@ -41,3 +44,6 @@ update-service:
 update-service2:
 	rsync -avz vsoutlook2.service vso1:/home/vsoutlook/vsoutlook-app-2/vsoutlook.service
 	rsync -avz config-2.yaml vso1:/home/vsoutlook/vsoutlook-app-2/data/config.yaml
+
+update-local:
+	rsync -avz config.yaml ~/Downloads/vsoutlook-app/data/config.yaml

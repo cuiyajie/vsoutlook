@@ -73,7 +73,9 @@
     "rsync": "rsync -avz dist/ vso1:/home/vsoutlook/vsoutlook-app/frontend",
     "deploy": "run-s build rsync",
     "rsync2": "rsync -avz dist/ vso1:/home/vsoutlook/vsoutlook-app-2/frontend",
-    "deploy2": "run-s build-2 rsync2"
+    "deploy2": "run-s build-2 rsync2",
+    "rsync-local": "rsync -avz dist/ ~/Downloads/vsoutlook-app/frontend",
+    "deploy-local": "run-s build rsync-local"
   },
   "dependencies": {
     "@ckeditor/ckeditor5-build-classic": "39.0.1",
