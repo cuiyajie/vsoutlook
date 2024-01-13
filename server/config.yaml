@@ -1,0 +1,9 @@
+HTTP_PORT: 8090
+DATABASE_URL: postgres://postgres:postgresql@localhost:5432/vsoutlook?sslmode=disable
+DATABASE_TESTURL: postgres://postgres:postgresql@localhost:5432/vsoutlook?sslmode=disable
+REDIS_URL: redis://localhost:6379/5
+SESSION_KEY: yfak
+SESSION_SECRET: vcsuaswyoizzzltkbdwjpufuklubvuxg
+STATIC_PATH: /home/vsoutlook/vsoutlook-app/frontend
+CLUST_HOST: http://172.16.1.102:8080
+CHART_PKG: local/foo
