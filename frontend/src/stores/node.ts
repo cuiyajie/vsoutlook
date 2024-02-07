@@ -35,19 +35,9 @@ export const useClustNode = defineStore('clustNode', () => {
     // nodes.value =  nodeMock.nodes
     const res = await $fetch('/api/cluster/nodes')
     if (res && res.code === 0) {
-      nodes.value = await Promise.all(Object.keys(res.data).map(async id => {
-        const ip = res.data[id]
-        const res1 = await $fetch('/api/cluster/node.detail', {
-          body: { id }
-        })
-        if (res1 && res1.code === 0) {
-          return {
-            id,
-            ip,
-            info: res1.data
-          }
-        }
-        return { id, ip, info: null }
+      nodes.value = res.data.map((n: any) => ({
+        id: n.nodeName,
+        ip: n.nodeIP
       }))
     }
   }

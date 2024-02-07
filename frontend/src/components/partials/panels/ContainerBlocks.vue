@@ -58,13 +58,13 @@ function onDrop(event: DragEvent) {
   });
 }
 
-function parseCpu(info: ClustNode['info']) {
-  return [Math.round((parseInt(info.current?.cpu?.value) || 0) * 100 / (parseInt(info.allocatable?.cpu?.value) || 1)) ]
-}
+// function parseCpu(info: ClustNode['info']) {
+//   return [Math.round((parseInt(info.current?.cpu?.value) || 0) * 100 / (parseInt(info.allocatable?.cpu?.value) || 1)) ]
+// }
 
-function parseMemory(info: ClustNode['info']) {
-  return [Math.round((parseInt(info.current?.memory?.value) || 0) * 100 / (parseInt(info.allocatable?.memory?.value) || 1)) ]
-}
+// function parseMemory(info: ClustNode['info']) {
+//   return [Math.round((parseInt(info.current?.memory?.value) || 0) * 100 / (parseInt(info.allocatable?.memory?.value) || 1)) ]
+// }
 
 (async () => {
   loading.value = true
@@ -127,7 +127,7 @@ onUnmounted(() => {
         <h5>{{ node.id }}</h5>
         <span>IP: {{ node.ip }}</span>
       </div>
-      <div class="chart-wrap ml-6">
+      <!-- <div class="chart-wrap ml-6">
         <ApexChart
           :height="cpuOptions.chart.height"
           :type="cpuOptions.chart.type"
@@ -142,7 +142,7 @@ onUnmounted(() => {
           :series="parseMemory(node.info)"
           :options="memoryOptions"
         />
-      </div>
+      </div> -->
     </VCard>
   </TransitionGroup>
 </template>

@@ -4,8 +4,8 @@ const modelValue = defineModel<any>({
     cpu: "",
     cpuNum: "",
     cpuCore: '',
-    hugePage: '',
-    memory: "",
+    hugePage: 0,
+    memory: 0,
     disk: "",
     gpu: "",
     inputBand: "",
@@ -22,7 +22,10 @@ const modelValue = defineModel<any>({
     recvAVFrameNodeCount: 2,
     sendAVFrameNodeCount: 2,
     recvframeCnt: 2,
-    maxRateMbpsByCore: 0
+    maxRateMbpsByCore: 0,
+    primaryVFAddress: "",
+    secondaryVFAddress: "",
+    shm: 0
   },
   local: true,
 });
@@ -44,31 +47,20 @@ const opened = ref(false)
           <div class="columns is-multiline">
             <div class="column is-4">
               <VField>
-                <VLabel>CPU主频</VLabel>
-                <VControl>
-                  <VInput
-                    v-model="modelValue.cpu"
-                    type="text"
-                    placeholder=""
-                  />
-                </VControl>
-              </VField>
-            </div>
-            <div class="column is-4">
-              <VField>
                 <VLabel>CPU核数</VLabel>
                 <VControl>
-                  <VInput
+                  <VInputNumber
                     v-model="modelValue.cpuNum"
-                    type="text"
-                    placeholder=""
+                    centered
+                    :min="0"
+                    :step="1"
                   />
                 </VControl>
               </VField>
             </div>
             <div class="column is-4">
               <VField>
-                <VLabel>CPU核心</VLabel>
+                <VLabel>CPU核心列表</VLabel>
                 <VControl>
                   <VInput
                     v-model="modelValue.cpuCore"
@@ -80,10 +72,49 @@ const opened = ref(false)
             </div>
             <div class="column is-4">
               <VField>
-                <VLabel>大页数(Huge Page)</VLabel>
+                <VLabel>内存 (GB)</VLabel>
+                <VControl>
+                  <VInputNumber
+                    v-model="modelValue.memory"
+                    centered
+                    :min="0"
+                    :step="1"
+                  />
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-4">
+              <VField>
+                <VLabel>大叶内存 (GB)</VLabel>
+                <VControl>
+                  <VInputNumber
+                    v-model="modelValue.hugePage"
+                    centered
+                    :min="0"
+                    :step="1"
+                  />
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-4">
+              <VField>
+                <VLabel>/dev/shm大小 (GB)</VLabel>
+                <VControl>
+                  <VInputNumber
+                    v-model="modelValue.shm"
+                    centered
+                    :min="0"
+                    :step="1"
+                  />
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-4">
+              <VField>
+                <VLabel>数据主网卡，CIDR格式</VLabel>
                 <VControl>
                   <VInput
-                    v-model="modelValue.hugePage"
+                    v-model="modelValue.primaryVFAddress"
                     type="text"
                     placeholder=""
                   />
@@ -92,10 +123,22 @@ const opened = ref(false)
             </div>
             <div class="column is-4">
               <VField>
-                <VLabel>内存</VLabel>
+                <VLabel>数据备网卡，CIDR格式</VLabel>
                 <VControl>
                   <VInput
-                    v-model="modelValue.memory"
+                    v-model="modelValue.secondaryVFAddress"
+                    type="text"
+                    placeholder=""
+                  />
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-4">
+              <VField>
+                <VLabel>CPU主频</VLabel>
+                <VControl>
+                  <VInput
+                    v-model="modelValue.cpu"
                     type="text"
                     placeholder=""
                   />

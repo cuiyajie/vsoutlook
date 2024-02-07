@@ -28,8 +28,8 @@ const specsData = ref({
   cpu: '',
   cpuNum: '',
   cpuCore: '',
-  hugePage: '',
-  memory: '',
+  hugePage: 0,
+  memory: 0,
   disk: '',
   gpu: '',
   inputBand: '',
@@ -46,7 +46,10 @@ const specsData = ref({
   recvAVFrameNodeCount: 2,
   sendAVFrameNodeCount: 2,
   recvframeCnt: 2,
-  maxRateMbpsByCore: 0
+  maxRateMbpsByCore: 0,
+  primaryVFAddress: "",
+  secondaryVFAddress: "",
+  shm: 0
 })
 
 tmplTypeStore.$fetchList();
@@ -83,22 +86,12 @@ async function save() {
 <template>
   <div class="columns is-multiline page-template">
     <div class="column is-2">
-      <VCard
-        radius="rounded"
-        class="card-widget"
-      >
+      <VCard radius="rounded" class="card-widget">
         <div class="title-wrap mb-4">
           <h3>应用列表</h3>
-          <button
-            class="button is-circle is-dark-outlined"
-            @click="createNewTmpl"
-          >
+          <button class="button is-circle is-dark-outlined" @click="createNewTmpl">
             <span class="icon is-small">
-              <i
-                aria-hidden="true"
-                class="iconify"
-                data-icon="feather:plus"
-              />
+              <i aria-hidden="true" class="iconify" data-icon="feather:plus" />
             </span>
           </button>
         </div>
@@ -106,60 +99,31 @@ async function save() {
       </VCard>
     </div>
     <div class="column is-8">
-      <VCard
-        radius="rounded"
-        class="tmpl-dashboard"
-      >
+      <VCard radius="rounded" class="tmpl-dashboard">
         <div class="title is-5 mb-6 tmpl-title">
           <h3>{{ tmpl?.name || "未命名应用" }}</h3>
           <VButtons>
-            <VButton
-              color="primary"
-              raised
-              :disabled="disabled"
-              @click="save"
-            >
+            <VButton color="primary" raised :disabled="disabled" @click="save">
               <span class="icon">
-                <i
-                  aria-hidden="true"
-                  class="fas fa-save"
-                />
+                <i aria-hidden="true" class="fas fa-save" />
               </span>
               <span>保存</span>
             </VButton>
-            <VButton
-              raised
-              :disabled="disabled"
-            >
+            <VButton raised :disabled="disabled">
               <span class="icon">
-                <i
-                  aria-hidden="true"
-                  class="fas fa-share-square"
-                />
+                <i aria-hidden="true" class="fas fa-share-square" />
               </span>
               <span>另存为</span>
             </VButton>
-            <VButton
-              raised
-              :disabled="disabled"
-            >
+            <VButton raised :disabled="disabled">
               <span class="icon">
-                <i
-                  class="fas fa-cloud-upload-alt"
-                  aria-hidden="true"
-                />
+                <i class="fas fa-cloud-upload-alt" aria-hidden="true" />
               </span>
               <span>发布到应用商店</span>
             </VButton>
-            <VButton
-              raised
-              :disabled="disabled"
-            >
+            <VButton raised :disabled="disabled">
               <span class="icon">
-                <i
-                  class="fas fa-caret-square-right"
-                  aria-hidden="true"
-                />
+                <i class="fas fa-caret-square-right" aria-hidden="true" />
               </span>
               <span>生成程序</span>
             </VButton>
@@ -180,7 +144,7 @@ async function save() {
           :class="[locked && 'is-locked']"
           slider
           type="rounded"
-          selected="module"
+          selected="resource"
           align="centered"
           :tabs="[
             { label: '能力组件拼装', value: 'module' },
@@ -190,10 +154,7 @@ async function save() {
         >
           <template #tab="{ activeValue }">
             <KeepAlive>
-              <div
-                v-if="activeValue === 'module'"
-                class="flow-container"
-              >
+              <div v-if="activeValue === 'module'" class="flow-container">
                 <AbilityFlow :flow="flowObject" />
               </div>
               <p v-else-if="activeValue === 'resource'">
@@ -206,9 +167,7 @@ async function save() {
     </div>
     <div class="column is-2">
       <VCard radius="rounded">
-        <h3 class="title is-5 mb-4">
-          能力组件
-        </h3>
+        <h3 class="title is-5 mb-4">能力组件</h3>
         <AbilityComponent :locked="locked" />
       </VCard>
     </div>

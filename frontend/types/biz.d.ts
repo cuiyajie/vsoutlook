@@ -1,15 +1,16 @@
 interface TemplateType {
   id: string,
   name: string,
-  icon: string
+  icon: string,
+  category: string
 }
 
 interface TmplRequirement {
   cpu: string,
-  cpuNum: string,
+  cpuNum: number,
   cpuCore: string,
-  hugePage: string,
-  memory: string,
+  hugePage: number,
+  memory: number,
   disk: string,
   gpu: string,
   inputBand: string,
@@ -25,7 +26,10 @@ interface TmplRequirement {
 	recvAVFrameNodeCount: number,
 	sendAVFrameNodeCount: number,
 	recvframeCnt: number,
-  maxRateMbpsByCore: number
+  maxRateMbpsByCore: number,
+  primaryVFAddress: string,
+  secondaryVFAddress: string,
+  shm: number
 }
 
 interface TemplateData {
@@ -86,14 +90,12 @@ interface DeviceDetail {
 	tmplTypeID: string,
 	tmplTypeName: string,
   tmplTypeIcon: string,
-  release: string,
-	revision: string,
-	chartVersion: string,
-	appVersion: string,
-	status: string,
-  statusInfo: any,
-  updated: string,
-  phase: string
+	appName: string,
+	podsStatus: [{ name: string, status: string }],
+  targetNode: string,
+  updatedAt: string,
+  status: string,
+  statusInfo: any
 }
 
 interface SystemInfo {
@@ -115,14 +117,14 @@ interface UserData {
 interface ClustNode {
   id: string,
   ip: string,
-  info: {
-    allocatable: { cpu: { value: string }, memory: { value: string } },
-    current: { cpu: { value: string }, memory: { value: string } },
-  }
+  // info: {
+  //   allocatable: { cpu: { value: string }, memory: { value: string } },
+  //   current: { cpu: { value: string }, memory: { value: string } },
+  // }
 }
 
 interface ClustDevice {
   id: string,
   node: string,
-  release: string
+  name: string
 }

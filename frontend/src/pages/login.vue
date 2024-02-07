@@ -52,14 +52,8 @@ useHead({
     <!--Fake navigation-->
     <div class="auth-nav">
       <div class="center">
-        <RouterLink
-          to="/"
-          class="header-item"
-        >
-          <Logo
-            width="38"
-            height="38"
-          />
+        <RouterLink to="/" class="header-item">
+          <Logo width="38" height="38" />
         </RouterLink>
       </div>
     </div>
@@ -69,19 +63,12 @@ useHead({
       <div class="inner-wrap">
         <!--Form Title-->
         <div class="auth-head">
-          <h2>欢迎访问维视远景</h2>
-          <p class="mt-2">
-            请登录您的帐户
-          </p>
+          <h2>欢迎使用 Live Media Mesh 平台（LM2）</h2>
         </div>
 
         <!--Form-->
         <div class="form-card">
-          <form
-            method="post"
-            novalidate
-            @submit.prevent="handleLogin"
-          >
+          <form method="post" novalidate @submit.prevent="handleLogin">
             <div class="login-form">
               <VField>
                 <VControl icon="feather:user">
@@ -119,6 +106,10 @@ useHead({
               </div>
             </div>
           </form>
+        </div>
+
+        <div class="auth-footer">
+          <p>由深思远景提供技术服务</p>
         </div>
       </div>
     </div>
@@ -345,8 +336,8 @@ useHead({
       max-width: 400px;
       margin: 40px auto 0;
 
-      .auth-head {
-        max-width: 320px;
+      .auth-head,
+      .auth-footer {
         width: 100%;
         margin: 0 auto;
         margin-bottom: 20px;
@@ -355,7 +346,7 @@ useHead({
         h2 {
           font-size: 2rem;
           font-family: var(--font);
-          line-height: 1;
+          line-height: 1.25;
         }
 
         p {
@@ -370,6 +361,11 @@ useHead({
           font-weight: 500;
           color: var(--primary);
         }
+      }
+
+      .auth-footer {
+        margin-top: 20px;
+        margin-bottom: 0;
       }
 
       .form-card {

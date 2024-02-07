@@ -3,6 +3,7 @@
 import { confirm } from "/@src/utils/dialog";
 import { useNotyf } from "/@src/composable/useNotyf";
 import { useDevices } from '/@src/stores/device'
+import { DeviceStatus } from "/@src/utils/enums-dic";
 
 const props = defineProps<{
   device: DeviceDetail
@@ -32,15 +33,42 @@ function remove() {
   });
 }
 
-function reboot() {
+const stoppable = computed(() => {
+  return props.device.status === DeviceStatus.Running
+})
+
+function stop() {
+  if (!stoppable) return
   confirm({
-    title: "重启设备",
-    content: "确定要重启该设备吗？",
+    title: "暂停设备",
+    content: "确定要暂停该设备吗？",
     onConfirm: async (hide) => {
-      const res = await deviceStore.$reboot(props.device);
+      const res = await deviceStore.$stop(props.device.id);
       hide();
-      if (res && res.result === "success") {
-        notyf.success("重启成功");
+      if (res && res.result === "ok") {
+        notyf.success("暂停成功");
+        emit('refresh')
+      } else if (res?.result === "error") {
+        notyf.error(res.message)
+      }
+    },
+  });
+}
+
+const startable = computed(() => {
+  return [DeviceStatus.Failed, DeviceStatus.Unavailable].includes(props.device.status as DeviceStatus)
+})
+
+function start() {
+  if (!startable) return
+  confirm({
+    title: "启动设备",
+    content: "确定要启动该设备吗？",
+    onConfirm: async (hide) => {
+      const res = await deviceStore.$start(props.device.id);
+      hide();
+      if (res && res.result === "ok") {
+        notyf.success("启动成功");
         emit('refresh')
       } else if (res?.result === "error") {
         notyf.error(res.message)
@@ -54,7 +82,7 @@ function viewContainer() {
 }
 
 function config() {
-  const { tmplID, tmplName, tmplTypeName, id, release } = props.device
+  const { tmplID, tmplName, tmplTypeName, id, name } = props.device
   bus.trigger(Signal.OpenResourceConfig, {
     tmpl: {
       id: tmplID,
@@ -63,7 +91,7 @@ function config() {
     },
     device: {
       id,
-      release,
+      name,
     },
     callbacks: {
       success: () => {
@@ -100,7 +128,7 @@ function config() {
       </a>
 
       <hr class="dropdown-divider">
-      <a
+      <!-- <a
         href="#"
         role="menuitem"
         class="dropdown-item is-media"
@@ -115,23 +143,42 @@ function config() {
         <div class="meta">
           <span>查看容器</span>
         </div>
-      </a>
-      <template v-if="device.phase === 'Running'">
+      </a> -->
+      <template v-if="stoppable">
         <a
           href="#"
           role="menuitem"
           class="dropdown-item is-media"
-          @click="close(); reboot()"
+          @click="close(); stop()"
         >
-          <div class="icon">
+          <div class="icon is-primary">
             <i
               class="iconify"
-              data-icon="feather:arrow-right-circle"
+              data-icon="feather:toggle-right"
               aria-hidden="true"
             />
           </div>
           <div class="meta">
-            <span>重启</span>
+            <span>暂停</span>
+          </div>
+        </a>
+      </template>
+      <template v-if="startable">
+        <a
+          href="#"
+          role="menuitem"
+          class="dropdown-item is-media"
+          @click="close(); start()"
+        >
+          <div class="icon">
+            <i
+              class="iconify"
+              data-icon="feather:toggle-left"
+              aria-hidden="true"
+            />
+          </div>
+          <div class="meta">
+            <span>启动</span>
           </div>
         </a>
       </template>
@@ -182,6 +229,10 @@ function config() {
 .dropdown.is-spaced.device-list-dropdown {
   .dropdown-menu {
     min-width: 140px;
+  }
+
+  .dropdown-content .is-media .icon.is-primary svg {
+    color: var(--primary);
   }
 }
 </style>

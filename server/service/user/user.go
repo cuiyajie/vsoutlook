@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"vsoutlook.com/vsoutlook/infra/def"
 	"vsoutlook.com/vsoutlook/models"
 	"vsoutlook.com/vsoutlook/service/svcinfra"
 )
@@ -14,33 +15,38 @@ type UserService struct{}
 
 type UserReq struct {
 	ID       string `json:"id"`
-	Username string `json:"username"`
+	Name     string `json:"name"`
 	Password string `json:"password"`
+	Role     uint8  `json:"role"`
 }
 
 const intlInvalidLogin = "请输入正确的用户名和密码。"
-const intlUnknownError = "Unknown error."
+const intlUnknownError = "未知错误。"
 
 func CreateUser(c *svcinfra.Context) {
 	var req UserReq
 	c.ShouldBindJSON(&req)
 	log.Printf("req %#v\n", req)
 
-	if len(req.Password)*len(req.Username) == 0 {
-		c.GeneralError("Invalid Input.")
+	if len(req.Password)*len(req.Name) == 0 {
+		c.GeneralError("用户名和密码不能为空。")
 		return
 	}
 
-	req.Username = strings.TrimSpace(req.Username)
+	req.Name = strings.TrimSpace(req.Name)
 
-	user := models.UserBy("name", req.Username)
+	user := models.UserBy("name", req.Name)
 	if user != nil {
-		c.GeneralError("Username already exits.")
+		c.GeneralError("用户名已存在。")
 		return
+	}
+
+	if req.Role == 0 {
+		req.Role = def.Role_Normal
 	}
 
 	if len(req.Password) < 3 {
-		c.GeneralError("Password too short.")
+		c.GeneralError("密码长度不能小于3。")
 		return
 	}
 
@@ -51,8 +57,9 @@ func CreateUser(c *svcinfra.Context) {
 	}
 
 	var newUser = models.User{
-		Name:     req.Username,
+		Name:     req.Name,
 		Password: hashedPwd,
+		Role:     req.Role,
 	}
 
 	result := models.Create(&newUser)
@@ -63,11 +70,14 @@ func CreateUser(c *svcinfra.Context) {
 	}
 	user = &newUser
 
-	c.Bye(gin.H{"result": "ok"})
+	c.Bye(gin.H{"user": user.AsBasic()})
 }
 
 func Login(c *svcinfra.Context) {
-	var req UserReq
+	var req struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
 	c.ShouldBindJSON(&req)
 	req.Username = strings.TrimSpace(req.Username)
 	if len(req.Username) == 0 || len(req.Password) == 0 {

@@ -9,22 +9,32 @@
 
 import { ref } from 'vue'
 import { acceptHMRUpdate, defineStore } from 'pinia'
-import { useNotyf } from "/@src/composable/useNotyf"
 import { useFetch } from "/@src/composable/useFetch"
 import * as dic from "/@src/utils/enums-dic"
 import { valert } from "../utils/dialog"
 
 export const useDevices = defineStore('device', () => {
   const devices = ref<DeviceDetail[]>([])
-  const notyf = useNotyf()
   const $fetch  = useFetch()
 
   async function $fetchList() {
     const res = await $fetch('/api/device/list')
     if (res && res.devices) {
       devices.value = res.devices.map((d: any) => {
-        d.updated = new Date(Date.parse(d.updated)).toLocaleString('zh')
-        d.statusInfo = dic.DeviceStatusDic[d.phase] || dic.DeviceStatusDic['Unavailable']
+        if (!Array.isArray(d.podsStatus) || d.podsStatus.length === 0) {
+          d.status = dic.DeviceStatus.Unavailable
+        } else if (d.podsStatus.every((p: any) => p.status === dic.DeviceStatus.Running)) {
+          d.status = dic.DeviceStatus.Running
+        } else if (d.podsStatus.every((p: any) => [dic.DeviceStatus.Pending, dic.DeviceStatus.Running].includes(p.status))) {
+          d.status = dic.DeviceStatus.Pending
+        } else if (d.podsStatus.some((p: any) => p.status === dic.DeviceStatus.Terminating)) {
+          d.status = dic.DeviceStatus.Terminating
+        } else if (d.podsStatus.some((p: any) => p.status === dic.DeviceStatus.Failed)) {
+          d.status = dic.DeviceStatus.Failed
+        } else {
+          d.status = dic.DeviceStatus.Unavailable
+        }
+        d.statusInfo = dic.DeviceStatusDic[d.status]
         return d
       })
     }
@@ -35,7 +45,7 @@ export const useDevices = defineStore('device', () => {
       body: {
         name,
         tmpl,
-        body: JSON.stringify({ params: body })
+        body: JSON.stringify(body)
       }
     })
     if (res && res.device) {
@@ -116,14 +126,16 @@ export const useDevices = defineStore('device', () => {
     }
   }
 
-  function shutdown() {
-    notyf.dismissAll()
-    notyf.info('即将支持，敬请期待')
+  async function $stop(id: string) {
+    return await $fetch('/api/device/stop', {
+      body: { id }
+    })
   }
 
-  function start() {
-    notyf.dismissAll()
-    notyf.info('即将支持，敬请期待')
+  async function $start(id: string) {
+    return await $fetch('/api/device/start', {
+      body: { id }
+    })
   }
 
   function getById(id: string) {
@@ -132,8 +144,8 @@ export const useDevices = defineStore('device', () => {
 
   return {
     devices,
-    shutdown,
-    start,
+    $stop,
+    $start,
     getById,
     $fetchList,
     $deploy,

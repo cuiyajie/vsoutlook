@@ -32,7 +32,6 @@ func SetupRouter() *gin.Engine {
 	{
 		guest := group(root, "api")
 		post(guest, "login", userSvc.Login)
-		post(guest, "internal/register", userSvc.CreateUser)
 	}
 
 	{
@@ -44,6 +43,7 @@ func SetupRouter() *gin.Engine {
 		member := group(root, "api", authenticated)
 		post(member, "user/me", user.CurrentUser)
 		post(member, "user/list", user.UserList)
+		post(member, "user/create", userSvc.CreateUser)
 	}
 
 	{
@@ -59,6 +59,8 @@ func SetupRouter() *gin.Engine {
 		post(member, "device/list", device.GetDeviceList)
 		post(member, "device/create", device.CreateDevice)
 		post(member, "device/update", device.UpdateDevice)
+		post(member, "device/start", device.StartDevice)
+		post(member, "device/stop", device.StopDevice)
 		post(member, "device/delete", device.DeleteDevice)
 	}
 

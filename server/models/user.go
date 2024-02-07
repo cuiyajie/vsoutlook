@@ -13,7 +13,7 @@ type User struct {
 	ModelId
 	Name     string
 	Password string `gorm:"type:varchar"`
-	Role     uint8  `gorm:"default:1"`
+	Role     uint8  `gorm:"default:2"`
 	ModelTime
 }
 

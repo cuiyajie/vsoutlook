@@ -5,7 +5,8 @@ export enum Signal {
   OpenNewSystem,
   OpenConfirmDialog,
   OpenResourceConfig,
-  OpenAlertDialog
+  OpenAlertDialog,
+  OpenNewUser,
 }
 
 export enum DeviceStatus {
@@ -34,5 +35,6 @@ export enum MirrorType {
 }
 
 export enum UserRole {
-  Admin = 1
+  Admin = 1,
+  Normal = 2
 }

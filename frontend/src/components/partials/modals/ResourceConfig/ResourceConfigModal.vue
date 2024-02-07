@@ -31,8 +31,8 @@ useListener(Signal.OpenResourceConfig, (p: { tmpl: TemplateData, node: ClustNode
   tmpl.value = p.tmpl;
   node.value = p.node;
   device.value = p.device;
-  if (p.device?.release) {
-    deviceName.value = p.device?.release
+  if (p.device?.name) {
+    deviceName.value = p.device?.name
   } else {
     deviceName.value = ""
   }
@@ -56,7 +56,7 @@ const dgi = computed(() => {
   return {
     created: isCreated,
     confirmTitle: isCreated ? "更新设备配置" : "部署设备",
-    confirmContent: isCreated ? `确定要更新设备 ${device.value?.release} 的配置吗？` : `确定要将应用 ${tmpl.value?.name} 部署到 ${node.value?.id}(${node.value?.ip}) 吗？`,
+    confirmContent: isCreated ? `确定要更新设备 ${device.value?.name} 的配置吗？` : `确定要将应用 ${tmpl.value?.name} 部署到 ${node.value?.id}(${node.value?.ip}) 吗？`,
     confirmMsg: isCreated ? "更新设备配置成功" : "部署设备成功",
     title: isCreated ? "更新设备配置" : "启动设备",
     submitText: isCreated ? "更新" : "启动",
@@ -67,27 +67,30 @@ const dgi = computed(() => {
 async function prepareParams() {
   const tmplRes: TemplateData = await tmplStore.$getTmplById(tmpl.value!.id)
   if (tmplRes.id) {
-    const val = compRef.value?.getValue()
+    // const val = compRef.value?.getValue()
     const params: any = {}
     const rq = tmplRes.requirement
+    params.targetNode = dgi.value.nodeName
     params.cpu = +rq.cpuNum || 1
     params.memory = +rq.memory || 1
     params.hugepage = +rq.hugePage || 6
-    params.nodeName = dgi.value.nodeName
-    params.cpucore = rq.cpuCore
-    params.localip0 = val!['2110-7_m_local_ip']
-    params.localip1 = val!['2110-7_b_local_ip']
-    params.configFile = JSON.stringify(compRef.value?.getValue())
-    params.configFilePath = '/opt/vsomediasoftware/config/vsompconfiginfo-web.json'
-    params.hostNetwork = rq.hostNetwork
-    params.logLevel = rq.logLevel
-    params.repairRecvFrame = +rq.repairRecvFrame
-    params.repairSendFrame = +rq.repairSendFrame
-    params.dmaList = rq.dmaList || ""
-    params.utfOffset = rq.utfOffset
-    params.recvAVFrameNodeCount = rq.recvAVFrameNodeCount
-    params.sendAVFrameNodeCount = rq.sendAVFrameNodeCount
-    params.recvframeCnt = rq.recvframeCnt
+    params.coreList = rq.cpuCore
+    params.primaryVFAddress = rq.primaryVFAddress
+    params.secondaryVFAddress = rq.secondaryVFAddress
+    params.shm = rq.shm || 0
+    // params.localip0 = val!['2110-7_m_local_ip']
+    // params.localip1 = val!['2110-7_b_local_ip']
+    // params.configFile = JSON.stringify(compRef.value?.getValue())
+    // params.configFilePath = '/opt/vsomediasoftware/config/vsompconfiginfo-web.json'
+    // params.hostNetwork = rq.hostNetwork
+    // params.logLevel = rq.logLevel
+    // params.repairRecvFrame = +rq.repairRecvFrame
+    // params.repairSendFrame = +rq.repairSendFrame
+    // params.dmaList = rq.dmaList || ""
+    // params.utfOffset = rq.utfOffset
+    // params.recvAVFrameNodeCount = rq.recvAVFrameNodeCount
+    // params.sendAVFrameNodeCount = rq.sendAVFrameNodeCount
+    // params.recvframeCnt = rq.recvframeCnt
     return params
   } else {
     return { error: "模板不存在" }

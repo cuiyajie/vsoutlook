@@ -20,10 +20,10 @@ type Tmpl struct {
 
 type TmplRequirement struct {
 	Cpu                  string `json:"cpu,omitempty"`
-	CpuNum               string `json:"cpuNum,omitempty"`
+	CpuNum               int    `json:"cpuNum,omitempty"`
 	CpuCore              string `json:"cpuCore,omitempty"`
-	HugePage             string `json:"hugePage,omitempty"`
-	Memory               string `json:"memory,omitempty"`
+	HugePage             int    `json:"hugePage,omitempty"`
+	Memory               int    `json:"memory,omitempty"`
 	Disk                 string `json:"disk,omitempty"`
 	Gpu                  string `json:"gpu,omitempty"`
 	InputBand            string `json:"inputBand,omitempty"`
@@ -40,6 +40,9 @@ type TmplRequirement struct {
 	SendAVFrameNodeCount int    `json:"sendAVFrameNodeCount"`
 	RecvframeCnt         int    `json:"recvframeCnt"`
 	MaxRateMbpsByCore    int    `json:"maxRateMbpsByCore"`
+	PrimaryVFAddress     string `json:"primaryVFAddress,omitempty"`
+	SecondaryVFAddress   string `json:"secondaryVFAddress,omitempty"`
+	Shm                  int    `json:"shm"`
 }
 
 type TmplAsBasic struct {

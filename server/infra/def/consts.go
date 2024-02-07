@@ -8,5 +8,6 @@ const (
 )
 
 const (
-	Role_Admin = 1
+	Role_Admin  = 1
+	Role_Normal = 2
 )

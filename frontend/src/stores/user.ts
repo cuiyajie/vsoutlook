@@ -22,9 +22,21 @@ export const useUserData = defineStore('user', () => {
     }
   }
 
+  async function $add(user: Partial<UserData> & { password: string }) {
+    const res = await $fetch('/api/user/create', {
+      body: user
+    })
+    if (res.user) {
+      users.value.push(res.user)
+    }
+    return res
+  }
+
+
   return {
     users,
-    $fetchList
+    $fetchList,
+    $add
   } as const
 })
 

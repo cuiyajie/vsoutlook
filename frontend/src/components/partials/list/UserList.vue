@@ -1,36 +1,44 @@
 <script setup lang="ts">
-import type { VTagColor } from '/@src/components/base/tags/VTag.vue'
-import type { VAvatarProps } from '/@src/components/base/avatar/VAvatar.vue'
-import { useUserData } from '/@src/stores/user'
-import { UserRole } from "/@src/utils/enums"
+import type { VTagColor } from "/@src/components/base/tags/VTag.vue";
+import type { VAvatarProps } from "/@src/components/base/avatar/VAvatar.vue";
+import { useUserData } from "/@src/stores/user";
+import { UserRole } from "/@src/utils/enums";
 
 export interface UserData extends VAvatarProps {
-  name: string
-  role: string
+  name: string;
+  role: string;
 }
 
-const userStore = useUserData()
+const userStore = useUserData();
 
-const filters = ref('')
+const filters = ref("");
 
 const filteredData = computed(() => {
   if (!filters.value) {
-    return userStore.users
+    return userStore.users;
   } else {
     return userStore.users.filter((item) => {
-      return item.name.match(new RegExp(filters.value, 'i'))
-    })
+      return item.name.match(new RegExp(filters.value, "i"));
+    });
   }
-})
+});
 
-const mapRoleData: Record<number, { color: VTagColor, label: string }> = {
+const mapRoleData: Record<number, { color: VTagColor; label: string }> = {
   [UserRole.Admin]: {
-    color: 'primary' as VTagColor,
-    label: '管理员'
+    color: "primary" as VTagColor,
+    label: "管理员",
   },
+  [UserRole.Normal]: {
+    color: "secondary" as VTagColor,
+    label: "普通用户",
+  },
+};
+
+function createUser() {
+  bus.trigger(Signal.OpenNewUser);
 }
 
-userStore.$fetchList()
+userStore.$fetchList();
 </script>
 
 <template>
@@ -42,7 +50,7 @@ userStore.$fetchList()
             v-model="filters"
             class="input custom-text-filter"
             placeholder="搜索..."
-          >
+          />
         </VControl>
       </VField>
 
@@ -51,6 +59,8 @@ userStore.$fetchList()
           color="primary"
           icon="fas fa-plus"
           elevated
+          @keyup.space.prevent="createUser"
+          @click.prevent="createUser"
         >
           添加用户
         </VButton>
@@ -70,15 +80,8 @@ userStore.$fetchList()
 
         <div class="list-view-inner">
           <!--Item-->
-          <TransitionGroup
-            name="list-complete"
-            tag="div"
-          >
-            <div
-              v-for="(item, key) in filteredData"
-              :key="key"
-              class="list-view-item"
-            >
+          <TransitionGroup name="list-complete" tag="div">
+            <div v-for="(item, key) in filteredData" :key="key" class="list-view-item">
               <div class="list-view-item-inner">
                 <div class="meta-left">
                   <h3>{{ item.name }}</h3>
@@ -108,10 +111,11 @@ userStore.$fetchList()
       />
     </div>
   </div>
+  <NewUserModal />
 </template>
 
 <style lang="scss">
-@import '/@src/scss/abstracts/all';
+@import "/@src/scss/abstracts/all";
 
 .list-view-v1 {
   .list-view-item {

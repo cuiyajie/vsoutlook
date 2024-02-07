@@ -24,7 +24,7 @@ module.exports = {
     '@typescript-eslint/consistent-type-imports': [
       'error',
       { prefer: 'type-imports', fixStyle: 'inline-type-imports' },
-    ],
+    ]
   },
   overrides: [
     {
@@ -58,6 +58,9 @@ module.exports = {
 
         // vue 3.3 allows setup props destructuring
         'vue/no-setup-props-destructure': 'off',
+
+        'vue/singleline-html-element-content-newline': 'off',
+        'vue/max-attributes-per-line': 'off'
       },
     },
   ],

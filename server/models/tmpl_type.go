@@ -7,14 +7,16 @@ import (
 
 type TmplType struct {
 	ModelId
-	Name string
-	Icon string
+	Name     string
+	Icon     string
+	Category string
 }
 
 type TmplTypeAsBasic struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
-	Icon string `json:"icon"`
+	ID       string `json:"id"`
+	Name     string `json:"name"`
+	Icon     string `json:"icon"`
+	Category string `json:"category"`
 }
 
 func (tmplType *TmplType) AsBasic() TmplTypeAsBasic {

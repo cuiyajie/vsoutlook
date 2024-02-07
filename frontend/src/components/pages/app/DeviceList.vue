@@ -9,7 +9,7 @@ const deviceStore = useDevices()
 const devices = computed(() => deviceStore.devices)
 const loading = ref(false)
 
-const nameSorter: VFlexTableWrapperSortFunction<DeviceDetail> = ({ order, a, b }) => {
+const tmplNameSorter: VFlexTableWrapperSortFunction<DeviceDetail> = ({ order, a, b }) => {
   if (order === 'asc') {
     return a.tmplName.localeCompare(b.tmplName)
   } else if (order === 'desc') {
@@ -18,7 +18,7 @@ const nameSorter: VFlexTableWrapperSortFunction<DeviceDetail> = ({ order, a, b }
   return 0
 }
 
-const tmplSorter: VFlexTableWrapperSortFunction<DeviceDetail> = ({ order, a, b }) => {
+const tmplTypeSorter: VFlexTableWrapperSortFunction<DeviceDetail> = ({ order, a, b }) => {
   if (order === 'asc') {
     return a.tmplTypeName.localeCompare(b.tmplTypeName)
   } else if (order === 'desc') {
@@ -32,38 +32,47 @@ const tmplNameFilter: VFlexTableWrapperFilterFunction<DeviceDetail> = ({ searchT
   return row.tmplName.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
 }
 
-const releaseFilter: VFlexTableWrapperFilterFunction<DeviceDetail> = ({ searchTerm, row }) => {
+const nameFilter: VFlexTableWrapperFilterFunction<DeviceDetail> = ({ searchTerm, row }) => {
   if (!searchTerm) return true
-  return row.release.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
+  return row.name.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
 }
+
+const formatDate = (t: number) => new Date(t * 1000).toLocaleString('zh-CN', {
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit',
+  second: '2-digit'
+})
 
 const columns = {
   icon: {
     label: '图标',
     align: 'center'
   },
-  release: {
+  name: {
     label: '设备名称',
     grow: true,
     searchable: true,
     sortable: false,
-    filter: releaseFilter
+    filter: nameFilter
   },
-  name: {
+  tmplName: {
     label: '应用名称',
     grow: true,
     searchable: true,
     sortable: true,
-    sort: nameSorter,
+    sort: tmplNameSorter,
     filter: tmplNameFilter
   },
-  tmplType: {
+  tmplTypeName: {
     label: '类型',
     sortable: true,
     searchable: true,
-    sorter: tmplSorter
+    sorter: tmplTypeSorter
   },
-  updated: {
+  updatedAt: {
     label: '更新时间',
     grow: true,
     sortable: true,
@@ -188,15 +197,15 @@ refresh()
             <span
               v-else-if="column.key === 'name'"
               class="dark-text"
-            >{{ row.tmplName }}</span>
+            >{{ row.name }}</span>
             <span
               v-else-if="column.key === 'tmplType'"
               class="dark-text"
             >{{ row.tmplTypeName }}</span>
             <span
-              v-else-if="column.key === 'updated'"
+              v-else-if="column.key === 'updatedAt'"
               class="dark-text"
-            >{{ row.updated }}</span>
+            >{{ formatDate(row.updatedAt) }}</span>
             <VTag
               v-else-if="column.key === 'status'"
               rounded

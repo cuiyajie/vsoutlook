@@ -58,6 +58,11 @@ function cloudImport() {
   notyf.info("即将支持，敬请期待");
 }
 
+function auth() {
+  notyf.dismissAll();
+  notyf.info("即将支持，敬请期待");
+}
+
 function deleteTmpl(tmplId: string) {
   confirm({
     title: "删除应用",
@@ -99,54 +104,35 @@ function listTmpl(tmpl: TemplateData) {
   <div>
     <div class="card-grid-toolbar tmpl-list">
       <VControl icon="feather:search">
-        <input
-          v-model="filters"
-          class="input custom-text-filter"
-          placeholder="搜索..."
-        >
+        <input v-model="filters" class="input custom-text-filter" placeholder="搜索...">
       </VControl>
       <TmplTypeSelect v-model="tmplType" />
 
       <div class="buttons">
         <VButtons>
-          <VButton
-            color="primary"
-            raised
-            @click="createTemplate"
-          >
+          <!-- <VButton color="primary" raised @click="createTemplate">
             <span class="icon">
-              <i
-                aria-hidden="true"
-                class="fas fa-plus"
-              />
+              <i aria-hidden="true" class="fas fa-plus" />
             </span>
             <span>新建应用</span>
           </VButton>
-          <VButton
-            color="primary"
-            raised
-            @click="localImport"
-          >
+          <VButton color="primary" raised @click="localImport">
             <span class="icon">
-              <i
-                aria-hidden="true"
-                class="fas fa-file-import"
-              />
+              <i aria-hidden="true" class="fas fa-file-import" />
             </span>
             <span>本地导入</span>
           </VButton>
-          <VButton
-            color="primary"
-            raised
-            @click="cloudImport"
-          >
+          <VButton color="primary" raised @click="cloudImport">
             <span class="icon">
-              <i
-                class="fas fa-cloud-download-alt"
-                aria-hidden="true"
-              />
+              <i class="fas fa-cloud-download-alt" aria-hidden="true" />
             </span>
             <span>云市场导入</span>
+          </VButton> -->
+          <VButton color="primary" raised @click="auth">
+            <span class="icon">
+              <i aria-hidden="true" class="fas fa-plus" />
+            </span>
+            <span>应用授权</span>
           </VButton>
         </VButtons>
       </div>
@@ -162,22 +148,19 @@ function listTmpl(tmpl: TemplateData) {
       />
 
       <!--Card Grid v2-->
-      <TransitionGroup
-        v-if="!loading"
-        name="list"
-        tag="div"
-        class="columns is-multiline"
-      >
+      <TransitionGroup v-if="!loading" name="list" tag="div" class="columns is-multiline">
         <!--Grid Item-->
-        <div
-          v-for="(item, key) in filteredData"
-          :key="key"
-          class="column is-4"
-        >
+        <div v-for="(item, key) in filteredData" :key="key" class="column is-4">
           <div class="card-grid-item">
             <div class="card">
               <header class="card-header">
-                <div class="card-header-title cursor-pointer">
+                <div
+                  tabindex="0"
+                  class="card-header-title"
+                  role="button"
+                  @keydown.space.prevent="tmplStore.navigate(item.id)"
+                  @click.prevent="tmplStore.navigate(item.id)"
+                >
                   <div class="meta">
                     <span class="dark-inverted">{{ item.name }}</span>
                   </div>
@@ -191,9 +174,19 @@ function listTmpl(tmpl: TemplateData) {
                   {{ tmplTypeMap[item.type]?.name }}
                 </div>
               </header>
-              <div class="card-content" />
+              <div class="card-content">
+                <div class="card-content-flex">
+                  <div class="card-info">
+                    <p v-if="item.description">{{ item.description }}</p>
+                    <p v-else><em>未添加描述</em></p>
+                  </div>
+                </div>
+              </div>
               <footer class="card-footer">
-                <a
+                <span :class="item.listed ? 'is-success' : 'is-danger'">{{
+                  item.listed ? "已授权" : "未授权"
+                }}</span>
+                <!-- <a
                   tabindex="0"
                   role="button"
                   class="with-icon"
@@ -209,46 +202,36 @@ function listTmpl(tmpl: TemplateData) {
                     aria-hidden="true"
                   />
                   {{ item.listed ? "下架" : "上架" }}
-                </a>
-                <a
+                </a> -->
+                <!-- <a
                   tabindex="0"
                   role="button"
                   @keydown.space.prevent="tmplStore.navigate(item.id)"
                   @click.prevent="tmplStore.navigate(item.id)"
-                >编辑</a>
+                  >编辑</a
+                >
                 <a
                   tabindex="0"
                   role="button"
                   @keydown.space.prevent="deleteTmpl(item.id)"
                   @click.prevent="deleteTmpl(item.id)"
-                >删除</a>
+                  >删除</a
+                > -->
               </footer>
             </div>
           </div>
         </div>
       </TransitionGroup>
 
-      <VPlaceloadWrap
-        v-if="loading"
-        class="columns is-multiline"
-      >
+      <VPlaceloadWrap v-if="loading" class="columns is-multiline">
         <div class="column is-4">
-          <VPlaceload
-            height="134px"
-            width="100%"
-          />
+          <VPlaceload height="134px" width="100%" />
         </div>
         <div class="column is-4">
-          <VPlaceload
-            height="134px"
-            width="100%"
-          />
+          <VPlaceload height="134px" width="100%" />
         </div>
         <div class="column is-4">
-          <VPlaceload
-            height="134px"
-            width="100%"
-          />
+          <VPlaceload height="134px" width="100%" />
         </div>
       </VPlaceloadWrap>
     </div>
@@ -290,14 +273,18 @@ function listTmpl(tmpl: TemplateData) {
         .card-header-title {
           display: flex;
           align-items: center;
+          cursor: pointer;
 
           .meta {
-            margin-inline-start: 10px;
             line-height: 1.2;
 
             span {
               display: block;
               font-weight: 400;
+
+              &:hover {
+                text-decoration: underline;
+              }
 
               &:first-child {
                 font-family: var(--font-alt);
@@ -332,7 +319,6 @@ function listTmpl(tmpl: TemplateData) {
       }
 
       .card-content {
-        border-top: 1px solid var(--fade-grey-dark-4);
         padding: 1rem;
 
         .card-content-flex {
@@ -364,6 +350,20 @@ function listTmpl(tmpl: TemplateData) {
       }
 
       .card-footer {
+        span {
+          padding: 1rem 0.75rem;
+          flex: 1 1 0%;
+          text-align: right;
+
+          &.is-danger {
+            color: var(--danger);
+          }
+
+          &.is-success {
+            color: var(--success);
+          }
+        }
+
         a {
           font-family: var(--font);
           color: var(--light-text);

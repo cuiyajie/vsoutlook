@@ -8,6 +8,7 @@ type Device struct {
 	ModelId
 	Name    string `gorm:"type:varchar"`
 	Tmpl    string `gorm:"index;type:varchar"`
+	AppName string `gorm:"type:varchar"`
 	Deleted uint8  `gorm:"default:0"`
 	ModelTime
 }
@@ -15,11 +16,14 @@ type Device struct {
 type DeviceAsBasic struct {
 	ID           string `json:"id"`
 	Name         string `json:"name"`
+	AppName      string `json:"appName"`
 	TmplID       string `json:"tmplID"`
 	TmplName     string `json:"tmplName"`
 	TmplTypeID   string `json:"tmplTypeID"`
 	TmplTypeName string `json:"tmplTypeName"`
 	TmplTypeIcon string `json:"tmplTypeIcon"`
+	CreatedAt    int64  `json:"createdAt"`
+	UpdatedAt    int64  `json:"updatedAt"`
 }
 
 func (device Device) IsDeleted() bool {
@@ -37,6 +41,8 @@ func (device *Device) AsBasic() DeviceAsBasic {
 	result.TmplTypeID = tmplType.ID
 	result.TmplTypeName = tmplType.Name
 	result.TmplTypeIcon = tmplType.Icon
+	result.CreatedAt = device.CreatedAt.Unix()
+	result.UpdatedAt = device.UpdatedAt.Unix()
 	return result
 }
 
