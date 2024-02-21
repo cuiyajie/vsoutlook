@@ -28,6 +28,11 @@ let callbacks: any = {}
 
 useListener(Signal.OpenResourceConfig, (p: { tmpl: TemplateData, node: ClustNode, device: ClustDevice, callbacks: any }) => {
   opened.value = true;
+  if (!p.tmpl?.requirement) {
+    tmplStore.$getTmplById(p.tmpl.id).then(res => {
+      tmpl.value = res
+    })
+  }
   tmpl.value = p.tmpl;
   node.value = p.node;
   device.value = p.device;
@@ -227,7 +232,7 @@ const TmplComponent = computed(() => {
             </Transition>
           </VControl>
         </VField>
-        <TmplComponent ref="compRef" />
+        <TmplComponent ref="compRef" :name="deviceName" :requiredment="tmpl?.requirement" />
         <input
           ref="fileInput"
           type="file"

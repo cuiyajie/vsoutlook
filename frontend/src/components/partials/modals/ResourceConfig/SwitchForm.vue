@@ -1,9 +1,14 @@
 <script setup lang="ts">
-import { def_switch_input_params, def_switch_output_params, def_switch_input_video_params, type SwitchInputParamsType, global_config, def_switch_input_bus_params, type SwitchInputBusParamsType } from './Consts';
-import { unwrap, wrap } from "./Utils";
+import { def_switch_input_params, def_switch_output_params, def_switch_input_video_params, type SwitchInputParamsType, global_config, def_switch_input_bus_params, type SwitchInputBusParamsType, type AuthServiceType, type NMosConfigType, type SSMAddressType, auth_service, nmos_config, ssm_address } from './Consts';
+import { handle, unwrap, watchNmosName, wrap } from "./Utils";
 import pick from 'lodash-es/pick'
 import merge from 'lodash-es/merge'
 import switchData from '/@src/data/vscomponent/switch.json'
+
+const props = defineProps<{
+  name: string,
+  requiredment: TmplRequirement
+}>()
 
 const mv = defineModel<{
   moudle: string,
@@ -11,11 +16,13 @@ const mv = defineModel<{
   tallyserver_url: string,
   p4server_url: string,
   hw_panel_url: string,
-  nmos_devname: string,
   physic_nic_port0_IP: string,
   physic_nic_port1_IP: string,
   "2110-7_m_local_ip": string,
-  "2110-7_b_local_ip": string
+  "2110-7_b_local_ip": string,
+  nmos: NMosConfigType,
+  ssm_address_range: SSMAddressType[],
+  authorization_service: AuthServiceType[]
 }>({
   default: {
     moudle: "switch",
@@ -23,17 +30,21 @@ const mv = defineModel<{
     tallyserver_url: "",
     p4server_url: "",
     hw_panel_url: "",
-    nmos_devname: "",
     physic_nic_port0_IP: "",
     physic_nic_port1_IP: "",
     "2110-7_m_local_ip": "",
-    "2110-7_b_local_ip": ""
+    "2110-7_b_local_ip": "",
+    nmos: { ...nmos_config },
+    ssm_address_range: [{ ...ssm_address }],
+    authorization_service: [{ ...auth_service }]
   },
   local: true,
 });
 
 const moduleName = ref('切换台')
-mv.value = pick(switchData, ['moudle', 'input_number', 'tallyserver_url', 'p4server_url', 'hw_panel_url', 'nmos_devname', 'physic_nic_port0_IP', 'physic_nic_port1_IP', '2110-7_m_local_ip', '2110-7_b_local_ip'])
+mv.value = pick(switchData, ['moudle', 'input_number', 'tallyserver_url', 'p4server_url', 'hw_panel_url', 'physic_nic_port0_IP', 'physic_nic_port1_IP', '2110-7_m_local_ip', '2110-7_b_local_ip', 'nmos', 'ssm_address_range', 'authorization_service'])
+
+watchNmosName(() => props.name, mv.value)
 
 const ipData = unwrap(switchData.input, 'in_')
 const input = ref<SwitchInputParamsType>(def_switch_input_params())
@@ -80,7 +91,7 @@ function getValue() {
   const bip = mv.value['2110-7_b_local_ip']
   const useb = output.value['g_2022-7']
   return {
-    ...mv.value,
+    ...handle(mv.value, props.requiredment),
     input: {
       ...wrap(input.value, 'in_', input.value['g_2022-7']),
       input_params: inputs.value.map(ipt => wrap(ipt.value, 'in_', input.value['g_2022-7'], true, mip, bip))
@@ -99,7 +110,7 @@ function getValue() {
 }
 
 function setValue(data: typeof switchData) {
-  mv.value = pick(data, ['moudle', 'input_number', 'tallyserver_url', 'p4server_url', 'hw_panel_url', 'nmos_devname', 'physic_nic_port0_IP', 'physic_nic_port1_IP', '2110-7_m_local_ip', '2110-7_b_local_ip'])
+  mv.value = pick(data, ['moudle', 'input_number', 'tallyserver_url', 'p4server_url', 'hw_panel_url', 'physic_nic_port0_IP', 'physic_nic_port1_IP', '2110-7_m_local_ip', '2110-7_b_local_ip', 'nmos', 'ssm_address_range', 'authorization_service'])
   const _ipData = unwrap(data.input, 'in_')
   input.value = merge(def_switch_input_params(), _ipData)
   inputBus.value = merge(def_switch_input_bus_params(), unwrap(data.bus, 'bus_in_'))
@@ -170,7 +181,7 @@ defineExpose({
                 </VControl>
               </VField>
             </div>
-            <div class="column is-6">
+            <div class="column is-4">
               <VField>
                 <VLabel>Tally服务地址</VLabel>
                 <VControl>
@@ -180,7 +191,7 @@ defineExpose({
                 </VControl>
               </VField>
             </div>
-            <div class="column is-6">
+            <div class="column is-4">
               <VField>
                 <VLabel>IO通讯地址</VLabel>
                 <VControl>
@@ -190,22 +201,12 @@ defineExpose({
                 </VControl>
               </VField>
             </div>
-            <div class="column is-6">
+            <div class="column is-4">
               <VField>
                 <VLabel>硬件控制面板通讯地址</VLabel>
                 <VControl>
                   <VInput
                     v-model="mv.hw_panel_url"
-                  />
-                </VControl>
-              </VField>
-            </div>
-            <div class="column is-6">
-              <VField>
-                <VLabel>NMOS注册设备名称</VLabel>
-                <VControl>
-                  <VInput
-                    v-model="mv.nmos_devname"
                   />
                 </VControl>
               </VField>
@@ -252,6 +253,9 @@ defineExpose({
             </div>
           </div>
         </div>
+        <NMosConfig v-model="mv.nmos" />
+        <SSMAddressRange v-model="mv.ssm_address_range" />
+        <AuthorizationService v-model="mv.authorization_service" />
         <!--Fieldset-->
         <div class="form-outer">
           <div class="form-header">

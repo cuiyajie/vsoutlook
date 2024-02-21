@@ -33,13 +33,14 @@ type TmplRequirement struct {
 	LogLevel             uint8  `json:"logLevel"`
 	RepairRecvFrame      bool   `json:"repairRecvFrame"`
 	RepairSendFrame      bool   `json:"repairSendFrame"`
-	DMAList              string `json:"dmaList,omitempty"`
+	DMAList              string `json:"dmaList"`
 	HostNetwork          bool   `json:"hostNetwork"`
 	UtfOffset            uint8  `json:"utfOffset"`
 	RecvAVFrameNodeCount int    `json:"recvAVFrameNodeCount"`
 	SendAVFrameNodeCount int    `json:"sendAVFrameNodeCount"`
 	RecvframeCnt         int    `json:"recvframeCnt"`
 	MaxRateMbpsByCore    int    `json:"maxRateMbpsByCore"`
+	ReceiveSessions      int    `json:"receiveSessions"`
 	PrimaryVFAddress     string `json:"primaryVFAddress,omitempty"`
 	SecondaryVFAddress   string `json:"secondaryVFAddress,omitempty"`
 	Shm                  int    `json:"shm"`

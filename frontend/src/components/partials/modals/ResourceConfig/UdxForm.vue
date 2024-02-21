@@ -1,28 +1,37 @@
 <script setup lang="ts">
-import { watchInput, useFormat, unwrap, getFormat, wrap } from './Utils';
-import { formatKeys, type UdxInputType, def_udx_output_params, val_udx, def_udx_input, global_config } from './Consts';
+import { watchInput, useFormat, unwrap, getFormat, wrap, watchNmosName, handle } from './Utils';
+import { formatKeys, type UdxInputType, def_udx_output_params, val_udx, def_udx_input, global_config, type AuthServiceType, type NMosConfigType, type SSMAddressType, auth_service, nmos_config, ssm_address } from './Consts';
 import pick from 'lodash-es/pick'
 import merge from 'lodash-es/merge'
 import udxData from '/@src/data/vscomponent/udx.json'
 
+const props = defineProps<{
+  name: string,
+  requiredment: TmplRequirement
+}>()
+
 const mv = defineModel<{
   moudle: string,
   mode: string,
-  nmos_devname: string,
   "2110-7_m_local_ip": string,
   "2110-7_b_local_ip": string,
+  nmos: NMosConfigType,
+  ssm_address_range: SSMAddressType[],
+  authorization_service: AuthServiceType[]
 }>({
   default: {
     moudle: "udx",
     mode: "upscale",
-    nmos_devname: "",
     "2110-7_m_local_ip": "",
     "2110-7_b_local_ip": "",
+    nmos: { ...nmos_config },
+    ssm_address_range: [{ ...ssm_address }],
+    authorization_service: [{ ...auth_service }]
   },
   local: true,
 });
 
-mv.value = pick(udxData, ['moudle', 'mode', 'nmos_devname', '2110-7_m_local_ip', '2110-7_b_local_ip'])
+mv.value = pick(udxData, ['moudle', 'mode', '2110-7_m_local_ip', '2110-7_b_local_ip', 'nmos', 'ssm_address_range', 'authorization_service'])
 const moduleName = ref("上下变换")
 
 const input = ref<UdxInputType>(def_udx_input());
@@ -32,7 +41,7 @@ const inputFormat = useFormat(input.value, getFormat(input.value))
 const OUT_2_OPEN = ref(false)
 const output = ref<typeof global_config>({ ...global_config })
 const opData = unwrap(udxData.output, 'out_')
-output.value = pick(opData, ['g_2022-7', 'g_local_ip1', 'g_local_ip2'])
+output.value = pick(opData, ['g_2022-7'])
 OUT_2_OPEN.value = opData.params.length > 1
 const outputs = ref<any[]>([])
 outputs.value = Array.from({ length: 2 }, (_, i) => {
@@ -41,6 +50,7 @@ outputs.value = Array.from({ length: 2 }, (_, i) => {
 const output1Format = useFormat(outputs.value[0].value, getFormat(opData.params[0]))
 const output2Format = useFormat(outputs.value[1].value, getFormat(opData.params[1]))
 
+watchNmosName(() => props.name, mv.value)
 watchInput('audioformat', input.value, outputs.value.map(o => o.value), { deep: true })
 
 watch(() => mv.value.mode, () => {
@@ -59,7 +69,7 @@ function getValue() {
   const bip = mv.value['2110-7_b_local_ip']
   const useb = output.value['g_2022-7']
   return {
-    ...mv.value,
+    ...handle(mv.value, props.requiredment),
     input: wrap(input.value, 'in_', input.value['g_2022-7']),
     output: {
       ...wrap(output.value, 'out_'),
@@ -69,12 +79,12 @@ function getValue() {
 }
 
 function setValue(data: typeof udxData) {
-  mv.value = pick(data, ['moudle', 'mode', 'nmos_devname', '2110-7_m_local_ip', '2110-7_b_local_ip'])
+  mv.value = pick(data, ['moudle', 'mode', '2110-7_m_local_ip', '2110-7_b_local_ip', 'nmos', 'ssm_address_range', 'authorization_service'])
   input.value = merge(def_udx_input(), unwrap(data.input, 'in_'))
   inputFormat.value = getFormat(input.value)
 
   const _opData = unwrap(data.output, 'out_')
-  output.value = pick(_opData, ['g_2022-7', 'g_local_ip1', 'g_local_ip2'])
+  output.value = pick(_opData, ['g_2022-7'])
   OUT_2_OPEN.value = _opData.params.length > 1
   outputs.value.forEach((o, i) => {
     o.value = merge(def_udx_output_params(), _opData.params[i])
@@ -111,7 +121,7 @@ defineExpose({
           </div>
 
           <div class="columns is-multiline">
-            <div class="column is-4">
+            <div class="column is-6">
               <VField>
                 <VLabel>模块名称</VLabel>
                 <VControl>
@@ -122,7 +132,7 @@ defineExpose({
                 </VControl>
               </VField>
             </div>
-            <div class="column is-4">
+            <div class="column is-6">
               <VField>
                 <VLabel>工作模式</VLabel>
                 <VControl>
@@ -137,16 +147,6 @@ defineExpose({
                       下变换
                     </VOption>
                   </VSelect>
-                </VControl>
-              </VField>
-            </div>
-            <div class="column is-4">
-              <VField>
-                <VLabel>NMOS注册设备名称</VLabel>
-                <VControl>
-                  <VInput
-                    v-model="mv.nmos_devname"
-                  />
                 </VControl>
               </VField>
             </div>
@@ -172,6 +172,9 @@ defineExpose({
             </div>
           </div>
         </div>
+        <NMosConfig v-model="mv.nmos" />
+        <SSMAddressRange v-model="mv.ssm_address_range" />
+        <AuthorizationService v-model="mv.authorization_service" />
         <!--Fieldset-->
         <div class="form-outer">
           <div class="form-header">
@@ -203,8 +206,8 @@ defineExpose({
                 <h4>全局参数</h4>
               </div>
               <div class="columns is-multiline">
-                <div class="column is-4">
-                  <VField>
+                <div class="column is-12">
+                  <VField class="is-horizontal">
                     <VLabel>启用2022-7备份</VLabel>
                     <VControl>
                       <VSwitchBlock
@@ -214,31 +217,6 @@ defineExpose({
                     </VControl>
                   </VField>
                 </div>
-                <div class="column is-4">
-                  <VField>
-                    <VLabel>2022-7主路输出网口IP</VLabel>
-                    <VControl>
-                      <VInput
-                        v-model="output['g_local_ip1']"
-                      />
-                    </VControl>
-                  </VField>
-                </div>
-                <Transition name="fade-slow">
-                  <div
-                    v-if="output['g_2022-7']"
-                    class="column is-4"
-                  >
-                    <VField>
-                      <VLabel>2022-7备路输出网口IP</VLabel>
-                      <VControl>
-                        <VInput
-                          v-model="output['g_local_ip2']"
-                        />
-                      </VControl>
-                    </VField>
-                  </div>
-                </Transition>
               </div>
             </div>
             <UdxOutput

@@ -1,35 +1,43 @@
 <script setup lang="ts">
-import { def_mv_input_params, def_mv_output_params, global_config } from './Consts';
-import { unwrap, wrap } from "./Utils";
+import { type AuthServiceType, type NMosConfigType, type SSMAddressType, auth_service, def_mv_input_params, def_mv_output_params, global_config, nmos_config, ssm_address } from './Consts';
+import { handle, unwrap, watchNmosName, wrap } from "./Utils";
 import pick from 'lodash-es/pick'
 import merge from 'lodash-es/merge'
 import mvData from '/@src/data/vscomponent/mv.json'
+
+const props = defineProps<{
+  name: string,
+  requiredment: TmplRequirement
+}>()
 
 const mv = defineModel<{
   moudle: string,
   input_number: number,
   output_number: number,
   tally_port: number,
-  tally_ip: string,
-  nmos_devname: string,
   "2110-7_m_local_ip": string,
-  "2110-7_b_local_ip": string
+  "2110-7_b_local_ip": string,
+  nmos: NMosConfigType,
+  ssm_address_range: SSMAddressType[],
+  authorization_service: AuthServiceType[]
 }>({
   default: {
     moudle: "mv",
     input_number: 10,
     output_number: 1,
     tally_port: 6001,
-    tally_ip: '',
-    nmos_devname: "",
     "2110-7_m_local_ip": "",
-    "2110-7_b_local_ip": ""
+    "2110-7_b_local_ip": "",
+    nmos: { ...nmos_config },
+    ssm_address_range: [{ ...ssm_address }],
+    authorization_service: [{ ...auth_service }]
   },
   local: true,
 });
 
-mv.value = pick(mvData, ['moudle', 'input_number', 'output_number', 'tally_port', 'tally_ip', 'nmos_devname', '2110-7_m_local_ip', '2110-7_b_local_ip'])
+mv.value = pick(mvData, ['moudle', 'input_number', 'output_number', 'tally_port', '2110-7_m_local_ip', '2110-7_b_local_ip', 'nmos', 'ssm_address_range', 'authorization_service'])
 const moduleName = ref('多画面')
+watchNmosName(() => props.name, mv.value)
 
 const ipData = unwrap(mvData.input, 'in_')
 const input = ref<{ "g_2022-7": boolean }>({ "g_2022-7": false });
@@ -77,7 +85,7 @@ function getValue() {
   const bip = mv.value['2110-7_b_local_ip']
   const useb = output.value['g_2022-7']
   return {
-    ...mv.value,
+    ...handle(mv.value, props.requiredment),
     input: {
       ...wrap(input.value, 'in_', input.value['g_2022-7']),
       input_params: inputs.value.map(ipt => wrap(ipt.value, 'in_', input.value['g_2022-7'], true, mip, bip))
@@ -97,7 +105,7 @@ function getValue() {
 }
 
 function setValue(data: typeof mvData) {
-  mv.value = pick(data, ['moudle', 'input_number', 'output_number', 'tally_port', 'tally_ip', 'nmos_devname', '2110-7_m_local_ip', '2110-7_b_local_ip'])
+  mv.value = pick(data, ['moudle', 'input_number', 'output_number', 'tally_port', '2110-7_m_local_ip', '2110-7_b_local_ip', 'nmos', 'ssm_address_range', 'authorization_service'])
   const _ipData = unwrap(data.input, 'in_')
   input.value = pick(_ipData, ['g_2022-7'])
   nextTick(() => {
@@ -143,7 +151,7 @@ defineExpose({
           </div>
 
           <div class="columns is-multiline">
-            <div class="column is-4">
+            <div class="column is-3">
               <VField>
                 <VLabel>模块名称</VLabel>
                 <VControl>
@@ -154,7 +162,7 @@ defineExpose({
                 </VControl>
               </VField>
             </div>
-            <div class="column is-4">
+            <div class="column is-3">
               <VField>
                 <VLabel>输入信号数量</VLabel>
                 <VControl>
@@ -162,13 +170,13 @@ defineExpose({
                     v-model="mv.input_number"
                     centered
                     :min="0"
-                    :max="10"
+                    :max="36"
                     :step="1"
                   />
                 </VControl>
               </VField>
             </div>
-            <div class="column is-4">
+            <div class="column is-3">
               <VField>
                 <VLabel>输出信号数量</VLabel>
                 <VControl>
@@ -183,26 +191,6 @@ defineExpose({
                       2
                     </VOption>
                   </VSelect>
-                </VControl>
-              </VField>
-            </div>
-            <div class="column is-6">
-              <VField>
-                <VLabel>nmos注册设备名称</VLabel>
-                <VControl>
-                  <VInput
-                    v-model="mv.nmos_devname"
-                  />
-                </VControl>
-              </VField>
-            </div>
-            <div class="column is-3">
-              <VField>
-                <VLabel>tally服务IP地址</VLabel>
-                <VControl>
-                  <VInput
-                    v-model="mv.tally_ip"
-                  />
                 </VControl>
               </VField>
             </div>
@@ -241,6 +229,9 @@ defineExpose({
             </div>
           </div>
         </div>
+        <NMosConfig v-model="mv.nmos" />
+        <SSMAddressRange v-model="mv.ssm_address_range" />
+        <AuthorizationService v-model="mv.authorization_service" />
         <!--Fieldset-->
         <div class="form-outer">
           <div class="form-header">
@@ -297,8 +288,8 @@ defineExpose({
                 <h4>全局参数</h4>
               </div>
               <div class="columns is-multiline">
-                <div class="column is-4">
-                  <VField>
+                <div class="column is-12">
+                  <VField class="is-horizontal">
                     <VLabel>启用2022-7备份</VLabel>
                     <VControl>
                       <VSwitchBlock
@@ -308,31 +299,6 @@ defineExpose({
                     </VControl>
                   </VField>
                 </div>
-                <div class="column is-4">
-                  <VField>
-                    <VLabel>2022-7主路输出网口IP</VLabel>
-                    <VControl>
-                      <VInput
-                        v-model="output['g_local_ip1']"
-                      />
-                    </VControl>
-                  </VField>
-                </div>
-                <Transition name="fade-slow">
-                  <div
-                    v-if="output['g_2022-7']"
-                    class="column is-4"
-                  >
-                    <VField>
-                      <VLabel>2022-7备路输出网口IP</VLabel>
-                      <VControl>
-                        <VInput
-                          v-model="output['g_local_ip2']"
-                        />
-                      </VControl>
-                    </VField>
-                  </div>
-                </Transition>
               </div>
             </div>
             <MVOutput

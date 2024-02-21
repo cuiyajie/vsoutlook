@@ -30,9 +30,7 @@ export const base_config = {
 }
 
 export const global_config = {
-  "g_2022-7": true,
-  g_local_ip1: "",
-  g_local_ip2: "",
+  "g_2022-7": true
 }
 
 export const ipstream_video = {
@@ -109,6 +107,26 @@ export const switch_keyfill_params = {
   fill_src_address: "",
   fill_dst_address: "",
   fill_p4_port: 1
+}
+
+export const nmos_config = {
+  name: "61stream1",
+  http_port: 9008,
+  log_level:  0,
+  log_path:  "/opt/vsomediasoftware/logs/",
+  domain:  "local."
+}
+
+export const ssm_address = {
+  index: 0,
+	from: "232.0.0.0",
+  to: "232.255.255.255"
+}
+
+export const auth_service = {
+  index: 0,
+	ip: "232.0.0.0",
+  port: 8000
 }
 
 export const def_codec_input = () => ({
@@ -211,3 +229,6 @@ export type SwitchInputParamsType = ReturnType<typeof def_switch_input_params>
 export type SwitchInputBusParamsType = ReturnType<typeof def_switch_input_bus_params>
 export type SwitchInputVideoParamsType = ReturnType<typeof def_switch_input_video_params>
 export type SwitchOutputParamsType = ReturnType<typeof def_switch_output_params>
+export type NMosConfigType = typeof nmos_config
+export type SSMAddressType = typeof ssm_address
+export type AuthServiceType = typeof auth_service

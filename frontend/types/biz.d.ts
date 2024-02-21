@@ -27,6 +27,7 @@ interface TmplRequirement {
 	sendAVFrameNodeCount: number,
 	recvframeCnt: number,
   maxRateMbpsByCore: number,
+  receiveSessions: number,
   primaryVFAddress: string,
   secondaryVFAddress: string,
   shm: number

@@ -26,7 +26,7 @@ function tabChange(tab: string) {
 
 const specsData = ref({
   cpu: '',
-  cpuNum: '',
+  cpuNum: 0,
   cpuCore: '',
   hugePage: 0,
   memory: 0,
@@ -46,7 +46,8 @@ const specsData = ref({
   recvAVFrameNodeCount: 2,
   sendAVFrameNodeCount: 2,
   recvframeCnt: 2,
-  maxRateMbpsByCore: 0,
+  maxRateMbpsByCore: 9000,
+  receiveSessions: 18,
   primaryVFAddress: "",
   secondaryVFAddress: "",
   shm: 0

@@ -22,7 +22,8 @@ const modelValue = defineModel<any>({
     recvAVFrameNodeCount: 2,
     sendAVFrameNodeCount: 2,
     recvframeCnt: 2,
-    maxRateMbpsByCore: 0,
+    maxRateMbpsByCore: 9000,
+    receiveSessions: 18,
     primaryVFAddress: "",
     secondaryVFAddress: "",
     shm: 0
@@ -368,10 +369,23 @@ const opened = ref(false)
                 </div>
                 <div class="column is-4">
                   <VField>
-                    <VLabel>MaxRateMbpsByCore</VLabel>
+                    <VLabel>单核心最大处理能力(Mb)</VLabel>
                     <VControl>
                       <VInputNumber
                         v-model="modelValue.maxRateMbpsByCore"
+                        centered
+                        :min="0"
+                        :step="1"
+                      />
+                    </VControl>
+                  </VField>
+                </div>
+                <div class="column is-4">
+                  <VField>
+                    <VLabel>收流会话数</VLabel>
+                    <VControl>
+                      <VInputNumber
+                        v-model="modelValue.receiveSessions"
                         centered
                         :min="0"
                         :step="1"

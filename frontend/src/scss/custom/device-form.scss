@@ -5,6 +5,38 @@
     max-width: none;
   }
 
+  .fieldset-heading.flex {
+    display: flex;
+    align-items: center;
+
+    .button.is-circle {
+      margin-left: 1rem;
+      height: 1.5rem;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+  }
+
+  .field {
+    .button.is-circle {
+      margin-top: 7px;
+      width: 1.5rem;
+      height: 1.5rem;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+  }
+
+  .index-field {
+
+    .control > label {
+      margin-inline-start: 0.54rem;
+      color: white;
+      line-height: 38px;
+    }
+  }
+
+
   .form-outer {
     .form-body {
       padding: 0 20px;

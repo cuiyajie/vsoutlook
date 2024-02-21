@@ -1,28 +1,37 @@
 <script setup lang="ts">
-import { getFormat, unwrap, useFormat, watchInput, wrap } from './Utils'
-import { def_codec_input, def_codec_output, v_protocols, val_codec } from './Consts';
+import { getFormat, handle, unwrap, useFormat, watchInput, watchNmosName, wrap } from './Utils'
+import { def_codec_input, def_codec_output, v_protocols, val_codec, type NMosConfigType, nmos_config, type SSMAddressType, ssm_address, type AuthServiceType, auth_service } from './Consts';
 import pick from 'lodash-es/pick'
 import merge from 'lodash-es/merge'
 import codecData from '/@src/data/vscomponent/codec.json'
 
+const props = defineProps<{
+  name: string,
+  requiredment: TmplRequirement
+}>()
+
 const mv = defineModel<{
   moudle: string;
   mode: string;
-  nmos_devname: string;
   "2110-7_m_local_ip": string;
   "2110-7_b_local_ip": string;
+  nmos: NMosConfigType,
+  ssm_address_range: SSMAddressType[],
+  authorization_service: AuthServiceType[]
 }>({
   default: {
     moudle: "codec",
     mode: val_codec[0],
-    nmos_devname: "",
     "2110-7_m_local_ip": "",
-    "2110-7_b_local_ip": ""
+    "2110-7_b_local_ip": "",
+    nmos: { ...nmos_config },
+    ssm_address_range: [{ ...ssm_address }],
+    authorization_service: [{ ...auth_service }]
   },
   local: true,
 });
 
-mv.value = pick(codecData, ['moudle', 'mode', 'nmos_devname', '2110-7_m_local_ip', '2110-7_b_local_ip'])
+mv.value = pick(codecData, ['moudle', 'mode', '2110-7_m_local_ip', '2110-7_b_local_ip', 'nmos', 'ssm_address_range', 'authorization_service'])
 
 const moduleName = ref('编解码器')
 const input = ref(def_codec_input());
@@ -32,6 +41,8 @@ const inputFormat = useFormat(input.value, getFormat(input.value))
 const output = ref(def_codec_output());
 output.value = unwrap(codecData.output, 'out_')
 const outputFormat = useFormat(output.value.params, getFormat(output.value.params))
+
+watchNmosName(() => props.name, mv.value)
 
 watch(inputFormat, nv => {
   outputFormat.value = nv
@@ -53,14 +64,14 @@ function getValue() {
   const mip = mv.value['2110-7_m_local_ip']
   const bip = mv.value['2110-7_b_local_ip']
   return {
-    ...mv.value,
+    ...handle(mv.value, props.requiredment),
     input: wrap(input.value, 'in_', input.value['g_2022-7']),
     output: wrap(output.value, 'out_', output.value['g_2022-7'], false, mip, bip)
   }
 }
 
 function setValue(data: typeof codecData) {
-  mv.value = pick(data, ['moudle', 'mode', 'nmos_devname', '2110-7_m_local_ip', '2110-7_b_local_ip'])
+  mv.value = pick(data, ['moudle', 'mode', '2110-7_m_local_ip', '2110-7_b_local_ip', 'nmos', 'ssm_address_range', 'authorization_service'])
   input.value = merge(def_codec_input(), unwrap(data.input, 'in_'))
   output.value = merge(def_codec_output(), unwrap(data.output, 'out_'))
   inputFormat.value = getFormat(input.value)
@@ -95,7 +106,7 @@ defineExpose({
           </div>
 
           <div class="columns is-multiline">
-            <div class="column is-4">
+            <div class="column is-6">
               <VField>
                 <VLabel>模块名称</VLabel>
                 <VControl>
@@ -106,7 +117,7 @@ defineExpose({
                 </VControl>
               </VField>
             </div>
-            <div class="column is-4">
+            <div class="column is-6">
               <VField>
                 <VLabel>工作模式</VLabel>
                 <VControl>
@@ -121,16 +132,6 @@ defineExpose({
                       解码器
                     </VOption>
                   </VSelect>
-                </VControl>
-              </VField>
-            </div>
-            <div class="column is-4">
-              <VField>
-                <VLabel>NMOS注册设备名称</VLabel>
-                <VControl>
-                  <VInput
-                    v-model="mv.nmos_devname"
-                  />
                 </VControl>
               </VField>
             </div>
@@ -156,6 +157,9 @@ defineExpose({
             </div>
           </div>
         </div>
+        <NMosConfig v-model="mv.nmos" />
+        <SSMAddressRange v-model="mv.ssm_address_range" />
+        <AuthorizationService v-model="mv.authorization_service" />
         <!--Fieldset-->
         <div class="form-outer">
           <div class="form-header">

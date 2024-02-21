@@ -8,7 +8,27 @@
   "hw_panel_url": "192.168.1.1:10003",
   "physic_nic_port0_IP": "192.168.1.1",
   "physic_nic_port1_IP": "192.168.1.2",
-  "nmos_devname": "devname",
+  "nmos": {
+    "name": "61stream1",
+    "http_port": 9008,
+    "log_level": 0,
+    "log_path": "/opt/vsomediasoftware/logs/",
+    "domain": "local."
+  },
+  "ssm_address_range": [
+    {
+      "index": 0,
+		  "from": "232.0.0.0",
+      "to": "232.255.255.255"
+    }
+  ],
+  "authorization_service": [
+    {
+      "index": 0,
+      "ip": "232.0.0.0",
+      "port": 8080
+    }
+  ],
   "input": {
     "in_g_2022-7": true,
     "in_v_protocol": "st2110-20",
@@ -233,8 +253,6 @@
   },
   "output": {
     "out_g_2022-7": true,
-    "out_g_local_ip1": "192.168.1.1",
-    "out_g_local_ip2": "192.168.1.2",
     "out_pgm_params": {
       "out_v_protocol": "st2110-20",
       "ipstream_master": {

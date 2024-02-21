@@ -5,8 +5,27 @@
   "2110-7_m_local_ip": "192.168.1.1",
   "2110-7_b_local_ip": "192.168.1.2",
   "tally_port": 6001,
-  "tally_ip": "192.168.1.1",
-  "nmos_devname": "devname",
+  "nmos": {
+    "name": "61stream1",
+    "http_port": 9008,
+    "log_level": 0,
+    "log_path": "/opt/vsomediasoftware/logs/",
+    "domain": "local."
+  },
+  "ssm_address_range": [
+    {
+      "index": 0,
+		  "from": "232.0.0.0",
+      "to": "232.255.255.255"
+    }
+  ],
+  "authorization_service": [
+    {
+      "index": 0,
+      "ip": "232.0.0.0",
+      "port": 8080
+    }
+  ],
   "input": {
     "in_g_2022-7": true,
     "input_params": [
@@ -254,8 +273,6 @@
   },
   "output": {
     "out_g_2022-7": true,
-    "out_g_local_ip1": "192.168.1.1",
-    "out_g_local_ip2": "192.168.1.2",
     "out_params": [
       {
         "out_mv_template": "c:\\mv_template1",

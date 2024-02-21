@@ -1,5 +1,5 @@
 import type { WatchSource, WatchOptions } from "vue";
-import { defs, formats, v_compression_format, v_compression_ratio, v_protocols, v_width, val_udx } from './Consts';
+import { defs, formats, v_compression_format, v_compression_ratio, v_protocols, v_width, val_udx, ssm_address } from './Consts';
 import omit from 'lodash-es/omit';
 
 function setFormat(dst: any, tokens: string[]) {
@@ -101,6 +101,16 @@ export function watchInput(key: string, input: any, mvs: any[], options: WatchOp
   );
 }
 
+export function watchNmosName(watcher: WatchSource<string>, mv: any) {
+  watch(
+    watcher,
+    (nv) => {
+      mv.nmos.name = nv;
+    },
+    { immediate: true }
+  );
+}
+
 export function watchModeVFormat(
   watcher: WatchSource<'upscale' | 'downscale'>,
   shouldFormats: Ref<any[]>
@@ -118,11 +128,39 @@ export function watchModeVFormat(
   );
 }
 
+export function handle(mv: any, required: TmplRequirement) {
+  if (mv.ssm_address_range?.length > 0) {
+    mv.ssm_address_range = mv.ssm_address_range.map((v: any, idx: number) => {
+      v.index = idx;
+      return v
+    })
+  }
+  if (mv.authorization_service?.length > 0) {
+    mv.authorization_service = mv.authorization_service.map((v: any, idx: number) => {
+      v.index = idx;
+      return v
+    })
+  }
+  if (required) {
+    Object.assign(mv, {
+      ipservice: {
+        log_level : required.logLevel,
+        dma_list : required.dmaList,
+        binding_core_list : required.cpuCore,
+        max_bandwidth_percore : required.maxRateMbpsByCore,
+        receive_sessions : required.receiveSessions
+      }
+    })
+  }
+  return mv
+}
+
 export function wrap(src: any, prefix: string, useBackup?: boolean, isBackup?: boolean, m_local_ip?: string, b_local_ip?: string) {
   const dst: any = {}
   for (const key in src) {
     let wrapKey = `${prefix}${key}`;
     if ([
+      'index',
       'ipstream_master', 'ipstream_backup', 'videoformat', 'audioformat', 'pip_params',
       'input_key_params', 'input_fill_params', 'input_video_params',
       'video_bus_master', 'video_bus_backup', 'keyfill_bus_master', 'keyfill_bus_backup',
@@ -162,7 +200,7 @@ export function unwrap(src: any, prefix: string) {
   for (const key in src) {
     const unwrapKey = key.replace(prefix, '');
     if (src[key] instanceof Array) {
-      dst[unwrapKey] = src[key].map((v: any) => unwrap(v, prefix));
+      dst[unwrapKey] = src[key].map((v: any, index: number) => Object.assign(unwrap(v, prefix), { index }));
     } else if (typeof src[key] === 'object') {
       if (src[key] === null) {
         dst[unwrapKey] = null
