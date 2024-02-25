@@ -10,8 +10,16 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"vsoutlook.com/vsoutlook/infra/config"
+	"vsoutlook.com/vsoutlook/models"
+	"vsoutlook.com/vsoutlook/models/db"
 	"vsoutlook.com/vsoutlook/service/svcinfra"
 )
+
+type ClusterNodeDetail struct {
+	NodeName    string                 `json:"nodeName"`
+	NodeIP      string                 `json:"nodeIP"`
+	Allocatable map[string]interface{} `json:"allocatable"`
+}
 
 func BuildProxyReq[T any](
 	c *svcinfra.Context,
@@ -126,11 +134,48 @@ func GetNodeDetail(c *svcinfra.Context) {
 		ID string `json:"id"`
 	}
 	c.ShouldBindJSON(&req)
-	path := "/api/nodes/" + req.ID
-	resp := BuildProxyReq[any](c, "GET", path, nil, nil)
+	path := "/node"
+	query := map[string]interface{}{
+		"node_name": req.ID,
+	}
+	resp := BuildProxyReq[ClusterNodeDetail](c, "GET", path, &query, nil)
 	if resp == nil {
 		c.GeneralError("获取节点详情失败")
 		return
 	}
-	c.Bye(resp)
+	data := make(map[string]interface{})
+	data["node"] = resp
+
+	node := models.ActiveNode(resp.NodeName)
+	if node == nil {
+		data["coreList"] = ""
+	} else {
+		data["coreList"] = node.CoreList
+	}
+	c.Bye(gin.H{"code": 0, "data": data})
+}
+
+func UpdateNode(c *svcinfra.Context) {
+	var req struct {
+		ID       string `json:"id"`
+		CoreList string `json:"core"`
+	}
+	c.ShouldBindJSON(&req)
+	node := models.ActiveNode(req.ID)
+	if node == nil {
+		node = &models.Node{
+			ID:        req.ID,
+			CoreList:  req.CoreList,
+			Allocated: make(models.MapUint32Slice),
+		}
+	} else {
+		if len(node.Allocated) == 0 {
+			node.CoreList = req.CoreList
+		} else {
+			c.GeneralError("节点已分配，不可修改")
+			return
+		}
+	}
+	db.DB.Save(node)
+	c.Bye(gin.H{"code": 0})
 }

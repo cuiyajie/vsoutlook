@@ -118,14 +118,15 @@ interface UserData {
 interface ClustNode {
   id: string,
   ip: string,
+  coreList: string,
   // info: {
-  //   allocatable: { cpu: { value: string }, memory: { value: string } },
-  //   current: { cpu: { value: string }, memory: { value: string } },
+  //   coreList: string
   // }
 }
 
 interface ClustDevice {
   id: string,
   node: string,
-  name: string
+  name: string,
+  config: string
 }

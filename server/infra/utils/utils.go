@@ -1,12 +1,14 @@
 package utils
 
 import (
+	"encoding/json"
 	"fmt"
 	"math/rand"
 	"net/mail"
 	"path/filepath"
 	"reflect"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 	"unicode"
@@ -104,4 +106,48 @@ func Ext(s string) string {
 		return ".prt." + parts[l-1]
 	}
 	return filepath.Ext(s)
+}
+
+func ParseCoreListString(input string) []int {
+	var numberArray []int
+	encountered := make(map[int]bool)
+
+	segments := strings.Split(input, ",")
+	for _, segment := range segments {
+		if strings.Contains(segment, "-") {
+			rangeValues := strings.Split(segment, "-")
+			start, _ := strconv.Atoi(rangeValues[0])
+			end, _ := strconv.Atoi(rangeValues[1])
+			for i := start; i <= end; i++ {
+				if !encountered[i] {
+					numberArray = append(numberArray, i)
+					encountered[i] = true
+				}
+			}
+		} else {
+			num, _ := strconv.Atoi(segment)
+			if !encountered[num] {
+				numberArray = append(numberArray, num)
+				encountered[num] = true
+			}
+		}
+	}
+
+	return numberArray
+}
+
+func IntArrayToString(arr []uint32) string {
+	var strArr []string
+	for _, num := range arr {
+		strArr = append(strArr, fmt.Sprintf("%d", num))
+	}
+	return strings.Join(strArr, ",")
+}
+
+func MapToString(m map[string]interface{}) string {
+	jsonData, err := json.Marshal(m)
+	if err != nil {
+		return ""
+	}
+	return string(jsonData)
 }

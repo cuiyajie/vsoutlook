@@ -8,6 +8,10 @@ const selectedTmpl = ref<TemplateData | null>(null);
 
 tmplTypeStore.$fetchList();
 tmplStore.$fetchList();
+
+function deployApp() {
+  bus.trigger(Signal.OpenResourceConfig);
+}
 </script>
 <template>
   <div>
@@ -38,12 +42,20 @@ tmplStore.$fetchList();
           </h3>
         </VCard>
       </div>
-      <div class="column is-9">
+      <div class="column is-9 container-page">
         <VCard
           radius="rounded"
         >
-          <h3 class="title is-5 mb-4">
+          <h3 class="title is-5 mb-0 container-title">
             容器平台
+            <VButton
+              color="primary"
+              raised
+              @keydown.space.prevent="deployApp"
+              @click.prevent="deployApp"
+            >
+              部署应用
+            </VButton>
           </h3>
           <ContainerBlocks />
         </VCard>
@@ -70,6 +82,16 @@ tmplStore.$fetchList();
     li.has-children ul li .is-submenu {
       margin-inline-start: 17px;
       padding: 7px 12px;
+    }
+  }
+
+  .container-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    .v-button {
+      transform: translateY(-10px);
     }
   }
 }

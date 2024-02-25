@@ -31,13 +31,38 @@ export const useClustNode = defineStore('clustNode', () => {
     }
   }
 
+  async function $update(id: string, core: string) {
+    const res = await $fetch('/api/cluster/node.update', {
+      body: { id, core }
+    })
+    if (res?.code === 0) {
+      nodes.value.find(node => node.id === id)!.coreList = core
+    }
+    return res
+  }
+
   async function $fetchList() {
     // nodes.value =  nodeMock.nodes
     const res = await $fetch('/api/cluster/nodes')
     if (res && res.code === 0) {
-      nodes.value = res.data.map((n: any) => ({
-        id: n.nodeName,
-        ip: n.nodeIP
+      nodes.value = await Promise.all(res.data.map(async (node: { nodeName: string, nodeIP: string }) => {
+        const res1 = await $fetch('/api/cluster/node.detail', {
+          body: { id: node.nodeName }
+        })
+        if (res1 && res1.code === 0) {
+          return {
+            id: node.nodeName,
+            ip: node.nodeIP,
+            coreList: res1.data.coreList,
+            info: res1.data.node
+          }
+        }
+        return {
+          id: node.nodeName,
+          ip: node.nodeIP,
+          coreList: "",
+          info: null
+        }
       }))
     }
   }
@@ -46,7 +71,8 @@ export const useClustNode = defineStore('clustNode', () => {
     nodes,
     $fetchList,
     $startQuery,
-    $stopQuery
+    $stopQuery,
+    $update
   } as const
 })
 

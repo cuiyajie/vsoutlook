@@ -59,7 +59,7 @@ const opened = ref(false)
                 </VControl>
               </VField>
             </div>
-            <div class="column is-4">
+            <!-- <div class="column is-4">
               <VField>
                 <VLabel>CPU核心列表</VLabel>
                 <VControl>
@@ -70,7 +70,7 @@ const opened = ref(false)
                   />
                 </VControl>
               </VField>
-            </div>
+            </div> -->
             <div class="column is-4">
               <VField>
                 <VLabel>内存 (GB)</VLabel>

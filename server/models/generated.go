@@ -5,6 +5,7 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"errors"
+	"fmt"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
@@ -59,6 +60,10 @@ func (Device) TableName() string {
 	return "devices"
 }
 
+func (Node) TableName() string {
+	return "nodes"
+}
+
 // for gorm
 func (d TmplRequirement) Value() (driver.Value, error) {
 	return json.Marshal(d)
@@ -74,4 +79,44 @@ func (d *TmplRequirement) Scan(value any) error {
 
 func (TmplRequirement) GormDBDataType(gormDb *gorm.DB, field *schema.Field) string {
 	return db.JSONField(gormDb)
+}
+
+func (s Uint32Slice) Value() (driver.Value, error) {
+	return json.Marshal(s)
+}
+
+func (s *Uint32Slice) Scan(value interface{}) error {
+	if value == nil {
+		*s = make(Uint32Slice, 0)
+		return nil
+	}
+
+	switch v := value.(type) {
+	case string:
+		return json.Unmarshal([]byte(v), s)
+	case []byte:
+		return json.Unmarshal(v, s)
+	default:
+		return fmt.Errorf("invalid scan type for Uint32Slice: %T", v)
+	}
+}
+
+func (m MapUint32Slice) Value() (driver.Value, error) {
+	return json.Marshal(m)
+}
+
+func (m *MapUint32Slice) Scan(value interface{}) error {
+	if value == nil {
+		*m = make(MapUint32Slice)
+		return nil
+	}
+
+	switch v := value.(type) {
+	case string:
+		return json.Unmarshal([]byte(v), m)
+	case []byte:
+		return json.Unmarshal(v, m)
+	default:
+		return fmt.Errorf("invalid scan type for MapUint32Slice: %T", v)
+	}
 }

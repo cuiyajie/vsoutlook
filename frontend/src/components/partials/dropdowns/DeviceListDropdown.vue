@@ -21,7 +21,7 @@ function remove() {
     title: "删除设备",
     content: "确定要删除该设备吗？",
     onConfirm: async (hide) => {
-      const res = await deviceStore.$remove(props.device.id);
+      const res = await deviceStore.$remove(props.device.id, props.device.targetNode);
       hide();
       if (res && res.result === "ok") {
         notyf.success("删除成功");
@@ -109,7 +109,7 @@ function config() {
     class="device-list-dropdown"
   >
     <template #content="{ close }">
-      <a
+      <!-- <a
         href="#"
         role="menuitem"
         class="dropdown-item is-media"
@@ -127,7 +127,7 @@ function config() {
         </div>
       </a>
 
-      <hr class="dropdown-divider">
+      <hr class="dropdown-divider"> -->
       <!-- <a
         href="#"
         role="menuitem"

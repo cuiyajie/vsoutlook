@@ -45,6 +45,7 @@ declare module 'vue' {
     NewTmplTypeModal: typeof import('./../src/components/partials/modals/NewTmplTypeModal.vue')['default']
     NewUserModal: typeof import('./../src/components/partials/modals/NewUserModal.vue')['default']
     NMosConfig: typeof import('./../src/components/partials/modals/ResourceConfig/NMosConfig.vue')['default']
+    NodeEditModal: typeof import('./../src/components/partials/modals/NodeEditModal.vue')['default']
     ResourceConfigModal: typeof import('./../src/components/partials/modals/ResourceConfig/ResourceConfigModal.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

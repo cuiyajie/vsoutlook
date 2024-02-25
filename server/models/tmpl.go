@@ -75,6 +75,7 @@ func (tmpl *Tmpl) AsDetail() any {
 		"type":        tmpl.Type,
 		"typeName":    tmplType.Name,
 		"description": tmpl.Description,
+		"listed":      tmpl.Listed,
 	}
 	result["requirement"] = tmpl.Requirement
 	result["flow"] = tmpl.Flow

@@ -40,11 +40,12 @@ export const useDevices = defineStore('device', () => {
     }
   }
 
-  async function $deploy(name: string, tmpl: string, body: any) {
+  async function $deploy(name: string, tmpl: string, node: string, body: any) {
     const res = await $fetch('/api/device/create', {
       body: {
         name,
         tmpl,
+        node,
         body: JSON.stringify(body)
       }
     })
@@ -70,9 +71,9 @@ export const useDevices = defineStore('device', () => {
     }
   }
 
-  async function $remove(id: string) {
+  async function $remove(id: string, node: string) {
     return await $fetch('/api/device/delete', {
-      body: { id }
+      body: { id, node }
     })
   }
 

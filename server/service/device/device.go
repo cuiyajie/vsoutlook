@@ -2,17 +2,15 @@ package device
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
-	"io"
-	"net/http"
-	"net/url"
 	"sort"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/copier"
-	"vsoutlook.com/vsoutlook/infra/config"
 	"vsoutlook.com/vsoutlook/infra/def"
+	"vsoutlook.com/vsoutlook/infra/utils"
 	"vsoutlook.com/vsoutlook/models"
 	"vsoutlook.com/vsoutlook/models/db"
 	"vsoutlook.com/vsoutlook/service/cluster"
@@ -91,7 +89,8 @@ func GetDevice(c *svcinfra.Context) {
 
 func DeleteDevice(c *svcinfra.Context) {
 	var req struct {
-		ID string `json:"id"`
+		ID   string `json:"id"`
+		Node string `json:"node"`
 	}
 	c.ShouldBindJSON(&req)
 	device := models.ActiveDevice(req.ID)
@@ -119,6 +118,12 @@ func DeleteDevice(c *svcinfra.Context) {
 	device.Deleted = def.SelfDeleted
 	if !c.Save(&device) {
 		return
+	}
+
+	node := models.ActiveNode(req.Node)
+	if node != nil {
+		delete(node.Allocated, device.ID)
+		c.Save(&node)
 	}
 
 	c.Bye(gin.H{"result": "ok"})
@@ -174,10 +179,50 @@ func StopDevice(c *svcinfra.Context) {
 	c.Bye(gin.H{"result": "ok"})
 }
 
+func allocateNodeCore(tmpl *models.Tmpl, node *models.Node) ([]uint32, error) {
+	cpuNum := tmpl.Requirement.CpuNum
+	if cpuNum <= 0 {
+		return nil, errors.New("该应用没有设置cpu数量")
+	}
+
+	if len(node.CoreList) == 0 {
+		return nil, errors.New("节点没有配置核心列表")
+	}
+
+	cores := utils.ParseCoreListString(node.CoreList)
+	if len(cores) < int(cpuNum) {
+		return nil, errors.New("节点核心数不足")
+	}
+
+	allocated := make(map[uint32]bool)
+	for _, v := range node.Allocated {
+		for _, v2 := range v {
+			allocated[v2] = true
+		}
+	}
+
+	if len(allocated)+cpuNum > len(cores) {
+		return nil, errors.New("节点核心数不足")
+	}
+
+	var result []uint32
+	for _, v := range cores {
+		if !allocated[uint32(v)] {
+			result = append(result, uint32(v))
+		}
+		if len(result) == int(cpuNum) {
+			break
+		}
+	}
+
+	return result, nil
+}
+
 func CreateDevice(c *svcinfra.Context) {
 	var req struct {
 		Name string `json:"name"`
 		Tmpl string `json:"tmpl"`
+		Node string `json:"node"`
 		Body string `json:"body"`
 	}
 
@@ -192,6 +237,20 @@ func CreateDevice(c *svcinfra.Context) {
 	}
 
 	tmpl := models.ActiveTmpl(req.Tmpl)
+	node := models.ActiveNode(req.Node)
+	if node == nil {
+		c.GeneralError("节点不存在")
+		return
+	}
+
+	cores, err := allocateNodeCore(tmpl, node)
+	if err != nil {
+		c.GeneralError(err.Error())
+		return
+	}
+
+	coreListStr := utils.IntArrayToString(cores)
+
 	newDevice := models.Device{
 		Name: req.Name,
 		Tmpl: req.Tmpl,
@@ -199,7 +258,7 @@ func CreateDevice(c *svcinfra.Context) {
 
 	tmplType := models.ActiveTmplType(tmpl.Type)
 	var data map[string]interface{}
-	err := json.Unmarshal([]byte(req.Body), &data)
+	err = json.Unmarshal([]byte(req.Body), &data)
 	if err != nil {
 		fmt.Printf("parse request body: %v", err)
 		c.GeneralError("请求数据格式错误")
@@ -208,6 +267,14 @@ func CreateDevice(c *svcinfra.Context) {
 	}
 	data["displayName"] = req.Name
 	data["applicationCategory"] = tmplType.Category
+	data["coreList"] = coreListStr
+	configFile := data["configFile"].(map[string]interface{})
+	if _, ok := configFile["ipservice"]; ok {
+		ipservice := configFile["ipservice"].(map[string]interface{})
+		ipservice["binding_core_list"] = coreListStr
+	}
+	fmt.Printf("config file: %v", data["configFile"])
+	newDevice.Config = utils.MapToString(configFile)
 
 	resp2 := cluster.BuildProxyReq[struct {
 		Name string `json:"name"`
@@ -226,6 +293,9 @@ func CreateDevice(c *svcinfra.Context) {
 		return
 	}
 
+	node.Allocated[newDevice.ID] = cores
+	c.Save(&node)
+
 	c.Bye(gin.H{"device": newDevice.AsBasic()})
 }
 
@@ -242,67 +312,5 @@ func UpdateDevice(c *svcinfra.Context) {
 		return
 	}
 
-	device := models.ActiveDevice(req.DeviceId)
-	tmpl := models.ActiveTmpl(device.Tmpl)
-
-	if req.Name != device.Name {
-		c.GeneralError("设备不存在")
-		return
-	}
-
-	clustPath := config.Get("CLUST_HOST")
-	baseURL := clustPath + "/api/namespaces/default/releases/" + device.Name
-
-	// Create a new URL with the base URL
-	apiURL, err := url.Parse(baseURL)
-	if err != nil {
-		fmt.Println("Error parsing URL:", err)
-		return
-	}
-	// Create query parameters
-	queryParams := url.Values{}
-	chart := config.Get("CHART_PKG")
-	if len(tmpl.Requirement.Chart) > 0 {
-		chart = tmpl.Requirement.Chart
-	}
-	queryParams.Set("chart", chart)
-	// Add query parameters to the URL
-	apiURL.RawQuery = queryParams.Encode()
-
-	fmt.Println("Update URL:", apiURL.String())
-
-	clustReq, err := http.NewRequest("PUT", apiURL.String(), strings.NewReader(req.Body))
-	if err != nil {
-		fmt.Printf("failed to create update request: %v", err)
-		c.GeneralError("创建更新设备请求失败")
-		return
-	}
-	clustReq.Header.Set("Content-Type", "application/json")
-	client := &http.Client{}
-	resp, err := client.Do(clustReq)
-	if err != nil {
-		fmt.Printf("failed to make update request: %v", err)
-		c.GeneralError("发送更新设备请求失败")
-		return
-	}
-
-	defer resp.Body.Close()
-
-	d, _ := io.ReadAll(resp.Body)
-	fmt.Println("cluster node response:", string(d))
-	var resp2 ClustResp
-	err = json.Unmarshal(d, &resp2)
-	if err != nil {
-		fmt.Printf("failed to parse response: %v", err)
-		c.GeneralError("更新设备返回数据格式错误")
-		return
-	}
-	if len(resp2.Error) > 0 {
-		fmt.Printf("failed to update device: %v", resp2.Error)
-		c.GeneralError("更新设备失败")
-		return
-	}
-
-	models.Save(&device)
-	c.Bye(gin.H{"device": device.AsBasic()})
+	c.Bye(gin.H{"result": "ok"})
 }

@@ -11,9 +11,11 @@ import { confirm } from "/@src/utils/dialog";
 import { useDevices } from '/@src/stores/device'
 import { useTemplate } from "/@src/stores/template";
 import downloadJsonFile from '/@src/utils/download-json'
+import { useClustNode } from "/@src/stores/node";
 
 const tmplStore = useTemplate();
 const deviceStore = useDevices()
+const nodeStore = useClustNode();
 
 const notyf = useNotyf();
 const opened = ref(false);
@@ -24,10 +26,30 @@ const tmpl = ref<TemplateData | null>(null)
 const node = ref<ClustNode | null>(null)
 const device = ref<ClustDevice | null>(null)
 const fileInput = ref<HTMLInputElement | null>(null)
+const inited = ref(false)
 let callbacks: any = {}
 
-useListener(Signal.OpenResourceConfig, (p: { tmpl: TemplateData, node: ClustNode, device: ClustDevice, callbacks: any }) => {
+const tmpls = computed(() => tmplStore.tmpls)
+const nodes = computed(() => nodeStore.nodes)
+
+function onTmplSelect(field?: any, val?: any) {
+  field?.setValue(val)
+  tmpl.value = tmpls.value.find(t => t.id === val) || null
+  if (val && !tmpl.value?.requirement) {
+    tmplStore.$getTmplById(val).then(res => {
+      tmpl.value = res
+    })
+  }
+}
+
+function setNode(nodeId: string) {
+  node.value = nodes.value.find(n => n.id === nodeId) || null
+}
+
+useListener(Signal.OpenResourceConfig, (p?: { tmpl: TemplateData, node: ClustNode, device: ClustDevice, callbacks: any }) => {
   opened.value = true;
+  inited.value = !!p
+  if (!p) return
   if (!p.tmpl?.requirement) {
     tmplStore.$getTmplById(p.tmpl.id).then(res => {
       tmpl.value = res
@@ -44,16 +66,30 @@ useListener(Signal.OpenResourceConfig, (p: { tmpl: TemplateData, node: ClustNode
   callbacks = p.callbacks || {}
   nextTick(() => {
     deviceInput.value?.field?.setValue(deviceName.value)
+    if (p.device?.config) {
+      const val = JSON.parse(p.device.config)
+      compRef.value?.setValue(val)
+    }
   })
 });
 
-const zodSchema = z.object({
-  deviceName: z.string({
-    required_error: "请输入设备名称",
-  }).refine(val => /^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$/.test(val), "请输入合法的设备名称")
-  .refine(val => val.length <= 53, "设备名称不能大于53个字符")
-});
-const validationSchema = toTypedSchema(zodSchema);
+const validationSchema = computed(() => {
+  const rules: any = {
+    deviceName: z.string({
+      required_error: "请输入设备名称",
+    }).refine(val => /^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$/.test(val), "请输入合法的设备名称")
+    .refine(val => val.length <= 53, "设备名称不能大于53个字符"),
+  };
+  if (!inited.value) {
+    rules.tmpl = z.string({
+      required_error: "请选择应用",
+    });
+    rules.node = z.string({
+      required_error: "请选择容器",
+    });
+  }
+  return toTypedSchema(z.object(rules))
+})
 const { handleSubmit } = useForm({ validationSchema });
 
 const dgi = computed(() => {
@@ -70,22 +106,20 @@ const dgi = computed(() => {
 })
 
 async function prepareParams() {
-  const tmplRes: TemplateData = await tmplStore.$getTmplById(tmpl.value!.id)
-  if (tmplRes.id) {
+  if (tmpl.value?.id && node.value?.id) {
     // const val = compRef.value?.getValue()
     const params: any = {}
-    const rq = tmplRes.requirement
+    const rq = tmpl.value.requirement
     params.targetNode = dgi.value.nodeName
     params.cpu = +rq.cpuNum || 1
     params.memory = +rq.memory || 1
     params.hugepage = +rq.hugePage || 6
-    params.coreList = rq.cpuCore
     params.primaryVFAddress = rq.primaryVFAddress
     params.secondaryVFAddress = rq.secondaryVFAddress
     params.shm = rq.shm || 0
+    params.configFile = compRef.value?.getValue()
     // params.localip0 = val!['2110-7_m_local_ip']
     // params.localip1 = val!['2110-7_b_local_ip']
-    // params.configFile = JSON.stringify(compRef.value?.getValue())
     // params.configFilePath = '/opt/vsomediasoftware/config/vsompconfiginfo-web.json'
     // params.hostNetwork = rq.hostNetwork
     // params.logLevel = rq.logLevel
@@ -121,7 +155,7 @@ const addInstance = handleSubmit(async () => {
       if (dgi.value.created) {
         pro = deviceStore.$updateConfig(deviceName.value, device.value!.id, params)
       } else {
-        pro = deviceStore.$deploy(deviceName.value, tmpl.value!.id, params)
+        pro = deviceStore.$deploy(deviceName.value, tmpl.value!.id, node.value!.id, params)
       }
       const res = await pro
       loading.value = false;
@@ -212,7 +246,6 @@ const TmplComponent = computed(() => {
           ref="deviceInput"
           v-slot="{ field }"
           label="设备名称*"
-          horizontal
           class="device-name"
         >
           <VControl fullwidth>
@@ -232,7 +265,83 @@ const TmplComponent = computed(() => {
             </Transition>
           </VControl>
         </VField>
-        <TmplComponent ref="compRef" :name="deviceName" :requiredment="tmpl?.requirement" />
+        <div v-if="!inited" class="columns">
+          <div class="column is-6 mt-4">
+            <VField
+              id="tmpl"
+              v-slot="{ field }"
+              label="选择应用*"
+            >
+              <VControl fullwidth>
+                <Multiselect
+                  placeholder="选择应用"
+                  value-prop="id"
+                  label="name"
+                  :max-height="145"
+                  :options="tmpls"
+                  @change="(val: any) => onTmplSelect(field, val)"
+                >
+                  <template #singlelabel="{ value }">
+                    <div class="multiselect-single-label">
+                      <span class="select-label-text">
+                        {{ value.name }}
+                      </span>
+                    </div>
+                  </template>
+                  <template #option="{ option }">
+                    <span class="select-label-text">
+                      {{ option.name }}
+                    </span>
+                  </template>
+                </Multiselect>
+                <p
+                  v-if="field?.errorMessage"
+                  class="help is-danger"
+                >
+                  {{ field.errorMessage }}
+                </p>
+              </VControl>
+            </VField>
+          </div>
+          <div class="column is-6 mt-4">
+            <VField
+              id="node"
+              v-slot="{ field }"
+              label="选择容器*"
+            >
+              <VControl fullwidth>
+                <Multiselect
+                  placeholder="选择容器"
+                  value-prop="id"
+                  label="name"
+                  :max-height="145"
+                  :options="nodes"
+                  @change="(val: any) => { field?.setValue(val); setNode(val); }"
+                >
+                  <template #singlelabel="{ value }">
+                    <div class="multiselect-single-label">
+                      <span class="select-label-text">
+                        {{ value.id }}
+                      </span>
+                    </div>
+                  </template>
+                  <template #option="{ option }">
+                    <span class="select-label-text">
+                      {{ option.id }}
+                    </span>
+                  </template>
+                </Multiselect>
+                <p
+                  v-if="field?.errorMessage"
+                  class="help is-danger"
+                >
+                  {{ field.errorMessage }}
+                </p>
+              </VControl>
+            </VField>
+          </div>
+        </div>
+        <TmplComponent v-if="tmpl" ref="compRef" :name="deviceName" :requiredment="tmpl?.requirement" />
         <input
           ref="fileInput"
           type="file"

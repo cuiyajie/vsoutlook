@@ -66,6 +66,10 @@ function onDrop(event: DragEvent) {
 //   return [Math.round((parseInt(info.current?.memory?.value) || 0) * 100 / (parseInt(info.allocatable?.memory?.value) || 1)) ]
 // }
 
+function edit(node: ClustNode) {
+  bus.trigger(Signal.OpenNodeEdit, node);
+}
+
 (async () => {
   loading.value = true
   await nodeStore.$fetchList()
@@ -127,6 +131,8 @@ onUnmounted(() => {
         <h5>{{ node.id }}</h5>
         <span>IP: {{ node.ip }}</span>
       </div>
+      <div class="info-meta">
+      </div>
       <!-- <div class="chart-wrap ml-6">
         <ApexChart
           :height="cpuOptions.chart.height"
@@ -143,10 +149,32 @@ onUnmounted(() => {
           :options="memoryOptions"
         />
       </div> -->
+      <div class="meta-right">
+        <div class="buttons">
+          <VButton
+            color="primary"
+            raised
+            @keydown.space.prevent="edit(node)"
+            @click.prevent="edit(node)"
+          >
+            编辑
+          </VButton>
+        </div>
+      </div>
     </VCard>
   </TransitionGroup>
+  <NodeEditModal />
 </template>
 <style lang="scss">
+.container-page {
+
+  .columns {
+    margin-top: 0;
+    margin-inline-start: 0;
+    margin-inline-end: 0;
+  }
+}
+
 .container-list {
   padding-top: 8px;
 
@@ -181,9 +209,17 @@ onUnmounted(() => {
       }
     }
 
+    .info-meta {
+      flex: 1;
+    }
+
     .chart-wrap {
       width: 200px;
       transform: translateY(-8px);
+    }
+
+    .meta-right {
+      flex: 0 0 auto;
     }
 
     &.drag-over {

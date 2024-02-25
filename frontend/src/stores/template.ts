@@ -51,6 +51,7 @@ export const useTemplate = defineStore('template', () => {
   async function $getTmplById(id: string) {
     const res = await $fetch('/api/tmpl/info', { body: { id } })
     if (res && res.tmpl) {
+      tmpls.value = tmpls.value.map(tmpl => tmpl.id === id ? res.tmpl : tmpl)
       return res.tmpl
     }
     return null

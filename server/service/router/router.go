@@ -70,6 +70,7 @@ func SetupRouter() *gin.Engine {
 		post(member, "cluster/pod.delete", cluster.DeletePod)
 		post(member, "cluster/nodes", cluster.GetNodes)
 		post(member, "cluster/node.detail", cluster.GetNodeDetail)
+		post(member, "cluster/node.update", cluster.UpdateNode)
 	}
 
 	router.NoRoute(h(site.FallbackHandler))

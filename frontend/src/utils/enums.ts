@@ -7,6 +7,7 @@ export enum Signal {
   OpenResourceConfig,
   OpenAlertDialog,
   OpenNewUser,
+  OpenNodeEdit,
 }
 
 export enum DeviceStatus {

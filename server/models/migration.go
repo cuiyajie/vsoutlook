@@ -14,6 +14,24 @@ func Migrate(env string) {
 	m := gormigrate.New(db.DB, gormigrate.DefaultOptions, []*gormigrate.Migration{
 		// 添加新的migration, 参考 https://github.com/go-gormigrate/gormigrate
 		{
+			ID: "20240225-1048",
+			Migrate: func(tx *gorm.DB) error {
+				type Device struct {
+					Config string `gorm:"type:varchar"`
+				}
+				return tx.AutoMigrate(&Device{})
+			},
+			Rollback: func(tx *gorm.DB) error {
+				return tx.Migrator().DropColumn("devices", "config")
+			},
+		},
+		{
+			ID: "20240222-2253",
+			Migrate: func(tx *gorm.DB) error {
+				return tx.AutoMigrate(&Node{})
+			},
+		},
+		{
 			ID: "20240204-2221",
 			Migrate: func(tx *gorm.DB) error {
 				type Device struct {

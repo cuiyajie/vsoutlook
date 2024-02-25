@@ -146,7 +146,6 @@ export function handle(mv: any, required: TmplRequirement) {
       ipservice: {
         log_level : required.logLevel,
         dma_list : required.dmaList,
-        binding_core_list : required.cpuCore,
         max_bandwidth_percore : required.maxRateMbpsByCore,
         receive_sessions : required.receiveSessions
       }

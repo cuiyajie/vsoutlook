@@ -63,14 +63,14 @@ function viewTmpl() {
           {{ tmpld.requirement.memory || '无' }}
         </span>
       </div>
-      <div class="info-block-line">
+      <!-- <div class="info-block-line">
         <h4 class="dark-inverted">
           CPU核心
         </h4>
         <span>
           {{ tmpld.requirement.cpuCore || '无' }}
         </span>
-      </div>
+      </div> -->
       <div class="info-block-line">
         <h4 class="dark-inverted">
           大页数 (Huge Page)
@@ -81,12 +81,52 @@ function viewTmpl() {
       </div>
       <div class="info-block-line">
         <h4 class="dark-inverted">
+          /dev/shm大小 (GB)
+        </h4>
+        <span>
+          {{ tmpld.requirement.shm || '无' }}
+        </span>
+      </div>
+      <div class="info-block-line">
+        <h4 class="dark-inverted">
+          数据主网卡
+        </h4>
+        <span>
+          {{ tmpld.requirement.primaryVFAddress || '无' }}
+        </span>
+      </div>
+      <div class="info-block-line">
+        <h4 class="dark-inverted">
+          数据备网卡
+        </h4>
+        <span>
+          {{ tmpld.requirement.secondaryVFAddress || '无' }}
+        </span>
+      </div>
+      <div class="info-block-line">
+        <h4 class="dark-inverted">
+          单核心最大处理能力(Mb)
+        </h4>
+        <span>
+          {{ tmpld.requirement.maxRateMbpsByCore || '无' }}
+        </span>
+      </div>
+      <div class="info-block-line">
+        <h4 class="dark-inverted">
+          收流会话数
+        </h4>
+        <span>
+          {{ tmpld.requirement.receiveSessions || '无' }}
+        </span>
+      </div>
+      <!-- <div class="info-block-line">
+        <h4 class="dark-inverted">
           Chart包名
         </h4>
         <span>
           {{ tmpld.requirement.chart || '无' }}
         </span>
-      </div>
+      </div> -->
       <div class="info-block-line multi">
         <h4 class="dark-inverted">
           说明
