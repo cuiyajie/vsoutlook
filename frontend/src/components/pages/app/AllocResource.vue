@@ -9,9 +9,6 @@ const selectedTmpl = ref<TemplateData | null>(null);
 tmplTypeStore.$fetchList();
 tmplStore.$fetchList();
 
-function deployApp() {
-  bus.trigger(Signal.OpenResourceConfig);
-}
 </script>
 <template>
   <div>
@@ -48,14 +45,6 @@ function deployApp() {
         >
           <h3 class="title is-5 mb-0 container-title">
             容器平台
-            <VButton
-              color="primary"
-              raised
-              @keydown.space.prevent="deployApp"
-              @click.prevent="deployApp"
-            >
-              部署应用
-            </VButton>
           </h3>
           <ContainerBlocks />
         </VCard>

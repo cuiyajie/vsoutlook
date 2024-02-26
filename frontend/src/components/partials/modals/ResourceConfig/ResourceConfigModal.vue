@@ -42,8 +42,9 @@ function onTmplSelect(field?: any, val?: any) {
   }
 }
 
-function setNode(nodeId: string) {
-  node.value = nodes.value.find(n => n.id === nodeId) || null
+function onNodeSelect(field?: any, val?: any) {
+  field?.setValue(val);
+  node.value = nodes.value.find(n => n.id === val) || null
 }
 
 useListener(Signal.OpenResourceConfig, (p?: { tmpl: TemplateData, node: ClustNode, device: ClustDevice, callbacks: any }) => {
@@ -59,7 +60,7 @@ useListener(Signal.OpenResourceConfig, (p?: { tmpl: TemplateData, node: ClustNod
   node.value = p.node;
   device.value = p.device;
   if (p.device?.name) {
-    deviceName.value = p.device?.name
+    deviceName.value = p.device?.name || ""
   } else {
     deviceName.value = ""
   }
@@ -83,10 +84,10 @@ const validationSchema = computed(() => {
   if (!inited.value) {
     rules.tmpl = z.string({
       required_error: "请选择应用",
-    });
+    }).nullable().refine(v => v !== null, "请选择应用");
     rules.node = z.string({
       required_error: "请选择容器",
-    });
+    }).nullable().refine(v => v !== null, "请选择容器");
   }
   return toTypedSchema(z.object(rules))
 })
@@ -316,7 +317,7 @@ const TmplComponent = computed(() => {
                   label="name"
                   :max-height="145"
                   :options="nodes"
-                  @change="(val: any) => { field?.setValue(val); setNode(val); }"
+                  @change="(val: any) => onNodeSelect(field, val)"
                 >
                   <template #singlelabel="{ value }">
                     <div class="multiselect-single-label">
@@ -391,6 +392,10 @@ const TmplComponent = computed(() => {
 }
 
 .v-modal {
+  .modal-card-body {
+    min-height: 400px;
+  }
+
   .btn-setting-import,
   .btn-setting-save {
     position: absolute;

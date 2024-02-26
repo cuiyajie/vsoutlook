@@ -176,7 +176,6 @@ onUnmounted(() => {
 }
 
 .container-list {
-  padding-top: 8px;
 
   .l-card {
     width: auto;

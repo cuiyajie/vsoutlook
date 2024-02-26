@@ -4,8 +4,12 @@ import type {
   VFlexTableWrapperFilterFunction,
 } from '/@src/components/base/table/VFlexTableWrapper.vue'
 import { useDevices } from '/@src/stores/device'
+import { useClustNode } from '/@src/stores/node'
+import { useTemplate } from '/@src/stores/template'
 
 const deviceStore = useDevices()
+const nodeStore = useClustNode();
+const tmplStore = useTemplate();
 const devices = computed(() => deviceStore.devices)
 const loading = ref(false)
 
@@ -114,6 +118,12 @@ async function refresh () {
   loading.value = false
 }
 
+function deployApp() {
+  nodeStore.$fetchList()
+  tmplStore.$fetchList();
+  bus.trigger(Signal.OpenResourceConfig);
+}
+
 refresh()
 
 </script>
@@ -146,6 +156,19 @@ refresh()
         </template>
         <template #right>
           <VButtons>
+            <VButton
+              color="primary"
+              raised
+              @click="deployApp"
+            >
+              <span class="icon">
+                <i
+                  class="lnir lnir-plus"
+                  aria-hidden="true"
+                />
+              </span>
+              <span>新建设备</span>
+            </VButton>
             <VButton
               color="primary"
               raised
