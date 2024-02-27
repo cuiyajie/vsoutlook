@@ -288,15 +288,6 @@ func CreateDevice(c *svcinfra.Context) {
 		db.DB.Delete(&newDevice)
 		return
 	}
-	var inf interface{} = *resp2
-	if resp3, ok := inf.(struct {
-		Value string `json:"value"`
-	}); ok {
-		fmt.Printf("failed to create device: %s", resp3.Value)
-		c.GeneralError(fmt.Sprintf("部署设备失败: %s", resp3.Value))
-		db.DB.Delete(&newDevice)
-		return
-	}
 	newDevice.AppName = resp2.Name
 	result := models.Create(&newDevice)
 	if result.Error != nil {
