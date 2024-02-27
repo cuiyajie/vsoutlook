@@ -43,16 +43,12 @@ type DeviceAsRelease struct {
 	PodsStatus []PodStatus `json:"podsStatus,omitempty"`
 }
 
-type StringResp struct {
-	Value string `json:"value"`
-}
-
 func GetDeviceList(c *svcinfra.Context) {
 	clustDevices := make([]DeviceAsRelease, 0)
 	clustQuery := map[string]interface{}{
 		"release_status": "true",
 	}
-	resp2 := cluster.BuildProxyReq[[]ClustReleaseApp](c, "GET", "/apps", &clustQuery, nil)
+	resp2, _ := cluster.BuildProxyReq[[]ClustReleaseApp](c, "GET", "/apps", &clustQuery, nil)
 	if resp2 == nil {
 		fmt.Printf("failed to get device list")
 		c.Bye(gin.H{"devices": clustDevices})
@@ -102,11 +98,15 @@ func DeleteDevice(c *svcinfra.Context) {
 	data := map[string]interface{}{
 		"name": device.AppName,
 	}
-	resp2 := cluster.BuildProxyReq[struct {
+	resp2, err := cluster.BuildProxyReq[struct {
 		Name string `json:"name"`
 	}](c, "POST", "/uninstall", nil, &data)
 	if resp2 == nil {
-		c.GeneralError("请求删除设备失败")
+		if err != nil {
+			c.GeneralError(fmt.Sprintf("请求删除设备失败: %s", err.Error()))
+		} else {
+			c.GeneralError("请求删除设备失败")
+		}
 		return
 	}
 
@@ -144,9 +144,9 @@ func StartDevice(c *svcinfra.Context) {
 		"release_name":  device.AppName,
 		"release_scale": "2",
 	}
-	resp2 := cluster.BuildProxyReq[StringResp](c, "GET", "/start", &data, nil)
+	resp2, err := cluster.BuildProxyReq[any](c, "GET", "/start", &data, nil)
 	// start udx-i5urluof successfully with scale 2
-	if resp2 == nil || !strings.Contains((*resp2).Value, "successfully") {
+	if (resp2 == nil && err == nil) || (err != nil && !strings.Contains(err.Error(), "successfully")) {
 		c.GeneralError("请求启动设备失败")
 		return
 	}
@@ -168,10 +168,9 @@ func StopDevice(c *svcinfra.Context) {
 	data := map[string]interface{}{
 		"release_name": device.AppName,
 	}
-	resp2 := cluster.BuildProxyReq[StringResp](c, "GET", "/stop", &data, nil)
-	fmt.Print(resp2)
+	resp2, err := cluster.BuildProxyReq[any](c, "GET", "/stop", &data, nil)
 	// stop udx-i5urluof successfully with scale 2
-	if resp2 == nil || !strings.Contains((*resp2).Value, "successfully") {
+	if (resp2 == nil && err == nil) || (err != nil && !strings.Contains(err.Error(), "successfully")) {
 		c.GeneralError("请求暂停设备失败")
 		return
 	}
@@ -274,15 +273,27 @@ func CreateDevice(c *svcinfra.Context) {
 		ipservice := configFile["ipservice"].(map[string]interface{})
 		ipservice["binding_core_list"] = coreListStr
 	}
-	fmt.Printf("config file: %v", data["configFile"])
 	newDevice.Config = utils.MapToString(configFile)
 
-	resp2 := cluster.BuildProxyReq[struct {
+	resp2, err := cluster.BuildProxyReq[struct {
 		Name string `json:"name"`
 	}](c, "POST", "/install", nil, &data)
 	if resp2 == nil {
 		fmt.Printf("failed to parse response: %v", err)
-		c.GeneralError("部署节点返回数据格式错误")
+		if err != nil {
+			c.GeneralError(fmt.Sprintf("部署设备失败: %s", err.Error()))
+		} else {
+			c.GeneralError("部署节点返回数据格式错误")
+		}
+		db.DB.Delete(&newDevice)
+		return
+	}
+	var inf interface{} = *resp2
+	if resp3, ok := inf.(struct {
+		Value string `json:"value"`
+	}); ok {
+		fmt.Printf("failed to create device: %s", resp3.Value)
+		c.GeneralError(fmt.Sprintf("部署设备失败: %s", resp3.Value))
 		db.DB.Delete(&newDevice)
 		return
 	}

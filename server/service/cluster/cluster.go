@@ -3,6 +3,7 @@ package cluster
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -27,13 +28,13 @@ func BuildProxyReq[T any](
 	path string,
 	query *map[string]interface{},
 	params *map[string]interface{},
-) *T {
+) (*T, error) {
 	clustPath := config.Get("CLUST_HOST")
 	baseURL := clustPath + path
 	apiURL, err := url.Parse(baseURL)
 	if err != nil {
 		fmt.Println("Error parsing URL:", err)
-		return nil
+		return nil, nil
 	}
 
 	if query != nil {
@@ -52,7 +53,7 @@ func BuildProxyReq[T any](
 		paramBytes, err = json.Marshal(params)
 		if err != nil {
 			fmt.Printf("failed to stringify params: %v", err)
-			return nil
+			return nil, nil
 		}
 	}
 
@@ -61,14 +62,14 @@ func BuildProxyReq[T any](
 	podReq, err := http.NewRequest(method, apiURL.String(), bytes.NewBuffer(paramBytes))
 	if err != nil {
 		fmt.Printf("failed to create request: %v", err)
-		return nil
+		return nil, nil
 	}
 	podReq.Header.Set("Content-Type", "application/json")
 	client := &http.Client{}
 	resp, err := client.Do(podReq)
 	if err != nil {
 		fmt.Printf("failed to make request: %v", err)
-		return nil
+		return nil, nil
 	}
 
 	defer resp.Body.Close()
@@ -77,18 +78,17 @@ func BuildProxyReq[T any](
 	fmt.Println("proxy node response:", string(d))
 	if err != nil {
 		fmt.Printf("failed to response: %v", err)
-		return nil
+		return nil, nil
 	}
 
 	var resp2 T
 
 	err = json.Unmarshal(d, &resp2)
 	if err != nil {
-		d = []byte(fmt.Sprintf(`{"value": "%s"}`, string(d)))
-		json.Unmarshal(d, &resp2)
+		return nil, errors.New(string(d))
 	}
 
-	return &resp2
+	return &resp2, nil
 }
 
 func GetPodsPhase(c *svcinfra.Context) {
@@ -97,7 +97,7 @@ func GetPodsPhase(c *svcinfra.Context) {
 	}
 	c.ShouldBindJSON(&req)
 	path := "/api/namespaces/default/releases/" + req.Device + "/podPhase"
-	resp := BuildProxyReq[any](c, "GET", path, nil, nil)
+	resp, _ := BuildProxyReq[any](c, "GET", path, nil, nil)
 	if resp == nil {
 		c.GeneralError("获取pod状态失败")
 		return
@@ -111,7 +111,7 @@ func DeletePod(c *svcinfra.Context) {
 	}
 	c.ShouldBindJSON(&req)
 	path := "/api/namespaces/default/pods/" + req.Pod + "/delete"
-	resp := BuildProxyReq[any](c, "GET", path, nil, nil)
+	resp, _ := BuildProxyReq[any](c, "GET", path, nil, nil)
 	if resp == nil {
 		c.GeneralError("删除pod失败")
 		return
@@ -121,7 +121,7 @@ func DeletePod(c *svcinfra.Context) {
 
 func GetNodes(c *svcinfra.Context) {
 	path := "/nodes"
-	resp := BuildProxyReq[[]interface{}](c, "GET", path, nil, nil)
+	resp, _ := BuildProxyReq[[]interface{}](c, "GET", path, nil, nil)
 	if resp == nil {
 		c.GeneralError("获取节点列表失败")
 		return
@@ -138,7 +138,7 @@ func GetNodeDetail(c *svcinfra.Context) {
 	query := map[string]interface{}{
 		"node_name": req.ID,
 	}
-	resp := BuildProxyReq[ClusterNodeDetail](c, "GET", path, &query, nil)
+	resp, _ := BuildProxyReq[ClusterNodeDetail](c, "GET", path, &query, nil)
 	if resp == nil {
 		c.GeneralError("获取节点详情失败")
 		return
