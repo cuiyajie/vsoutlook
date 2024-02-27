@@ -26,7 +26,7 @@ func NewLogger(dir string) *Logger {
 		utils.EnsureDirExists(dir)
 	}
 	l := &Logger{dir: dir}
-	// l.Switch()
+	l.Switch()
 	return l
 }
 

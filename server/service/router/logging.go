@@ -36,7 +36,7 @@ func logger(c *gin.Context) {
 	var info utils.Map
 	ctype := c.Request.Header["Content-Type"]
 	path := c.Request.URL.Path
-	if strings.HasPrefix(path, "api") && len(ctype) == 1 && strings.Contains(ctype[0], "json") {
+	if strings.HasPrefix(path, "/api") && len(ctype) == 1 && strings.Contains(ctype[0], "json") {
 		if err := json.Unmarshal(body, &info); err != nil {
 			log.Printf("unmarshal body err: %s body: %s", err, body)
 		}

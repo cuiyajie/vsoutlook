@@ -239,8 +239,9 @@ func CreateDevice(c *svcinfra.Context) {
 	tmpl := models.ActiveTmpl(req.Tmpl)
 	node := models.ActiveNode(req.Node)
 	if node == nil {
-		c.GeneralError("节点不存在")
-		return
+		node = &models.Node{
+			ID: req.Node,
+		}
 	}
 
 	cores, err := allocateNodeCore(tmpl, node)

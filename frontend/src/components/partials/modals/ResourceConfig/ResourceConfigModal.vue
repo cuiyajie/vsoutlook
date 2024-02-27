@@ -78,8 +78,7 @@ const validationSchema = computed(() => {
   const rules: any = {
     deviceName: z.string({
       required_error: "请输入设备名称",
-    }).refine(val => /^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$/.test(val), "请输入合法的设备名称")
-    .refine(val => val.length <= 53, "设备名称不能大于53个字符"),
+    })
   };
   if (!inited.value) {
     rules.tmpl = z.string({
@@ -237,6 +236,7 @@ const TmplComponent = computed(() => {
     :title="dgi.title"
     actions="right"
     cancel-label="取消"
+    dialog-class="resource-config-modal"
     @submit.prevent="opened = false"
     @close="opened = false"
   >
@@ -391,7 +391,7 @@ const TmplComponent = computed(() => {
   }
 }
 
-.v-modal {
+.v-modal.resource-config-modal {
   .modal-card-body {
     min-height: 400px;
   }
