@@ -1,8 +1,8 @@
 {
   "moudle": "codec",
   "mode": "encoder",
-  "2110-7_m_local_ip": "192.168.1.1",
-  "2110-7_b_local_ip": "192.168.1.2",
+  "2110-7_m_local_ip": "192.168.1.1/24",
+  "2110-7_b_local_ip": "192.168.1.2/24",
   "nmos": {
     "name": "61stream1",
     "http_port": 9008,

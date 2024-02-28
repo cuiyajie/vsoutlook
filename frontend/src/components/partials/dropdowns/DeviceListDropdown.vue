@@ -56,7 +56,7 @@ function stop() {
 }
 
 const startable = computed(() => {
-  return [DeviceStatus.Failed, DeviceStatus.Unavailable].includes(props.device.status as DeviceStatus)
+  return [DeviceStatus.Failed, DeviceStatus.Unavailable, DeviceStatus.Terminated].includes(props.device.status as DeviceStatus)
 })
 
 function start() {

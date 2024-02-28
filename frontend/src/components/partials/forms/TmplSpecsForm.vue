@@ -24,8 +24,6 @@ const modelValue = defineModel<any>({
     recvframeCnt: 2,
     maxRateMbpsByCore: 9000,
     receiveSessions: 18,
-    primaryVFAddress: "",
-    secondaryVFAddress: "",
     shm: 0
   },
   local: true,
@@ -106,30 +104,6 @@ const opened = ref(false)
                     centered
                     :min="0"
                     :step="1"
-                  />
-                </VControl>
-              </VField>
-            </div>
-            <div class="column is-4">
-              <VField>
-                <VLabel>数据主网卡，CIDR格式</VLabel>
-                <VControl>
-                  <VInput
-                    v-model="modelValue.primaryVFAddress"
-                    type="text"
-                    placeholder=""
-                  />
-                </VControl>
-              </VField>
-            </div>
-            <div class="column is-4">
-              <VField>
-                <VLabel>数据备网卡，CIDR格式</VLabel>
-                <VControl>
-                  <VInput
-                    v-model="modelValue.secondaryVFAddress"
-                    type="text"
-                    placeholder=""
                   />
                 </VControl>
               </VField>

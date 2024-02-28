@@ -22,7 +22,7 @@ export const useDevices = defineStore('device', () => {
     if (res && res.devices) {
       devices.value = res.devices.map((d: any) => {
         if (!Array.isArray(d.podsStatus) || d.podsStatus.length === 0) {
-          d.status = dic.DeviceStatus.Unavailable
+          d.status = dic.DeviceStatus.Terminated
         } else if (d.podsStatus.every((p: any) => p.status === dic.DeviceStatus.Running)) {
           d.status = dic.DeviceStatus.Running
         } else if (d.podsStatus.every((p: any) => [dic.DeviceStatus.Pending, dic.DeviceStatus.Running].includes(p.status))) {

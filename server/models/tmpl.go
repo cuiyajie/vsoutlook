@@ -41,8 +41,6 @@ type TmplRequirement struct {
 	RecvframeCnt         int    `json:"recvframeCnt"`
 	MaxRateMbpsByCore    int    `json:"maxRateMbpsByCore"`
 	ReceiveSessions      int    `json:"receiveSessions"`
-	PrimaryVFAddress     string `json:"primaryVFAddress,omitempty"`
-	SecondaryVFAddress   string `json:"secondaryVFAddress,omitempty"`
 	Shm                  int    `json:"shm"`
 }
 

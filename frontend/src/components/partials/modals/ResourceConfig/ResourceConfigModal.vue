@@ -12,6 +12,7 @@ import { useDevices } from '/@src/stores/device'
 import { useTemplate } from "/@src/stores/template";
 import downloadJsonFile from '/@src/utils/download-json'
 import { useClustNode } from "/@src/stores/node";
+import isCIDR from "/@src/utils/cidr";
 
 const tmplStore = useTemplate();
 const deviceStore = useDevices()
@@ -109,17 +110,23 @@ async function prepareParams() {
   if (tmpl.value?.id && node.value?.id) {
     // const val = compRef.value?.getValue()
     const params: any = {}
+    const val = compRef.value?.getValue()
+    if (!val || !isCIDR(val['2110-7_m_local_ip'])) {
+      return { error: "主网卡地址格式错误" }
+    }
+    if (!val || !isCIDR(val['2110-7_b_local_ip'])) {
+      return { error: "备网卡地址格式错误" }
+    }
+    params.primaryVFAddress = val!['2110-7_m_local_ip']
+    params.secondaryVFAddress = val!['2110-7_b_local_ip']
+    params.configFile = val
+
     const rq = tmpl.value.requirement
     params.targetNode = dgi.value.nodeName
     params.cpu = +rq.cpuNum || 1
     params.memory = +rq.memory || 1
     params.hugepage = +rq.hugePage || 6
-    params.primaryVFAddress = rq.primaryVFAddress
-    params.secondaryVFAddress = rq.secondaryVFAddress
     params.shm = rq.shm || 0
-    params.configFile = compRef.value?.getValue()
-    // params.localip0 = val!['2110-7_m_local_ip']
-    // params.localip1 = val!['2110-7_b_local_ip']
     // params.configFilePath = '/opt/vsomediasoftware/config/vsompconfiginfo-web.json'
     // params.hostNetwork = rq.hostNetwork
     // params.logLevel = rq.logLevel

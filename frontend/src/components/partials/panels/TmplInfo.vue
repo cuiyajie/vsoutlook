@@ -89,22 +89,6 @@ function viewTmpl() {
       </div>
       <div class="info-block-line">
         <h4 class="dark-inverted">
-          数据主网卡
-        </h4>
-        <span>
-          {{ tmpld.requirement.primaryVFAddress || '无' }}
-        </span>
-      </div>
-      <div class="info-block-line">
-        <h4 class="dark-inverted">
-          数据备网卡
-        </h4>
-        <span>
-          {{ tmpld.requirement.secondaryVFAddress || '无' }}
-        </span>
-      </div>
-      <div class="info-block-line">
-        <h4 class="dark-inverted">
           单核心最大处理能力(Mb)
         </h4>
         <span>

@@ -48,8 +48,6 @@ const specsData = ref({
   recvframeCnt: 2,
   maxRateMbpsByCore: 9000,
   receiveSessions: 18,
-  primaryVFAddress: "",
-  secondaryVFAddress: "",
   shm: 0
 })
 

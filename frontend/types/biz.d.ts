@@ -28,8 +28,6 @@ interface TmplRequirement {
 	recvframeCnt: number,
   maxRateMbpsByCore: number,
   receiveSessions: number,
-  primaryVFAddress: string,
-  secondaryVFAddress: string,
   shm: number
 }
 
