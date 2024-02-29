@@ -145,7 +145,6 @@ export function handle(mv: any, required: TmplRequirement) {
     Object.assign(mv, {
       ipservice: {
         log_level : required.logLevel,
-        dma_list : required.dmaList,
         max_bandwidth_percore : required.maxRateMbpsByCore,
         receive_sessions : required.receiveSessions
       }

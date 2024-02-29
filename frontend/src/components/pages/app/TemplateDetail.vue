@@ -24,9 +24,10 @@ function tabChange(tab: string) {
   }
 }
 
-const specsData = ref({
+const specsData = ref<TmplRequirement & { description: string }>({
   cpu: '',
   cpuNum: 0,
+  dpdkCpu: 0,
   cpuCore: '',
   hugePage: 0,
   memory: 0,
@@ -40,7 +41,6 @@ const specsData = ref({
   logLevel: 0,
   repairRecvFrame: true,
   repairSendFrame: true,
-  dmaList: "",
   hostNetwork: false,
   utfOffset: 37,
   recvAVFrameNodeCount: 2,
@@ -67,6 +67,18 @@ watch(() => route.params?.id, async (nv, ov) => {
 }, { immediate: true });
 
 async function save() {
+  if (specsData.value.cpuNum === 0) {
+    notyf.error('CPU 总核心数不能为 0')
+    return
+  }
+  if (specsData.value.dpdkCpu === 0) {
+    notyf.error('DPDKCPU 核心数不能为 0')
+    return
+  }
+  if (specsData.value.cpuNum <= specsData.value.dpdkCpu) {
+    notyf.error('CPU 总核心数不能小于等于 DPDKCPU 核心数')
+    return
+  }
   if (tmpl.value?.id) {
     const { description, ...requirement } = specsData.value
     flowObject.value = toObject()

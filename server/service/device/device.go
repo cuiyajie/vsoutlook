@@ -179,8 +179,8 @@ func StopDevice(c *svcinfra.Context) {
 }
 
 func allocateNodeCore(tmpl *models.Tmpl, node *models.Node) ([]uint32, error) {
-	cpuNum := tmpl.Requirement.CpuNum
-	if cpuNum <= 0 {
+	dpdkCpu := tmpl.Requirement.DPDKCpu
+	if dpdkCpu <= 0 {
 		return nil, errors.New("该应用没有设置cpu数量")
 	}
 
@@ -189,7 +189,7 @@ func allocateNodeCore(tmpl *models.Tmpl, node *models.Node) ([]uint32, error) {
 	}
 
 	cores := utils.ParseCoreListString(node.CoreList)
-	if len(cores) < int(cpuNum) {
+	if len(cores) < int(dpdkCpu) {
 		return nil, errors.New("节点核心数不足")
 	}
 
@@ -200,7 +200,7 @@ func allocateNodeCore(tmpl *models.Tmpl, node *models.Node) ([]uint32, error) {
 		}
 	}
 
-	if len(allocated)+cpuNum > len(cores) {
+	if len(allocated)+dpdkCpu > len(cores) {
 		return nil, errors.New("节点核心数不足")
 	}
 
@@ -209,7 +209,7 @@ func allocateNodeCore(tmpl *models.Tmpl, node *models.Node) ([]uint32, error) {
 		if !allocated[uint32(v)] {
 			result = append(result, uint32(v))
 		}
-		if len(result) == int(cpuNum) {
+		if len(result) == int(dpdkCpu) {
 			break
 		}
 	}
@@ -268,10 +268,12 @@ func CreateDevice(c *svcinfra.Context) {
 	data["displayName"] = req.Name
 	data["applicationCategory"] = tmplType.Category
 	data["coreList"] = coreListStr
+	data["DMAList"] = node.DMAList
 	configFile := data["configFile"].(map[string]interface{})
 	if _, ok := configFile["ipservice"]; ok {
 		ipservice := configFile["ipservice"].(map[string]interface{})
 		ipservice["binding_core_list"] = coreListStr
+		ipservice["dma_list"] = node.DMAList
 	}
 	newDevice.Config = utils.MapToString(configFile)
 

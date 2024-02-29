@@ -2,8 +2,8 @@
   "moudle": "mv",
   "input_number": 8,
   "output_number": 2,
-  "2110-7_m_local_ip": "192.168.1.1/24",
-  "2110-7_b_local_ip": "192.168.1.2/24",
+  "2110-7_m_local_ip": "192.168.1.1",
+  "2110-7_b_local_ip": "192.168.1.2",
   "tally_port": 6001,
   "nmos": {
     "name": "61stream1",

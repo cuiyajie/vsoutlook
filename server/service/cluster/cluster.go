@@ -40,7 +40,7 @@ func BuildProxyReq[T any](
 	if query != nil {
 		// Create query parameters
 		queryParams := url.Values{}
-		fmt.Printf("query: %v", *query)
+		fmt.Printf("query: %v\n", *query)
 		for k, v := range *query {
 			queryParams.Set(k, fmt.Sprintf("%v", v))
 		}
@@ -54,6 +54,8 @@ func BuildProxyReq[T any](
 		if err != nil {
 			fmt.Printf("failed to stringify params: %v", err)
 			return nil, nil
+		} else {
+			fmt.Printf("request params: %v\n", *params)
 		}
 	}
 
@@ -149,8 +151,10 @@ func GetNodeDetail(c *svcinfra.Context) {
 	node := models.ActiveNode(resp.NodeName)
 	if node == nil {
 		data["coreList"] = ""
+		data["dmaList"] = ""
 	} else {
 		data["coreList"] = node.CoreList
+		data["dmaList"] = node.DMAList
 	}
 	c.Bye(gin.H{"code": 0, "data": data})
 }
@@ -159,6 +163,7 @@ func UpdateNode(c *svcinfra.Context) {
 	var req struct {
 		ID       string `json:"id"`
 		CoreList string `json:"core"`
+		DMAList  string `json:"dma"`
 	}
 	c.ShouldBindJSON(&req)
 	node := models.ActiveNode(req.ID)
@@ -167,14 +172,16 @@ func UpdateNode(c *svcinfra.Context) {
 			ID:        req.ID,
 			CoreList:  req.CoreList,
 			Allocated: make(models.MapUint32Slice),
+			DMAList:   req.DMAList,
 		}
 	} else {
 		if len(node.Allocated) == 0 {
 			node.CoreList = req.CoreList
-		} else {
+		} else if node.CoreList != req.CoreList {
 			c.GeneralError("节点已分配，不可修改")
 			return
 		}
+		node.DMAList = req.DMAList
 	}
 	db.DB.Save(node)
 	c.Bye(gin.H{"code": 0})

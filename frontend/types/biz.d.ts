@@ -8,6 +8,7 @@ interface TemplateType {
 interface TmplRequirement {
   cpu: string,
   cpuNum: number,
+  dpdkCpu: number,
   cpuCore: string,
   hugePage: number,
   memory: number,
@@ -20,7 +21,6 @@ interface TmplRequirement {
   logLevel: number,
   repairRecvFrame: boolean,
   repairSendFrame: boolean,
-  dmaList: string,
   hostNetwork: boolean,
   utfOffset: number,
 	recvAVFrameNodeCount: number,
@@ -113,12 +113,15 @@ interface UserData {
   role: number
 }
 
-interface ClustNode {
+interface ClustNodeInfo {
+  coreList: string,
+  dmaList: string,
+}
+
+interface ClustNode extends ClustNodeInfo {
   id: string,
   ip: string,
-  coreList: string,
   // info: {
-  //   coreList: string
   // }
 }
 

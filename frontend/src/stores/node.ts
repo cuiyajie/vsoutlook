@@ -31,12 +31,16 @@ export const useClustNode = defineStore('clustNode', () => {
     }
   }
 
-  async function $update(id: string, core: string) {
+  async function $update(id: string, core: string, dma: string) {
     const res = await $fetch('/api/cluster/node.update', {
-      body: { id, core }
+      body: { id, core, dma }
     })
     if (res?.code === 0) {
-      nodes.value.find(node => node.id === id)!.coreList = core
+      const tnode = nodes.value.find(node => node.id === id)
+      if (tnode) {
+        tnode.coreList = core
+        tnode.dmaList = dma
+      }
     }
     return res
   }
@@ -54,6 +58,7 @@ export const useClustNode = defineStore('clustNode', () => {
             id: node.nodeName,
             ip: node.nodeIP,
             coreList: res1.data.coreList,
+            dmaList: res1.data.dmaList,
             info: res1.data.node
           }
         }
@@ -61,6 +66,7 @@ export const useClustNode = defineStore('clustNode', () => {
           id: node.nodeName,
           ip: node.nodeIP,
           coreList: "",
+          dmaList: "",
           info: null
         }
       }))

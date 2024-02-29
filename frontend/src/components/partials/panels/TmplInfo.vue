@@ -49,10 +49,18 @@ function viewTmpl() {
       </div>
       <div class="info-block-line">
         <h4 class="dark-inverted">
-          CPU
+          CPU 总核心数
         </h4>
         <span>
           {{ tmpld.requirement.cpuNum || '无' }}
+        </span>
+      </div>
+      <div class="info-block-line">
+        <h4 class="dark-inverted">
+          DPDKCPU 核心数
+        </h4>
+        <span>
+          {{ tmpld.requirement.dpdkCpu || '无' }}
         </span>
       </div>
       <div class="info-block-line">

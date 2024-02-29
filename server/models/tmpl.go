@@ -20,7 +20,8 @@ type Tmpl struct {
 
 type TmplRequirement struct {
 	Cpu                  string `json:"cpu,omitempty"`
-	CpuNum               int    `json:"cpuNum,omitempty"`
+	CpuNum               int    `json:"cpuNum"`
+	DPDKCpu              int    `json:"dpdkCpu"`
 	CpuCore              string `json:"cpuCore,omitempty"`
 	HugePage             int    `json:"hugePage,omitempty"`
 	Memory               int    `json:"memory,omitempty"`
@@ -33,7 +34,6 @@ type TmplRequirement struct {
 	LogLevel             uint8  `json:"logLevel"`
 	RepairRecvFrame      bool   `json:"repairRecvFrame"`
 	RepairSendFrame      bool   `json:"repairSendFrame"`
-	DMAList              string `json:"dmaList"`
 	HostNetwork          bool   `json:"hostNetwork"`
 	UtfOffset            uint8  `json:"utfOffset"`
 	RecvAVFrameNodeCount int    `json:"recvAVFrameNodeCount"`

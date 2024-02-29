@@ -15,12 +15,14 @@ type Node struct {
 	ID        string         `gorm:"type:varchar;primary_key"`
 	CoreList  string         `gorm:"type:varchar"`
 	Allocated MapUint32Slice `gorm:"type:jsonb"`
+	DMAList   string         `gorm:"type:varchar"`
 }
 
 type NodeAsBasic struct {
 	ID        string         `json:"id"`
 	CoreList  string         `json:"coreList"`
 	Allocated MapUint32Slice `json:"allocated"`
+	DMAList   string         `json:"dmaList"`
 }
 
 func (node *Node) AsBasic() NodeAsBasic {
@@ -28,6 +30,7 @@ func (node *Node) AsBasic() NodeAsBasic {
 	result.ID = node.ID
 	result.CoreList = node.CoreList
 	result.Allocated = node.Allocated
+	result.DMAList = node.DMAList
 	return result
 }
 

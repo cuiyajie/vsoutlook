@@ -1,8 +1,9 @@
 <script setup lang="ts">
-const modelValue = defineModel<any>({
+const modelValue = defineModel<TmplRequirement & { description: string }>({
   default: {
     cpu: "",
-    cpuNum: "",
+    cpuNum: 0,
+    dpdkCpu: 0,
     cpuCore: '',
     hugePage: 0,
     memory: 0,
@@ -16,7 +17,6 @@ const modelValue = defineModel<any>({
     logLevel: 0,
     repairRecvFrame: true,
     repairSendFrame: true,
-    dmaList: "",
     hostNetwork: false,
     utfOffset: 37,
     recvAVFrameNodeCount: 2,
@@ -46,7 +46,7 @@ const opened = ref(false)
           <div class="columns is-multiline">
             <div class="column is-4">
               <VField>
-                <VLabel>CPU核数</VLabel>
+                <VLabel>CPU 总核心数</VLabel>
                 <VControl>
                   <VInputNumber
                     v-model="modelValue.cpuNum"
@@ -57,18 +57,19 @@ const opened = ref(false)
                 </VControl>
               </VField>
             </div>
-            <!-- <div class="column is-4">
+            <div class="column is-4">
               <VField>
-                <VLabel>CPU核心列表</VLabel>
+                <VLabel>DPKUCPU 核心数</VLabel>
                 <VControl>
-                  <VInput
-                    v-model="modelValue.cpuCore"
-                    type="text"
-                    placeholder=""
+                  <VInputNumber
+                    v-model="modelValue.dpdkCpu"
+                    centered
+                    :min="0"
+                    :step="1"
                   />
                 </VControl>
               </VField>
-            </div> -->
+            </div>
             <div class="column is-4">
               <VField>
                 <VLabel>内存 (GB)</VLabel>
@@ -286,18 +287,6 @@ const opened = ref(false)
                       <VSwitchBlock
                         v-model="modelValue.repairSendFrame"
                         color="primary"
-                      />
-                    </VControl>
-                  </VField>
-                </div>
-                <div class="column is-6">
-                  <VField>
-                    <VLabel>DMA List</VLabel>
-                    <VControl>
-                      <VInput
-                        v-model="modelValue.dmaList"
-                        type="text"
-                        placeholder=""
                       />
                     </VControl>
                   </VField>

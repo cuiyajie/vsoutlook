@@ -111,28 +111,29 @@ async function prepareParams() {
     // const val = compRef.value?.getValue()
     const params: any = {}
     const val = compRef.value?.getValue()
-    if (!val || !isCIDR(val['2110-7_m_local_ip'])) {
+    if (!val || !isCIDR(`${val['2110-7_m_local_ip']}/24`)) {
       return { error: "主网卡地址格式错误" }
     }
-    if (!val || !isCIDR(val['2110-7_b_local_ip'])) {
+    if (!val || !isCIDR(`${val['2110-7_b_local_ip']}/24`)) {
       return { error: "备网卡地址格式错误" }
     }
-    params.primaryVFAddress = val!['2110-7_m_local_ip']
-    params.secondaryVFAddress = val!['2110-7_b_local_ip']
+    params.primaryVFAddress = `${val['2110-7_m_local_ip']}/24`
+    params.secondaryVFAddress = `${val['2110-7_b_local_ip']}/24`
     params.configFile = val
 
     const rq = tmpl.value.requirement
     params.targetNode = dgi.value.nodeName
     params.cpu = +rq.cpuNum || 1
     params.memory = +rq.memory || 1
-    params.hugepage = +rq.hugePage || 6
+    params.hugepages = +rq.hugePage || 6
     params.shm = rq.shm || 0
+
     // params.configFilePath = '/opt/vsomediasoftware/config/vsompconfiginfo-web.json'
     // params.hostNetwork = rq.hostNetwork
-    // params.logLevel = rq.logLevel
+    params.logLevel = rq.logLevel
+    params.MaxRateMbpsByCore = rq.maxRateMbpsByCore
     // params.repairRecvFrame = +rq.repairRecvFrame
     // params.repairSendFrame = +rq.repairSendFrame
-    // params.dmaList = rq.dmaList || ""
     // params.utfOffset = rq.utfOffset
     // params.recvAVFrameNodeCount = rq.recvAVFrameNodeCount
     // params.sendAVFrameNodeCount = rq.sendAVFrameNodeCount

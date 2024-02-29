@@ -7,7 +7,7 @@ import { useForm } from "vee-validate";
 
 const notyf = useNotyf();
 const opened = ref(false);
-const nodeInfo = ref<{ coreList: string }>({ coreList: "" });
+const nodeInfo = ref<ClustNodeInfo>({ coreList: "", dmaList: "" });
 const node = ref<ClustNode | null>(null);
 const nodeStore = useClustNode();
 const coreListRef = ref<any>(null);
@@ -16,6 +16,7 @@ useListener(Signal.OpenNodeEdit, (_node: ClustNode) => {
   opened.value = true;
   node.value = _node;
   nodeInfo.value.coreList = _node.coreList
+  nodeInfo.value.dmaList = _node.dmaList
   nextTick(() => {
     coreListRef.value?.field?.setValue(nodeInfo.value.coreList)
   })
@@ -25,7 +26,8 @@ const loading = ref(false);
 const zodSchema = z.object({
   coreList: z.string({
     required_error: "请输入隔离核心数",
-  }).refine(val => /^(\d+|(\d+-\d+))(,(\d+|(\d+-\d+)))*$/.test(val), "请输入合法的隔离核心数")
+  }).refine(val => /^(\d+|(\d+-\d+))(,(\d+|(\d+-\d+)))*$/.test(val), "请输入合法的隔离核心数"),
+  dmaList: z.string().optional()
 });
 const validationSchema = toTypedSchema(zodSchema);
 const { handleSubmit } = useForm({ validationSchema });
@@ -34,7 +36,11 @@ const handleEdit = handleSubmit(async () => {
   if (loading.value) return;
 
   loading.value = true;
-  const res = await nodeStore.$update(node.value!.id, nodeInfo.value.coreList);
+  const res = await nodeStore.$update(
+    node.value!.id,
+    nodeInfo.value.coreList,
+    nodeInfo.value.dmaList
+  );
   loading.value = false;
   if (res?.code === 0) {
     opened.value = false;
