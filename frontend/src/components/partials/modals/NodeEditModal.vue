@@ -87,6 +87,15 @@ const handleEdit = handleSubmit(async () => {
             </Transition>
           </VControl>
         </VField>
+        <VField label="DMA List">
+          <VControl>
+            <VInput
+              v-model="nodeInfo.dmaList"
+              type="text"
+              placeholder=""
+            />
+          </VControl>
+        </VField>
       </div>
     </template>
     <template #action>

@@ -235,6 +235,12 @@ func CreateDevice(c *svcinfra.Context) {
 		return
 	}
 
+	d := models.QueryOne[models.Device]("name", req.Name)
+	if d != nil {
+		c.GeneralError("设备名称已存在")
+		return
+	}
+
 	tmpl := models.ActiveTmpl(req.Tmpl)
 	node := models.ActiveNode(req.Node)
 	if node == nil {

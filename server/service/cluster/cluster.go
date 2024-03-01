@@ -136,19 +136,19 @@ func GetNodeDetail(c *svcinfra.Context) {
 		ID string `json:"id"`
 	}
 	c.ShouldBindJSON(&req)
+
+	data := make(map[string]interface{})
+
 	path := "/node"
 	query := map[string]interface{}{
 		"node_name": req.ID,
 	}
 	resp, _ := BuildProxyReq[ClusterNodeDetail](c, "GET", path, &query, nil)
-	if resp == nil {
-		c.GeneralError("获取节点详情失败")
-		return
+	var node *models.Node
+	if resp != nil {
+		data["node"] = resp
 	}
-	data := make(map[string]interface{})
-	data["node"] = resp
-
-	node := models.ActiveNode(resp.NodeName)
+	node = models.ActiveNode(req.ID)
 	if node == nil {
 		data["coreList"] = ""
 		data["dmaList"] = ""
