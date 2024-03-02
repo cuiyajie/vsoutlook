@@ -12,7 +12,6 @@ import { useDevices } from '/@src/stores/device'
 import { useTemplate } from "/@src/stores/template";
 import downloadJsonFile from '/@src/utils/download-json'
 import { useClustNode } from "/@src/stores/node";
-import isCIDR from "/@src/utils/cidr";
 
 const tmplStore = useTemplate();
 const deviceStore = useDevices()
@@ -97,14 +96,6 @@ const dgi = computed(() => {
   };
 })
 
-async function prepareParams() {
-  if (tmpl.value?.id && node.value?.id) {
-    return compRef.value?.getValue()
-  } else {
-    return { error: "模板不存在" }
-  }
-}
-
 const loading = ref(false)
 const addInstance = handleSubmit(async () => {
   if (loading.value) return;
@@ -114,12 +105,7 @@ const addInstance = handleSubmit(async () => {
     onConfirm: async (hide) => {
       hide()
       loading.value = true;
-      const params = await prepareParams()
-      if (params.error) {
-        loading.value = false;
-        notyf.error(params.error);
-        return
-      }
+      const params = compRef.value?.getValue()
       let pro: Promise<any>
       if (dgi.value.created) {
         pro = deviceStore.$updateConfig(deviceName.value, device.value!.id, params)
@@ -372,6 +358,11 @@ const tmplConfig = computed(() => {
     font-weight: 600;
     text-align: left;
     margin-left: 20px;
+  }
+
+  .input[readonly] {
+    background-color: var(--dark-sidebar-light-10);
+    border-color: var(--dark-sidebar-light-10);
   }
 }
 

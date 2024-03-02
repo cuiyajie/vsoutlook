@@ -99,7 +99,7 @@ func GetDevice(c *svcinfra.Context) {
 	}
 	c.ShouldBindJSON(&req)
 	device := models.GetDevice(req.ID)
-	c.Bye(gin.H{"tmpl": device.AsBasic()})
+	c.Bye(gin.H{"device": device.AsDetail()})
 }
 
 func preInstallation(c *svcinfra.Context, configStr string, tmpl *models.Tmpl, node *models.Node, device *models.Device) (*[]uint32, error) {
@@ -413,7 +413,16 @@ func UpdateDevice(c *svcinfra.Context) {
 		return
 	}
 
-	c.Bye(gin.H{"result": "ok"})
+	device := models.ActiveDevice(req.DeviceId)
+	if device == nil {
+		c.GeneralError("设备不存在")
+		return
+	}
+
+	device.Config = req.Body
+	c.Save(&device)
+
+	c.Bye(gin.H{"device": device.AsBasic()})
 }
 
 func DeleteDevice(c *svcinfra.Context) {

@@ -38,7 +38,7 @@ const stoppable = computed(() => {
 })
 
 function stop() {
-  if (!stoppable) return
+  if (!stoppable.value) return
   confirm({
     title: "暂停设备",
     content: "确定要暂停该设备吗？",
@@ -60,7 +60,7 @@ const startable = computed(() => {
 })
 
 function start() {
-  if (!startable) return
+  if (!startable.value) return
   confirm({
     title: "启动设备",
     content: "确定要启动该设备吗？",
@@ -81,18 +81,20 @@ function viewContainer() {
   deviceStore.$showContainer(props.device)
 }
 
-function config() {
-  const { tmplID, tmplName, tmplTypeName, id, name } = props.device
+async function config() {
+  if (!startable.value) {
+    notyf.error("设备正在运行中，无法更新配置")
+    return
+  }
+  const { tmplID, tmplName, tmplTypeName, id } = props.device
+  const device = await deviceStore.$getById(id)
   bus.trigger(Signal.OpenResourceConfig, {
     tmpl: {
       id: tmplID,
       name: tmplName,
       typeName: tmplTypeName
     },
-    device: {
-      id,
-      name,
-    },
+    device,
     callbacks: {
       success: () => {
         emit('refresh')
@@ -109,7 +111,7 @@ function config() {
     class="device-list-dropdown"
   >
     <template #content="{ close }">
-      <!-- <a
+      <a
         href="#"
         role="menuitem"
         class="dropdown-item is-media"
@@ -123,11 +125,11 @@ function config() {
           />
         </div>
         <div class="meta">
-          <span>配置</span>
+          <span>更新配置</span>
         </div>
       </a>
 
-      <hr class="dropdown-divider"> -->
+      <hr v-if="startable || stoppable" class="dropdown-divider">
       <!-- <a
         href="#"
         role="menuitem"
@@ -234,5 +236,6 @@ function config() {
   .dropdown-content .is-media .icon.is-primary svg {
     color: var(--primary);
   }
+
 }
 </style>

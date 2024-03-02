@@ -2,9 +2,9 @@ import { useThemeColors } from '/@src/composable/useThemeColors'
 
 const baseOptions = (themeColors: ReturnType<typeof useThemeColors>) => ({
   chart: {
-    height: 180,
+    height: 140,
     type: 'radialBar',
-    offsetY: 0,
+    offsetY: -6,
   },
   plotOptions: {
     radialBar: {
@@ -15,21 +15,21 @@ const baseOptions = (themeColors: ReturnType<typeof useThemeColors>) => ({
         show: true,
         name: {
           show: true,
-          fontSize: '12px',
-          fontWeight: 500,
-          offsetY: -10,
+          fontSize: '9px',
+          fontWeight: 900,
+          offsetY: -4,
         },
         value: {
           show: true,
           fontWeight: 900,
           color: themeColors.lightText,
-          fontSize: '18px',
-          offsetY: 0,
+          fontSize: '12px',
+          offsetY: 4,
         }
       },
       hollow: {
         margin: 15,
-        size: '60%',
+        size: '50%',
       },
       track: {
         strokeWidth: '100%',
@@ -55,8 +55,22 @@ export function useResourceCharts() {
     labels: ['Memory'],
   })
 
+  const nnrOptions = shallowRef({
+    ...baseOptions(themeColors),
+    colors: [themeColors.blue],
+    labels: ['Rx rate'],
+  })
+
+  const ntrOptions = shallowRef({
+    ...baseOptions(themeColors),
+    colors: [themeColors.danger],
+    labels: ['Tx rate'],
+  })
+
   return {
     cpuOptions,
     memoryOptions,
+    nnrOptions,
+    ntrOptions
   }
 }

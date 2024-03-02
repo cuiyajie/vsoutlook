@@ -20,6 +20,7 @@ type ClusterNodeDetail struct {
 	NodeName    string                 `json:"nodeName"`
 	NodeIP      string                 `json:"nodeIP"`
 	Allocatable map[string]interface{} `json:"allocatable"`
+	Allocated   map[string]interface{} `json:"allocated"`
 }
 
 func BuildProxyReq[T any](

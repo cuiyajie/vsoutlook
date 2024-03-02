@@ -24,10 +24,14 @@ type DeviceAsBasic struct {
 	TmplTypeID   string `json:"tmplTypeID"`
 	TmplTypeName string `json:"tmplTypeName"`
 	TmplTypeIcon string `json:"tmplTypeIcon"`
-	Config       string `json:"config"`
 	Node         string `json:"node"`
 	CreatedAt    int64  `json:"createdAt"`
 	UpdatedAt    int64  `json:"updatedAt"`
+}
+
+type DeviceAsDetail struct {
+	DeviceAsBasic
+	Config string `json:"config"`
 }
 
 func (device Device) IsDeleted() bool {
@@ -47,10 +51,17 @@ func (device *Device) AsBasic() DeviceAsBasic {
 	result.TmplTypeIcon = tmplType.Icon
 	result.CreatedAt = device.CreatedAt.Unix()
 	result.UpdatedAt = device.UpdatedAt.Unix()
-	result.Config = device.Config
 	result.AppName = device.AppName
 	result.Node = device.Node
 	return result
+}
+
+func (device *Device) AsDetail() DeviceAsDetail {
+	result := device.AsBasic()
+	var detail DeviceAsDetail
+	detail.DeviceAsBasic = result
+	detail.Config = device.Config
+	return detail
 }
 
 func DeviceList() []DeviceAsBasic {

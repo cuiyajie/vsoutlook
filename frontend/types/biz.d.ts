@@ -94,7 +94,9 @@ interface DeviceDetail {
   targetNode: string,
   updatedAt: string,
   status: string,
-  statusInfo: any
+  statusInfo: any,
+  config: string,
+  node: string
 }
 
 interface SystemInfo {
@@ -121,8 +123,18 @@ interface ClustNodeInfo {
 interface ClustNode extends ClustNodeInfo {
   id: string,
   ip: string,
-  // info: {
-  // }
+  allocatable: {
+    cpu: number,
+    memory: number,
+    networkReceiveRate: number,
+    networkTransmitRate: number
+  },
+  allocated: {
+    cpu: number,
+    memory: number,
+    networkReceiveRate: number,
+    networkTransmitRate: number
+  }
 }
 
 interface ClustDevice {

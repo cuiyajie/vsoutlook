@@ -17,30 +17,32 @@ export const useDevices = defineStore('device', () => {
   const devices = ref<DeviceDetail[]>([])
   const $fetch  = useFetch()
 
+  function handleDevice(d: any): DeviceDetail {
+    if (d.targetNode === 'unknown') {
+      d.status = dic.DeviceStatus.Unavailable
+    } else if (!d.appName) {
+      d.status = dic.DeviceStatus.Terminated
+    } else if (!Array.isArray(d.podsStatus) || d.podsStatus.length === 0) {
+      d.status = dic.DeviceStatus.Terminated
+    } else if (d.podsStatus.every((p: any) => p.status === dic.DeviceStatus.Running)) {
+      d.status = dic.DeviceStatus.Running
+    } else if (d.podsStatus.every((p: any) => [dic.DeviceStatus.Pending, dic.DeviceStatus.Running].includes(p.status))) {
+      d.status = dic.DeviceStatus.Pending
+    } else if (d.podsStatus.some((p: any) => p.status === dic.DeviceStatus.Terminating)) {
+      d.status = dic.DeviceStatus.Terminating
+    } else if (d.podsStatus.some((p: any) => p.status === dic.DeviceStatus.Failed)) {
+      d.status = dic.DeviceStatus.Failed
+    } else {
+      d.status = dic.DeviceStatus.Unavailable
+    }
+    d.statusInfo = dic.DeviceStatusDic[d.status]
+    return d
+  }
+
   async function $fetchList() {
     const res = await $fetch('/api/device/list')
     if (res && res.devices) {
-      devices.value = res.devices.map((d: any) => {
-        if (d.targetNode === 'unknown') {
-          d.status = dic.DeviceStatus.Unavailable
-        } else if (!d.appName) {
-          d.status = dic.DeviceStatus.Terminated
-        } else if (!Array.isArray(d.podsStatus) || d.podsStatus.length === 0) {
-          d.status = dic.DeviceStatus.Terminated
-        } else if (d.podsStatus.every((p: any) => p.status === dic.DeviceStatus.Running)) {
-          d.status = dic.DeviceStatus.Running
-        } else if (d.podsStatus.every((p: any) => [dic.DeviceStatus.Pending, dic.DeviceStatus.Running].includes(p.status))) {
-          d.status = dic.DeviceStatus.Pending
-        } else if (d.podsStatus.some((p: any) => p.status === dic.DeviceStatus.Terminating)) {
-          d.status = dic.DeviceStatus.Terminating
-        } else if (d.podsStatus.some((p: any) => p.status === dic.DeviceStatus.Failed)) {
-          d.status = dic.DeviceStatus.Failed
-        } else {
-          d.status = dic.DeviceStatus.Unavailable
-        }
-        d.statusInfo = dic.DeviceStatusDic[d.status]
-        return d
-      })
+      devices.value = res.devices.map(handleDevice)
     }
   }
 
@@ -65,7 +67,7 @@ export const useDevices = defineStore('device', () => {
       body: {
         name,
         deviceId,
-        body: JSON.stringify({ params: body })
+        body: JSON.stringify(body)
       }
     })
     if (res && res.device) {
@@ -143,6 +145,24 @@ export const useDevices = defineStore('device', () => {
     })
   }
 
+  async function $getById(id: string) {
+    let device = devices.value.find(d => d.id === id)
+    if (device?.config) {
+      return device
+    }
+    const res = await $fetch('/api/device/detail', {
+      body: { id }
+    })
+    if (res && res.device) {
+      device = handleDevice(res.device)
+      const idx = devices.value.findIndex(d => d.id === id)
+      if (idx !== -1) {
+        devices.value.splice(idx, 1, device)
+      }
+    }
+    return device
+  }
+
   function getById(id: string) {
     return devices.value.find(d => d.id === id)
   }
@@ -151,6 +171,7 @@ export const useDevices = defineStore('device', () => {
     devices,
     $stop,
     $start,
+    $getById,
     getById,
     $fetchList,
     $deploy,

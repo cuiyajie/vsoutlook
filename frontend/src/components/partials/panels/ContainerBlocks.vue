@@ -6,7 +6,7 @@ import ApexChart from 'vue3-apexcharts'
 
 const dragContext = useTmplDragging();
 const nodeStore = useClustNode();
-const { cpuOptions, memoryOptions } = useResourceCharts()
+const { cpuOptions, memoryOptions, nnrOptions, ntrOptions } = useResourceCharts()
 
 const nodes = computed(() => nodeStore.nodes)
 const loading = ref(false)
@@ -58,13 +58,9 @@ function onDrop(event: DragEvent) {
   });
 }
 
-// function parseCpu(info: ClustNode['info']) {
-//   return [Math.round((parseInt(info.current?.cpu?.value) || 0) * 100 / (parseInt(info.allocatable?.cpu?.value) || 1)) ]
-// }
-
-// function parseMemory(info: ClustNode['info']) {
-//   return [Math.round((parseInt(info.current?.memory?.value) || 0) * 100 / (parseInt(info.allocatable?.memory?.value) || 1)) ]
-// }
+function parseChartData(info: ClustNode, key: keyof ClustNode['allocatable']) {
+  return info.allocated ? [Math.round((info.allocated[key] || 0) * 100 / (info.allocatable[key] || 1))] : [-1]
+}
 
 function edit(node: ClustNode) {
   bus.trigger(Signal.OpenNodeEdit, node);
@@ -132,23 +128,39 @@ onUnmounted(() => {
         <span>IP: {{ node.ip }}</span>
       </div>
       <div class="info-meta">
+        <div class="chart-wrap">
+          <ApexChart
+            :height="cpuOptions.chart.height"
+            :type="cpuOptions.chart.type"
+            :series="parseChartData(node, 'cpu')"
+            :options="cpuOptions"
+          />
+        </div>
+        <div class="chart-wrap">
+          <ApexChart
+            :height="memoryOptions.chart.height"
+            :type="memoryOptions.chart.type"
+            :series="parseChartData(node, 'memory')"
+            :options="memoryOptions"
+          />
+        </div>
+        <div class="chart-wrap">
+          <ApexChart
+            :height="nnrOptions.chart.height"
+            :type="nnrOptions.chart.type"
+            :series="parseChartData(node, 'networkReceiveRate')"
+            :options="nnrOptions"
+          />
+        </div>
+        <div class="chart-wrap">
+          <ApexChart
+            :height="ntrOptions.chart.height"
+            :type="ntrOptions.chart.type"
+            :series="parseChartData(node, 'networkTransmitRate')"
+            :options="ntrOptions"
+          />
+        </div>
       </div>
-      <!-- <div class="chart-wrap ml-6">
-        <ApexChart
-          :height="cpuOptions.chart.height"
-          :type="cpuOptions.chart.type"
-          :series="parseCpu(node.info)"
-          :options="cpuOptions"
-        />
-      </div>
-      <div class="chart-wrap">
-        <ApexChart
-          :height="memoryOptions.chart.height"
-          :type="memoryOptions.chart.type"
-          :series="parseMemory(node.info)"
-          :options="memoryOptions"
-        />
-      </div> -->
       <div class="meta-right">
         <div class="buttons">
           <VButton
@@ -186,6 +198,7 @@ onUnmounted(() => {
 
     .block-meta {
       margin-left: 16px;
+      flex: 1;
 
       h5 {
         font-size: 1.2rem;
@@ -209,12 +222,16 @@ onUnmounted(() => {
     }
 
     .info-meta {
-      flex: 1;
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-left: 20px;
+      margin-right: 40px;
     }
 
     .chart-wrap {
-      width: 200px;
-      transform: translateY(-8px);
+      width: 90px;
     }
 
     .meta-right {
