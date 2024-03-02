@@ -6,8 +6,7 @@ import merge from 'lodash-es/merge'
 import codecData from '/@src/data/vscomponent/codec.json'
 
 const props = defineProps<{
-  name: string,
-  requiredment: TmplRequirement
+  name: string
 }>()
 
 const mv = defineModel<{
@@ -63,7 +62,7 @@ function getValue() {
   const mip = mv.value['2110-7_m_local_ip']
   const bip = mv.value['2110-7_b_local_ip']
   return {
-    ...handle(mv.value, props.requiredment),
+    ...handle(mv.value),
     input: wrap(input.value, 'in_', input.value['g_2022-7']),
     output: wrap(output.value, 'out_', output.value['g_2022-7'], false, mip, bip)
   }

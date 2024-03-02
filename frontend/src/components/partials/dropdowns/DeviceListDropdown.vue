@@ -48,7 +48,7 @@ function stop() {
       if (res && res.result === "ok") {
         notyf.success("暂停成功");
         emit('refresh')
-      } else if (res?.result === "error") {
+      } else if (res?.error) {
         notyf.error(res.message)
       }
     },
@@ -67,10 +67,10 @@ function start() {
     onConfirm: async (hide) => {
       const res = await deviceStore.$start(props.device.id);
       hide();
-      if (res && res.result === "ok") {
+      if (res && res.device) {
         notyf.success("启动成功");
         emit('refresh')
-      } else if (res?.result === "error") {
+      } else if (res?.error) {
         notyf.error(res.message)
       }
     },

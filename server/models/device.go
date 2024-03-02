@@ -10,6 +10,7 @@ type Device struct {
 	Tmpl    string `gorm:"index;type:varchar"`
 	AppName string `gorm:"type:varchar"`
 	Config  string `gorm:"type:varchar"`
+	Node    string `gorm:"type:varchar"`
 	Deleted uint8  `gorm:"default:0"`
 	ModelTime
 }
@@ -24,6 +25,7 @@ type DeviceAsBasic struct {
 	TmplTypeName string `json:"tmplTypeName"`
 	TmplTypeIcon string `json:"tmplTypeIcon"`
 	Config       string `json:"config"`
+	Node         string `json:"node"`
 	CreatedAt    int64  `json:"createdAt"`
 	UpdatedAt    int64  `json:"updatedAt"`
 }
@@ -46,6 +48,8 @@ func (device *Device) AsBasic() DeviceAsBasic {
 	result.CreatedAt = device.CreatedAt.Unix()
 	result.UpdatedAt = device.UpdatedAt.Unix()
 	result.Config = device.Config
+	result.AppName = device.AppName
+	result.Node = device.Node
 	return result
 }
 

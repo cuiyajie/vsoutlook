@@ -21,7 +21,11 @@ export const useDevices = defineStore('device', () => {
     const res = await $fetch('/api/device/list')
     if (res && res.devices) {
       devices.value = res.devices.map((d: any) => {
-        if (!Array.isArray(d.podsStatus) || d.podsStatus.length === 0) {
+        if (d.targetNode === 'unknown') {
+          d.status = dic.DeviceStatus.Unavailable
+        } else if (!d.appName) {
+          d.status = dic.DeviceStatus.Terminated
+        } else if (!Array.isArray(d.podsStatus) || d.podsStatus.length === 0) {
           d.status = dic.DeviceStatus.Terminated
         } else if (d.podsStatus.every((p: any) => p.status === dic.DeviceStatus.Running)) {
           d.status = dic.DeviceStatus.Running

@@ -12,7 +12,6 @@ import (
 	"vsoutlook.com/vsoutlook/infra/def"
 	"vsoutlook.com/vsoutlook/infra/utils"
 	"vsoutlook.com/vsoutlook/models"
-	"vsoutlook.com/vsoutlook/models/db"
 	"vsoutlook.com/vsoutlook/service/cluster"
 	"vsoutlook.com/vsoutlook/service/svcinfra"
 )
@@ -36,6 +35,14 @@ type ClustReleaseApp struct {
 	TargetNode          string      `json:"targetNode"`
 	PodsStatus          []PodStatus `json:"podsStatus,omitempty"`
 }
+type ClustReleaseAppDetail struct {
+	Name                string                 `json:"name"`
+	Namespace           string                 `json:"namespace"`
+	DisplayName         string                 `json:"displayName"`
+	ApplicationCategory string                 `json:"applicationCategory"`
+	TargetNode          string                 `json:"targetNode"`
+	PodsStatus          map[string]interface{} `json:"podsStatus,omitempty"`
+}
 
 type DeviceAsRelease struct {
 	models.DeviceAsBasic
@@ -44,6 +51,12 @@ type DeviceAsRelease struct {
 }
 
 func GetDeviceList(c *svcinfra.Context) {
+	devices := models.DeviceList()
+	if len(devices) == 0 {
+		c.Bye(gin.H{"devices": devices})
+		return
+	}
+
 	clustDevices := make([]DeviceAsRelease, 0)
 	clustQuery := map[string]interface{}{
 		"release_status": "true",
@@ -51,20 +64,26 @@ func GetDeviceList(c *svcinfra.Context) {
 	resp2, _ := cluster.BuildProxyReq[[]ClustReleaseApp](c, "GET", "/apps", &clustQuery, nil)
 	if resp2 == nil {
 		fmt.Printf("failed to get device list")
-		c.Bye(gin.H{"devices": clustDevices})
+		c.Bye(gin.H{"devices": devices})
 		return
 	}
 
+	appsMap := make(map[string]ClustReleaseApp)
 	for _, v := range *resp2 {
-		device := models.QueryOne[models.Device]("app_name", v.Name)
-		if device != nil {
-			release := DeviceAsRelease{}
-			basicDevice := device.AsBasic()
-			copier.Copy(&release, &basicDevice)
-			release.TargetNode = v.TargetNode
-			release.PodsStatus = v.PodsStatus
-			clustDevices = append(clustDevices, release)
+		appsMap[v.Name] = v
+	}
+
+	for _, d := range devices {
+		release := DeviceAsRelease{}
+		copier.Copy(&release, &d)
+		if app, ok := appsMap[d.AppName]; ok {
+			release.TargetNode = app.TargetNode
+			release.PodsStatus = app.PodsStatus
+		} else {
+			release.TargetNode = d.Node
+			release.AppName = ""
 		}
+		clustDevices = append(clustDevices, release)
 	}
 
 	sort.Slice(clustDevices, func(i, j int) bool {
@@ -83,53 +102,133 @@ func GetDevice(c *svcinfra.Context) {
 	c.Bye(gin.H{"tmpl": device.AsBasic()})
 }
 
-func DeleteDevice(c *svcinfra.Context) {
+func preInstallation(c *svcinfra.Context, configStr string, tmpl *models.Tmpl, node *models.Node, device *models.Device) (*[]uint32, error) {
+	cores, err := allocateNodeCore(tmpl, node)
+	if err != nil {
+		return nil, err
+	}
+
+	coreListStr := utils.IntArrayToString(cores)
+	var configFile map[string]interface{}
+	err = json.Unmarshal([]byte(configStr), &configFile)
+	if err != nil {
+		return nil, errors.New("设备配置文件格式错误")
+	}
+	fmt.Printf("configFile: %v\n", configFile)
+
+	tmplType := models.ActiveTmplType(tmpl.Type)
+	data := make(map[string]interface{})
+
+	if paddr, ok := configFile["2110-7_m_local_ip"].(string); ok {
+		data["primaryVFAddress"] = paddr + "/24"
+	} else {
+		return nil, errors.New("设备主网卡地址格式错误")
+	}
+	if saddr, ok := configFile["2110-7_b_local_ip"].(string); ok {
+		data["secondaryVFAddress"] = saddr + "/24"
+	} else {
+		return nil, errors.New("设备备网卡地址格式错误")
+	}
+	data["targetNode"] = node.ID
+	data["cpu"] = tmpl.Requirement.CpuNum
+	data["memory"] = tmpl.Requirement.Memory
+	data["hugepages"] = tmpl.Requirement.HugePage
+	data["shm"] = tmpl.Requirement.Shm
+	data["logLevel"] = tmpl.Requirement.LogLevel
+	data["MaxRateMbpsByCore"] = tmpl.Requirement.MaxRateMbpsByCore
+	data["RXsessioncnt"] = tmpl.Requirement.ReceiveSessions
+	data["displayName"] = device.Name
+	data["applicationCategory"] = tmplType.Category
+	data["coreList"] = coreListStr
+	data["DMAList"] = node.DMAList
+	if _, ok := configFile["ipservice"]; ok {
+		ipservice := configFile["ipservice"].(map[string]interface{})
+		ipservice["binding_core_list"] = coreListStr
+		ipservice["dma_list"] = node.DMAList
+		ipservice["receive_sessions"] = tmpl.Requirement.ReceiveSessions
+	}
+	configJson := utils.MapToString(configFile)
+	data["configFile"] = configJson
+	device.Config = configJson
+
+	resp2, err := cluster.BuildProxyReq[struct {
+		Name string `json:"name"`
+	}](c, "POST", "/install", nil, &data)
+	if resp2 == nil {
+		fmt.Printf("failed to parse response: %v", err)
+		if err != nil {
+			return nil, fmt.Errorf("部署设备失败: %s", err.Error())
+		} else {
+			return nil, errors.New("部署节点返回数据格式错误")
+		}
+	}
+	device.AppName = resp2.Name
+	return &cores, nil
+}
+
+func preUninstallation(c *svcinfra.Context, device *models.Device) error {
+	data := map[string]interface{}{
+		"name": device.AppName,
+	}
+	respQ, _ := cluster.BuildProxyReq[ClustReleaseAppDetail](c, "GET", "/app", &map[string]interface{}{
+		"release_name": device.AppName,
+	}, nil)
+	if respQ != nil {
+		resp2, err := cluster.BuildProxyReq[struct {
+			Name string `json:"name"`
+		}](c, "POST", "/uninstall", nil, &data)
+		if resp2 == nil {
+			if err != nil {
+				return fmt.Errorf("请求删除设备失败: %s", err.Error())
+			} else {
+				return errors.New("请求删除设备失败")
+			}
+		}
+
+		if resp2.Name != device.AppName {
+			return errors.New("删除设备失败")
+		}
+	}
+	return nil
+}
+
+func StartDevice(c *svcinfra.Context) {
 	var req struct {
-		ID   string `json:"id"`
-		Node string `json:"node"`
+		ID string `json:"id"`
 	}
 	c.ShouldBindJSON(&req)
 	device := models.ActiveDevice(req.ID)
 	if device == nil {
-		c.Bye(gin.H{"result": "ok"})
+		c.GeneralError("启动的设备不存在")
 		return
 	}
 
-	data := map[string]interface{}{
-		"name": device.AppName,
+	if device.Node == "" {
+		c.GeneralError("设备没有分配节点")
+		return
 	}
-	resp2, err := cluster.BuildProxyReq[struct {
-		Name string `json:"name"`
-	}](c, "POST", "/uninstall", nil, &data)
-	if resp2 == nil {
-		if err != nil {
-			c.GeneralError(fmt.Sprintf("请求删除设备失败: %s", err.Error()))
-		} else {
-			c.GeneralError("请求删除设备失败")
+
+	tmpl := models.ActiveTmpl(device.Tmpl)
+	node := models.ActiveNode(device.Node)
+	if node == nil {
+		node = &models.Node{
+			ID: device.Node,
 		}
+	}
+
+	cores, err := preInstallation(c, device.Config, tmpl, node, device)
+	if err != nil {
+		c.GeneralError(err.Error())
 		return
 	}
-
-	if resp2.Name != device.AppName {
-		c.GeneralError("删除设备失败")
-		return
-	}
-
-	device.Deleted = def.SelfDeleted
-	if !c.Save(&device) {
-		return
-	}
-
-	node := models.ActiveNode(req.Node)
-	if node != nil {
-		delete(node.Allocated, device.ID)
-		c.Save(&node)
-	}
-
-	c.Bye(gin.H{"result": "ok"})
+	c.Save(&device)
+	node.Allocated[device.ID] = *cores
+	c.Save(&node)
+	c.Bye(gin.H{"device": device.AsBasic()})
 }
 
-func StartDevice(c *svcinfra.Context) {
+// deprecated
+func StartDevice2(c *svcinfra.Context) {
 	var req struct {
 		ID string `json:"id"`
 	}
@@ -155,6 +254,36 @@ func StartDevice(c *svcinfra.Context) {
 }
 
 func StopDevice(c *svcinfra.Context) {
+	var req struct {
+		ID string `json:"id"`
+	}
+	c.ShouldBindJSON(&req)
+	device := models.ActiveDevice(req.ID)
+	if device == nil {
+		c.GeneralError("暂停的设备不存在")
+		return
+	}
+	if device.AppName == "" {
+		c.Bye(gin.H{"result": "ok"})
+		return
+	}
+	err := preUninstallation(c, device)
+	if err != nil {
+		c.GeneralError(err.Error())
+		return
+	}
+	device.AppName = ""
+	node := models.ActiveNode(device.Node)
+	if node != nil {
+		delete(node.Allocated, device.ID)
+		c.Save(&node)
+	}
+	c.Save(&device)
+	c.Bye(gin.H{"result": "ok"})
+}
+
+// deprecated
+func StopDevice2(c *svcinfra.Context) {
 	var req struct {
 		ID string `json:"id"`
 	}
@@ -235,7 +364,7 @@ func CreateDevice(c *svcinfra.Context) {
 		return
 	}
 
-	d := models.QueryOne[models.Device]("name", req.Name)
+	d := models.QueryOne4[models.Device]("name", req.Name, "deleted", 0)
 	if d != nil {
 		c.GeneralError("设备名称已存在")
 		return
@@ -249,64 +378,25 @@ func CreateDevice(c *svcinfra.Context) {
 		}
 	}
 
-	cores, err := allocateNodeCore(tmpl, node)
+	newDevice := models.Device{
+		Name: req.Name,
+		Tmpl: req.Tmpl,
+		Node: req.Node,
+	}
+
+	cores, err := preInstallation(c, req.Body, tmpl, node, &newDevice)
 	if err != nil {
 		c.GeneralError(err.Error())
 		return
 	}
-
-	coreListStr := utils.IntArrayToString(cores)
-
-	newDevice := models.Device{
-		Name: req.Name,
-		Tmpl: req.Tmpl,
-	}
-
-	tmplType := models.ActiveTmplType(tmpl.Type)
-	var data map[string]interface{}
-	err = json.Unmarshal([]byte(req.Body), &data)
-	if err != nil {
-		fmt.Printf("parse request body: %v", err)
-		c.GeneralError("请求数据格式错误")
-		db.DB.Delete(&newDevice)
-		return
-	}
-	data["displayName"] = req.Name
-	data["applicationCategory"] = tmplType.Category
-	data["coreList"] = coreListStr
-	data["DMAList"] = node.DMAList
-	configFile := data["configFile"].(map[string]interface{})
-	if _, ok := configFile["ipservice"]; ok {
-		ipservice := configFile["ipservice"].(map[string]interface{})
-		ipservice["binding_core_list"] = coreListStr
-		ipservice["dma_list"] = node.DMAList
-	}
-	newDevice.Config = utils.MapToString(configFile)
-
-	resp2, err := cluster.BuildProxyReq[struct {
-		Name string `json:"name"`
-	}](c, "POST", "/install", nil, &data)
-	if resp2 == nil {
-		fmt.Printf("failed to parse response: %v", err)
-		if err != nil {
-			c.GeneralError(fmt.Sprintf("部署设备失败: %s", err.Error()))
-		} else {
-			c.GeneralError("部署节点返回数据格式错误")
-		}
-		db.DB.Delete(&newDevice)
-		return
-	}
-	newDevice.AppName = resp2.Name
 	result := models.Create(&newDevice)
 	if result.Error != nil {
 		fmt.Printf("failed to create device in db: %v", result.Error)
 		c.GeneralError("部署设备失败")
 		return
 	}
-
-	node.Allocated[newDevice.ID] = cores
+	node.Allocated[newDevice.ID] = *cores
 	c.Save(&node)
-
 	c.Bye(gin.H{"device": newDevice.AsBasic()})
 }
 
@@ -320,6 +410,39 @@ func UpdateDevice(c *svcinfra.Context) {
 	c.ShouldBindJSON(&req)
 	if len(req.Name) == 0 {
 		c.GeneralError("设备名称不能为空")
+		return
+	}
+
+	c.Bye(gin.H{"result": "ok"})
+}
+
+func DeleteDevice(c *svcinfra.Context) {
+	var req struct {
+		ID string `json:"id"`
+	}
+	c.ShouldBindJSON(&req)
+	device := models.ActiveDevice(req.ID)
+	if device == nil {
+		c.Bye(gin.H{"result": "ok"})
+		return
+	}
+	if device.AppName != "" {
+		err := preUninstallation(c, device)
+		if err != nil {
+			c.GeneralError(err.Error())
+			return
+		}
+	}
+
+	node := models.ActiveNode(device.Node)
+	if node != nil {
+		delete(node.Allocated, device.ID)
+		c.Save(&node)
+	}
+
+	device.AppName = ""
+	device.Deleted = def.SelfDeleted
+	if !c.Save(&device) {
 		return
 	}
 

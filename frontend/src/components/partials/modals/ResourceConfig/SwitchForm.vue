@@ -6,8 +6,7 @@ import merge from 'lodash-es/merge'
 import switchData from '/@src/data/vscomponent/switch.json'
 
 const props = defineProps<{
-  name: string,
-  requiredment: TmplRequirement
+  name: string
 }>()
 
 const mv = defineModel<{
@@ -90,7 +89,7 @@ function getValue() {
   const bip = mv.value['2110-7_b_local_ip']
   const useb = output.value['g_2022-7']
   return {
-    ...handle(mv.value, props.requiredment),
+    ...handle(mv.value),
     input: {
       ...wrap(input.value, 'in_', input.value['g_2022-7']),
       input_params: inputs.value.map(ipt => wrap(ipt.value, 'in_', input.value['g_2022-7'], true, mip, bip))

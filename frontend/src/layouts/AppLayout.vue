@@ -209,6 +209,8 @@ watch(
 </template>
 <style lang="scss">
 .sidebar-layout.is-narrow {
+  overflow: auto;
+
   .sidebar-panel {
     width: 160px;
 
@@ -220,6 +222,8 @@ watch(
   .view-wrapper.is-pushed-full {
     margin-inline-start: 240px;
     width: calc(100% - 240px);
+    min-width: 1200px;
+    overflow: auto;
   }
 
   .page-content-wrapper {

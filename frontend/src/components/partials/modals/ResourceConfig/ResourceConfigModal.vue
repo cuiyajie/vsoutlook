@@ -36,11 +36,6 @@ const nodes = computed(() => nodeStore.nodes)
 function onTmplSelect(field?: any, val?: any) {
   field?.setValue(val)
   tmpl.value = tmpls.value.find(t => t.id === val) || null
-  if (val && !tmpl.value?.requirement) {
-    tmplStore.$getTmplById(val).then(res => {
-      tmpl.value = res
-    })
-  }
 }
 
 function onNodeSelect(field?: any, val?: any) {
@@ -52,11 +47,6 @@ useListener(Signal.OpenResourceConfig, (p?: { tmpl: TemplateData, node: ClustNod
   opened.value = true;
   inited.value = !!p
   if (!p) return
-  if (!p.tmpl?.requirement) {
-    tmplStore.$getTmplById(p.tmpl.id).then(res => {
-      tmpl.value = res
-    })
-  }
   tmpl.value = p.tmpl;
   node.value = p.node;
   device.value = p.device;
@@ -109,38 +99,7 @@ const dgi = computed(() => {
 
 async function prepareParams() {
   if (tmpl.value?.id && node.value?.id) {
-    // const val = compRef.value?.getValue()
-    const params: any = {}
-    const val = compRef.value?.getValue()
-    if (!val || !isCIDR(`${val['2110-7_m_local_ip']}/24`)) {
-      return { error: "主网卡地址格式错误" }
-    }
-    if (!val || !isCIDR(`${val['2110-7_b_local_ip']}/24`)) {
-      return { error: "备网卡地址格式错误" }
-    }
-    params.primaryVFAddress = `${val['2110-7_m_local_ip']}/24`
-    params.secondaryVFAddress = `${val['2110-7_b_local_ip']}/24`
-    params.configFile = val
-
-    const rq = tmpl.value.requirement
-    params.targetNode = dgi.value.nodeName
-    params.cpu = +rq.cpuNum || 1
-    params.memory = +rq.memory || 1
-    params.hugepages = +rq.hugePage || 6
-    params.shm = rq.shm || 0
-
-    // params.configFilePath = '/opt/vsomediasoftware/config/vsompconfiginfo-web.json'
-    // params.hostNetwork = rq.hostNetwork
-    params.logLevel = rq.logLevel
-    params.MaxRateMbpsByCore = rq.maxRateMbpsByCore
-    params.RXsessioncnt = rq.receiveSessions
-    // params.repairRecvFrame = +rq.repairRecvFrame
-    // params.repairSendFrame = +rq.repairSendFrame
-    // params.utfOffset = rq.utfOffset
-    // params.recvAVFrameNodeCount = rq.recvAVFrameNodeCount
-    // params.sendAVFrameNodeCount = rq.sendAVFrameNodeCount
-    // params.recvframeCnt = rq.recvframeCnt
-    return params
+    return compRef.value?.getValue()
   } else {
     return { error: "模板不存在" }
   }

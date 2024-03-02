@@ -1,5 +1,5 @@
 import type { WatchSource, WatchOptions } from "vue";
-import { defs, formats, v_compression_format, v_compression_ratio, v_protocols, v_width, val_udx, ssm_address } from './Consts';
+import { defs, formats, v_compression_format, v_compression_ratio, v_protocols, v_width, val_udx } from './Consts';
 import omit from 'lodash-es/omit';
 
 function setFormat(dst: any, tokens: string[]) {
@@ -128,7 +128,7 @@ export function watchModeVFormat(
   );
 }
 
-export function handle(mv: any, required: TmplRequirement) {
+export function handle(mv: any) {
   if (mv.ssm_address_range?.length > 0) {
     mv.ssm_address_range = mv.ssm_address_range.map((v: any, idx: number) => {
       v.index = idx;
@@ -141,15 +141,7 @@ export function handle(mv: any, required: TmplRequirement) {
       return v
     })
   }
-  if (required) {
-    Object.assign(mv, {
-      ipservice: {
-        log_level : required.logLevel,
-        max_bandwidth_percore : required.maxRateMbpsByCore,
-        receive_sessions : required.receiveSessions
-      }
-    })
-  }
+  mv.ipservice = {}
   return mv
 }
 

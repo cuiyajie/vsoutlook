@@ -41,6 +41,11 @@ const nameFilter: VFlexTableWrapperFilterFunction<DeviceDetail> = ({ searchTerm,
   return row.name.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
 }
 
+const appNameFilter: VFlexTableWrapperFilterFunction<DeviceDetail> = ({ searchTerm, row }) => {
+  if (!searchTerm) return true
+  return row.appName.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
+}
+
 const formatDate = (t: number) => new Date(t * 1000).toLocaleString('zh-CN', {
   year: 'numeric',
   month: '2-digit',
@@ -64,7 +69,7 @@ const columns = {
   },
   tmplName: {
     label: '应用名称',
-    grow: true,
+    grow: false,
     searchable: true,
     sortable: true,
     sort: tmplNameSorter,
@@ -76,9 +81,15 @@ const columns = {
     searchable: true,
     sorter: tmplTypeSorter
   },
+  appName: {
+    label: '应用部署名称',
+    searchable: true,
+    sortable: false,
+    filter: appNameFilter
+  },
   updatedAt: {
     label: '更新时间',
-    grow: true,
+    grow: false,
     sortable: true,
     align: 'center'
   },
@@ -222,9 +233,17 @@ refresh()
               class="dark-text"
             >{{ row.name }}</span>
             <span
+              v-else-if="column.key === 'tmplName'"
+              class="dark-text"
+            >{{ row.tmplName }}</span>
+            <span
               v-else-if="column.key === 'tmplType'"
               class="dark-text"
             >{{ row.tmplTypeName }}</span>
+            <span
+              v-else-if="column.key === 'appName'"
+              class="dark-text"
+            >{{ row.appName }}</span>
             <span
               v-else-if="column.key === 'updatedAt'"
               class="dark-text"
@@ -326,26 +345,53 @@ refresh()
       padding: 0 16px;
     }
 
+    .flex-table-header span,
+    .flex-table-item .flex-table-cell {
+      justify-content: center;
+    }
+
     .flex-table-header span:nth-child(1),
     .flex-table-item .flex-table-cell:nth-child(1) {
       flex: 0 0 90px;
     }
 
+    .flex-table-item .flex-table-cell:nth-child(2) {
+      min-width: 0;
+
+      span {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+    }
+
     .flex-table-header span:nth-child(3),
     .flex-table-item .flex-table-cell:nth-child(3) {
+      flex: 0 0 120px;
     }
 
     .flex-table-header span:nth-child(4),
     .flex-table-item .flex-table-cell:nth-child(4) {
+      flex: 0 0 120px;
+    }
+
+    .flex-table-header span:nth-child(5),
+    .flex-table-item .flex-table-cell:nth-child(5) {
+      flex: 0 0 150px;
     }
 
     .flex-table-header span:nth-child(6),
     .flex-table-item .flex-table-cell:nth-child(6) {
-      flex: 0 0 100px;
+      flex: 0 0 180px;
     }
 
     .flex-table-header span:nth-child(7),
     .flex-table-item .flex-table-cell:nth-child(7) {
+      flex: 0 0 100px;
+    }
+
+    .flex-table-header span:nth-child(8),
+    .flex-table-item .flex-table-cell:nth-child(8) {
       flex: 0 0 80px;
     }
   }
