@@ -64,7 +64,7 @@ const opened = ref(false)
             </div>
             <div class="column is-6">
               <VField>
-                <VLabel>主视频流IO输入端口</VLabel>
+                <VLabel>主视频流前置SDN输入端口</VLabel>
                 <VControl>
                   <VInputNumber
                     v-model="mv.ipstream_master.v_P4_port"
@@ -112,7 +112,7 @@ const opened = ref(false)
                 class="column is-6"
               >
                 <VField>
-                  <VLabel>备视频流IO输入端口</VLabel>
+                  <VLabel>备视频流前置SDN输入端口</VLabel>
                   <VControl>
                     <VInputNumber
                       v-model="mv.ipstream_backup.v_P4_port"

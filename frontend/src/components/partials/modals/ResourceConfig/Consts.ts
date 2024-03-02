@@ -110,6 +110,8 @@ export const switch_keyfill_params = {
 }
 
 export const nmos_config = {
+  nmos_enable: true,
+  rds_server_url: "192.168.1.112:8010",
   name: "61stream1",
   http_port: 9008,
   log_level:  0,

@@ -44,7 +44,7 @@ const opened = ref(false)
         <!--Fieldset-->
         <div class="form-fieldset">
           <div class="columns is-multiline">
-            <div class="column is-4">
+            <div class="column is-6">
               <VField>
                 <VLabel>CPU 总核心数</VLabel>
                 <VControl>
@@ -57,7 +57,7 @@ const opened = ref(false)
                 </VControl>
               </VField>
             </div>
-            <div class="column is-4">
+            <div class="column is-6">
               <VField>
                 <VLabel>DPKUCPU 核心数</VLabel>
                 <VControl>
@@ -70,7 +70,7 @@ const opened = ref(false)
                 </VControl>
               </VField>
             </div>
-            <div class="column is-4">
+            <div class="column is-6">
               <VField>
                 <VLabel>内存 (GB)</VLabel>
                 <VControl>
@@ -83,7 +83,7 @@ const opened = ref(false)
                 </VControl>
               </VField>
             </div>
-            <div class="column is-4">
+            <div class="column is-6">
               <VField>
                 <VLabel>大叶内存 (GB)</VLabel>
                 <VControl>
@@ -96,9 +96,9 @@ const opened = ref(false)
                 </VControl>
               </VField>
             </div>
-            <div class="column is-4">
+            <div class="column is-6">
               <VField>
-                <VLabel>/dev/shm大小 (GB)</VLabel>
+                <VLabel>共享内存 (GB)</VLabel>
                 <VControl>
                   <VInputNumber
                     v-model="modelValue.shm"
@@ -109,7 +109,47 @@ const opened = ref(false)
                 </VControl>
               </VField>
             </div>
-            <div class="column is-4">
+            <div class="column is-6">
+              <VField>
+                <VLabel>日志级别</VLabel>
+                <VControl>
+                  <VInputNumber
+                    v-model="modelValue.logLevel"
+                    centered
+                    :min="0"
+                    :max="5"
+                    :step="1"
+                  />
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-6">
+              <VField>
+                <VLabel>单核心最大处理能力(Mb)</VLabel>
+                <VControl>
+                  <VInputNumber
+                    v-model="modelValue.maxRateMbpsByCore"
+                    centered
+                    :min="0"
+                    :step="1"
+                  />
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-6">
+              <VField>
+                <VLabel>收流会话数</VLabel>
+                <VControl>
+                  <VInputNumber
+                    v-model="modelValue.receiveSessions"
+                    centered
+                    :min="0"
+                    :step="1"
+                  />
+                </VControl>
+              </VField>
+            </div>
+            <!-- <div class="column is-4">
               <VField>
                 <VLabel>CPU主频</VLabel>
                 <VControl>
@@ -144,8 +184,8 @@ const opened = ref(false)
                   />
                 </VControl>
               </VField>
-            </div>
-            <div class="column is-4">
+            </div> -->
+            <!-- <div class="column is-4">
               <VField>
                 <VLabel>信号输入宽带</VLabel>
                 <VControl>
@@ -168,8 +208,8 @@ const opened = ref(false)
                   />
                 </VControl>
               </VField>
-            </div>
-            <div class="column is-4">
+            </div> -->
+            <!-- <div class="column is-4">
               <VField>
                 <VLabel>光纤网卡端口数</VLabel>
                 <VControl>
@@ -192,7 +232,7 @@ const opened = ref(false)
                   />
                 </VControl>
               </VField>
-            </div>
+            </div> -->
             <div class="column is-12">
               <VField>
                 <VLabel>备注说明</VLabel>
@@ -210,7 +250,7 @@ const opened = ref(false)
             </div>
           </div>
         </div>
-        <div
+        <!-- <div
           class="form-fieldset collapse-form"
           :open="opened || undefined"
         >
@@ -359,7 +399,7 @@ const opened = ref(false)
               </div>
             </div>
           </Transition>
-        </div>
+        </div> -->
       </div>
     </div>
   </form>

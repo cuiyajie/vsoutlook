@@ -113,7 +113,7 @@ const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value)
             </div>
             <div class="column is-6">
               <VField>
-                <VLabel>主视频流IO输入端口</VLabel>
+                <VLabel>主视频流前置SDN输入端口</VLabel>
                 <VControl>
                   <VInputNumber
                     v-model="mv.ipstream_master.v_p4inport"
@@ -126,7 +126,7 @@ const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value)
             </div>
             <div class="column is-6">
               <VField>
-                <VLabel>主视频流IO输出端口</VLabel>
+                <VLabel>主视频流前置SDN输出端口</VLabel>
                 <VControl>
                   <VInputNumber
                     v-model="mv.ipstream_master.v_p4outport"
@@ -172,7 +172,7 @@ const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value)
                 class="column is-6"
               >
                 <VField>
-                  <VLabel>备视频流IO输入端口</VLabel>
+                  <VLabel>备视频流前置SDN输入端口</VLabel>
                   <VControl>
                     <VInputNumber
                       v-model="mv.ipstream_backup.v_p4inport"
@@ -190,7 +190,7 @@ const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value)
                 class="column is-6"
               >
                 <VField>
-                  <VLabel>备视频流IO输入端口</VLabel>
+                  <VLabel>备视频流前置SDN输入端口</VLabel>
                   <VControl>
                     <VInputNumber
                       v-model="mv.ipstream_backup.v_p4outport"
@@ -233,7 +233,7 @@ const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value)
     </Transition>
     <Transition name="fade-slow">
       <div
-        v-if="isOpen"
+        v-if="isOpen && (mv.videoformat.v_compression_format || mv.videoformat.v_compression_ratio)"
         class="form-fieldset-nested is-tail"
       >
         <div class="form-fieldset">
@@ -241,7 +241,7 @@ const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value)
             <h5>视频编码参数</h5>
           </div>
           <div class="columns is-multiline">
-            <div class="column is-6">
+            <div v-if="mv.videoformat.v_compression_format" class="column is-6">
               <VField>
                 <VLabel>编码格式</VLabel>
                 <VControl>
@@ -252,7 +252,7 @@ const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value)
                 </VControl>
               </VField>
             </div>
-            <div class="column is-6">
+            <div v-if="mv.videoformat.v_compression_ratio" class="column is-6">
               <VField>
                 <VLabel>压缩比</VLabel>
                 <VControl>

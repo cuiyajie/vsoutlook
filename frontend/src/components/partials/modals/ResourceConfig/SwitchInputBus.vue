@@ -58,7 +58,7 @@ const keyfill_opened = ref(false)
           </div>
           <div class="column is-4">
             <VField>
-              <VLabel>主视频母线a使用的p4输出端口</VLabel>
+              <VLabel>主视频母线a使用的前置SDN输出端口</VLabel>
               <VControl>
                 <VInputNumber
                   v-model="mv.video_bus_master[0].v_P4_port"
@@ -91,7 +91,7 @@ const keyfill_opened = ref(false)
           </div>
           <div class="column is-4">
             <VField>
-              <VLabel>主视频母线b使用的p4输出端口</VLabel>
+              <VLabel>主视频母线b使用的前置SDN输出端口</VLabel>
               <VControl>
                 <VInputNumber
                   v-model="mv.video_bus_master[1].v_P4_port"
@@ -138,7 +138,7 @@ const keyfill_opened = ref(false)
               class="column is-4"
             >
               <VField>
-                <VLabel>备视频母线a使用的p4输出端口</VLabel>
+                <VLabel>备视频母线a使用的前置SDN输出端口</VLabel>
                 <VControl>
                   <VInputNumber
                     v-model="mv.video_bus_backup[0].v_P4_port"
@@ -186,7 +186,7 @@ const keyfill_opened = ref(false)
               class="column is-4"
             >
               <VField>
-                <VLabel>备视频母线b使用的p4输出端口</VLabel>
+                <VLabel>备视频母线b使用的前置SDN输出端口</VLabel>
                 <VControl>
                   <VInputNumber
                     v-model="mv.video_bus_backup[1].v_P4_port"
@@ -246,7 +246,7 @@ const keyfill_opened = ref(false)
           </div>
           <div class="column is-4">
             <VField>
-              <VLabel>主key母线使用的p4输出端口</VLabel>
+              <VLabel>主key母线使用的前置SDN输出端口</VLabel>
               <VControl>
                 <VInputNumber
                   v-model="mv.keyfill_bus_master.key_p4_port"
@@ -279,7 +279,7 @@ const keyfill_opened = ref(false)
           </div>
           <div class="column is-4">
             <VField>
-              <VLabel>主fill母线使用的p4输出端口</VLabel>
+              <VLabel>主fill母线使用的前置SDN输出端口</VLabel>
               <VControl>
                 <VInputNumber
                   v-model="mv.keyfill_bus_master.fill_p4_port"
@@ -326,7 +326,7 @@ const keyfill_opened = ref(false)
               class="column is-4"
             >
               <VField>
-                <VLabel>备key母线使用的p4输出端口</VLabel>
+                <VLabel>备key母线使用的前置SDN输出端口</VLabel>
                 <VControl>
                   <VInputNumber
                     v-model="mv.keyfill_bus_backup.key_p4_port"
@@ -374,7 +374,7 @@ const keyfill_opened = ref(false)
               class="column is-4"
             >
               <VField>
-                <VLabel>备fill母线使用的p4输出端口</VLabel>
+                <VLabel>备fill母线使用的前置SDN输出端口</VLabel>
                 <VControl>
                   <VInputNumber
                     v-model="mv.keyfill_bus_backup.fill_p4_port"

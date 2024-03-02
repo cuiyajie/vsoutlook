@@ -4,6 +4,8 @@
   "2110-7_m_local_ip": "192.168.1.1",
   "2110-7_b_local_ip": "192.168.1.2",
   "nmos": {
+    "nmos_enable":true,
+    "rds_server_url":"192.168.1.112:8010",
     "name": "61stream1",
     "http_port": 9008,
     "log_level": 0,
@@ -28,16 +30,16 @@
     "in_g_2022-7": true,
     "in_v_protocol": "st2110-20",
     "ipstream_master": {
-      "in_v_src_address": "238.0.0.1:5004",
-      "in_v_dst_address": "239.0.0.1:5004",
-      "in_a_src_address": "238.0.0.1:5005",
-      "in_a_dst_address": "239.0.0.1:5005"
+      "in_v_src_address": "238.0.0.1:30000",
+      "in_v_dst_address": "239.0.0.1:30000",
+      "in_a_src_address": "238.0.0.1:30000",
+      "in_a_dst_address": "239.0.0.1:30000"
     },
     "ipstream_backup": {
-      "in_v_src_address": "238.0.0.2:5004",
-      "in_v_dst_address": "239.0.0.2:5004",
-      "in_a_src_address": "238.0.0.2:5005",
-      "in_a_dst_address": "239.0.0.2:5005"
+      "in_v_src_address": "238.0.0.2:30000",
+      "in_v_dst_address": "239.0.0.2:30000",
+      "in_a_src_address": "238.0.0.2:30000",
+      "in_a_dst_address": "239.0.0.2:30000"
     },
     "videoformat": {
       "in_v_width": 3840,
@@ -60,16 +62,16 @@
     "out_params": {
       "out_v_protocol": "st2110-22",
       "ipstream_master": {
-        "out_v_src_address": "238.0.0.3:5004",
-        "out_v_dst_address": "239.0.0.3:5004",
-        "out_a_src_address": "238.0.0.3:5005",
-        "out_a_dst_address": "239.0.0.3:5005"
+        "out_v_src_address": "238.0.0.3:30000",
+        "out_v_dst_address": "239.0.0.3:30000",
+        "out_a_src_address": "238.0.0.3:30000",
+        "out_a_dst_address": "239.0.0.3:30000"
       },
       "ipstream_backup": {
-        "out_v_src_address": "238.0.0.4:5004",
-        "out_v_dst_address": "239.0.0.4:5004",
-        "out_a_src_address": "238.0.0.4:5005",
-        "out_a_dst_address": "239.0.0.4:5005"
+        "out_v_src_address": "238.0.0.4:30000",
+        "out_v_dst_address": "239.0.0.4:30000",
+        "out_a_src_address": "238.0.0.4:30000",
+        "out_a_dst_address": "239.0.0.4:30000"
       },
       "videoformat": {
         "out_v_width": 3840,

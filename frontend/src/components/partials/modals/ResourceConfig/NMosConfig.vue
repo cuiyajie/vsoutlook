@@ -16,13 +16,24 @@ const mv = defineModel<NMosConfigType>({
     <div class="columns is-multiline">
       <div class="column is-6">
         <VField>
-          <VLabel>设备名称</VLabel>
+          <VLabel>是否启用nmos</VLabel>
           <VControl>
-            <VInput v-model="mv.name" readonly />
+            <VSwitchBlock
+              v-model="mv.nmos_enable"
+              color="primary"
+            />
           </VControl>
         </VField>
       </div>
-      <div class="column is-3">
+      <div class="column is-6">
+        <VField>
+          <VLabel>RDS服务地址(含端口)</VLabel>
+          <VControl>
+            <VInput v-model="mv.rds_server_url" />
+          </VControl>
+        </VField>
+      </div>
+      <div class="column is-6">
         <VField>
           <VLabel>端口</VLabel>
           <VControl>
@@ -35,7 +46,7 @@ const mv = defineModel<NMosConfigType>({
           </VControl>
         </VField>
       </div>
-      <div class="column is-3">
+      <div class="column is-6">
         <VField>
           <VLabel>日志级别</VLabel>
           <VControl>

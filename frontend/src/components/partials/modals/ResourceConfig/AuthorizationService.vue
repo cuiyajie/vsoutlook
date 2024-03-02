@@ -33,7 +33,7 @@ function remove(idx: number) {
     <div v-for="(auth, idx) in mv" :key="idx" class="columns is-multiline">
       <div class="column is-1">
         <VField class="index-field">
-          <VLabel>索引</VLabel>
+          <VLabel>序号</VLabel>
           <VControl>
             <VLabel>{{ idx }}</VLabel>
           </VControl>
@@ -41,7 +41,7 @@ function remove(idx: number) {
       </div>
       <div class="column is-6">
         <VField>
-          <VLabel>服务IP地址</VLabel>
+          <VLabel>IP地址</VLabel>
           <VControl>
             <VInput v-model="auth.ip" />
           </VControl>
@@ -49,7 +49,7 @@ function remove(idx: number) {
       </div>
       <div class="column is-4">
         <VField>
-          <VLabel>服务端口</VLabel>
+          <VLabel>端口</VLabel>
           <VControl>
             <VInputNumber
               v-model="auth.port"

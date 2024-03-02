@@ -33,7 +33,7 @@ function remove(idx: number) {
     <div v-for="(ssm, idx) in mv" :key="idx" class="columns is-multiline">
       <div class="column is-1">
         <VField class="index-field">
-          <VLabel>索引</VLabel>
+          <VLabel>序号</VLabel>
           <VControl>
             <VLabel>{{ idx }}</VLabel>
           </VControl>

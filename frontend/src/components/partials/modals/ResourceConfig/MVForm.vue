@@ -36,7 +36,7 @@ const mv = defineModel<{
 });
 
 mv.value = pick(mvData, ['moudle', 'input_number', 'output_number', 'tally_port', '2110-7_m_local_ip', '2110-7_b_local_ip', 'nmos', 'ssm_address_range', 'authorization_service'])
-const moduleName = ref('多画面')
+
 watchNmosName(() => props.name, mv.value)
 
 const ipData = unwrap(mvData.input, 'in_')
@@ -151,18 +151,7 @@ defineExpose({
           </div>
 
           <div class="columns is-multiline">
-            <div class="column is-3">
-              <VField>
-                <VLabel>模块名称</VLabel>
-                <VControl>
-                  <VInput
-                    v-model="moduleName"
-                    readonly
-                  />
-                </VControl>
-              </VField>
-            </div>
-            <div class="column is-3">
+            <div class="column is-4">
               <VField>
                 <VLabel>输入信号数量</VLabel>
                 <VControl>
@@ -176,7 +165,7 @@ defineExpose({
                 </VControl>
               </VField>
             </div>
-            <div class="column is-3">
+            <div class="column is-4">
               <VField>
                 <VLabel>输出信号数量</VLabel>
                 <VControl>
@@ -194,7 +183,7 @@ defineExpose({
                 </VControl>
               </VField>
             </div>
-            <div class="column is-3">
+            <div class="column is-4">
               <VField>
                 <VLabel>tally服务端口</VLabel>
                 <VControl>

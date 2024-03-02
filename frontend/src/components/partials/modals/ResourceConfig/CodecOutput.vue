@@ -166,12 +166,12 @@ defineProps<{
         </div>
       </div>
     </div>
-    <div class="form-fieldset">
+    <div v-if="mv.params.videoformat.v_compression_format || mv.params.videoformat.v_compression_ratio" class="form-fieldset">
       <div class="fieldset-heading">
         <h5>视频编码参数</h5>
       </div>
       <div class="columns is-multiline">
-        <div class="column is-6">
+        <div v-if="mv.params.videoformat.v_compression_format" class="column is-6">
           <VField>
             <VLabel>编码格式</VLabel>
             <VControl>
@@ -182,7 +182,7 @@ defineProps<{
             </VControl>
           </VField>
         </div>
-        <div class="column is-6">
+        <div v-if="mv.params.videoformat.v_compression_ratio" class="column is-6">
           <VField>
             <VLabel>压缩比</VLabel>
             <VControl>

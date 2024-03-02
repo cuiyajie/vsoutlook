@@ -65,7 +65,7 @@ function viewTmpl() {
       </div>
       <div class="info-block-line">
         <h4 class="dark-inverted">
-          内存
+          内存 (GB)
         </h4>
         <span>
           {{ tmpld.requirement.memory || '无' }}
@@ -81,7 +81,7 @@ function viewTmpl() {
       </div> -->
       <div class="info-block-line">
         <h4 class="dark-inverted">
-          大页数 (Huge Page)
+          大叶内存 (GB)
         </h4>
         <span>
           {{ tmpld.requirement.hugePage || '无' }}
@@ -89,10 +89,18 @@ function viewTmpl() {
       </div>
       <div class="info-block-line">
         <h4 class="dark-inverted">
-          /dev/shm大小 (GB)
+          共享内存 (GB)
         </h4>
         <span>
           {{ tmpld.requirement.shm || '无' }}
+        </span>
+      </div>
+      <div class="info-block-line">
+        <h4 class="dark-inverted">
+          日志级别
+        </h4>
+        <span>
+          {{ tmpld.requirement.logLevel || '无' }}
         </span>
       </div>
       <div class="info-block-line">

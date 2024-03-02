@@ -33,7 +33,6 @@ const mv = defineModel<{
 
 mv.value = pick(codecData, ['moudle', 'mode', '2110-7_m_local_ip', '2110-7_b_local_ip', 'nmos', 'ssm_address_range', 'authorization_service'])
 
-const moduleName = ref('编解码器')
 const input = ref(def_codec_input());
 input.value = unwrap(codecData.input, 'in_')
 const inputFormat = useFormat(input.value, getFormat(input.value))
@@ -106,18 +105,7 @@ defineExpose({
           </div>
 
           <div class="columns is-multiline">
-            <div class="column is-6">
-              <VField>
-                <VLabel>模块名称</VLabel>
-                <VControl>
-                  <VInput
-                    v-model="moduleName"
-                    readonly
-                  />
-                </VControl>
-              </VField>
-            </div>
-            <div class="column is-6">
+            <div class="column is-4">
               <VField>
                 <VLabel>工作模式</VLabel>
                 <VControl>
@@ -135,7 +123,7 @@ defineExpose({
                 </VControl>
               </VField>
             </div>
-            <div class="column is-6">
+            <div class="column is-4">
               <VField>
                 <VLabel>2022-7主路收发网口IP</VLabel>
                 <VControl>
@@ -145,7 +133,7 @@ defineExpose({
                 </VControl>
               </VField>
             </div>
-            <div class="column is-6">
+            <div class="column is-4">
               <VField>
                 <VLabel>2022-7备路收发网口IP</VLabel>
                 <VControl>

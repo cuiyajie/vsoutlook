@@ -41,7 +41,6 @@ const mv = defineModel<{
   local: true,
 });
 
-const moduleName = ref('切换台')
 mv.value = pick(switchData, ['moudle', 'input_number', 'tallyserver_url', 'p4server_url', 'hw_panel_url', 'physic_nic_port0_IP', 'physic_nic_port1_IP', '2110-7_m_local_ip', '2110-7_b_local_ip', 'nmos', 'ssm_address_range', 'authorization_service'])
 
 watchNmosName(() => props.name, mv.value)
@@ -157,18 +156,7 @@ defineExpose({
           </div>
 
           <div class="columns is-multiline">
-            <div class="column is-8">
-              <VField>
-                <VLabel>模块名称</VLabel>
-                <VControl>
-                  <VInput
-                    v-model="moduleName"
-                    readonly
-                  />
-                </VControl>
-              </VField>
-            </div>
-            <div class="column is-4">
+            <div class="column is-6">
               <VField>
                 <VLabel>输入信号数量</VLabel>
                 <VControl>
@@ -181,9 +169,9 @@ defineExpose({
                 </VControl>
               </VField>
             </div>
-            <div class="column is-4">
+            <div class="column is-6">
               <VField>
-                <VLabel>Tally服务地址</VLabel>
+                <VLabel>Tally服务地址（含端口）</VLabel>
                 <VControl>
                   <VInput
                     v-model="mv.tallyserver_url"
@@ -191,9 +179,9 @@ defineExpose({
                 </VControl>
               </VField>
             </div>
-            <div class="column is-4">
+            <div class="column is-6">
               <VField>
-                <VLabel>IO通讯地址</VLabel>
+                <VLabel>前置SDN通讯地址（含端口）</VLabel>
                 <VControl>
                   <VInput
                     v-model="mv.p4server_url"
@@ -201,9 +189,9 @@ defineExpose({
                 </VControl>
               </VField>
             </div>
-            <div class="column is-4">
+            <div class="column is-6">
               <VField>
-                <VLabel>硬件控制面板通讯地址</VLabel>
+                <VLabel>硬件控制面板通讯地址（含端口）</VLabel>
                 <VControl>
                   <VInput
                     v-model="mv.hw_panel_url"
@@ -213,7 +201,7 @@ defineExpose({
             </div>
             <div class="column is-6">
               <VField>
-                <VLabel>拉流物理网卡端口0IP</VLabel>
+                <VLabel>拉流物理网卡端口0 - IP</VLabel>
                 <VControl>
                   <VInput
                     v-model="mv.physic_nic_port0_IP"
@@ -223,7 +211,7 @@ defineExpose({
             </div>
             <div class="column is-6">
               <VField>
-                <VLabel>拉流物理网卡端口1IP</VLabel>
+                <VLabel>拉流物理网卡端口1 - IP</VLabel>
                 <VControl>
                   <VInput
                     v-model="mv.physic_nic_port1_IP"

@@ -68,7 +68,7 @@ const fill_opened = ref(false)
           </VControl>
         </VField>
       </div>
-      <div class="column is-6">
+      <div v-if="mv.videoformat.v_compression_format" class="column is-6">
         <VField>
           <VLabel>视频编码格式</VLabel>
           <VControl>
@@ -79,7 +79,7 @@ const fill_opened = ref(false)
           </VControl>
         </VField>
       </div>
-      <div class="column is-6">
+      <div v-if="mv.videoformat.v_compression_ratio" class="column is-6">
         <VField>
           <VLabel>视频压缩比</VLabel>
           <VControl>
@@ -140,7 +140,7 @@ const fill_opened = ref(false)
             </div>
             <div class="column is-6">
               <VField>
-                <VLabel>主视频流IO输入端口</VLabel>
+                <VLabel>主视频流前置SDN输入端口</VLabel>
                 <VControl>
                   <VInputNumber
                     v-model="mv.input_key_params.ipstream_master.Key_P4_port"
@@ -188,7 +188,7 @@ const fill_opened = ref(false)
                 class="column is-6"
               >
                 <VField>
-                  <VLabel>备视频流IO输入端口</VLabel>
+                  <VLabel>备视频流前置SDN输入端口</VLabel>
                   <VControl>
                     <VInputNumber
                       v-model="mv.input_key_params.ipstream_backup.Key_P4_port"
@@ -253,7 +253,7 @@ const fill_opened = ref(false)
             </div>
             <div class="column is-6">
               <VField>
-                <VLabel>主视频流IO输入端口</VLabel>
+                <VLabel>主视频流前置SDN输入端口</VLabel>
                 <VControl>
                   <VInputNumber
                     v-model="mv.input_fill_params.ipstream_master.fill_P4_port"
@@ -301,7 +301,7 @@ const fill_opened = ref(false)
                 class="column is-6"
               >
                 <VField>
-                  <VLabel>备视频流IO输入端口</VLabel>
+                  <VLabel>备视频流前置SDN输入端口</VLabel>
                   <VControl>
                     <VInputNumber
                       v-model="mv.input_fill_params.ipstream_backup.fill_P4_port"

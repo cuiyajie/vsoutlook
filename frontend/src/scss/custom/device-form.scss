@@ -163,6 +163,16 @@
 }
 
 .is-dark {
+
+  .device-form.form-layout {
+
+    .input[readonly],
+    .textarea[readonly] {
+      background-color: var(--dark-sidebar-light-10);
+      border-color: var(--dark-sidebar-light-10);
+    }
+  }
+
   .collapse-form {
     &[open] {
       .collapse-header {

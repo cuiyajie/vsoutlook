@@ -79,7 +79,8 @@ const validationSchema = computed(() => {
   const rules: any = {
     deviceName: z.string({
       required_error: "请输入设备名称",
-    })
+    }).refine(val => /^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$/.test(val), "请输入合法的设备名称")
+    .refine(val => val.length <= 53, "设备名称不能大于53个字符"),
   };
   if (!inited.value) {
     rules.tmpl = z.string({
@@ -100,7 +101,7 @@ const dgi = computed(() => {
     confirmTitle: isCreated ? "更新设备配置" : "部署设备",
     confirmContent: isCreated ? `确定要更新设备 ${device.value?.name} 的配置吗？` : `确定要将应用 ${tmpl.value?.name} 部署到 ${node.value?.id}(${node.value?.ip}) 吗？`,
     confirmMsg: isCreated ? "更新设备配置成功" : "部署设备成功",
-    title: isCreated ? "更新设备配置" : "启动设备",
+    title: `${isCreated ? "更新设备配置" : "启动设备"} - ${tmplConfig.value.name}`,
     submitText: isCreated ? "更新" : "启动",
     nodeName: isCreated ? device.value?.node : node.value?.id,
   };
@@ -132,6 +133,7 @@ async function prepareParams() {
     // params.hostNetwork = rq.hostNetwork
     params.logLevel = rq.logLevel
     params.MaxRateMbpsByCore = rq.maxRateMbpsByCore
+    params.RXsessioncnt = rq.receiveSessions
     // params.repairRecvFrame = +rq.repairRecvFrame
     // params.repairSendFrame = +rq.repairSendFrame
     // params.utfOffset = rq.utfOffset
@@ -217,18 +219,33 @@ function saveSetting() {
 }
 
 const compRef = ref<InstanceType<typeof CodecForm> | null>(null)
-const TmplComponent = computed(() => {
+const tmplConfig = computed(() => {
   switch (tmpl.value?.typeName) {
     case "编解码":
-      return CodecForm;
+      return {
+        name: '编解码器',
+        component: CodecForm
+      };
     case "上下变换":
-      return UdxForm;
+      return {
+        name: '上下变换',
+        component: UdxForm
+      };
     case "多画面":
-      return MVForm;
+      return {
+        name: '多画面',
+        component: MVForm
+      };
     case "切换台":
-      return SwitchForm;
+      return {
+        name: '切换台',
+        component: SwitchForm
+      };
     default:
-      return CodecForm;
+      return {
+        name: '编解码器',
+        component: CodecForm
+      };
   }
 })
 </script>
@@ -261,7 +278,7 @@ const TmplComponent = computed(() => {
             <VInput
               v-model="deviceName"
               type="text"
-              placeholder="设备名称"
+              placeholder="分段以字母数字开头，可包含连字符(-)，字母数字结尾，可由点分隔的多段组成，例如:my-example.name123"
               :readonly="dgi.created"
             />
             <Transition name="fade-slow">
@@ -350,7 +367,7 @@ const TmplComponent = computed(() => {
             </VField>
           </div>
         </div>
-        <TmplComponent v-if="tmpl" ref="compRef" :name="deviceName" :requiredment="tmpl?.requirement" />
+        <tmplConfig.component v-if="tmpl" ref="compRef" :name="deviceName" :requiredment="tmpl?.requirement" />
         <input
           ref="fileInput"
           type="file"

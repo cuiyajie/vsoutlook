@@ -32,7 +32,6 @@ const mv = defineModel<{
 });
 
 mv.value = pick(udxData, ['moudle', 'mode', '2110-7_m_local_ip', '2110-7_b_local_ip', 'nmos', 'ssm_address_range', 'authorization_service'])
-const moduleName = ref("上下变换")
 
 const input = ref<UdxInputType>(def_udx_input());
 input.value = unwrap(udxData.input, 'in_')
@@ -121,18 +120,7 @@ defineExpose({
           </div>
 
           <div class="columns is-multiline">
-            <div class="column is-6">
-              <VField>
-                <VLabel>模块名称</VLabel>
-                <VControl>
-                  <VInput
-                    v-model="moduleName"
-                    readonly
-                  />
-                </VControl>
-              </VField>
-            </div>
-            <div class="column is-6">
+            <div class="column is-4">
               <VField>
                 <VLabel>工作模式</VLabel>
                 <VControl>
@@ -150,7 +138,7 @@ defineExpose({
                 </VControl>
               </VField>
             </div>
-            <div class="column is-6">
+            <div class="column is-4">
               <VField>
                 <VLabel>2022-7主路收发网口IP</VLabel>
                 <VControl>
@@ -160,7 +148,7 @@ defineExpose({
                 </VControl>
               </VField>
             </div>
-            <div class="column is-6">
+            <div class="column is-4">
               <VField>
                 <VLabel>2022-7备路收发网口IP</VLabel>
                 <VControl>
