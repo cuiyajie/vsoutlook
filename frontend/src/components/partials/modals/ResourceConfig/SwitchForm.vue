@@ -92,7 +92,7 @@ function getValue() {
     ...handle(mv.value),
     input: {
       ...wrap(input.value, 'in_', input.value['g_2022-7']),
-      input_params: inputs.value.map(ipt => wrap(ipt.value, 'in_', input.value['g_2022-7'], true, mip, bip))
+      input_video_params: inputs.value.map(ipt => wrap(ipt.value, 'in_', input.value['g_2022-7'], true, mip, bip))
     },
     bus: wrap(inputBus.value, 'bus_in_', input.value['g_2022-7']),
     output: {

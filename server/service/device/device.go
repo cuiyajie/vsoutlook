@@ -102,7 +102,18 @@ func GetDevice(c *svcinfra.Context) {
 	c.Bye(gin.H{"device": device.AsDetail()})
 }
 
+func checkAllocatedCore(c *svcinfra.Context, node *models.Node) {
+	for deviceId := range node.Allocated {
+		device := models.ActiveDevice(deviceId)
+		if device == nil || device.Deleted == def.SelfDeleted || device.AppName == "" || device.Node != node.ID {
+			delete(node.Allocated, deviceId)
+		}
+	}
+	c.Save(&node)
+}
+
 func preInstallation(c *svcinfra.Context, configStr string, tmpl *models.Tmpl, node *models.Node, device *models.Device) (*[]uint32, error) {
+	checkAllocatedCore(c, node)
 	cores, err := allocateNodeCore(tmpl, node)
 	if err != nil {
 		return nil, err
@@ -143,6 +154,8 @@ func preInstallation(c *svcinfra.Context, configStr string, tmpl *models.Tmpl, n
 	data["DMAList"] = node.DMAList
 	if _, ok := configFile["ipservice"]; ok {
 		ipservice := configFile["ipservice"].(map[string]interface{})
+		ipservice["max_bandwidth_percore"] = tmpl.Requirement.MaxRateMbpsByCore
+		ipservice["log_level"] = tmpl.Requirement.LogLevel
 		ipservice["binding_core_list"] = coreListStr
 		ipservice["dma_list"] = node.DMAList
 		ipservice["receive_sessions"] = tmpl.Requirement.ReceiveSessions

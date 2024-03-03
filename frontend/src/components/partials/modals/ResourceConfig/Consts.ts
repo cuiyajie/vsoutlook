@@ -90,8 +90,8 @@ export const switch_fill_params = {
 }
 
 export const switch_video_params = {
-  in_sw_index: 1,
-  in_sw_displayname: "cam1"
+  sw_index: 1,
+  sw_displayname: "cam1"
 }
 
 export const switch_out_params = {

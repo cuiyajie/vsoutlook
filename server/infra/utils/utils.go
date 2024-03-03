@@ -132,7 +132,7 @@ func ParseCoreListString(input string) []int {
 			}
 		}
 	}
-
+	fmt.Printf("numberArray: %v\n", numberArray)
 	return numberArray
 }
 

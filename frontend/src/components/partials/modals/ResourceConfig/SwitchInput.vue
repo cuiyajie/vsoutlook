@@ -143,7 +143,7 @@ const opened = ref(false)
                 <VLabel>切换台输入序号</VLabel>
                 <VControl>
                   <VInputNumber
-                    v-model="mv.in_sw_index"
+                    v-model="mv.sw_index"
                     centered
                     :min="0"
                     :step="1"
@@ -156,7 +156,7 @@ const opened = ref(false)
                 <VLabel>切换台显示名称</VLabel>
                 <VControl>
                   <VInput
-                    v-model="mv.in_sw_displayname"
+                    v-model="mv.sw_displayname"
                   />
                 </VControl>
               </VField>
