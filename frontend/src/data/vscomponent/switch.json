@@ -28,7 +28,7 @@
     {
       "index": 0,
       "ip": "232.0.0.0",
-      "port": 8080
+      "port": 6001
     }
   ],
   "input": {
@@ -260,14 +260,14 @@
       "ipstream_master": {
         "out_v_src_address": "238.0.0.11:30000",
         "out_v_dst_address": "239.0.0.11:30000",
-        "out_v_p4inport": 1,
-        "out_v_p4outport": 2
+        "out_v_p4inport": 172,
+        "out_v_p4outport": 164
       },
       "ipstream_backup": {
         "out_v_src_address": "238.0.10.11:30000",
         "out_v_dst_address": "239.0.10.11:30000",
-        "out_v_p4inport": 1,
-        "out_v_p4outport": 2
+        "out_v_p4inport": 188,
+        "out_v_p4outport": 186
       },
       "videoformat": {
         "out_v_width": 3840,
@@ -285,8 +285,8 @@
       "ipstream_master": {
         "out_v_src_address": "238.0.0.11:30000",
         "out_v_dst_address": "239.0.0.11:30000",
-        "out_v_p4inport": 1,
-        "out_v_p4outport": 2
+        "out_v_p4inport": 172,
+        "out_v_p4outport": 164
       },
       "ipstream_backup": {
         "out_v_src_address": "238.0.10.11:30000",

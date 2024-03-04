@@ -16,6 +16,7 @@ type Node struct {
 	CoreList  string         `gorm:"type:varchar"`
 	Allocated MapUint32Slice `gorm:"type:jsonb"`
 	DMAList   string         `gorm:"type:varchar"`
+	VFCount   uint32         `gorm:"type:integer;default:4"`
 }
 
 type NodeAsBasic struct {
@@ -23,6 +24,7 @@ type NodeAsBasic struct {
 	CoreList  string         `json:"coreList"`
 	Allocated MapUint32Slice `json:"allocated"`
 	DMAList   string         `json:"dmaList"`
+	VFCount   uint32         `json:"vfCount"`
 }
 
 func (node *Node) AsBasic() NodeAsBasic {
@@ -31,6 +33,7 @@ func (node *Node) AsBasic() NodeAsBasic {
 	result.CoreList = node.CoreList
 	result.Allocated = node.Allocated
 	result.DMAList = node.DMAList
+	result.VFCount = node.VFCount
 	return result
 }
 

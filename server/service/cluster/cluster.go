@@ -153,9 +153,11 @@ func GetNodeDetail(c *svcinfra.Context) {
 	if node == nil {
 		data["coreList"] = ""
 		data["dmaList"] = ""
+		data["vfCount"] = 0
 	} else {
 		data["coreList"] = node.CoreList
 		data["dmaList"] = node.DMAList
+		data["vfCount"] = node.VFCount
 	}
 	c.Bye(gin.H{"code": 0, "data": data})
 }
@@ -165,6 +167,7 @@ func UpdateNode(c *svcinfra.Context) {
 		ID       string `json:"id"`
 		CoreList string `json:"core"`
 		DMAList  string `json:"dma"`
+		VFCount  uint32 `json:"vf"`
 	}
 	c.ShouldBindJSON(&req)
 	node := models.ActiveNode(req.ID)
@@ -174,6 +177,7 @@ func UpdateNode(c *svcinfra.Context) {
 			CoreList:  req.CoreList,
 			Allocated: make(models.MapUint32Slice),
 			DMAList:   req.DMAList,
+			VFCount:   req.VFCount,
 		}
 	} else {
 		if len(node.Allocated) == 0 {
@@ -182,7 +186,12 @@ func UpdateNode(c *svcinfra.Context) {
 			c.GeneralError("节点已分配，不可修改")
 			return
 		}
+		if len(node.Allocated) > int(req.VFCount) {
+			c.GeneralError("VF数量不可小于已分配的数量")
+			return
+		}
 		node.DMAList = req.DMAList
+		node.VFCount = req.VFCount
 	}
 	db.DB.Save(node)
 	c.Bye(gin.H{"code": 0})

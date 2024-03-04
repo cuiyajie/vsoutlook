@@ -64,7 +64,7 @@ function remove(idx: number) {
         <VField>
           <VLabel>&nbsp;</VLabel>
           <VControl>
-            <VIconButton color="warning" light raised circle icon="feather:x" @click="remove" />
+            <VIconButton color="warning" light raised circle icon="feather:x" @click="remove(idx)" />
           </VControl>
         </VField>
       </div>

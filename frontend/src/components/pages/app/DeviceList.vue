@@ -132,7 +132,13 @@ async function refresh () {
 function deployApp() {
   nodeStore.$fetchList()
   tmplStore.$fetchList();
-  bus.trigger(Signal.OpenResourceConfig);
+  bus.trigger(Signal.OpenResourceConfig, {
+    callbacks: {
+      success: () => {
+        refresh()
+      }
+    }
+  });
 }
 
 refresh()

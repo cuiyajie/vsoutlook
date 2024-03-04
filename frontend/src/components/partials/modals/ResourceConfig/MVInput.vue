@@ -29,7 +29,7 @@ useProtocolDC(mv.value)
       @keydown.space.prevent="opened = !opened"
       @click.prevent="opened = !opened"
     >
-      <h4>第{{ index }}路输入参数</h4>
+      <h4>第{{ index }}路输入参数&nbsp;&nbsp;（序号: {{ index - 1 }}）</h4>
       <div class="collapse-icon">
         <VIcon icon="feather:chevron-down" />
       </div>

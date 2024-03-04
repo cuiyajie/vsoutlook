@@ -330,6 +330,10 @@ func allocateNodeCore(tmpl *models.Tmpl, node *models.Node) ([]uint32, error) {
 		return nil, errors.New("节点没有配置核心列表")
 	}
 
+	if len(node.Allocated) >= int(node.VFCount) {
+		return nil, errors.New("节点VF数量已满")
+	}
+
 	cores := utils.ParseCoreListString(node.CoreList)
 	if len(cores) < int(dpdkCpu) {
 		return nil, errors.New("节点核心数不足")

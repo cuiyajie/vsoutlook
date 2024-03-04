@@ -31,15 +31,16 @@ export const useClustNode = defineStore('clustNode', () => {
     }
   }
 
-  async function $update(id: string, core: string, dma: string) {
+  async function $update(id: string, core: string, dma: string, vf: number) {
     const res = await $fetch('/api/cluster/node.update', {
-      body: { id, core, dma }
+      body: { id, core, dma, vf }
     })
     if (res?.code === 0) {
       const tnode = nodes.value.find(node => node.id === id)
       if (tnode) {
         tnode.coreList = core
         tnode.dmaList = dma
+        tnode.vfCount = vf
       }
     }
     return res
@@ -54,12 +55,13 @@ export const useClustNode = defineStore('clustNode', () => {
           body: { id: n.nodeName }
         })
         if (res1 && res1.code === 0) {
-          const { coreList, dmaList, node } = res1.data
+          const { coreList, dmaList, node, vfCount } = res1.data
           return {
             id: n.nodeName,
             ip: n.nodeIP,
             coreList,
             dmaList,
+            vfCount,
             allocatable: node?.allocatable,
             allocated: node?.allocated
           }

@@ -44,8 +44,9 @@ function onNodeSelect(field?: any, val?: any) {
 
 useListener(Signal.OpenResourceConfig, (p?: { tmpl: TemplateData, node: ClustNode, device: ClustDevice, callbacks: any }) => {
   opened.value = true;
-  inited.value = !!p
-  if (!p) return
+  callbacks = p?.callbacks || {}
+  inited.value = !!p?.tmpl && !!p?.node;
+  if (!p?.tmpl || !p?.node) return
   tmpl.value = p.tmpl;
   node.value = p.node;
   device.value = p.device;
@@ -54,7 +55,6 @@ useListener(Signal.OpenResourceConfig, (p?: { tmpl: TemplateData, node: ClustNod
   } else {
     deviceName.value = ""
   }
-  callbacks = p.callbacks || {}
   nextTick(() => {
     deviceInput.value?.field?.setValue(deviceName.value)
     if (p.device?.config) {

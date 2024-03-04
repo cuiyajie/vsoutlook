@@ -118,6 +118,7 @@ interface UserData {
 interface ClustNodeInfo {
   coreList: string,
   dmaList: string,
+  vfCount: number,
 }
 
 interface ClustNode extends ClustNodeInfo {
