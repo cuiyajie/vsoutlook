@@ -204,8 +204,8 @@ export const def_switch_input_video_params = () => ({
 })
 
 export const def_switch_input_bus_params = () => ({
-  video_bus_master: [{ ...ipstream_video, v_P4_port: 1 }, { ...ipstream_video, v_P4_port: 1 }],
-  video_bus_backup: [{ ...ipstream_video, v_P4_port: 2 }, { ...ipstream_video, v_P4_port: 2 }],
+  video_bus_master: [{ ...ipstream_video, v_p4_port: 1 }, { ...ipstream_video, v_p4_port: 1 }],
+  video_bus_backup: [{ ...ipstream_video, v_p4_port: 2 }, { ...ipstream_video, v_p4_port: 2 }],
   keyfill_bus_master: {
     ...switch_keyfill_params
   },
