@@ -67,7 +67,7 @@ const opened = ref(false)
                 <VLabel>主视频流前置SDN输入端口</VLabel>
                 <VControl>
                   <VInputNumber
-                    v-model="mv.ipstream_master.v_P4_port"
+                    v-model="mv.ipstream_master.v_p4_port"
                     centered
                     :min="0"
                     :step="1"
@@ -115,7 +115,7 @@ const opened = ref(false)
                   <VLabel>备视频流前置SDN输入端口</VLabel>
                   <VControl>
                     <VInputNumber
-                      v-model="mv.ipstream_backup.v_P4_port"
+                      v-model="mv.ipstream_backup.v_p4_port"
                       centered
                       :min="0"
                       :step="1"

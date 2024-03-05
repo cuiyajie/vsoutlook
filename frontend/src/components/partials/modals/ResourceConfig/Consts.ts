@@ -81,12 +81,12 @@ export const pip_params = {
 
 export const switch_key_params = {
   ...ipstream_video,
-  Key_P4_port: 1
+  key_p4_port: 1
 }
 
 export const switch_fill_params = {
   ...ipstream_video,
-  fill_P4_port: 3
+  fill_p4_port: 3
 }
 
 export const switch_video_params = {
@@ -198,8 +198,8 @@ export const def_switch_input_params = () => ({
 })
 
 export const def_switch_input_video_params = () => ({
-  ipstream_master: { ...ipstream_video, v_P4_port: 1 },
-  ipstream_backup: { ...ipstream_video, v_P4_port: 2 },
+  ipstream_master: { ...ipstream_video, v_p4_port: 1 },
+  ipstream_backup: { ...ipstream_video, v_p4_port: 2 },
   ...switch_video_params
 })
 

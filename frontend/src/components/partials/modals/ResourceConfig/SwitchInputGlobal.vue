@@ -143,7 +143,7 @@ const fill_opened = ref(false)
                 <VLabel>主视频流前置SDN输入端口</VLabel>
                 <VControl>
                   <VInputNumber
-                    v-model="mv.input_key_params.ipstream_master.Key_P4_port"
+                    v-model="mv.input_key_params.ipstream_master.key_p4_port"
                     centered
                     :min="0"
                     :step="1"
@@ -191,7 +191,7 @@ const fill_opened = ref(false)
                   <VLabel>备视频流前置SDN输入端口</VLabel>
                   <VControl>
                     <VInputNumber
-                      v-model="mv.input_key_params.ipstream_backup.Key_P4_port"
+                      v-model="mv.input_key_params.ipstream_backup.key_p4_port"
                       centered
                       :min="0"
                       :step="1"
@@ -256,7 +256,7 @@ const fill_opened = ref(false)
                 <VLabel>主视频流前置SDN输入端口</VLabel>
                 <VControl>
                   <VInputNumber
-                    v-model="mv.input_fill_params.ipstream_master.fill_P4_port"
+                    v-model="mv.input_fill_params.ipstream_master.fill_p4_port"
                     centered
                     :min="0"
                     :step="1"
@@ -304,7 +304,7 @@ const fill_opened = ref(false)
                   <VLabel>备视频流前置SDN输入端口</VLabel>
                   <VControl>
                     <VInputNumber
-                      v-model="mv.input_fill_params.ipstream_backup.fill_P4_port"
+                      v-model="mv.input_fill_params.ipstream_backup.fill_p4_port"
                       centered
                       :min="0"
                       :step="1"

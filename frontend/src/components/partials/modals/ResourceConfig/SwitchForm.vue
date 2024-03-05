@@ -15,8 +15,8 @@ const mv = defineModel<{
   tallyserver_url: string,
   p4server_url: string,
   hw_panel_url: string,
-  physic_nic_port0_IP: string,
-  physic_nic_port1_IP: string,
+  physic_nic_port0_ip: string,
+  physic_nic_port1_ip: string,
   "2110-7_m_local_ip": string,
   "2110-7_b_local_ip": string,
   nmos: NMosConfigType,
@@ -29,8 +29,8 @@ const mv = defineModel<{
     tallyserver_url: "",
     p4server_url: "",
     hw_panel_url: "",
-    physic_nic_port0_IP: "",
-    physic_nic_port1_IP: "",
+    physic_nic_port0_ip: "",
+    physic_nic_port1_ip: "",
     "2110-7_m_local_ip": "",
     "2110-7_b_local_ip": "",
     nmos: { ...nmos_config },
@@ -40,7 +40,7 @@ const mv = defineModel<{
   local: true,
 });
 
-mv.value = pick(switchData, ['moudle', 'input_number', 'tallyserver_url', 'p4server_url', 'hw_panel_url', 'physic_nic_port0_IP', 'physic_nic_port1_IP', '2110-7_m_local_ip', '2110-7_b_local_ip', 'nmos', 'ssm_address_range', 'authorization_service'])
+mv.value = pick(switchData, ['moudle', 'input_number', 'tallyserver_url', 'p4server_url', 'hw_panel_url', 'physic_nic_port0_ip', 'physic_nic_port1_ip', '2110-7_m_local_ip', '2110-7_b_local_ip', 'nmos', 'ssm_address_range', 'authorization_service'])
 
 watchNmosName(() => props.name, mv.value)
 
@@ -108,7 +108,7 @@ function getValue() {
 }
 
 function setValue(data: typeof switchData) {
-  mv.value = pick(data, ['moudle', 'input_number', 'tallyserver_url', 'p4server_url', 'hw_panel_url', 'physic_nic_port0_IP', 'physic_nic_port1_IP', '2110-7_m_local_ip', '2110-7_b_local_ip', 'nmos', 'ssm_address_range', 'authorization_service'])
+  mv.value = pick(data, ['moudle', 'input_number', 'tallyserver_url', 'p4server_url', 'hw_panel_url', 'physic_nic_port0_ip', 'physic_nic_port1_ip', '2110-7_m_local_ip', '2110-7_b_local_ip', 'nmos', 'ssm_address_range', 'authorization_service'])
   const _ipData = unwrap(data.input, 'in_')
   input.value = merge(def_switch_input_params(), _ipData)
   inputBus.value = merge(def_switch_input_bus_params(), unwrap(data.bus, 'bus_in_'))
@@ -203,7 +203,7 @@ defineExpose({
                 <VLabel>拉流物理网卡端口0 - IP</VLabel>
                 <VControl>
                   <VInput
-                    v-model="mv.physic_nic_port0_IP"
+                    v-model="mv.physic_nic_port0_ip"
                   />
                 </VControl>
               </VField>
@@ -213,7 +213,7 @@ defineExpose({
                 <VLabel>拉流物理网卡端口1 - IP</VLabel>
                 <VControl>
                   <VInput
-                    v-model="mv.physic_nic_port1_IP"
+                    v-model="mv.physic_nic_port1_ip"
                   />
                 </VControl>
               </VField>

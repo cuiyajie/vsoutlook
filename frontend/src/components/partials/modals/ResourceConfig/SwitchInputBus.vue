@@ -61,7 +61,7 @@ const keyfill_opened = ref(false)
               <VLabel>主视频母线a使用的前置SDN输出端口</VLabel>
               <VControl>
                 <VInputNumber
-                  v-model="mv.video_bus_master[0].v_P4_port"
+                  v-model="mv.video_bus_master[0].v_p4_port"
                   centered
                   :min="0"
                   :step="1"
@@ -94,7 +94,7 @@ const keyfill_opened = ref(false)
               <VLabel>主视频母线b使用的前置SDN输出端口</VLabel>
               <VControl>
                 <VInputNumber
-                  v-model="mv.video_bus_master[1].v_P4_port"
+                  v-model="mv.video_bus_master[1].v_p4_port"
                   centered
                   :min="0"
                   :step="1"
@@ -141,7 +141,7 @@ const keyfill_opened = ref(false)
                 <VLabel>备视频母线a使用的前置SDN输出端口</VLabel>
                 <VControl>
                   <VInputNumber
-                    v-model="mv.video_bus_backup[0].v_P4_port"
+                    v-model="mv.video_bus_backup[0].v_p4_port"
                     centered
                     :min="0"
                     :step="1"
@@ -189,7 +189,7 @@ const keyfill_opened = ref(false)
                 <VLabel>备视频母线b使用的前置SDN输出端口</VLabel>
                 <VControl>
                   <VInputNumber
-                    v-model="mv.video_bus_backup[1].v_P4_port"
+                    v-model="mv.video_bus_backup[1].v_p4_port"
                     centered
                     :min="0"
                     :step="1"
