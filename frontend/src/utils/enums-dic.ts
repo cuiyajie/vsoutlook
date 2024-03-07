@@ -14,7 +14,7 @@ export const DeviceStatusDic: Record<string, { text: string, color: string }> = 
   'Pending': { text: '创建中', color: 'blue' },
   'Terminating': { text: '删除中', color: 'purple' },
   'Failed': { text: '启动失败', color: 'danger' },
-  'Terminated': { text: '已暂停', color: 'warning' },
+  'Terminated': { text: '已停止', color: 'warning' },
   'Unavailable': { text: '未知状态', color: 'light' },
 }
 

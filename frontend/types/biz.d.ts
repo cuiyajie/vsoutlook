@@ -92,7 +92,7 @@ interface DeviceDetail {
 	appName: string,
 	podsStatus: [{ name: string, status: string }],
   targetNode: string,
-  updatedAt: string,
+  updatedAt: number,
   status: string,
   statusInfo: any,
   config: string,

@@ -17,10 +17,16 @@ import (
 )
 
 type ClusterNodeDetail struct {
-	NodeName    string                 `json:"nodeName"`
-	NodeIP      string                 `json:"nodeIP"`
-	Allocatable map[string]interface{} `json:"allocatable"`
-	Allocated   map[string]interface{} `json:"allocated"`
+	NodeName     string                 `json:"nodeName"`
+	NodeIP       string                 `json:"nodeIP"`
+	Applications []string               `json:"applications"`
+	Allocatable  map[string]interface{} `json:"allocatable"`
+	Allocated    map[string]interface{} `json:"allocated"`
+}
+
+type ClusterNodeInfo struct {
+	NodeName string `json:"nodeName"`
+	NodeIP   string `json:"nodeIP"`
 }
 
 func BuildProxyReq[T any](

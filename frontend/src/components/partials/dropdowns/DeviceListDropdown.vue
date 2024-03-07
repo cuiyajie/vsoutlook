@@ -40,13 +40,13 @@ const stoppable = computed(() => {
 function stop() {
   if (!stoppable.value) return
   confirm({
-    title: "暂停设备",
-    content: "确定要暂停该设备吗？",
+    title: "停止设备",
+    content: "确定要停止该设备吗？",
     onConfirm: async (hide) => {
       const res = await deviceStore.$stop(props.device.id);
       hide();
       if (res && res.result === "ok") {
-        notyf.success("暂停成功");
+        notyf.success("停止成功");
         emit('refresh')
       } else if (res?.error) {
         notyf.error(res.message)
@@ -125,7 +125,7 @@ async function config() {
           />
         </div>
         <div class="meta">
-          <span>更新配置</span>
+          <span>配置</span>
         </div>
       </a>
 
@@ -161,7 +161,7 @@ async function config() {
             />
           </div>
           <div class="meta">
-            <span>暂停</span>
+            <span>停止</span>
           </div>
         </a>
       </template>

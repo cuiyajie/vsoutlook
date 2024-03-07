@@ -47,6 +47,7 @@ type ClustReleaseAppDetail struct {
 type DeviceAsRelease struct {
 	models.DeviceAsBasic
 	TargetNode string      `json:"targetNode"`
+	NodeIP     string      `json:"nodeIP"`
 	PodsStatus []PodStatus `json:"podsStatus,omitempty"`
 }
 
@@ -68,6 +69,14 @@ func GetDeviceList(c *svcinfra.Context) {
 		return
 	}
 
+	resp3, _ := cluster.BuildProxyReq[[]cluster.ClusterNodeInfo](c, "GET", "/nodes", nil, nil)
+	nodesMap := make(map[string]cluster.ClusterNodeInfo)
+	if resp3 != nil {
+		for _, v := range *resp3 {
+			nodesMap[v.NodeName] = v
+		}
+	}
+
 	appsMap := make(map[string]ClustReleaseApp)
 	for _, v := range *resp2 {
 		appsMap[v.Name] = v
@@ -82,6 +91,13 @@ func GetDeviceList(c *svcinfra.Context) {
 		} else {
 			release.TargetNode = d.Node
 			release.AppName = ""
+		}
+		if node, ok := nodesMap[release.TargetNode]; ok {
+			release.Node = node.NodeName
+			release.NodeIP = node.NodeIP
+		} else {
+			release.Node = ""
+			release.NodeIP = ""
 		}
 		clustDevices = append(clustDevices, release)
 	}
@@ -273,7 +289,7 @@ func StopDevice(c *svcinfra.Context) {
 	c.ShouldBindJSON(&req)
 	device := models.ActiveDevice(req.ID)
 	if device == nil {
-		c.GeneralError("暂停的设备不存在")
+		c.GeneralError("停止的设备不存在")
 		return
 	}
 	if device.AppName == "" {
@@ -303,7 +319,7 @@ func StopDevice2(c *svcinfra.Context) {
 	c.ShouldBindJSON(&req)
 	device := models.ActiveDevice(req.ID)
 	if device == nil {
-		c.GeneralError("暂停的设备不存在")
+		c.GeneralError("停止的设备不存在")
 		return
 	}
 
@@ -313,7 +329,7 @@ func StopDevice2(c *svcinfra.Context) {
 	resp2, err := cluster.BuildProxyReq[any](c, "GET", "/stop", &data, nil)
 	// stop udx-i5urluof successfully with scale 2
 	if (resp2 == nil && err == nil) || (err != nil && !strings.Contains(err.Error(), "successfully")) {
-		c.GeneralError("请求暂停设备失败")
+		c.GeneralError("请求停止设备失败")
 		return
 	}
 

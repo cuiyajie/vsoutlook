@@ -16,7 +16,7 @@ watch(() => props.tmpl, async (nv, ov) => {
 
 function viewTmpl() {
   if (!tmpld.value.id) return
-  router.push(`/app/template/${tmpld.value.id}`)
+  router.push(`/app/template/${tmpld.value.id}?from=resource`)
 }
 </script>
 <template>

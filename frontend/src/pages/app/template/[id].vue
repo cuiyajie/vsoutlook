@@ -11,7 +11,26 @@ useHead({
   title: `应用详情 - ${__SITE_NAME__}`,
 });
 
-const tmpl = computed(() => tmplStore.getById(route.params.id));
+const tmpl = computed(() => tmplStore.getById((route.params as any).id));
+const breadcrumbItems = computed(() => [
+  {
+    label: "Vuero",
+    hideLabel: true,
+    icon: "feather:home",
+    to: "/app",
+  },
+  route.query.from === "resource" ? {
+    label: "资源管理",
+    to: "/app/resource",
+  } : {
+    label: "应用商店",
+    to: "/app/template",
+  },
+  {
+    label: tmpl.value?.name || "新建应用",
+    to: `/app/template/${(route.params as any).id}`,
+  },
+]);
 </script>
 
 <template>
@@ -19,22 +38,7 @@ const tmpl = computed(() => tmplStore.getById(route.params.id));
     <VBreadcrumb
       with-icons
       separator="arrow"
-      :items="[
-        {
-          label: 'Vuero',
-          hideLabel: true,
-          icon: 'feather:home',
-          to: '/app',
-        },
-        {
-          label: '设备管理',
-          to: '/app/template',
-        },
-        {
-          label: tmpl?.name || '新建应用',
-          to: `/app/template/${route.params.id}`,
-        },
-      ]"
+      :items="breadcrumbItems"
     />
     <TemplateDetail />
   </div>

@@ -22,18 +22,9 @@ const tmplNameSorter: VFlexTableWrapperSortFunction<DeviceDetail> = ({ order, a,
   return 0
 }
 
-const tmplTypeSorter: VFlexTableWrapperSortFunction<DeviceDetail> = ({ order, a, b }) => {
-  if (order === 'asc') {
-    return a.tmplTypeName.localeCompare(b.tmplTypeName)
-  } else if (order === 'desc') {
-    return b.tmplTypeName.localeCompare(a.tmplTypeName)
-  }
-  return 0
-}
-
 const tmplNameFilter: VFlexTableWrapperFilterFunction<DeviceDetail> = ({ searchTerm, row }) => {
   if (!searchTerm) return true
-  return row.tmplName.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
+  return row.tmplName.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase()) || row.appName.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
 }
 
 const nameFilter: VFlexTableWrapperFilterFunction<DeviceDetail> = ({ searchTerm, row }) => {
@@ -41,10 +32,29 @@ const nameFilter: VFlexTableWrapperFilterFunction<DeviceDetail> = ({ searchTerm,
   return row.name.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
 }
 
-const appNameFilter: VFlexTableWrapperFilterFunction<DeviceDetail> = ({ searchTerm, row }) => {
-  if (!searchTerm) return true
-  return row.appName.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
+const nodeSorter: VFlexTableWrapperSortFunction<DeviceDetail> = ({ order, a, b }) => {
+  if (order === 'asc') {
+    return a.node.localeCompare(b.node)
+  } else if (order === 'desc') {
+    return b.node.localeCompare(a.node)
+  }
+  return 0
 }
+
+const nodeFilter: VFlexTableWrapperFilterFunction<DeviceDetail> = ({ searchTerm, row }) => {
+  if (!searchTerm) return true
+  return row.node.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
+}
+
+const updateAtSorter: VFlexTableWrapperSortFunction<DeviceDetail> = ({ order, a, b }) => {
+  if (order === 'asc') {
+    return a.updatedAt - b.updatedAt
+  } else if (order === 'desc') {
+    return b.updatedAt - a.updatedAt
+  }
+  return 0
+}
+
 
 const formatDate = (t: number) => new Date(t * 1000).toLocaleString('zh-CN', {
   year: 'numeric',
@@ -75,23 +85,20 @@ const columns = {
     sort: tmplNameSorter,
     filter: tmplNameFilter
   },
-  tmplTypeName: {
-    label: '类型',
+  node: {
+    label: '运行节点',
+    grow: false,
+    searchable: true,
     sortable: true,
-    searchable: true,
-    sorter: tmplTypeSorter
-  },
-  appName: {
-    label: '应用部署名称',
-    searchable: true,
-    sortable: false,
-    filter: appNameFilter
+    sort: nodeSorter,
+    filter: nodeFilter
   },
   updatedAt: {
     label: '更新时间',
     grow: false,
     sortable: true,
-    align: 'center'
+    align: 'center',
+    sort: updateAtSorter,
   },
   status: {
     label: '状态',
@@ -228,28 +235,34 @@ refresh()
         <VFlexTable>
           <!-- Custom "name" cell content -->
           <template #body-cell="{ row, column }">
-            <VIconWrap
-              v-if="column.key === 'icon'"
-              size="medium"
-              class="is-tt-icon"
-              :picture="`/images/tmpl/${row.tmplTypeIcon}`"
-            />
-            <span
+            <div v-if="column.key === 'icon'" class="col-icon">
+              <VIconWrap
+                size="small"
+                class="is-tt-icon"
+                :picture="`/images/tmpl/${row.tmplTypeIcon}`"
+              />
+              <div class="subcell">
+                <span>{{ row.tmplTypeName }}</span>
+              </div>
+            </div>
+            <div
               v-else-if="column.key === 'name'"
               class="dark-text"
-            >{{ row.name }}</span>
+            >
+              <span>{{ row.name }}</span>
+              <div v-if="row.appName" class="subcell">{{ row.appName }}</div>
+            </div>
             <span
               v-else-if="column.key === 'tmplName'"
               class="dark-text"
             >{{ row.tmplName }}</span>
-            <span
-              v-else-if="column.key === 'tmplType'"
+            <div
+              v-else-if="column.key === 'node'"
               class="dark-text"
-            >{{ row.tmplTypeName }}</span>
-            <span
-              v-else-if="column.key === 'appName'"
-              class="dark-text"
-            >{{ row.appName }}</span>
+            >
+              <span>{{ row.node }}</span>
+              <div v-if="row.nodeIP" class="subcell">{{ row.nodeIP }}</div>
+            </div>
             <span
               v-else-if="column.key === 'updatedAt'"
               class="dark-text"
@@ -354,15 +367,29 @@ refresh()
     .flex-table-header span,
     .flex-table-item .flex-table-cell {
       justify-content: center;
+
+      div.subcell {
+        font-size: 0.8rem;
+        margin-top: 2px;
+      }
     }
 
+    // 图标
     .flex-table-header span:nth-child(1),
     .flex-table-item .flex-table-cell:nth-child(1) {
       flex: 0 0 90px;
+
+      .col-icon {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
     }
 
+    // 名称
     .flex-table-item .flex-table-cell:nth-child(2) {
       min-width: 0;
+      text-align: center;
 
       span {
         text-overflow: ellipsis;
@@ -371,33 +398,34 @@ refresh()
       }
     }
 
+    // 应用名称
     .flex-table-header span:nth-child(3),
     .flex-table-item .flex-table-cell:nth-child(3) {
       flex: 0 0 120px;
     }
 
+    // 节点
     .flex-table-header span:nth-child(4),
     .flex-table-item .flex-table-cell:nth-child(4) {
-      flex: 0 0 120px;
+      flex: 0 0 150px;
+      text-align: center;
     }
 
+    // 更新时间
     .flex-table-header span:nth-child(5),
     .flex-table-item .flex-table-cell:nth-child(5) {
-      flex: 0 0 150px;
-    }
-
-    .flex-table-header span:nth-child(6),
-    .flex-table-item .flex-table-cell:nth-child(6) {
       flex: 0 0 180px;
     }
 
-    .flex-table-header span:nth-child(7),
-    .flex-table-item .flex-table-cell:nth-child(7) {
+    // 状态
+    .flex-table-header span:nth-child(6),
+    .flex-table-item .flex-table-cell:nth-child(6) {
       flex: 0 0 100px;
     }
 
-    .flex-table-header span:nth-child(8),
-    .flex-table-item .flex-table-cell:nth-child(8) {
+    // 操作
+    .flex-table-header span:nth-child(7),
+    .flex-table-item .flex-table-cell:nth-child(7) {
       flex: 0 0 80px;
     }
   }
