@@ -16,17 +16,9 @@ import (
 	"vsoutlook.com/vsoutlook/service/svcinfra"
 )
 
-type ListNodeInfo struct {
-	NodeName string   `json:"nodeName"`
-	NodeIP   string   `json:"nodeIP"`
-	Running  []string `json:"running"`
-	Stopped  []string `json:"stopped"`
-}
-
 type ClusterListNode struct {
-	NodeName     string   `json:"nodeName"`
-	NodeIP       string   `json:"nodeIP"`
-	Applications []string `json:"applications"`
+	NodeName string `json:"nodeName"`
+	NodeIP   string `json:"nodeIP"`
 }
 
 type ClusterNodeDetail struct {
@@ -148,22 +140,7 @@ func GetNodes(c *svcinfra.Context) {
 		c.GeneralError("获取节点列表失败")
 		return
 	}
-	nodes := make([]ListNodeInfo, 0)
-	for _, n := range *resp {
-		node := ListNodeInfo{}
-		node.NodeName = n.NodeName
-		node.NodeIP = n.NodeIP
-		node.Running = make([]string, 0)
-		node.Stopped = make([]string, 0)
-		devices := models.GetDevicesByNode(n.NodeName)
-		for _, d := range devices {
-			if d.AppName == "" {
-				node.Stopped = append(node.Stopped, d.Name)
-			}
-		}
-		nodes = append(nodes, node)
-	}
-	c.Bye(gin.H{"code": 0, "data": nodes})
+	c.Bye(gin.H{"code": 0, "data": resp})
 }
 
 func GetNodeDetail(c *svcinfra.Context) {
@@ -183,6 +160,22 @@ func GetNodeDetail(c *svcinfra.Context) {
 	if resp != nil {
 		data["node"] = resp
 	}
+	devices := models.GetDevicesByNode(req.ID)
+	running := make([]string, 0)
+	stopped := make([]string, 0)
+	appMaps := make(map[string]bool)
+	for _, app := range resp.Applications {
+		appMaps[app] = true
+	}
+	for _, device := range devices {
+		if len(device.AppName) > 0 && appMaps[device.Name] {
+			running = append(running, device.Name)
+			continue
+		}
+		stopped = append(stopped, device.Name)
+	}
+	data["running"] = running
+	data["stopped"] = stopped
 	node = models.ActiveNode(req.ID)
 	if node == nil {
 		data["coreList"] = ""

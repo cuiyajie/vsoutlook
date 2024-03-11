@@ -55,6 +55,11 @@ function onDrop(event: DragEvent) {
   bus.trigger(Signal.OpenResourceConfig, {
     tmpl: data,
     node: nodes.value.find(n => n.id === nid),
+    callbacks: {
+      success: () => {
+        nodeStore.$getById(nid!)
+      }
+    }
   });
 }
 
@@ -161,7 +166,15 @@ onUnmounted(() => {
           />
         </div>
       </div>
-      <div class="app-list">
+      <div class="app-block">
+        <div class="app-list running">
+          <h6>运行中</h6>
+          <div v-for="run in node.running" :key="run" class="app-item">{{ run }}</div>
+        </div>
+        <div class="app-list stopped">
+          <h6>已暂停</h6>
+          <div v-for="stp in node.stopped" :key="stp" class="app-item">{{ stp }}</div>
+        </div>
       </div>
       <div class="meta-right">
         <div class="buttons">
@@ -230,17 +243,38 @@ onUnmounted(() => {
       align-items: center;
       gap: 12px;
       margin-left: 20px;
-      margin-right: 40px;
+      margin-right: 20px;
     }
 
     .chart-wrap {
       width: 90px;
     }
 
-    .app-list {
+    .app-block {
       flex: 1;
-      padding-left: 24px;
-      padding-right: 24px;
+      min-width: 200px;
+      display: flex;
+      align-items: flex-start;
+    }
+
+    .app-list {
+      flex: 0 0 90px;
+      font-size: 0.75rem;
+      padding-left: 12px;
+      padding-right: 12px;
+      min-height: 90px;
+
+      h6, .app-item {
+        color: inherit;
+      }
+
+      &.running {
+        color: var(--success);
+      }
+
+      &.stopped {
+        color: var(--danger);
+      }
     }
 
     .meta-right {

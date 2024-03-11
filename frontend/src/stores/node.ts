@@ -46,32 +46,52 @@ export const useClustNode = defineStore('clustNode', () => {
     return res
   }
 
+  async function $fetchById(id: string) {
+    const res1 = await $fetch('/api/cluster/node.detail', {
+      body: { id }
+    })
+    if (res1 && res1.code === 0) {
+      const { coreList, dmaList, node, vfCount, running, stopped } = res1.data
+      return {
+        id: node?.nodeName,
+        ip: node?.nodeIP,
+        coreList,
+        dmaList,
+        vfCount,
+        allocatable: node?.allocatable,
+        allocated: node?.allocated,
+        running,
+        stopped
+      }
+    }
+    return {
+      id: "",
+      ip: "",
+      coreList: "",
+      dmaList: "",
+      running: [],
+      stopped: []
+    }
+  }
+
+  async function $getById(id: string) {
+    const node = await $fetchById(id)
+    const tnode = nodes.value.find(n => n.id === id)
+    if (tnode) {
+      Object.assign(tnode, node)
+    }
+  }
+
   async function $fetchList() {
     // nodes.value =  nodeMock.nodes
     const res = await $fetch('/api/cluster/nodes')
     if (res && res.code === 0) {
       nodes.value = await Promise.all(res.data.map(async (n: { nodeName: string, nodeIP: string }) => {
-        const res1 = await $fetch('/api/cluster/node.detail', {
-          body: { id: n.nodeName }
-        })
-        if (res1 && res1.code === 0) {
-          const { coreList, dmaList, node, vfCount } = res1.data
-          return {
-            id: n.nodeName,
-            ip: n.nodeIP,
-            coreList,
-            dmaList,
-            vfCount,
-            allocatable: node?.allocatable,
-            allocated: node?.allocated
-          }
-        }
-        return {
+        const node = await $fetchById(n.nodeName)
+        return Object.assign(node, {
           id: n.nodeName,
-          ip: n.nodeIP,
-          coreList: "",
-          dmaList: ""
-        }
+          ip: n.nodeIP
+        })
       }))
     }
   }
@@ -81,7 +101,8 @@ export const useClustNode = defineStore('clustNode', () => {
     $fetchList,
     $startQuery,
     $stopQuery,
-    $update
+    $update,
+    $getById
   } as const
 })
 

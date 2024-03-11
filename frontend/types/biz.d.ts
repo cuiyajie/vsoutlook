@@ -124,6 +124,8 @@ interface ClustNodeInfo {
 interface ClustNode extends ClustNodeInfo {
   id: string,
   ip: string,
+  running: string[],
+  stopped: string[],
   allocatable: {
     cpu: number,
     memory: number,
