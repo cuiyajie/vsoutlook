@@ -150,7 +150,7 @@ defineExpose({
           </div>
 
           <div class="columns is-multiline">
-            <div class="column is-4">
+            <div class="column is-6">
               <VField>
                 <VLabel>输入信号数量</VLabel>
                 <VControl>
@@ -164,7 +164,7 @@ defineExpose({
                 </VControl>
               </VField>
             </div>
-            <div class="column is-4">
+            <div class="column is-6">
               <VField>
                 <VLabel>输出信号数量</VLabel>
                 <VControl>
@@ -182,7 +182,17 @@ defineExpose({
                 </VControl>
               </VField>
             </div>
-            <div class="column is-4">
+            <div class="column is-6">
+              <VField>
+                <VLabel>对外IP</VLabel>
+                <VControl>
+                  <VInput
+                    v-model="mv.nmos.host_addresses"
+                  />
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-6">
               <VField>
                 <VLabel>tally服务端口</VLabel>
                 <VControl>

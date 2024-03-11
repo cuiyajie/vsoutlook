@@ -12,6 +12,7 @@ type Device struct {
 	Config  string `gorm:"type:varchar"`
 	Node    string `gorm:"type:varchar"`
 	Deleted uint8  `gorm:"default:0"`
+	SeedID  string `gorm:"type:varchar"`
 	ModelTime
 }
 

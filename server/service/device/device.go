@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/jinzhu/copier"
 	"vsoutlook.com/vsoutlook/infra/def"
 	"vsoutlook.com/vsoutlook/infra/utils"
@@ -51,6 +52,19 @@ type DeviceAsRelease struct {
 	TargetNode string      `json:"targetNode"`
 	NodeIP     string      `json:"nodeIP"`
 	PodsStatus []PodStatus `json:"podsStatus,omitempty"`
+}
+
+func generateDeviceSeedID() string {
+	// Generate a version 4 (random) UUID
+	u := uuid.New()
+
+	// Convert the UUID to a string and remove hyphens
+	uuidString := strings.ReplaceAll(u.String(), "-", "")
+
+	// Format the UUID string as "8 characters - 4 characters - 4 characters - 4 characters - 12 characters"
+	formattedUUID := fmt.Sprintf("%s-%s-%s-%s-%s", uuidString[:8], uuidString[8:12], uuidString[12:16], uuidString[16:20], uuidString[20:])
+
+	return formattedUUID
 }
 
 func GetDeviceList(c *svcinfra.Context) {
@@ -182,6 +196,29 @@ func preInstallation(c *svcinfra.Context, configStr string, tmpl *models.Tmpl, n
 		ipservice["binding_core_list"] = coreListStr
 		ipservice["dma_list"] = node.DMAList
 		ipservice["receive_sessions"] = tmpl.Requirement.ReceiveSessions
+	}
+	if len(device.SeedID) == 0 {
+		device.SeedID = generateDeviceSeedID()
+	}
+	if _, ok := configFile["nmos"]; ok {
+		nmos := configFile["nmos"].(map[string]interface{})
+		if externalAddress, ok := nmos["host_addresses"].(string); ok {
+			if len(externalAddress) > 0 {
+				data["externalAddress"] = externalAddress
+				externalPorts := make([]int, 0)
+				if httpPort, ok1 := nmos["http_port"].(float64); ok1 {
+					externalPorts = append(externalPorts, int(httpPort))
+				}
+				if tallyPort, ok2 := configFile["tally_port"].(float64); ok2 {
+					externalPorts = append(externalPorts, int(tallyPort))
+				}
+				fmt.Printf("externalPorts: %v\n", externalPorts)
+				if len(externalPorts) > 0 {
+					data["externalPorts"] = externalPorts
+				}
+			}
+		}
+		nmos["seed_id"] = device.SeedID
 	}
 	configJson := utils.MapToString(configFile)
 	data["configFile"] = configJson

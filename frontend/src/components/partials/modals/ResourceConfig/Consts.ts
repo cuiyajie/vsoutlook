@@ -116,7 +116,8 @@ export const nmos_config = {
   http_port: 9008,
   log_level:  0,
   log_path:  "/opt/vsomediasoftware/logs/",
-  domain:  "local."
+  domain:  "local.",
+  host_addresses: "192.168.1.64"
 }
 
 export const ssm_address = {
