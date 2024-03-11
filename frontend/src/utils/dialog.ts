@@ -4,6 +4,8 @@ export interface ConfirmDialogOptions {
   confirmText?: string,
   content?: string,
   html?: string,
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+  size?: import("../components/base/modal/VModal.vue").VModalSize,
   onConfirm?: (hide: () => void) => void
 }
 export interface AlertDialogOptions {

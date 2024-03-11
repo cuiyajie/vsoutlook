@@ -6,12 +6,14 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/copier"
 	"vsoutlook.com/vsoutlook/infra/def"
 	"vsoutlook.com/vsoutlook/infra/utils"
 	"vsoutlook.com/vsoutlook/models"
+	"vsoutlook.com/vsoutlook/models/db"
 	"vsoutlook.com/vsoutlook/service/cluster"
 	"vsoutlook.com/vsoutlook/service/svcinfra"
 )
@@ -82,6 +84,7 @@ func GetDeviceList(c *svcinfra.Context) {
 		appsMap[v.Name] = v
 	}
 
+	stoppedDevices := make([]string, 0)
 	for _, d := range devices {
 		release := DeviceAsRelease{}
 		copier.Copy(&release, &d)
@@ -91,6 +94,9 @@ func GetDeviceList(c *svcinfra.Context) {
 		} else {
 			release.TargetNode = d.Node
 			release.AppName = ""
+			if d.AppName != "" {
+				stoppedDevices = append(stoppedDevices, d.ID)
+			}
 		}
 		if node, ok := nodesMap[release.TargetNode]; ok {
 			release.Node = node.NodeName
@@ -101,6 +107,7 @@ func GetDeviceList(c *svcinfra.Context) {
 		}
 		clustDevices = append(clustDevices, release)
 	}
+	db.DB.Model(&models.Device{}).Where("id in (?)", stoppedDevices).Updates(map[string]interface{}{"app_name": ""})
 
 	sort.Slice(clustDevices, func(i, j int) bool {
 		return clustDevices[i].UpdatedAt > clustDevices[j].UpdatedAt
@@ -250,6 +257,7 @@ func StartDevice(c *svcinfra.Context) {
 		c.GeneralError(err.Error())
 		return
 	}
+	device.UpdatedAt = time.Now()
 	c.Save(&device)
 	node.Allocated[device.ID] = *cores
 	c.Save(&node)

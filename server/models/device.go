@@ -73,3 +73,13 @@ func DeviceList() []DeviceAsBasic {
 	}
 	return result
 }
+
+func GetDevicesByNode(node string) []DeviceAsBasic {
+	var devices []Device
+	db.DB.Where("deleted=0 AND node=?", node).Find(&devices)
+	result := make([]DeviceAsBasic, 0, len(devices))
+	for _, t := range devices {
+		result = append(result, t.AsBasic())
+	}
+	return result
+}

@@ -161,6 +161,8 @@ onUnmounted(() => {
           />
         </div>
       </div>
+      <div class="app-list">
+      </div>
       <div class="meta-right">
         <div class="buttons">
           <VButton
@@ -195,10 +197,11 @@ onUnmounted(() => {
     display: flex;
     align-items: center;
     margin-top: 16px;
+    overflow-x: auto;
 
     .block-meta {
       margin-left: 16px;
-      flex: 1;
+      flex: 0 0 160px;
 
       h5 {
         font-size: 1.2rem;
@@ -232,6 +235,12 @@ onUnmounted(() => {
 
     .chart-wrap {
       width: 90px;
+    }
+
+    .app-list {
+      flex: 1;
+      padding-left: 24px;
+      padding-right: 24px;
     }
 
     .meta-right {

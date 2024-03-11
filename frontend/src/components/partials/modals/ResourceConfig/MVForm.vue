@@ -24,7 +24,7 @@ const mv = defineModel<{
     moudle: "mv",
     input_number: 10,
     output_number: 1,
-    tally_port: 6001,
+    tally_port: 6000,
     "2110-7_m_local_ip": "",
     "2110-7_b_local_ip": "",
     nmos: { ...nmos_config },

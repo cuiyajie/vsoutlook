@@ -3,6 +3,8 @@
 import { confirm } from "/@src/utils/dialog";
 import { useNotyf } from "/@src/composable/useNotyf";
 import { useDevices } from '/@src/stores/device'
+import { useClustNode } from '/@src/stores/node'
+import { useTemplate } from '/@src/stores/template'
 import { DeviceStatus } from "/@src/utils/enums-dic";
 
 const props = defineProps<{
@@ -15,6 +17,8 @@ const emit = defineEmits<{
 
 const notyf = useNotyf();
 const deviceStore = useDevices();
+const nodeStore = useClustNode();
+const tmplStore = useTemplate();
 
 function remove() {
   confirm({
@@ -77,24 +81,20 @@ function start() {
   });
 }
 
-function viewContainer() {
-  deviceStore.$showContainer(props.device)
-}
-
 async function config() {
   if (!startable.value) {
     notyf.error("设备正在运行中，无法更新配置")
     return
   }
-  const { tmplID, tmplName, tmplTypeName, id } = props.device
-  const device = await deviceStore.$getById(id)
+  const { id } = props.device
+  await nodeStore.$fetchList()
+  const res = await Promise.all([
+    deviceStore.$getById(id),
+    nodeStore.$fetchList(),
+    tmplStore.$fetchList()
+  ])
   bus.trigger(Signal.OpenResourceConfig, {
-    tmpl: {
-      id: tmplID,
-      name: tmplName,
-      typeName: tmplTypeName
-    },
-    device,
+    device: res[0],
     callbacks: {
       success: () => {
         emit('refresh')

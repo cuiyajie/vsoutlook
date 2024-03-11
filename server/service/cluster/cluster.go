@@ -16,6 +16,19 @@ import (
 	"vsoutlook.com/vsoutlook/service/svcinfra"
 )
 
+type ListNodeInfo struct {
+	NodeName string   `json:"nodeName"`
+	NodeIP   string   `json:"nodeIP"`
+	Running  []string `json:"running"`
+	Stopped  []string `json:"stopped"`
+}
+
+type ClusterListNode struct {
+	NodeName     string   `json:"nodeName"`
+	NodeIP       string   `json:"nodeIP"`
+	Applications []string `json:"applications"`
+}
+
 type ClusterNodeDetail struct {
 	NodeName     string                 `json:"nodeName"`
 	NodeIP       string                 `json:"nodeIP"`
@@ -130,12 +143,27 @@ func DeletePod(c *svcinfra.Context) {
 
 func GetNodes(c *svcinfra.Context) {
 	path := "/nodes"
-	resp, _ := BuildProxyReq[[]interface{}](c, "GET", path, nil, nil)
+	resp, _ := BuildProxyReq[[]ClusterListNode](c, "GET", path, nil, nil)
 	if resp == nil {
 		c.GeneralError("获取节点列表失败")
 		return
 	}
-	c.Bye(gin.H{"code": 0, "data": resp})
+	nodes := make([]ListNodeInfo, 0)
+	for _, n := range *resp {
+		node := ListNodeInfo{}
+		node.NodeName = n.NodeName
+		node.NodeIP = n.NodeIP
+		node.Running = make([]string, 0)
+		node.Stopped = make([]string, 0)
+		devices := models.GetDevicesByNode(n.NodeName)
+		for _, d := range devices {
+			if d.AppName == "" {
+				node.Stopped = append(node.Stopped, d.Name)
+			}
+		}
+		nodes = append(nodes, node)
+	}
+	c.Bye(gin.H{"code": 0, "data": nodes})
 }
 
 func GetNodeDetail(c *svcinfra.Context) {

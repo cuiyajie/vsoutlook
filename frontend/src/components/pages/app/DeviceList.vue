@@ -235,22 +235,19 @@ refresh()
         <VFlexTable>
           <!-- Custom "name" cell content -->
           <template #body-cell="{ row, column }">
-            <div v-if="column.key === 'icon'" class="col-icon">
-              <VIconWrap
-                size="small"
-                class="is-tt-icon"
-                :picture="`/images/tmpl/${row.tmplTypeIcon}`"
-              />
-              <div class="subcell">
-                <span>{{ row.tmplTypeName }}</span>
-              </div>
-            </div>
+            <VIconWrap
+              v-if="column.key === 'icon'"
+              v-tooltip.rounded.primary="row.tmplTypeName"
+              size="medium"
+              class="is-tt-icon"
+              :picture="`/images/tmpl/${row.tmplTypeIcon}`"
+            />
             <div
               v-else-if="column.key === 'name'"
               class="dark-text"
             >
               <span>{{ row.name }}</span>
-              <div v-if="row.appName" class="subcell">{{ row.appName }}</div>
+              <div v-if="row.appName" class="subcell">( {{ row.appName }} )</div>
             </div>
             <span
               v-else-if="column.key === 'tmplName'"
@@ -261,7 +258,7 @@ refresh()
               class="dark-text"
             >
               <span>{{ row.node }}</span>
-              <div v-if="row.nodeIP" class="subcell">{{ row.nodeIP }}</div>
+              <div v-if="row.nodeIP" class="subcell">( {{ row.nodeIP }} )</div>
             </div>
             <span
               v-else-if="column.key === 'updatedAt'"
@@ -371,6 +368,7 @@ refresh()
       div.subcell {
         font-size: 0.8rem;
         margin-top: 2px;
+        color: var(--dark-dark-text);
       }
     }
 

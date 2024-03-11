@@ -151,3 +151,11 @@ func MapToString(m map[string]interface{}) string {
 	}
 	return string(jsonData)
 }
+
+func KeysOf(m map[string]interface{}) []string {
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	return keys
+}

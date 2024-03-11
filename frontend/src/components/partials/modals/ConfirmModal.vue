@@ -7,6 +7,7 @@ const defaultOptions: ConfirmDialogOptions = {
   title: "提醒",
   cancelText: "取消",
   confirmText: "确认",
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onConfirm: (hide: () => void) => {},
 };
 const dopts = ref<ConfirmDialogOptions>(defaultOptions);
@@ -27,7 +28,7 @@ function handleConfirm() {
   <VModal
     :open="opened"
     actions="center"
-    size="small"
+    :size="dopts.size || 'small'"
     :title="dopts.title"
     :cancel-label="dopts.cancelText"
     dialog-class="confirm-dialog"
@@ -57,6 +58,7 @@ function handleConfirm() {
 .modal.v-modal {
   &.confirm-dialog {
     z-index: 1000 !important;
+    text-align: center;
   }
 }
 </style>

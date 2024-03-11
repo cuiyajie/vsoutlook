@@ -3,7 +3,7 @@
   "input_number": 10,
   "2110-7_m_local_ip": "192.168.1.1",
   "2110-7_b_local_ip": "192.168.1.2",
-  "tallyserver_url": "192.168.1.1:10001",
+  "tallyserver_url": "192.168.1.1:6000",
   "p4server_url": "192.168.1.1:10002",
   "hw_panel_url": "192.168.1.1:10003",
   "physic_nic_port0_ip": "192.168.1.1",

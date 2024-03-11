@@ -42,17 +42,19 @@ function onNodeSelect(field?: any, val?: any) {
   node.value = nodes.value.find(n => n.id === val) || null
 }
 
-useListener(Signal.OpenResourceConfig, (p?: { tmpl: TemplateData, node: ClustNode, device: ClustDevice, callbacks: any }) => {
+useListener(Signal.OpenResourceConfig, (p?: { tmpl: TemplateData, node: ClustNode, device: DeviceDetail, callbacks: any }) => {
   opened.value = true;
   callbacks = p?.callbacks || {}
-  inited.value = !!p?.tmpl && !!p?.node;
-  if (!p?.tmpl || !p?.node) return
-  tmpl.value = p.tmpl;
-  node.value = p.node;
-  device.value = p.device;
-  if (p.device?.name) {
+  inited.value = (!!p?.tmpl && !!p?.node) || !!p?.device
+  if ((!p?.tmpl || !p?.node) && !p?.device) return
+  if (p.device) {
+    device.value = p.device;
     deviceName.value = p.device?.name || ""
+    tmpl.value = tmpls.value.find(t => t.id === p.device.tmplID) || null
+    node.value = nodes.value.find(n => n.id === p.device.node) || null
   } else {
+    tmpl.value = p.tmpl;
+    node.value = p.node;
     deviceName.value = ""
   }
   nextTick(() => {
@@ -88,9 +90,9 @@ const dgi = computed(() => {
   return {
     created: isCreated,
     confirmTitle: isCreated ? "更新设备配置" : "部署设备",
-    confirmContent: isCreated ? `确定要更新设备 ${device.value?.name} 的配置吗？` : `确定要将应用 ${tmpl.value?.name} 部署到 ${node.value?.id}(${node.value?.ip}) 吗？`,
+    confirmContent: isCreated ? `确定要更新设备 ${device.value?.name} 的配置吗？` : `确定要将 ${deviceName.value} 设备部署到 ${node.value?.id} (${node.value?.ip}) 吗？`,
     confirmMsg: isCreated ? "更新设备配置成功" : "部署设备成功",
-    title: `${isCreated ? "更新设备配置" : "启动设备"} - ${tmplConfig.value.name}`,
+    title: `${isCreated ? "更新设备配置" : "启动设备"}${tmpl.value ? ` - ${tmplConfig.value.name}` : ''}`,
     submitText: isCreated ? "更新" : "启动",
     nodeName: isCreated ? device.value?.node : node.value?.id,
   };
@@ -102,6 +104,7 @@ const addInstance = handleSubmit(async () => {
   confirm({
     title: dgi.value.confirmTitle,
     content: dgi.value.confirmContent,
+    size: 'medium',
     onConfirm: async (hide) => {
       hide()
       loading.value = true;
@@ -216,7 +219,7 @@ const tmplConfig = computed(() => {
           id="deviceName"
           ref="deviceInput"
           v-slot="{ field }"
-          label="设备名称*"
+          label="设备名称 *"
           class="device-name"
         >
           <VControl fullwidth>
@@ -241,7 +244,7 @@ const tmplConfig = computed(() => {
             <VField
               id="tmpl"
               v-slot="{ field }"
-              label="选择应用*"
+              label="应用类型 *"
             >
               <VControl fullwidth>
                 <Multiselect
@@ -278,11 +281,11 @@ const tmplConfig = computed(() => {
             <VField
               id="node"
               v-slot="{ field }"
-              label="选择容器*"
+              label="部署节点 *"
             >
               <VControl fullwidth>
                 <Multiselect
-                  placeholder="选择容器"
+                  placeholder="选择节点"
                   value-prop="id"
                   label="name"
                   :max-height="145"

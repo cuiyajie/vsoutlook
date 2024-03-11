@@ -4,7 +4,7 @@
   "output_number": 1,
   "2110-7_m_local_ip": "192.168.1.1",
   "2110-7_b_local_ip": "192.168.1.2",
-  "tally_port": 6001,
+  "tally_port": 6000,
   "nmos": {
     "nmos_enable":true,
     "rds_server_url":"192.168.1.112:8010",
