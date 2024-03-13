@@ -17,6 +17,7 @@ export const v_width = ["1920", "3840"]
 export const v_compression_ratio = ["5:1", "8:1"]
 export const val_codec = ["encoder", "decoder"]
 export const val_udx = ["upscale", "downscale"]
+export const val_switch_keytype = ["external_key", "internal_key"]
 
 export const defs = {
   format: formatKeys[0],
@@ -34,14 +35,14 @@ export const global_config = {
 }
 
 export const ipstream_video = {
-  v_src_address: "",
-  v_dst_address: "",
+  v_src_address: "10.1.1.61:30000",
+  v_dst_address: "232.0.61.1:30000",
 }
 
 export const ipstream = {
   ...ipstream_video,
-  a_src_address: "",
-  a_dst_address: ""
+  a_src_address: "10.1.1.61:30000",
+  a_dst_address: "232.0.61.1:30000"
 }
 
 export const compression_format = {
@@ -78,6 +79,27 @@ export const pip_params = {
   pip_name: '',
   pip_video_index: 0
 };
+
+export const switch_key = {
+  key_number: 2,
+  ext_key_number: 1
+}
+
+export const switch_key_parmas_externnal = {
+  keytype: 'external_key',
+  ext_key_index: 0
+}
+
+export const switch_key_params_internal = {
+  keytype: 'internal_key',
+  int_key: {
+    name: "",
+    top_x: 0,
+    top_y: 0,
+    width: 3840,
+    height: 2160
+	}
+}
 
 export const switch_key_params = {
   ...ipstream_video,
@@ -184,18 +206,41 @@ export const def_mv_output_params = () => ({
   videoformat: { ...base_video_format }
 })
 
+export const def_switch_key = () => ({
+  ...switch_key,
+  key_params: []
+})
+
+export const def_switch_key_params = () => ([
+  { ...switch_key_parmas_externnal },
+  { ...switch_key_params_internal }
+])
+
+export const def_switch_external_key_params = () => ({
+  ...switch_key_parmas_externnal
+})
+
+export const def_switch_internal_key_params = () => ({
+  ...switch_key_params_internal,
+  int_key: { ...switch_key_params_internal.int_key }
+})
+
 export const def_switch_input_params = () => ({
   ...base_config,
   videoformat: { ...videoformat },
-  input_key_params: {
-    ipstream_master: { ...switch_key_params },
-    ipstream_backup: { ...switch_key_params },
-  },
-  input_fill_params: {
-    ipstream_master: { ...switch_fill_params },
-    ipstream_backup: { ...switch_fill_params },
-  },
+  input_key_params: [],
+  input_fill_params: [],
   input_video_params: []
+})
+
+export const def_switch_input_key_params = () => ({
+  ipstream_master: { ...switch_key_params },
+  ipstream_backup: { ...switch_key_params },
+})
+
+export const def_switch_input_fill_params = () => ({
+  ipstream_master: { ...switch_fill_params },
+  ipstream_backup: { ...switch_fill_params },
 })
 
 export const def_switch_input_video_params = () => ({
@@ -204,15 +249,15 @@ export const def_switch_input_video_params = () => ({
   ...switch_video_params
 })
 
-export const def_switch_input_bus_params = () => ({
+export const def_switch_bus_params = () => ({
   video_bus_master: [{ ...ipstream_video, v_p4_port: 1 }, { ...ipstream_video, v_p4_port: 1 }],
   video_bus_backup: [{ ...ipstream_video, v_p4_port: 2 }, { ...ipstream_video, v_p4_port: 2 }],
-  keyfill_bus_master: {
-    ...switch_keyfill_params
-  },
-  keyfill_bus_backup: {
-    ...switch_keyfill_params
-  }
+  keyfill_bus_master: [],
+  keyfill_bus_backup: []
+})
+
+export const def_switch_bus_keyfill_params = () => ({
+  ...switch_keyfill_params
 })
 
 export const def_switch_output_params = () => ({
@@ -228,9 +273,14 @@ export type UdxInputType = ReturnType<typeof def_udx_input>
 export type UdxOutputParamsType = ReturnType<typeof def_udx_output_params>
 export type MVInputParamsType = ReturnType<typeof def_mv_input_params>
 export type MVOutputParamsType = ReturnType<typeof def_mv_output_params>
+export type SwitchKeyType = typeof switch_key
+export type SwitchKeyParamsType = ReturnType<typeof def_switch_key_params>[0]
 export type SwitchInputParamsType = ReturnType<typeof def_switch_input_params>
-export type SwitchInputBusParamsType = ReturnType<typeof def_switch_input_bus_params>
+export type SwitchInputKeyParamsType = ReturnType<typeof def_switch_input_key_params>
+export type SwitchInputFillParamsType = ReturnType<typeof def_switch_input_fill_params>
 export type SwitchInputVideoParamsType = ReturnType<typeof def_switch_input_video_params>
+export type SwitchBusParamsType = ReturnType<typeof def_switch_bus_params>
+export type SwitchBusKeyfillParamsType = ReturnType<typeof def_switch_bus_keyfill_params>
 export type SwitchOutputParamsType = ReturnType<typeof def_switch_output_params>
 export type NMosConfigType = typeof nmos_config
 export type SSMAddressType = typeof ssm_address
