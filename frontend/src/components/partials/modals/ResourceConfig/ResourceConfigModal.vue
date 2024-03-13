@@ -18,11 +18,11 @@ const deviceStore = useDevices()
 const nodeStore = useClustNode();
 
 const notyf = useNotyf();
-const opened = ref(true);
+const opened = ref(false);
 
 const deviceName = ref("");
 const deviceInput = ref<any>(null);
-const tmpl = ref<TemplateData | null>({ typeName: '切换台' })
+const tmpl = ref<TemplateData | null>(null)
 const node = ref<ClustNode | null>(null)
 const device = ref<ClustDevice | null>(null)
 const fileInput = ref<HTMLInputElement | null>(null)
