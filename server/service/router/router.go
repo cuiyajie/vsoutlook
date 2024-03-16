@@ -11,6 +11,7 @@ import (
 	"vsoutlook.com/vsoutlook/infra/track"
 	"vsoutlook.com/vsoutlook/service/cluster"
 	"vsoutlook.com/vsoutlook/service/device"
+	"vsoutlook.com/vsoutlook/service/settings"
 	"vsoutlook.com/vsoutlook/service/site"
 	"vsoutlook.com/vsoutlook/service/svcinfra"
 	"vsoutlook.com/vsoutlook/service/tmpl"
@@ -72,6 +73,11 @@ func SetupRouter() *gin.Engine {
 		post(member, "cluster/nodes", cluster.GetNodes)
 		post(member, "cluster/node.detail", cluster.GetNodeDetail)
 		post(member, "cluster/node.update", cluster.UpdateNode)
+	}
+
+	{
+		member := group(root, "api", authenticated)
+		post(member, "settings/update", settings.UpdateSetting)
 	}
 
 	router.NoRoute(h(site.FallbackHandler))

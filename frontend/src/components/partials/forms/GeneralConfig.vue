@@ -1,15 +1,58 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import VField from "../../base/form/VField.vue";
+import { useUserSession } from "/@src/stores/userSession";
+
+const usStore = useUserSession();
+const settings = computed(() => usStore.settings);
+
+function updateProp(key: string, value: string) {
+  usStore.$updateSettings({ key, value })
+}
+
+const handleKeyDown = (event: KeyboardEvent) => {
+  if (event.key === 'Enter') {
+    (event.target as HTMLInputElement).blur();
+  }
+}
+
+const vBlurOnEnter = {
+  mounted(el: HTMLInputElement) {
+
+    const handleBlur = (event: FocusEvent) => {
+      const target = event.target as HTMLInputElement;
+      const key = target.dataset.key;
+      if (key) {
+        updateProp(key, target.value)
+      }
+    }
+
+    el.addEventListener('keydown', handleKeyDown);
+    el.addEventListener('blur', handleBlur);
+
+    (el as any)._blurOnEnterDirectiveCleanup = () => {
+      el.removeEventListener('keydown', handleKeyDown);
+      el.removeEventListener('blur', handleBlur);
+    };
+  },
+  beforeUnmount(el: HTMLInputElement) {
+    if ((el as any)._blurOnEnterDirectiveCleanup) {
+      (el as any)._blurOnEnterDirectiveCleanup();
+      delete (el as any)._blurOnEnterDirectiveCleanup;
+    }
+  }
+};
+
+</script>
 
 <template>
   <form
     method="post"
     novalidate
-    class="form-layout is-stacked"
-    @submit.prevent="onSubmit"
+    class="form-layout is-stacked gconfig"
   >
     <div class="form-outer">
       <div class="form-body">
-        <div class="form-section is-grey">
+        <!-- <div class="form-section is-grey">
           <div class="form-section-header">
             <div class="left">
               <h3>容器服务</h3>
@@ -86,7 +129,7 @@
               </VControl>
             </VField>
           </div>
-        </div>
+        </div> -->
 
         <div class="form-section is-grey">
           <div class="form-section-header">
@@ -95,20 +138,68 @@
             </div>
           </div>
 
-          <div class="form-section-inner is-horizontal">
-            Comming soon
+          <div class="form-section-inner is-horizontal flex-auto">
+            <VField
+              horizontal
+              label="RDS服务地址(含端口)"
+            >
+              <VControl
+                icon="feather:map-pin"
+                fullwidth
+              >
+                <VInput
+                  v-model="settings.rds_server_url"
+                  v-blur-on-enter
+                  type="url"
+                  placeholder="192.168.1.112:8010"
+                  inputmode="url"
+                  data-key="rds_server_url"
+                />
+              </VControl>
+            </VField>
           </div>
         </div>
 
         <div class="form-section is-grey">
           <div class="form-section-header">
             <div class="left">
-              <h3>Tally配置</h3>
+              <h3>授权服务配置</h3>
             </div>
           </div>
-
-          <div class="form-section-inner is-horizontal">
-            Comming soon
+          <div class="columns is-multiline">
+            <div class="column is-6">
+              <VField id="ip">
+                <VLabel>IP地址</VLabel>
+                <VControl icon="feather:map-pin">
+                  <input
+                    v-model="settings.authorization_service_ip"
+                    v-blur-on-enter
+                    type="text"
+                    placeholder="232.0.0.0"
+                    class="input is-primary-focus"
+                    data-key="authorization_service_ip"
+                  >
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-6">
+              <VField>
+                <VLabel>端口</VLabel>
+                <VControl>
+                  <VInputNumber
+                    v-model="settings.authorization_service_port"
+                    placeholder="6001"
+                    centered
+                    :min="0"
+                    :step="1"
+                    data-key="authorization_service_port"
+                    @blur="updateProp('authorization_service_port', $event.target.value)"
+                    @step-click="val => updateProp('authorization_service_port', String(val))"
+                    @keyup.enter.stop="handleKeyDown"
+                  />
+                </VControl>
+              </VField>
+            </div>
           </div>
         </div>
       </div>
@@ -163,6 +254,15 @@
           .form-section-inner {
             &.is-horizontal {
               max-width: 540px;
+            }
+
+            &.flex-auto {
+
+              .field-label {
+                flex-basis: auto;
+                flex-shrink: 0;
+                flex-grow: 0;
+              }
             }
 
             .field {

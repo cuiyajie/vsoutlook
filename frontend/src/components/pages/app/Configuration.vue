@@ -2,7 +2,7 @@
 <template>
   <VTabs
     class="gc-tabs"
-    selected="users"
+    selected="general"
     align="centered"
     :tabs="[
       { label: '通用', value: 'general' },

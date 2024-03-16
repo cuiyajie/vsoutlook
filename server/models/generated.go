@@ -64,6 +64,10 @@ func (Node) TableName() string {
 	return "nodes"
 }
 
+func (Settings) TableName() string {
+	return "settings"
+}
+
 // for gorm
 func (d TmplRequirement) Value() (driver.Value, error) {
 	return json.Marshal(d)

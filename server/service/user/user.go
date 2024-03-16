@@ -104,7 +104,8 @@ func Login(c *svcinfra.Context) {
 
 func (us *UserService) CurrentUser(c *svcinfra.Context) {
 	user := c.User
-	c.Bye(gin.H{"user": user.AsBasic()})
+	settings := models.GetSettings()
+	c.Bye(gin.H{"user": user.AsBasic(), "settings": settings})
 }
 
 func (us *UserService) Logout(c *svcinfra.Context) {

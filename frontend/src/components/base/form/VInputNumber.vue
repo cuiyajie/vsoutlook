@@ -37,6 +37,8 @@ const { field, id } = useVFieldContext({
   help: "VInputNumber",
 });
 
+const emit = defineEmits(["blur", "stepClick"]);
+
 const internal = computed({
   get() {
     if (field?.value) {
@@ -79,6 +81,7 @@ function decrease() {
       internal.value = 0;
     }
     internal.value = normalizeDecimalNumber(internal.value - props.step);
+    emit('stepClick', internal.value)
   }
 }
 
@@ -88,6 +91,7 @@ function increase() {
       internal.value = 0;
     }
     internal.value = normalizeDecimalNumber(internal.value + props.step);
+    emit('stepClick', internal.value)
   }
 }
 
@@ -97,6 +101,11 @@ function paste(event: ClipboardEvent) {
   if (clipboardData && !REGEXP_NUMBER.test(clipboardData.getData("text"))) {
     event.preventDefault();
   }
+}
+
+function onBlur(event: FocusEvent) {
+  field.value?.handleBlur(event);
+  emit("blur", event);
 }
 </script>
 
@@ -115,7 +124,7 @@ function paste(event: ClipboardEvent) {
       :false-value="props.falseValue"
       :readonly="readonly"
       @change="field?.handleChange"
-      @blur="field?.handleBlur"
+      @blur="onBlur"
       @paste="paste"
     />
     <label

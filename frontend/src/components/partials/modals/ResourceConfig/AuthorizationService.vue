@@ -1,6 +1,9 @@
 <!-- eslint-disable vue/prop-name-casing -->
 <script setup lang="ts">
-import { type AuthServiceType, auth_service } from './Consts';
+import { type AuthServiceType } from './Consts';
+import { useGlobalConfig } from './Utils';
+
+const { def_auth_service } = useGlobalConfig();
 
 const mv = defineModel<AuthServiceType[]>({
   default: [],
@@ -8,7 +11,7 @@ const mv = defineModel<AuthServiceType[]>({
 });
 
 function add() {
-  mv.value.push({ ...auth_service });
+  mv.value.push(def_auth_service());
 }
 
 function remove(idx: number) {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getFormat, handle, unwrap, useFormat, watchInput, watchNmosName, wrap } from './Utils'
+import { getFormat, handle, unwrap, useFormat, useGlobalConfig, watchInput, watchNmosName, wrap } from './Utils'
 import { def_codec_input, def_codec_output, v_protocols, val_codec, type NMosConfigType, nmos_config, type SSMAddressType, ssm_address, type AuthServiceType, auth_service } from './Consts';
 import pick from 'lodash-es/pick'
 import merge from 'lodash-es/merge'
@@ -29,8 +29,10 @@ const mv = defineModel<{
   },
   local: true,
 });
+const advanceOpened = ref(false)
 
 mv.value = pick(codecData, ['moudle', 'mode', '2110-7_m_local_ip', '2110-7_b_local_ip', 'nmos', 'ssm_address_range', 'authorization_service'])
+useGlobalConfig(mv)
 
 const input = ref(def_codec_input());
 input.value = unwrap(codecData.input, 'in_')
@@ -144,9 +146,30 @@ defineExpose({
             </div>
           </div>
         </div>
-        <NMosConfig v-model="mv.nmos" />
-        <SSMAddressRange v-model="mv.ssm_address_range" />
-        <AuthorizationService v-model="mv.authorization_service" />
+        <div
+          class="form-fieldset collapse-form form-outer"
+          :open="advanceOpened || undefined"
+        >
+          <div
+            class="fieldset-heading collapse-header"
+            tabindex="0"
+            role="button"
+            @keydown.space.prevent="advanceOpened = !advanceOpened"
+            @click.prevent="advanceOpened = !advanceOpened"
+          >
+            <h4>高级配置</h4>
+            <div class="collapse-icon">
+              <VIcon icon="feather:chevron-down" />
+            </div>
+          </div>
+          <Transition name="fade-slow">
+            <div v-show="advanceOpened" class="form-body">
+              <NMosConfig v-model="mv.nmos" class="seperator" />
+              <SSMAddressRange v-model="mv.ssm_address_range" class="seperator" />
+              <AuthorizationService v-model="mv.authorization_service" />
+            </div>
+          </Transition>
+        </div>
         <!--Fieldset-->
         <div class="form-outer">
           <div class="form-header">

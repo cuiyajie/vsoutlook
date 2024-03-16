@@ -8,7 +8,7 @@ const mv = defineModel<UdxInputType>({
 });
 
 const props = defineProps<{
-  mode: 'upscale' | 'downscale',
+  mode: string,
 }>()
 
 const format = defineModel('format', {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { type AuthServiceType, type NMosConfigType, type SSMAddressType, auth_service, def_mv_input_params, def_mv_output_params, global_config, nmos_config, ssm_address } from './Consts';
-import { handle, unwrap, watchNmosName, wrap } from "./Utils";
+import { handle, unwrap, useGlobalConfig, watchNmosName, wrap } from "./Utils";
 import pick from 'lodash-es/pick'
 import merge from 'lodash-es/merge'
 import mvData from '/@src/data/vscomponent/mv.json'
@@ -33,8 +33,10 @@ const mv = defineModel<{
   },
   local: true,
 });
+const advanceOpened = ref(false)
 
 mv.value = pick(mvData, ['moudle', 'input_number', 'output_number', 'tally_port', '2110-7_m_local_ip', '2110-7_b_local_ip', 'nmos', 'ssm_address_range', 'authorization_service'])
+useGlobalConfig(mv)
 
 watchNmosName(() => props.name, mv.value)
 
@@ -194,19 +196,6 @@ defineExpose({
             </div>
             <div class="column is-6">
               <VField>
-                <VLabel>tally服务端口</VLabel>
-                <VControl>
-                  <VInputNumber
-                    v-model="mv.tally_port"
-                    centered
-                    :min="0"
-                    :max="65535"
-                  />
-                </VControl>
-              </VField>
-            </div>
-            <div class="column is-6">
-              <VField>
                 <VLabel>2022-7主路收发网口IP</VLabel>
                 <VControl>
                   <VInput
@@ -227,9 +216,47 @@ defineExpose({
             </div>
           </div>
         </div>
-        <NMosConfig v-model="mv.nmos" />
-        <SSMAddressRange v-model="mv.ssm_address_range" />
-        <AuthorizationService v-model="mv.authorization_service" />
+        <div
+          class="form-fieldset collapse-form form-outer"
+          :open="advanceOpened || undefined"
+        >
+          <div
+            class="fieldset-heading collapse-header"
+            tabindex="0"
+            role="button"
+            @keydown.space.prevent="advanceOpened = !advanceOpened"
+            @click.prevent="advanceOpened = !advanceOpened"
+          >
+            <h4>高级配置</h4>
+            <div class="collapse-icon">
+              <VIcon icon="feather:chevron-down" />
+            </div>
+          </div>
+          <Transition name="fade-slow">
+            <div v-show="advanceOpened" class="form-body">
+              <div class="form-fieldset seperator">
+                <div class="columns is-multiline">
+                  <div class="column is-6">
+                    <VField>
+                      <VLabel>tally服务端口</VLabel>
+                      <VControl>
+                        <VInputNumber
+                          v-model="mv.tally_port"
+                          centered
+                          :min="0"
+                          :max="65535"
+                        />
+                      </VControl>
+                    </VField>
+                  </div>
+                </div>
+              </div>
+              <NMosConfig v-model="mv.nmos" class="seperator" />
+              <SSMAddressRange v-model="mv.ssm_address_range" class="seperator" />
+              <AuthorizationService v-model="mv.authorization_service" />
+            </div>
+          </Transition>
+        </div>
         <!--Fieldset-->
         <div class="form-outer">
           <div class="form-header">

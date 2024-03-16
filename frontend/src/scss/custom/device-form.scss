@@ -208,6 +208,19 @@
           border-color: var(--dark-sidebar-light-4) !important;
         }
       }
+
+      &.form-fieldset.form-outer {
+        > .fieldset-heading {
+          border-width: 1px;
+        }
+      }
+    }
+
+    &.form-fieldset.form-outer {
+      > .fieldset-heading {
+        border-width: 0;
+        margin-bottom: 0 !important;
+      }
     }
 
     .collapse-header {
