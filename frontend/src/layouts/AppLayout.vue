@@ -80,25 +80,13 @@ watch(
     >
       <template #links>
         <li>
-          <RouterLink to="app">
+          <RouterLink to="/app">
             <i
               aria-hidden="true"
               class="iconify"
               data-icon="feather:home"
             />
           </RouterLink>
-        </li>
-      </template>
-
-      <template #bottom-links>
-        <li>
-          <a href="#">
-            <i
-              aria-hidden="true"
-              class="iconify"
-              data-icon="feather:settings"
-            />
-          </a>
         </li>
       </template>
     </MobileSidebar>
@@ -116,7 +104,7 @@ watch(
     >
       <template #links>
         <!-- Dashboards -->
-        <li>
+        <!-- <li>
           <a
             :class="[activeMobileSubsidebar === 'dashboard' && 'is-active']"
             data-content="Dashboards"
@@ -130,8 +118,9 @@ watch(
               class="iconify sidebar-svg"
               data-icon="feather:home"
             />
+            <span>主页</span>
           </a>
-        </li>
+        </li> -->
       </template>
 
       <template #bottom-links>
@@ -220,8 +209,8 @@ watch(
   }
 
   .view-wrapper.is-pushed-full {
-    margin-inline-start: 240px;
-    width: calc(100% - 240px);
+    margin-inline-start: 160px;
+    width: calc(100% - 160px);
     min-width: 1200px;
     overflow: auto;
   }

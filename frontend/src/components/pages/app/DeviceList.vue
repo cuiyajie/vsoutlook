@@ -345,7 +345,7 @@ refresh()
       border-bottom: 1px solid var(--fade-grey-dark-3);
 
       span:nth-child(1) {
-        width: 120px;
+        width: percentage(90/960);
       }
 
       > span {
@@ -375,7 +375,7 @@ refresh()
     // 图标
     .flex-table-header span:nth-child(1),
     .flex-table-item .flex-table-cell:nth-child(1) {
-      flex: 0 0 90px;
+      flex: 0 0 percentage(90/960);
 
       .col-icon {
         display: flex;
@@ -399,32 +399,32 @@ refresh()
     // 应用名称
     .flex-table-header span:nth-child(3),
     .flex-table-item .flex-table-cell:nth-child(3) {
-      flex: 0 0 120px;
+      flex: 0 0 percentage(120/960);
     }
 
     // 节点
     .flex-table-header span:nth-child(4),
     .flex-table-item .flex-table-cell:nth-child(4) {
-      flex: 0 0 150px;
+      flex: 0 0 percentage(150/960);
       text-align: center;
     }
 
     // 更新时间
     .flex-table-header span:nth-child(5),
     .flex-table-item .flex-table-cell:nth-child(5) {
-      flex: 0 0 180px;
+      flex: 0 0 percentage(180/960);
     }
 
     // 状态
     .flex-table-header span:nth-child(6),
     .flex-table-item .flex-table-cell:nth-child(6) {
-      flex: 0 0 100px;
+      flex: 0 0 percentage(100/960);
     }
 
     // 操作
     .flex-table-header span:nth-child(7),
     .flex-table-item .flex-table-cell:nth-child(7) {
-      flex: 0 0 80px;
+      flex: 0 0 percentage(80/960);
     }
   }
 }

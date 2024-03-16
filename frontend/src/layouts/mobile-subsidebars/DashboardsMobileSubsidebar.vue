@@ -1,35 +1,43 @@
 <template>
   <div class="mobile-subsidebar">
     <div class="inner">
-      <div class="sidebar-title">
-        <h3>Dashboards</h3>
-      </div>
-
-      <ul
-        class="submenu"
-        data-simplebar
-      >
-        <VCollapseLinks>
-          <template #header>
-            Personal
+      <ul>
+        <li>
+          <RouterLink to="/app/template">
             <i
+              class="mr-1 fas fa-shopping-bag"
               aria-hidden="true"
-              class="iconify"
-              data-icon="feather:chevron-right"
             />
-          </template>
-
-          <RouterLink
-            to="app"
-            class="is-submenu"
-          >
-            <i
-              aria-hidden="true"
-              class="lnil lnil-home"
-            />
-            <span>Home</span>
+            应用商店
           </RouterLink>
-        </VCollapseLinks>
+        </li>
+        <li>
+          <RouterLink to="/app/devices">
+            <i
+              class="mr-1 fas fa-layer-group"
+              aria-hidden="true"
+            />
+            设备管理
+          </RouterLink>
+        </li>
+        <li>
+          <RouterLink to="/app/resource">
+            <i
+              class="mr-1 fas fa-server"
+              aria-hidden="true"
+            />
+            资源管理
+          </RouterLink>
+        </li>
+        <li>
+          <RouterLink to="/app/config">
+            <i
+              class="mr-1 fas fa-users-cog"
+              aria-hidden="true"
+            />
+            系统配置
+          </RouterLink>
+        </li>
       </ul>
     </div>
   </div>

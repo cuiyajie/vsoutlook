@@ -24,10 +24,11 @@
 
 .sidebar-panel {
   position: fixed;
+  padding-top: 64px;
   top: 0;
-  inset-inline-start: 80px;
+  inset-inline-start: 0;
   height: 100%;
-  width: 240px;
+  width: 160px;
   background: var(--white);
   z-index: 31;
 

@@ -90,11 +90,11 @@ const props = defineProps<VViewWrapperProps>()
 
 .view-wrapper {
   position: relative;
-  height: 100%;
+  width: 100%;
   min-height: 100vh;
-  width: calc(100% - 80px);
-  padding: 0 0 60px;
-  margin-inline-start: 80px;
+  height: calc(100% - 64px);
+  padding: 64px 0 0 0;
+  margin-inline-start: 0;
   background: var(--background-grey);
   transition: all 0.3s; // transition-all test
 

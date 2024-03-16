@@ -215,6 +215,66 @@ const props = defineProps<{
     width: calc(100% - 60px);
     margin-inline-start: 60px;
 
+    ul {
+      padding: 10px 0;
+    }
+
+    li {
+      height: 36px;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      border-inline-start: 2px solid transparent;
+      cursor: pointer;
+
+      &.is-active {
+        a {
+          font-weight: 500;
+          color: var(--primary);
+        }
+
+        > a {
+          font-weight: 600;
+        }
+      }
+
+      > a.router-link-exact-active {
+        font-weight: 600;
+        color: var(--primary);
+      }
+
+      a {
+        font-family: var(--font);
+        display: block;
+        width: 100%;
+        padding: 0 20px;
+        font-size: 0.95rem;
+        color: var(--light-text);
+        &:hover,
+        &:focus {
+          color: var(--dark-text);
+        }
+        .tag {
+          line-height: 1.8;
+          height: 1.8em;
+          font-size: 0.7rem;
+          margin-inline-start: 0.25rem;
+        }
+      }
+
+      > a {
+        font-family: var(--font-alt);
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--light-text);
+        letter-spacing: 0.12em;
+        .fas {
+          text-align: center;
+          width: 14px;
+        }
+      }
+    }
+
     .sidebar-title {
       height: 60px;
       display: flex;

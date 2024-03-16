@@ -1,10 +1,10 @@
 <script setup lang="ts">
-const emit = defineEmits(['close'])
+// const emit = defineEmits(['close'])
 </script>
 
 <template>
   <div class="sidebar-panel is-generic">
-    <div class="subpanel-header">
+    <!-- <div class="subpanel-header">
       <h3 class="no-mb">
         主页
       </h3>
@@ -21,7 +21,7 @@ const emit = defineEmits(['close'])
           data-icon="feather:x"
         />
       </div>
-    </div>
+    </div> -->
     <div
       class="inner"
       data-simplebar

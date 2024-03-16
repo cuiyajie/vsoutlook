@@ -52,7 +52,7 @@ const themeClasses = computed(() => {
       </RouterLink>
     </div>
     <div class="sidebar-inner">
-      <div class="naver" />
+      <!-- <div class="naver" /> -->
 
       <ul class="icon-menu has-slimscroll">
         <slot name="links" />
@@ -70,13 +70,16 @@ const themeClasses = computed(() => {
 .main-sidebar {
   position: fixed;
   top: 0;
+  left: 0;
   inset-inline-start: 0;
   margin-inline-start: 0;
-  height: 100vh;
-  width: 80px;
+  height: 64px;
+  width: 100vw;
   background-color: var(--body-color);
   box-shadow: none;
   z-index: 35;
+  display: flex;
+  align-items: center;
   transition:
     border-radius 0.3s ease-in,
     background-color 0.3s ease-in,
@@ -278,9 +281,11 @@ const themeClasses = computed(() => {
   }
 
   .sidebar-inner {
-    height: calc(100% - 60px);
-    width: 100%;
+    width: calc(100% - 64px);
+    height: 100%;
     position: relative;
+    display: flex;
+    align-items: center;
 
     .naver {
       position: absolute;
@@ -342,11 +347,17 @@ const themeClasses = computed(() => {
         }
 
         a {
-          display: block;
+          display: flex;
+          align-items: center;
           position: relative;
           transform: rotate(calc(var(--transform-direction) * 0));
           opacity: 1;
           transition: all 0.3s; // transition-all test
+
+          > span {
+            margin-left: 8px;
+            color: var(--light-text);
+          }
 
           &:hover,
           &.is-selected,
@@ -385,7 +396,7 @@ const themeClasses = computed(() => {
 
     .bottom-menu {
       position: absolute;
-      bottom: 0;
+      right: 0;
       padding: 0;
 
       li {
@@ -437,8 +448,10 @@ const themeClasses = computed(() => {
 
       .profile-dropdown {
         .dropdown-menu {
-          bottom: 0;
-          inset-inline-start: 145%;
+          top: 64px;
+          bottom: auto;
+          // bottom: 0;
+          // inset-inline-start: 145%;
 
           .dropdown-content {
             padding-top: 0;

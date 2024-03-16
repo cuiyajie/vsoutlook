@@ -19,7 +19,6 @@ async function logout() {
     right
     spaced
     class="user-dropdown profile-dropdown"
-    up
   >
     <template #button="{ toggle }">
       <a
