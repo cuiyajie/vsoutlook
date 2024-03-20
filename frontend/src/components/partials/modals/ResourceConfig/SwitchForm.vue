@@ -88,7 +88,7 @@ watch(() => mv.value.input_number, (nv) => {
       Array.from({ length: nv - len }, (_, i) => {
         return {
           index: len + i + 1,
-          value: params[len + i] ? ref(params[len + i]) : ref(def_switch_input_video_params())
+          value: params[len + i] ? ref(params[len + i]) : ref(def_switch_input_video_params(len + i))
         }
       })
     );
@@ -170,12 +170,11 @@ function getValue() {
   const useb = output.value['g_2022-7']
   return {
     ...handle(mv.value),
-    input_extkey_number: key.value.ext_key_number,
     input: {
       ...wrap(input.value, 'in_', input.value['g_2022-7']),
-      input_video_params: inputs.value.map(ipt => wrap(ipt.value, 'in_', input.value['g_2022-7'], true, mip, bip)),
-      input_key_params: inputKeys.value.map(ipt => wrap(ipt.value, 'in_', input.value['g_2022-7'], true, mip, bip)),
-      input_fill_params: inputFills.value.map(ipt => wrap(ipt.value, 'in_', input.value['g_2022-7'], true, mip, bip))
+      input_video_params: inputs.value.map((ipt, idx) => Object.assign(wrap(ipt.value, 'in_', input.value['g_2022-7'], true, mip, bip), { index: idx })),
+      input_key_params: inputKeys.value.map((ipt, idx) => Object.assign(wrap(ipt.value, 'in_', input.value['g_2022-7'], true, mip, bip), { index: idx })),
+      input_fill_params: inputFills.value.map((ipt, idx) => Object.assign(wrap(ipt.value, 'in_', input.value['g_2022-7'], true, mip, bip), { index: idx }))
     },
     key: {
       ...key.value,
@@ -183,8 +182,8 @@ function getValue() {
     },
     bus: {
       ...wrap(bus.value, 'bus_in_', input.value['g_2022-7']),
-      keyfill_bus_master: masterBusKeyFills.value.map(ipt => wrap(ipt.value, 'bus_in_', input.value['g_2022-7'])),
-      keyfill_bus_backup: backupBusKeyFills.value.map(ipt => wrap(ipt.value, 'bus_in_', input.value['g_2022-7']))
+      keyfill_bus_master: masterBusKeyFills.value.map((ipt, idx) => Object.assign(wrap(ipt.value, 'bus_in_', input.value['g_2022-7']), { index: idx })),
+      keyfill_bus_backup: backupBusKeyFills.value.map((ipt, idx) => Object.assign(wrap(ipt.value, 'bus_in_', input.value['g_2022-7']), { index: idx }))
     },
     output: {
       ...wrap(output.value, 'out_'),
@@ -207,7 +206,7 @@ function setValue(data: typeof switchData) {
   nextTick(() => {
     const params = _ipData.input_video_params
     inputs.value.forEach((iptv, idx) => {
-      iptv.value = merge(def_switch_input_video_params(), params[idx])
+      iptv.value = merge(def_switch_input_video_params(0), params[idx])
     })
     const ikParams = _ipData.input_key_params
     inputKeys.value.forEach((ipt, idx) => {

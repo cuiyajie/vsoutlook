@@ -70,7 +70,7 @@ const validationSchema = computed(() => {
   const rules: any = {
     deviceName: z.string({
       required_error: "请输入设备名称",
-    }).refine(val => /^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$/.test(val), "请输入合法的设备名称")
+    }).refine(val => /^[A-Za-z0-9]([-A-Za-z0-9]*[A-Za-z0-9])?(\.[A-Za-z0-9]([-A-Za-z0-9]*[A-Za-z0-9])?)*$/.test(val), "请输入合法的设备名称")
     .refine(val => val.length <= 53, "设备名称不能大于53个字符"),
   };
   if (!inited.value) {
@@ -320,7 +320,7 @@ const tmplConfig = computed(() => {
           ref="fileInput"
           type="file"
           accept=".json"
-          style="display: none;"
+          style="width: 0; height: 0; opacity: 0; position: absolute; top: -100px; left: -100px; z-index: -1;"
           @change="onFileImported"
         >
       </div>

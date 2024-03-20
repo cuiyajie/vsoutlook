@@ -103,7 +103,14 @@ export function watchCpressFormat(mv: any) {
 
 export function useFormat(mv: any, def = defs.format) {
   const v_format = ref(def);
-  watchFormat(v_format, mv);
+  let _val = mv
+  if (isRef(mv)) {
+    watch(() => mv.value, (nv) => {
+      v_format.value = getFormat(nv);
+    });
+    _val = mv.value;
+  }
+  watchFormat(v_format, _val);
   return v_format;
 }
 
@@ -177,6 +184,7 @@ export function wrap(src: any, prefix: string, useBackup?: boolean, isBackup?: b
       'ipstream_master', 'ipstream_backup', 'videoformat', 'audioformat', 'pip_params',
       'input_key_params', 'input_fill_params', 'input_video_params',
       'video_bus_master', 'video_bus_backup', 'keyfill_bus_master', 'keyfill_bus_backup',
+      'screenindex', 'tallyindex'
     ].includes(key)) {
       wrapKey = key
     }
@@ -185,7 +193,7 @@ export function wrap(src: any, prefix: string, useBackup?: boolean, isBackup?: b
       if (isBackup && !useBackup) {
         continue
       } else {
-        dst[wrapKey] = src[key].map((v: any) => wrap(v, prefix, useBackup, isBackup, m_local_ip, b_local_ip));
+        dst[wrapKey] = src[key].map((v: any, index: number) => Object.assign(wrap(v, prefix, useBackup, isBackup, m_local_ip, b_local_ip), { index }));
       }
     } else if (typeof src[key] === 'object') {
       const isBackup = key.endsWith('backup')

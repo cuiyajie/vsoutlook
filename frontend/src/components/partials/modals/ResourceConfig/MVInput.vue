@@ -13,7 +13,7 @@ defineProps<{
 }>()
 const opened = ref(false)
 
-const format = useFormat(mv.value, getFormat(mv.value))
+const format = useFormat(mv, getFormat(mv.value))
 useProtocolDC(mv.value)
 </script>
 <template>

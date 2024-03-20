@@ -1,7 +1,7 @@
 export const formats = [
   { key: "1920_1080_1_25_sdr_bt709", value: "1920*1080 50i(sdr/bt709)" },
   { key: "1920_1080_0_50_hlg_bt2020", value: "1920*1080 50p(hdr/bt2020)" },
-  { key: "3840_2160_0_50_hlg_bt2020", value: "3840*2160 50i(hdr/bt2020)" },
+  { key: "3840_2160_0_50_hlg_bt2020", value: "3840*2160 50p(hdr/bt2020)" },
 ];
 
 export const formatKeys = formats.map(f => f.key)
@@ -72,12 +72,14 @@ export const audioformat = {
 
 export const mv_config = {
   mv_template: '',
-  pips_number: 4
+  pips_number: 4,
+  screenindex: 0,
 };
 
 export const pip_params = {
   pip_name: '',
-  pip_video_index: 0
+  pip_video_index: 0,
+  tallyindex: 0
 };
 
 export const switch_key = {
@@ -206,6 +208,13 @@ export const def_mv_output_params = () => ({
   videoformat: { ...base_video_format }
 })
 
+export const def_mv_pip_params = (idx: number) => ({
+  ...pip_params,
+  pip_name: `cam${idx + 1}`,
+  pip_video_index: idx,
+  tallyindex: idx
+})
+
 export const def_switch_key = () => ({
   ...switch_key,
   key_params: []
@@ -243,10 +252,12 @@ export const def_switch_input_fill_params = () => ({
   ipstream_backup: { ...switch_fill_params },
 })
 
-export const def_switch_input_video_params = () => ({
+export const def_switch_input_video_params = (idx: number) => ({
   ipstream_master: { ...ipstream_video, v_p4_port: 1 },
   ipstream_backup: { ...ipstream_video, v_p4_port: 2 },
-  ...switch_video_params
+  ...switch_video_params,
+  sw_index: idx + 1,
+  sw_displayname: `cam${idx + 1}`
 })
 
 export const def_switch_bus_params = () => ({
@@ -282,6 +293,7 @@ export type SwitchInputVideoParamsType = ReturnType<typeof def_switch_input_vide
 export type SwitchBusParamsType = ReturnType<typeof def_switch_bus_params>
 export type SwitchBusKeyfillParamsType = ReturnType<typeof def_switch_bus_keyfill_params>
 export type SwitchOutputParamsType = ReturnType<typeof def_switch_output_params>
+export type SwitchMVPipParamsType = typeof pip_params
 export type NMosConfigType = typeof nmos_config
 export type SSMAddressType = typeof ssm_address
 export type AuthServiceType = typeof auth_service

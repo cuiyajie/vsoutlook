@@ -280,22 +280,27 @@
       {
         "out_mv_template": "/opt/vsomediasoftware/config/viewlayout.json",
         "out_pips_number": 4,
+        "screenindex": 0,
         "pip_params": [
           {
             "out_pip_name": "cam1",
-            "out_pip_video_index": 0
+            "out_pip_video_index": 0,
+            "tallyindex": 0
           },
           {
             "out_pip_name": "cam2",
-            "out_pip_video_index": 1
+            "out_pip_video_index": 1,
+            "tallyindex": 1
           },
           {
             "out_pip_name": "cam3",
-            "out_pip_video_index": 2
+            "out_pip_video_index": 2,
+            "tallyindex": 2
           },
           {
             "out_pip_name": "cam4",
-            "out_pip_video_index": 3
+            "out_pip_video_index": 3,
+            "tallyindex": 3
           }
         ],
         "out_v_protocol": "st2110-20",

@@ -221,6 +221,14 @@ const vBlurOnEnter = {
   max-width: 740px;
   margin: 0 auto;
 
+  &.gconfig {
+
+    .form-outer {
+      border-radius: 16px;
+      overflow: hidden;
+    }
+  }
+
   &.is-stacked {
     .form-outer {
       .form-body {

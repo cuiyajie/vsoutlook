@@ -7,7 +7,7 @@ const mv = defineModel<SwitchInputParamsType>({
   local: true,
 });
 
-const format = useFormat(mv.value, getFormat(mv.value));
+const format = useFormat(mv, getFormat(mv.value));
 useProtocolDC(mv.value);
 
 </script>

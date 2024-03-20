@@ -89,7 +89,7 @@ function getValue() {
     ...handle(mv.value),
     input: {
       ...wrap(input.value, 'in_', input.value['g_2022-7']),
-      input_params: inputs.value.map(ipt => wrap(ipt.value, 'in_', input.value['g_2022-7'], true, mip, bip))
+      input_params: inputs.value.map((ipt, index) => Object.assign(wrap(ipt.value, 'in_', input.value['g_2022-7'], true, mip, bip), { index }))
     },
     output: {
       ...wrap(output.value, 'out_'),
@@ -99,7 +99,7 @@ function getValue() {
         if (optRef?.getValue) {
           v = optRef.getValue()
         }
-        return wrap(v, 'out_', useb, false, mip, bip)
+        return Object.assign(wrap(v, 'out_', useb, false, mip, bip), { index: i })
       })
     }
   }

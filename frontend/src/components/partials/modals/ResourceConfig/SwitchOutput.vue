@@ -1,6 +1,7 @@
+<!-- eslint-disable vue/prop-name-casing -->
 <script setup lang="ts">
-import { type SwitchOutputParamsType, formatMap, formatKeys, v_protocols } from './Consts';
-import { useFormat, useProtocolDC } from './Utils';
+import { type SwitchOutputParamsType, v_protocols, formats } from './Consts';
+import { getFormat, useFormat, useProtocolDC } from './Utils';
 
 const mv = defineModel<SwitchOutputParamsType>({
   default: {} as SwitchOutputParamsType,
@@ -23,7 +24,7 @@ const props = defineProps<{
 
 const opened = ref(false)
 
-const format = useFormat(mv.value, formatKeys[2]);
+const format = useFormat(mv, getFormat(mv.value));
 useProtocolDC(mv.value)
 
 const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value))
@@ -190,7 +191,7 @@ const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value)
                 class="column is-6"
               >
                 <VField>
-                  <VLabel>备视频流前置SDN输入端口</VLabel>
+                  <VLabel>备视频流前置SDN输出端口</VLabel>
                   <VControl>
                     <VInputNumber
                       v-model="mv.ipstream_backup.v_p4outport"
@@ -211,7 +212,7 @@ const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value)
         v-if="isOpen"
         class="form-fieldset-nested"
       >
-        <div class="form-fieldset seperator">
+        <div class="form-fieldset" :class="(mv.videoformat.v_compression_format || mv.videoformat.v_compression_ratio) && 'seperator'">
           <div class="fieldset-heading">
             <h5>视频参数</h5>
           </div>
@@ -220,10 +221,18 @@ const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value)
               <VField>
                 <VLabel>视频格式</VLabel>
                 <VControl>
-                  <VInput
-                    :model-value="formatMap[format]"
-                    readonly
-                  />
+                  <VSelect
+                    v-model="format"
+                    class="is-rounded"
+                  >
+                    <VOption
+                      v-for="f in formats"
+                      :key="f.key"
+                      :value="f.key"
+                    >
+                      {{ f.value }}
+                    </VOption>
+                  </VSelect>
                 </VControl>
               </VField>
             </div>

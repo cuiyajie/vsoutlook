@@ -1,7 +1,7 @@
 <!-- eslint-disable vue/prop-name-casing -->
 <script setup lang="ts">
-import { useFormat, getFormat } from './Utils';
-import { formatMap, type MVOutputParamsType, pip_params } from './Consts';
+import { useFormat, getFormat, useProtocolDC } from './Utils';
+import { formats, type MVOutputParamsType, def_mv_pip_params, type SwitchMVPipParamsType } from './Consts';
 
 const mv = defineModel<MVOutputParamsType>({
   default: {} as MVOutputParamsType,
@@ -18,11 +18,12 @@ defineProps<{
 
 const opened = ref(false)
 
-const format = useFormat(mv.value, getFormat(mv.value));
+const format = useFormat(mv, getFormat(mv.value));
+useProtocolDC(mv.value)
 
 const pips = ref<Array<{
   index: number,
-  value: Ref<typeof pip_params>
+  value: Ref<SwitchMVPipParamsType>
 }>>([]);
 
 watch(() => mv.value.pips_number, (nv) => {
@@ -35,7 +36,7 @@ watch(() => mv.value.pips_number, (nv) => {
       ...pips.value,
       ...Array.from({ length: nv - len }, (_, i) => ({
         index: len + i + 1,
-        value: params[len + i] ? ref(params[len + i]) : ref({ ...pip_params })
+        value: params[len + i] ? ref(params[len + i]) : ref(def_mv_pip_params(len + i))
       }))
     ]
   }
@@ -85,7 +86,7 @@ defineExpose({
             <h5>输出布局</h5>
           </div>
           <div class="columns is-multiline">
-            <div class="column is-8">
+            <div class="column is-4">
               <VField>
                 <VLabel>布局模板</VLabel>
                 <VControl>
@@ -122,13 +123,26 @@ defineExpose({
                 </VControl>
               </VField>
             </div>
+            <div class="column is-4">
+              <VField>
+                <VLabel>tally-屏幕索引</VLabel>
+                <VControl>
+                  <VInputNumber
+                    v-model="mv.screenindex"
+                    centered
+                    :min="0"
+                    :step="1"
+                  />
+                </VControl>
+              </VField>
+            </div>
           </div>
           <div
             v-for="pip in pips"
             :key="pip.index"
             class="columns is-multiline"
           >
-            <div class="column is-6">
+            <div class="column is-4">
               <VField>
                 <VLabel>窗口{{ pip.index }}名称</VLabel>
                 <VInput
@@ -136,11 +150,22 @@ defineExpose({
                 />
               </VField>
             </div>
-            <div class="column is-6">
+            <div class="column is-4">
               <VField>
                 <VLabel>窗口{{ pip.index }}关联输入视频序号</VLabel>
                 <VInputNumber
                   v-model="pip.value.pip_video_index"
+                  centered
+                  :min="0"
+                  :step="1"
+                />
+              </VField>
+            </div>
+            <div class="column is-4">
+              <VField>
+                <VLabel>窗口{{ pip.index }}tally索引</VLabel>
+                <VInputNumber
+                  v-model="pip.value.tallyindex"
                   centered
                   :min="0"
                   :step="1"
@@ -239,10 +264,18 @@ defineExpose({
               <VField>
                 <VLabel>视频格式</VLabel>
                 <VControl>
-                  <VInput
-                    v-model="formatMap[format]"
-                    readonly
-                  />
+                  <VSelect
+                    v-model="format"
+                    class="is-rounded"
+                  >
+                    <VOption
+                      v-for="f in formats"
+                      :key="f.key"
+                      :value="f.key"
+                    >
+                      {{ f.value }}
+                    </VOption>
+                  </VSelect>
                 </VControl>
               </VField>
             </div>

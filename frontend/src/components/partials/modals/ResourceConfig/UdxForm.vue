@@ -73,7 +73,8 @@ function getValue() {
     input: wrap(input.value, 'in_', input.value['g_2022-7']),
     output: {
       ...wrap(output.value, 'out_'),
-      out_params: outputs.value.map(o => wrap(unref(o), 'out_', useb, false, mip, bip)).slice(0, (OUT_2_OPEN.value && mv.value.mode !== val_udx[1]) ? 2 : 1)
+      out_params: outputs.value.map((o, i) => Object.assign(wrap(unref(o), 'out_', useb, false, mip, bip), { index: i }))
+        .slice(0, (OUT_2_OPEN.value && mv.value.mode !== val_udx[1]) ? 2 : 1)
     }
   }
 }

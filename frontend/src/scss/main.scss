@@ -46,6 +46,7 @@ SCSS Imports
 @import './components/layout-selector';
 
 // custom components
+@import './custom/override.scss';
 @import './custom/tmpl-list';
 @import './custom/tmpl-form.scss';
 @import './custom/kv-info';
