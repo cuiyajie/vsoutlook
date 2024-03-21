@@ -89,6 +89,7 @@ onUnmounted(() => {
               <h3>{{ title }}</h3>
               <button
                 ref="closeButton"
+                type="button"
                 class="v-modal-close ml-auto"
                 aria-label="close"
                 tabindex="0"
