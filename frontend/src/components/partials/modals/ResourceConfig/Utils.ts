@@ -36,15 +36,16 @@ export function useGlobalConfig<T extends {
   }
 }
 
-export function watchFormat(format: WatchSource<string>, mv: any) {
+export function watchFormat(format: WatchSource<string>, mv: Ref<any>) {
   watch(
     format,
     (nv) => {
       const tokens = nv.split("_");
-      if (mv) {
-        setFormat(mv.videoformat, tokens);
+      if (mv.value?.videoformat) {
+        setFormat(mv.value.videoformat, tokens);
       } else {
-        mv.videoformat = omit(mv.videoformat, 'v_width', 'v_height', 'v_interlaced', 'v_fps', 'v_gamma', 'v_gamut');
+        mv.value = mv.value || {}
+        mv.value.videoformat = omit(mv.value.videoformat, 'v_width', 'v_height', 'v_interlaced', 'v_fps', 'v_gamma', 'v_gamut');
       }
     },
     { immediate: true }
@@ -56,65 +57,44 @@ export function getFormat(mv: any) {
   return `${vf.v_width}_${vf.v_height}_${Number(vf.v_interlaced)}_${vf.v_fps}_${vf.v_gamma}_${vf.v_gamut}`;
 }
 
-export function watchFormat2(format: WatchSource<string>, mvs: any[]) {
+export function watchProtocol(mv: Ref<any>) {
   watch(
-    format,
-    (nv) => {
-      const tokens = nv.split("_");
-      mvs.forEach(m => {
-        if (m) {
-          setFormat(m.videoformat, tokens);
-        } else {
-          m.videoformat = omit(m.videoformat, 'v_width', 'v_height', 'v_interlaced', 'v_fps', 'v_gamma', 'v_gamut');
-        }
-      })
-    },
-    { immediate: true }
-  );
-}
-
-export function watchProtocol(mv: any) {
-  watch(
-    () => mv.v_protocol,
+    () => mv.value.v_protocol,
     (nv) => {
       if (nv === v_protocols[1]) {
-        mv.videoformat.v_compression_format = v_compression_format;
+        mv.value.videoformat.v_compression_format = v_compression_format;
       } else {
-        mv.videoformat.v_compression_format = null;
+        mv.value.videoformat.v_compression_format = null;
       }
     },
     { immediate: true }
   );
 }
 
-export function watchCpressFormat(mv: any) {
+export function watchCpressFormat(mv: Ref<any>) {
   watch(
-    [() => mv.videoformat.v_compression_format, () => mv.videoformat.v_width],
+    [() => mv.value.videoformat.v_compression_format, () => mv.value.videoformat.v_width],
     ([df, w]) => {
       if (df === v_compression_format) {
-        mv.videoformat.v_compression_ratio = String(w) === v_width[0] ? v_compression_ratio[0] : v_compression_ratio[1];
+        mv.value.videoformat.v_compression_ratio = String(w) === v_width[0] ? v_compression_ratio[0] : v_compression_ratio[1];
       } else {
-        mv.videoformat.v_compression_ratio = null;
+        mv.value.videoformat.v_compression_ratio = null;
       }
     },
     { immediate: true }
   );
 }
 
-export function useFormat(mv: any, def = defs.format) {
+export function useFormat(mv: Ref<any>, def = defs.format) {
   const v_format = ref(def);
-  let _val = mv
-  if (isRef(mv)) {
-    watch(() => mv.value, (nv) => {
-      v_format.value = getFormat(nv);
-    });
-    _val = mv.value;
-  }
-  watchFormat(v_format, _val);
+  watch(() => mv.value, (nv) => {
+    v_format.value = getFormat(nv);
+  });
+  watchFormat(v_format, mv);
   return v_format;
 }
 
-export function useProtocolDC(mv: any) {
+export function useProtocolDC(mv: Ref<any>) {
   watchProtocol(mv);
   watchCpressFormat(mv);
 }

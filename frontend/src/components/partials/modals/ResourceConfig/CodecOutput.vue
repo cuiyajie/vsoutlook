@@ -8,13 +8,19 @@ const mv = defineModel<CodecOutputType>({
   local: true,
 });
 
+const params = defineModel('params', {
+  default: {} as CodecOutputType['params'],
+  local: true,
+  required: true
+})
+
 const format = defineModel('format', {
   default: formatKeys[0],
   local: true,
   required: true
 })
 
-useProtocolDC(mv.value.params)
+useProtocolDC(params)
 
 defineProps<{
   m_local_ip: string,

@@ -14,7 +14,7 @@ const format = defineModel('format', {
   required: true
 });
 
-useProtocolDC(mv.value)
+useProtocolDC(mv)
 </script>
 <template>
   <div class="form-body">

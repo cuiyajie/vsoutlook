@@ -36,17 +36,22 @@ useGlobalConfig(mv)
 
 const input = ref(def_codec_input());
 input.value = unwrap(codecData.input, 'in_')
-const inputFormat = useFormat(input.value, getFormat(input.value))
+const inputFormat = useFormat(input, getFormat(input.value))
 
 const output = ref(def_codec_output());
 output.value = unwrap(codecData.output, 'out_')
-const outputFormat = useFormat(output.value.params, getFormat(output.value.params))
+const outputParams = ref(output.value.params)
+const outputFormat = useFormat(outputParams, getFormat(output.value.params))
 
 watchNmosName(() => props.name, mv.value)
 
 watch(inputFormat, nv => {
   outputFormat.value = nv
 }, { immediate: true })
+
+watch(outputParams, nv => {
+  output.value.params = nv
+}, { deep: true })
 
 watchInput('audioformat', input.value, [output.value.params], { deep: true })
 
@@ -74,8 +79,7 @@ function setValue(data: typeof codecData) {
   mv.value = pick(data, ['moudle', 'mode', '2110-7_m_local_ip', '2110-7_b_local_ip', 'nmos', 'ssm_address_range', 'authorization_service'])
   input.value = merge(def_codec_input(), unwrap(data.input, 'in_'))
   output.value = merge(def_codec_output(), unwrap(data.output, 'out_'))
-  inputFormat.value = getFormat(input.value)
-  outputFormat.value = getFormat(output.value.params)
+  outputParams.value = output.value.params
 }
 
 defineExpose({
@@ -195,6 +199,7 @@ defineExpose({
           </div>
           <CodecOutput
             v-model="output"
+            v-model:params="outputParams"
             v-model:format="outputFormat"
             :m_local_ip="mv['2110-7_m_local_ip']"
             :b_local_ip="mv['2110-7_b_local_ip']"

@@ -20,7 +20,7 @@ const format = defineModel('format', {
 const shouldFormats = ref([...formats])
 watchModeVFormat(() => props.mode, shouldFormats)
 
-useProtocolDC(mv.value)
+useProtocolDC(mv)
 
 </script>
 <template>

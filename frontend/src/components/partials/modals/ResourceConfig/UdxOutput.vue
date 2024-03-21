@@ -27,7 +27,7 @@ const opened = ref(false)
 
 const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value))
 
-useProtocolDC(mv.value)
+useProtocolDC(mv)
 </script>
 <template>
   <div

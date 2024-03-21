@@ -36,7 +36,7 @@ useGlobalConfig(mv)
 
 const input = ref<UdxInputType>(def_udx_input());
 input.value = unwrap(udxData.input, 'in_')
-const inputFormat = useFormat(input.value, getFormat(input.value))
+const inputFormat = useFormat(input, getFormat(input.value))
 
 const OUT_2_OPEN = ref(false)
 const output = ref<typeof global_config>({ ...global_config })
@@ -47,8 +47,8 @@ const outputs = ref<any[]>([])
 outputs.value = Array.from({ length: 2 }, (_, i) => {
   return opData.params[i] ? ref(opData.params[i]) : ref(def_udx_output_params())
 });
-const output1Format = useFormat(outputs.value[0].value, getFormat(opData.params[0]))
-const output2Format = useFormat(outputs.value[1].value, getFormat(opData.params[1]))
+const output1Format = useFormat(outputs.value[0], getFormat(opData.params[0]))
+const output2Format = useFormat(outputs.value[1], getFormat(opData.params[1]))
 
 watchNmosName(() => props.name, mv.value)
 watchInput('audioformat', input.value, outputs.value.map(o => o.value), { deep: true })

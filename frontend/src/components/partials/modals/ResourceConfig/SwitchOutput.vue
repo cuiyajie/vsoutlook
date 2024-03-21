@@ -25,7 +25,7 @@ const props = defineProps<{
 const opened = ref(false)
 
 const format = useFormat(mv, getFormat(mv.value));
-useProtocolDC(mv.value)
+useProtocolDC(mv)
 
 const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value))
 </script>
