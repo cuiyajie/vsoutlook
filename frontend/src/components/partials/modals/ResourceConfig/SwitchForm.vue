@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { def_switch_input_params, def_switch_output_params, def_switch_input_video_params, type SwitchInputParamsType, global_config, def_switch_bus_params, type SwitchBusParamsType, type AuthServiceType, type NMosConfigType, type SSMAddressType, auth_service, nmos_config, ssm_address, type SwitchKeyType, def_switch_input_key_params, def_switch_input_fill_params, def_switch_bus_keyfill_params, def_switch_key_params, def_switch_key } from './Consts';
-import { handle, unwrap, useGlobalConfig, watchNmosName, wrap } from "./Utils";
+import { def_switch_input_params, def_switch_output_params, def_switch_input_video_params, type SwitchInputParamsType, global_config, def_switch_bus_params, type SwitchBusParamsType, type NMosConfigType, type SSMAddressType, nmos_config, ssm_address, type SwitchKeyType, def_switch_input_key_params, def_switch_input_fill_params, def_switch_bus_keyfill_params, def_switch_key_params, def_switch_key } from './Consts';
+import { handle, unwrap, watchNmosName, wrap } from "./Utils";
 import pick from 'lodash-es/pick'
 import merge from 'lodash-es/merge'
 import switchData from '/@src/data/vscomponent/switch.json'
@@ -21,7 +21,6 @@ const mv = defineModel<{
   "2110-7_b_local_ip": string,
   nmos: NMosConfigType,
   ssm_address_range: SSMAddressType[],
-  authorization_service: AuthServiceType[]
 }>({
   default: {
     moudle: "switch",
@@ -35,14 +34,12 @@ const mv = defineModel<{
     "2110-7_b_local_ip": "",
     nmos: { ...nmos_config },
     ssm_address_range: [{ ...ssm_address }],
-    authorization_service: [{ ...auth_service }]
   },
   local: true,
 });
 const advanceOpened = ref(false)
 
 mv.value = pick(switchData, ['moudle', 'input_number', 'tallyserver_url', 'p4server_url', 'hw_panel_url', 'physic_nic_port0_ip', 'physic_nic_port1_ip', '2110-7_m_local_ip', '2110-7_b_local_ip', 'nmos', 'ssm_address_range', 'authorization_service'])
-useGlobalConfig(mv)
 
 watchNmosName(() => props.name, mv.value)
 
@@ -345,6 +342,16 @@ defineExpose({
                 </VControl>
               </VField>
             </div>
+            <div class="column is-6">
+              <VField>
+                <VLabel>对外IP</VLabel>
+                <VControl>
+                  <VInput
+                    v-model="mv.nmos.host_addresses"
+                  />
+                </VControl>
+              </VField>
+            </div>
           </div>
         </div>
         <div
@@ -367,7 +374,6 @@ defineExpose({
             <div v-show="advanceOpened" class="form-body">
               <NMosConfig v-model="mv.nmos" class="seperator" />
               <SSMAddressRange v-model="mv.ssm_address_range" class="seperator" />
-              <AuthorizationService v-model="mv.authorization_service" />
             </div>
           </Transition>
         </div>

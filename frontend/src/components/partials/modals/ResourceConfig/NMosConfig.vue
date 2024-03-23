@@ -27,22 +27,6 @@ const mv = defineModel<NMosConfigType>({
       </div>
       <div class="column is-6">
         <VField>
-          <VLabel>RDS服务地址(含端口)</VLabel>
-          <VControl>
-            <VInput v-model="mv.rds_server_url" />
-          </VControl>
-        </VField>
-      </div>
-      <div class="column is-6">
-        <VField>
-          <VLabel>对外IP</VLabel>
-          <VControl>
-            <VInput v-model="mv.host_addresses" />
-          </VControl>
-        </VField>
-      </div>
-      <div class="column is-6">
-        <VField>
           <VLabel>对外端口</VLabel>
           <VControl>
             <VInputNumber

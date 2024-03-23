@@ -54,6 +54,11 @@ type DeviceAsRelease struct {
 	PodsStatus []PodStatus `json:"podsStatus,omitempty"`
 }
 
+type AuthService struct {
+	IP   string `json:"ip"`
+	Port int    `json:"port"`
+}
+
 func generateDeviceSeedID() string {
 	// Generate a version 4 (random) UUID
 	u := uuid.New()
@@ -156,6 +161,8 @@ func preInstallation(c *svcinfra.Context, configStr string, tmpl *models.Tmpl, n
 		return nil, err
 	}
 
+	settings := models.GetSettings()
+
 	coreListStr := utils.IntArrayToString(cores)
 	var configFile map[string]interface{}
 	err = json.Unmarshal([]byte(configStr), &configFile)
@@ -219,6 +226,24 @@ func preInstallation(c *svcinfra.Context, configStr string, tmpl *models.Tmpl, n
 			}
 		}
 		nmos["seed_id"] = device.SeedID
+		if rdsServerUrl, ok := settings["rds_server_url"]; ok {
+			nmos["rds_server_url"] = rdsServerUrl
+		}
+	}
+	if asJsonStr, ok := settings["authorization_services"]; ok {
+		var authServices []AuthService
+		err := json.Unmarshal([]byte(asJsonStr), &authServices)
+		authServiceData := make([]map[string]interface{}, 0)
+		if err == nil {
+			for i, v := range authServices {
+				authServiceData = append(authServiceData, map[string]interface{}{
+					"index": i,
+					"ip":    v.IP,
+					"port":  v.Port,
+				})
+			}
+		}
+		configFile["authorization_service"] = authServiceData
 	}
 	configJson := utils.MapToString(configFile)
 	data["configFile"] = configJson

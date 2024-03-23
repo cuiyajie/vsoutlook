@@ -1,7 +1,6 @@
 import type { WatchSource, WatchOptions } from "vue";
-import { type AuthServiceType, defs, formats, v_compression_format, v_compression_ratio, v_protocols, v_width, val_udx, type NMosConfigType } from './Consts';
+import { defs, formats, v_compression_format, v_compression_ratio, v_protocols, v_width, val_udx } from './Consts';
 import omit from 'lodash-es/omit';
-import { useUserSession } from '/@src/stores/userSession';
 
 function setFormat(dst: any, tokens: string[]) {
   Object.assign(dst, {
@@ -12,28 +11,6 @@ function setFormat(dst: any, tokens: string[]) {
     'v_gamma': tokens[4],
     'v_gamut': tokens[5],
   });
-}
-
-export function useGlobalConfig<T extends {
-  nmos: NMosConfigType;
-  authorization_service: AuthServiceType[];
-}>(mv?: Ref<T>) {
-  const ustore = useUserSession();
-  const settings = computed(() => ustore.settings);
-  const def_auth_service = () => ({
-    index: 0,
-    ip: settings.value?.authorization_service_ip || "",
-    port: settings.value?.authorization_service_port || "",
-  } as AuthServiceType)
-
-  if (mv) {
-    mv.value.nmos.rds_server_url = settings.value.rds_server_url || ""
-    mv.value.authorization_service = [def_auth_service()]
-  }
-  return {
-    settings,
-    def_auth_service
-  }
 }
 
 export function watchFormat(format: WatchSource<string>, mv: Ref<any>) {

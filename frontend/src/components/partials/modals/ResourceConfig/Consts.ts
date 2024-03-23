@@ -150,12 +150,6 @@ export const ssm_address = {
   to: "232.255.255.255"
 }
 
-export const auth_service = {
-  index: 0,
-	ip: "232.0.0.0",
-  port: 8000
-}
-
 export const def_codec_input = () => ({
   ...base_config,
   ipstream_master: { ...ipstream },
@@ -296,4 +290,3 @@ export type SwitchOutputParamsType = ReturnType<typeof def_switch_output_params>
 export type SwitchMVPipParamsType = typeof pip_params
 export type NMosConfigType = typeof nmos_config
 export type SSMAddressType = typeof ssm_address
-export type AuthServiceType = typeof auth_service

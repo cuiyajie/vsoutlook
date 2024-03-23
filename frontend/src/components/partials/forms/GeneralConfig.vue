@@ -5,8 +5,33 @@ import { useUserSession } from "/@src/stores/userSession";
 const usStore = useUserSession();
 const settings = computed(() => usStore.settings);
 
-function updateProp(key: string, value: string) {
-  usStore.$updateSettings({ key, value })
+const def_auth_service = {
+	ip: "232.0.0.0",
+  port: 6001
+}
+
+const authServices = ref<{ ip: string, port: number }[]>([]);
+
+function parseAuthService() {
+  let services = []
+  try {
+    services = JSON.parse(settings.value.authorization_services || "")
+  } catch (error) {
+    services = []
+  }
+  authServices.value = services
+}
+
+watch(() => settings.value.authorization_services, () => {
+  parseAuthService()
+}, { immediate: true })
+
+function updateProp(key: string, value?: string) {
+  if (key === 'authorization_services') {
+    usStore.$updateSettings({ key, value: JSON.stringify(authServices.value) })
+  } else {
+    usStore.$updateSettings({ key, value })
+  }
 }
 
 const handleKeyDown = (event: KeyboardEvent) => {
@@ -42,6 +67,16 @@ const vBlurOnEnter = {
   }
 };
 
+function addAuthService() {
+  authServices.value.push({ ...def_auth_service })
+  updateProp('authorization_services')
+}
+
+function removeAuthService(idx: number) {
+  authServices.value.splice(idx, 1)
+  updateProp('authorization_services')
+}
+
 </script>
 
 <template>
@@ -52,85 +87,6 @@ const vBlurOnEnter = {
   >
     <div class="form-outer">
       <div class="form-body">
-        <!-- <div class="form-section is-grey">
-          <div class="form-section-header">
-            <div class="left">
-              <h3>容器服务</h3>
-            </div>
-          </div>
-
-          <div class="form-section-inner is-horizontal">
-            <VField
-              horizontal
-              label="服务地址"
-            >
-              <VControl
-                icon="feather:map-pin"
-                fullwidth
-              >
-                <VInput
-                  type="text"
-                  placeholder="e.g. Conference room"
-                />
-              </VControl>
-            </VField>
-            <VField
-              horizontal
-              label="镜像仓库地址"
-            >
-              <VControl
-                icon="feather:map-pin"
-                fullwidth
-              >
-                <VInput
-                  type="url"
-                  placeholder="https://zoom.com/m/156546"
-                  inputmode="url"
-                />
-              </VControl>
-            </VField>
-          </div>
-        </div>
-        <div class="form-section is-grey">
-          <div class="form-section-header">
-            <div class="left">
-              <h3>虚拟机地址</h3>
-            </div>
-          </div>
-
-          <div class="form-section-inner is-horizontal">
-            <VField
-              horizontal
-              label="服务地址"
-            >
-              <VControl
-                icon="feather:map-pin"
-                fullwidth
-              >
-                <VInput
-                  type="text"
-                  placeholder="e.g. Conference room"
-                />
-              </VControl>
-            </VField>
-            <VField
-              horizontal
-              label="镜像仓库地址"
-            >
-              <VControl
-                icon="feather:map-pin"
-                fullwidth
-              >
-                <VInput
-                  type="url"
-                  placeholder="https://zoom.com/m/156546"
-                  inputmode="url"
-                />
-              </VControl>
-            </VField>
-          </div>
-        </div> -->
-
         <div class="form-section is-grey">
           <div class="form-section-header">
             <div class="left">
@@ -165,42 +121,69 @@ const vBlurOnEnter = {
             <div class="left">
               <h3>授权服务配置</h3>
             </div>
+            <button
+              type="button"
+              class="button is-circle is-dark-outlined"
+              @keydown.space.prevent="addAuthService"
+              @click.prevent="addAuthService"
+            >
+              <span class="icon is-large">
+                <i aria-hidden="true" class="iconify" data-icon="feather:plus" />
+              </span>
+            </button>
           </div>
-          <div class="columns is-multiline">
+          <div v-for="(auth, idx) in authServices" :key="idx" class="columns is-multiline">
+            <div class="column is-1">
+              <VField class="index-field">
+                <VLabel>序号</VLabel>
+                <VControl>
+                  <VLabel>{{ idx }}</VLabel>
+                </VControl>
+              </VField>
+            </div>
             <div class="column is-6">
               <VField id="ip">
                 <VLabel>IP地址</VLabel>
                 <VControl icon="feather:map-pin">
                   <input
-                    v-model="settings.authorization_service_ip"
+                    v-model="auth.ip"
                     v-blur-on-enter
                     type="text"
-                    placeholder="232.0.0.0"
+                    :placeholder="def_auth_service.ip"
                     class="input is-primary-focus"
-                    data-key="authorization_service_ip"
+                    data-key="authorization_services"
                   >
                 </VControl>
               </VField>
             </div>
-            <div class="column is-6">
+            <div class="column is-4">
               <VField>
                 <VLabel>端口</VLabel>
                 <VControl>
                   <VInputNumber
-                    v-model="settings.authorization_service_port"
-                    placeholder="6001"
+                    v-model="auth.port"
+                    :placeholder="def_auth_service.port"
                     centered
                     :min="0"
                     :step="1"
-                    data-key="authorization_service_port"
-                    @blur="updateProp('authorization_service_port', $event.target.value)"
-                    @step-click="val => updateProp('authorization_service_port', String(val))"
+                    data-key="authorization_services"
+                    @blur="updateProp('authorization_services')"
+                    @step-click="val => $nextTick(() => updateProp('authorization_services'))"
                     @keyup.enter.stop="handleKeyDown"
                   />
                 </VControl>
               </VField>
             </div>
+            <div class="column is-1">
+              <VField>
+                <VLabel>&nbsp;</VLabel>
+                <VControl>
+                  <VIconButton color="warning" light raised circle icon="feather:x" @click="removeAuthService(idx)" />
+                </VControl>
+              </VField>
+            </div>
           </div>
+          <div v-if="authServices.length === 0" class="form-empty">暂时没有添加授权服务</div>
         </div>
       </div>
     </div>
@@ -226,6 +209,24 @@ const vBlurOnEnter = {
     .form-outer {
       border-radius: 16px;
       overflow: hidden;
+    }
+
+    .form-empty {
+      padding: 20px;
+      text-align: center;
+      font-style: italic;
+      font-weight: 500;
+      color: var(--light-text);
+    }
+
+    .index-field {
+
+      .control > label {
+        margin-inline-start: 0.54rem;
+        color: white;
+        line-height: 38px;
+        color: var(--light-text);
+      }
     }
   }
 

@@ -11,6 +11,7 @@ export type Settings = {
   rds_server_url: string,
   authorization_service_ip: string,
   authorization_service_port: number,
+  authorization_services: string,
 }
 
 export const useUserSession = defineStore('userSession', () => {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { type AuthServiceType, type NMosConfigType, type SSMAddressType, auth_service, def_mv_input_params, def_mv_output_params, global_config, nmos_config, ssm_address } from './Consts';
-import { handle, unwrap, useGlobalConfig, watchNmosName, wrap } from "./Utils";
+import { type NMosConfigType, type SSMAddressType, def_mv_input_params, def_mv_output_params, global_config, nmos_config, ssm_address } from './Consts';
+import { handle, unwrap, watchNmosName, wrap } from "./Utils";
 import pick from 'lodash-es/pick'
 import merge from 'lodash-es/merge'
 import mvData from '/@src/data/vscomponent/mv.json'
@@ -18,7 +18,6 @@ const mv = defineModel<{
   "2110-7_b_local_ip": string,
   nmos: NMosConfigType,
   ssm_address_range: SSMAddressType[],
-  authorization_service: AuthServiceType[]
 }>({
   default: {
     moudle: "mv",
@@ -29,14 +28,12 @@ const mv = defineModel<{
     "2110-7_b_local_ip": "",
     nmos: { ...nmos_config },
     ssm_address_range: [{ ...ssm_address }],
-    authorization_service: [{ ...auth_service }]
   },
   local: true,
 });
 const advanceOpened = ref(false)
 
 mv.value = pick(mvData, ['moudle', 'input_number', 'output_number', 'tally_port', '2110-7_m_local_ip', '2110-7_b_local_ip', 'nmos', 'ssm_address_range', 'authorization_service'])
-useGlobalConfig(mv)
 
 watchNmosName(() => props.name, mv.value)
 
@@ -186,16 +183,6 @@ defineExpose({
             </div>
             <div class="column is-6">
               <VField>
-                <VLabel>对外IP</VLabel>
-                <VControl>
-                  <VInput
-                    v-model="mv.nmos.host_addresses"
-                  />
-                </VControl>
-              </VField>
-            </div>
-            <div class="column is-6">
-              <VField>
                 <VLabel>2022-7主路收发网口IP</VLabel>
                 <VControl>
                   <VInput
@@ -210,6 +197,16 @@ defineExpose({
                 <VControl>
                   <VInput
                     v-model="mv['2110-7_b_local_ip']"
+                  />
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-6">
+              <VField>
+                <VLabel>对外IP</VLabel>
+                <VControl>
+                  <VInput
+                    v-model="mv.nmos.host_addresses"
                   />
                 </VControl>
               </VField>
@@ -253,7 +250,6 @@ defineExpose({
               </div>
               <NMosConfig v-model="mv.nmos" class="seperator" />
               <SSMAddressRange v-model="mv.ssm_address_range" class="seperator" />
-              <AuthorizationService v-model="mv.authorization_service" />
             </div>
           </Transition>
         </div>

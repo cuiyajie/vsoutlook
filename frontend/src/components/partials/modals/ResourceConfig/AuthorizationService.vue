@@ -1,18 +1,11 @@
 <!-- eslint-disable vue/prop-name-casing -->
 <script setup lang="ts">
 import { type AuthServiceType } from './Consts';
-import { useGlobalConfig } from './Utils';
-
-const { def_auth_service } = useGlobalConfig();
 
 const mv = defineModel<AuthServiceType[]>({
   default: [],
   local: true,
 });
-
-function add() {
-  mv.value.push(def_auth_service());
-}
 
 function remove(idx: number) {
   mv.value.splice(idx, 1);
