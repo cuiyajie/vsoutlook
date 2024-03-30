@@ -96,7 +96,8 @@ interface DeviceDetail {
   status: string,
   statusInfo: any,
   config: string,
-  node: string
+  node: string,
+  nodeIP: string
 }
 
 interface SystemInfo {

@@ -23,7 +23,7 @@ const tmplStore = useTemplate();
 function remove() {
   confirm({
     title: "删除设备",
-    content: "确定要删除该设备吗？",
+    content: `确定要删除设备 ${props.device.name} (${props.device.node}/${props.device.nodeIP}) 吗？`,
     onConfirm: async (hide) => {
       const res = await deviceStore.$remove(props.device.id, props.device.targetNode);
       hide();
@@ -45,7 +45,7 @@ function stop() {
   if (!stoppable.value) return
   confirm({
     title: "停止设备",
-    content: "确定要停止该设备吗？",
+    content: `确定要停止设备 ${props.device.name} (${props.device.node}/${props.device.nodeIP}) 吗？`,
     onConfirm: async (hide) => {
       const res = await deviceStore.$stop(props.device.id);
       hide();
@@ -67,7 +67,7 @@ function start() {
   if (!startable.value) return
   confirm({
     title: "启动设备",
-    content: "确定要启动该设备吗？",
+    content: `确定要启动设备 ${props.device.name} (${props.device.node}/${props.device.nodeIP}) 吗？`,
     onConfirm: async (hide) => {
       const res = await deviceStore.$start(props.device.id);
       hide();

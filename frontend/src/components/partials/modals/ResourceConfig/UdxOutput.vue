@@ -1,7 +1,7 @@
 <!-- eslint-disable vue/prop-name-casing -->
 <script setup lang="ts">
-import { type UdxOutputParamsType, formatMap, v_protocols } from "./Consts";
-import { useProtocolDC } from "./Utils";
+import { type UdxOutputParamsType, v_protocols, formats, formatKeys } from "./Consts";
+import { useProtocolDC, watchModeVFormat } from "./Utils";
 
 const mv = defineModel<UdxOutputParamsType>({
   default: {} as UdxOutputParamsType,
@@ -9,10 +9,10 @@ const mv = defineModel<UdxOutputParamsType>({
 });
 
 const props = defineProps<{
+  mode: string,
   title: string,
   toggleTitle?: string,
   isLast?: boolean,
-  format: string,
   useBackup: boolean,
   m_local_ip: string,
   b_local_ip: string,
@@ -23,9 +23,18 @@ const OPEN = defineModel('OPEN', {
   local: true
 })
 
+const format = defineModel('format', {
+  default: formatKeys[1],
+  local: true,
+  required: true
+});
+
 const opened = ref(false)
 
 const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value))
+
+const shouldFormats = ref([...formats])
+watchModeVFormat(() => props.mode, shouldFormats, false)
 
 useProtocolDC(mv)
 </script>
@@ -207,10 +216,18 @@ useProtocolDC(mv)
               <VField>
                 <VLabel>视频格式</VLabel>
                 <VControl>
-                  <VInput
-                    v-model="formatMap[format]"
-                    readonly
-                  />
+                  <VSelect
+                    v-model="format"
+                    class="is-rounded"
+                  >
+                    <VOption
+                      v-for="f in shouldFormats"
+                      :key="f.key"
+                      :value="f.key"
+                    >
+                      {{ f.value }}
+                    </VOption>
+                  </VSelect>
                 </VControl>
               </VField>
             </div>

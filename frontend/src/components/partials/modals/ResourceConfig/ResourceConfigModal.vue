@@ -12,10 +12,13 @@ import { useDevices } from '/@src/stores/device'
 import { useTemplate } from "/@src/stores/template";
 import downloadJsonFile from '/@src/utils/download-json'
 import { useClustNode } from "/@src/stores/node";
+import { useUserSession } from "/@src/stores/userSession";
+import dayjs from "dayjs";
 
 const tmplStore = useTemplate();
 const deviceStore = useDevices()
 const nodeStore = useClustNode();
+const usStore = useUserSession();
 
 const notyf = useNotyf();
 const opened = ref(false);
@@ -123,6 +126,9 @@ const addInstance = handleSubmit(async () => {
         opened.value = false;
         notyf.success(dgi.value.confirmMsg);
         callbacks.success?.()
+        if (usStore.settings.auto_save_container_config) {
+          saveSetting()
+        }
       }
     },
   });
@@ -160,8 +166,9 @@ function onFileImported(e: Event) {
 
 function saveSetting() {
   const val = compRef.value?.getValue()
+  const fileName = `${tmpl.value?.name}_${deviceName.value || '未命名'}_${dayjs().format('YYYYMMDDHHmmss')}.json`
   if (val) {
-    downloadJsonFile(val, `${val.moudle}.json`)
+    downloadJsonFile(val, `${fileName}.json`)
     notyf.success("保存成功");
   }
 }

@@ -63,12 +63,12 @@ function auth() {
   notyf.info("即将支持，敬请期待");
 }
 
-function deleteTmpl(tmplId: string) {
+function deleteTmpl(tmpl: TemplateData) {
   confirm({
     title: "删除应用",
-    content: "确定要删除该应用吗？",
+    content: `确定要删除该应用 ${tmpl.name} 吗？`,
     onConfirm: async (hide) => {
-      const res = await tmplStore.$deleteTmpl(tmplId);
+      const res = await tmplStore.$deleteTmpl(tmpl.id);
       if (res === "success") {
         hide();
         notyf.success("删除成功");
@@ -213,8 +213,8 @@ function listTmpl(tmpl: TemplateData) {
                 <a
                   tabindex="0"
                   role="button"
-                  @keydown.space.prevent="deleteTmpl(item.id)"
-                  @click.prevent="deleteTmpl(item.id)"
+                  @keydown.space.prevent="deleteTmpl(item)"
+                  @click.prevent="deleteTmpl(item)"
                   >删除</a
                 > -->
               </footer>

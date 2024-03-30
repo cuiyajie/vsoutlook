@@ -90,6 +90,30 @@ function removeAuthService(idx: number) {
         <div class="form-section is-grey">
           <div class="form-section-header">
             <div class="left">
+              <h3>通用配置</h3>
+            </div>
+          </div>
+
+          <div class="form-section-inner is-horizontal flex-auto">
+            <VField
+              class="field-switch"
+              horizontal
+              label="自动保存容器配置"
+            >
+              <VControl>
+                <VSwitchBlock
+                  v-model="settings.auto_save_container_config"
+                  color="primary"
+                  @update:model-value="val => updateProp('auto_save_container_config', String(val))"
+                />
+              </VControl>
+            </VField>
+          </div>
+        </div>
+
+        <div class="form-section is-grey">
+          <div class="form-section-header">
+            <div class="left">
               <h3>NMOS服务</h3>
             </div>
           </div>
@@ -226,6 +250,13 @@ function removeAuthService(idx: number) {
         color: white;
         line-height: 38px;
         color: var(--light-text);
+      }
+    }
+
+    .field-switch {
+
+      .field-body {
+        transform: translateY(8px);
       }
     }
   }

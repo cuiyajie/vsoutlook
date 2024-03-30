@@ -35,7 +35,7 @@ const advanceOpened = ref(false)
 
 mv.value = pick(mvData, ['moudle', 'input_number', 'output_number', 'tally_port', '2110-7_m_local_ip', '2110-7_b_local_ip', 'nmos', 'ssm_address_range', 'authorization_service'])
 
-watchNmosName(() => props.name, mv.value)
+watchNmosName(() => props.name, mv)
 
 const ipData = unwrap(mvData.input, 'in_')
 const input = ref<{ "g_2022-7": boolean }>({ "g_2022-7": false });

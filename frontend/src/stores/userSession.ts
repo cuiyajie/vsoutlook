@@ -12,6 +12,7 @@ export type Settings = {
   authorization_service_ip: string,
   authorization_service_port: number,
   authorization_services: string,
+  auto_save_container_config: boolean,
 }
 
 export const useUserSession = defineStore('userSession', () => {
@@ -28,6 +29,7 @@ export const useUserSession = defineStore('userSession', () => {
 
   function setSettings(newSettings: Partial<Settings>) {
     settings.value = Object.assign({}, settings.value, newSettings)
+    settings.value.auto_save_container_config = String(newSettings.auto_save_container_config) === 'true'
   }
 
   function setLoading(newLoading: boolean) {
@@ -39,7 +41,8 @@ export const useUserSession = defineStore('userSession', () => {
       body: newSettings
     })
     if (res?.settings) {
-      setSettings(res.settings)
+      const s = res.settings
+      setSettings({ [s.key]: s.value })
     }
   }
 

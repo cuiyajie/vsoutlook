@@ -40,7 +40,7 @@ output.value = unwrap(codecData.output, 'out_')
 const outputParams = ref(output.value.params)
 const outputFormat = useFormat(outputParams, getFormat(output.value.params))
 
-watchNmosName(() => props.name, mv.value)
+watchNmosName(() => props.name, mv)
 
 watch(inputFormat, nv => {
   outputFormat.value = nv
@@ -50,7 +50,7 @@ watch(outputParams, nv => {
   output.value.params = nv
 }, { deep: true })
 
-watchInput('audioformat', input.value, [output.value.params], { deep: true })
+watchInput('audioformat', input, [outputParams], { deep: true })
 
 watch(() => mv.value.mode, () => {
   if (mv.value.mode === val_codec[0]) {

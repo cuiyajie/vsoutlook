@@ -76,23 +76,23 @@ export function useProtocolDC(mv: Ref<any>) {
   watchCpressFormat(mv);
 }
 
-export function watchInput(key: string, input: any, mvs: any[], options: WatchOptions  = {}) {
+export function watchInput(key: string, input: Ref<any>, mvs: Ref<any>[], options: WatchOptions  = {}) {
   watch(
-    () => input[key],
+    () => input.value[key],
     (nv) => {
       mvs.forEach(m => {
-        Object.assign(m[key], nv)
+        Object.assign(m.value[key], nv)
       });
     },
     { immediate: true, ...options }
   );
 }
 
-export function watchNmosName(watcher: WatchSource<string>, mv: any) {
+export function watchNmosName(watcher: WatchSource<string>, mv: Ref<any>) {
   watch(
     watcher,
     (nv) => {
-      mv.nmos.name = nv;
+      mv.value.nmos.name = nv;
     },
     { immediate: true }
   );
@@ -100,15 +100,24 @@ export function watchNmosName(watcher: WatchSource<string>, mv: any) {
 
 export function watchModeVFormat(
   watcher: WatchSource<string>,
-  shouldFormats: Ref<any[]>
+  shouldFormats: Ref<any[]>,
+  input = true
 ) {
   watch(
     watcher,
     (nv) => {
       if (nv === val_udx[0]) {
-        shouldFormats.value = formats.slice(0, 2)
+        if (input) {
+          shouldFormats.value = formats.slice(0, 2)
+        } else {
+          shouldFormats.value = [formats[2]];
+        }
       } else {
-        shouldFormats.value = formats.slice(-1);
+        if (input) {
+          shouldFormats.value = formats.slice(-2);
+        } else {
+          shouldFormats.value = formats.slice(0, 2);
+        }
       }
     },
     { immediate: true }

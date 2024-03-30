@@ -47,8 +47,8 @@ outputs.value = Array.from({ length: 2 }, (_, i) => {
 const output1Format = useFormat(outputs.value[0], getFormat(opData.params[0]))
 const output2Format = useFormat(outputs.value[1], getFormat(opData.params[1]))
 
-watchNmosName(() => props.name, mv.value)
-watchInput('audioformat', input.value, outputs.value.map(o => o.value), { deep: true })
+watchNmosName(() => props.name, mv)
+watchInput('audioformat', input, outputs.value.map(o => o), { deep: true })
 
 watch(() => mv.value.mode, () => {
   if (mv.value.mode === val_udx[0]) {
@@ -56,9 +56,9 @@ watch(() => mv.value.mode, () => {
     output1Format.value = formatKeys[2]
   } else {
     inputFormat.value = formatKeys[2]
-    output1Format.value = formatKeys[1]
+    output1Format.value = output1Format.value !== formatKeys[2] ? output1Format.value : formatKeys[1]
+    output2Format.value = output2Format.value !== formatKeys[2] ? output2Format.value : formatKeys[1]
   }
-  output2Format.value = formatKeys[1]
 }, { immediate: true })
 
 function getValue() {
@@ -238,8 +238,9 @@ defineExpose({
             </div>
             <UdxOutput
               v-model="outputs[0]"
+              v-model:format="output1Format"
+              :mode="mv.mode"
               title="第一路输出参数"
-              :format="output1Format"
               :use-backup="output['g_2022-7']"
               :m_local_ip="mv['2110-7_m_local_ip']"
               :b_local_ip="mv['2110-7_b_local_ip']"
@@ -247,11 +248,12 @@ defineExpose({
             <UdxOutput
               v-if="mv.mode === val_udx[0]"
               v-model="outputs[1]"
+              v-model:format="output2Format"
               v-model:OPEN="OUT_2_OPEN"
+              :mode="mv.mode"
               title="第二路输出参数"
               toggle-title="是否启用第二路输出"
               is-last
-              :format="output2Format"
               :use-backup="output['g_2022-7']"
               :m_local_ip="mv['2110-7_m_local_ip']"
               :b_local_ip="mv['2110-7_b_local_ip']"

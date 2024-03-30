@@ -41,7 +41,7 @@ const advanceOpened = ref(false)
 
 mv.value = pick(switchData, ['moudle', 'input_number', 'tallyserver_url', 'p4server_url', 'hw_panel_url', 'physic_nic_port0_ip', 'physic_nic_port1_ip', '2110-7_m_local_ip', '2110-7_b_local_ip', 'nmos', 'ssm_address_range', 'authorization_service'])
 
-watchNmosName(() => props.name, mv.value)
+watchNmosName(() => props.name, mv)
 
 const keyData = switchData.key
 const key = ref<SwitchKeyType>({ ...keyData })
