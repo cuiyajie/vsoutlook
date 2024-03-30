@@ -7,12 +7,14 @@ export type UserData = {
   name: string
 }
 
-export type Settings = {
-  rds_server_url: string,
-  authorization_service_ip: string,
-  authorization_service_port: number,
-  authorization_services: string,
-  auto_save_container_config: boolean,
+function parseJsonString<T>(json: string, def: T) {
+  let result: T = def
+  try {
+    result = JSON.parse(json || "")
+  } catch (error) {
+    result = def
+  }
+  return result
 }
 
 export const useUserSession = defineStore('userSession', () => {
@@ -27,9 +29,20 @@ export const useUserSession = defineStore('userSession', () => {
     user.value = newUser
   }
 
-  function setSettings(newSettings: Partial<Settings>) {
+  function setSettings(newSettings: Partial<Record<keyof Settings, string>>) {
+    if (newSettings['auto_save_container_config']) {
+      settings.value.auto_save_container_config = String(newSettings.auto_save_container_config) === 'true'
+      delete newSettings.auto_save_container_config
+    }
+    if (newSettings['authorization_services']) {
+      settings.value.authorization_services = parseJsonString(newSettings.authorization_services, [])
+      delete newSettings.authorization_services
+    }
+    if (newSettings['mv_template_list']) {
+      settings.value.mv_template_list = parseJsonString(newSettings.mv_template_list, [])
+      delete newSettings.mv_template_list
+    }
     settings.value = Object.assign({}, settings.value, newSettings)
-    settings.value.auto_save_container_config = String(newSettings.auto_save_container_config) === 'true'
   }
 
   function setLoading(newLoading: boolean) {
@@ -42,7 +55,7 @@ export const useUserSession = defineStore('userSession', () => {
     })
     if (res?.settings) {
       const s = res.settings
-      setSettings({ [s.key]: s.value })
+      setSettings({ [s.key]: s.value } as any)
     }
   }
 

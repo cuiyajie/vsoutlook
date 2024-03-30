@@ -2,6 +2,10 @@
 <script setup lang="ts">
 import { useFormat, getFormat, useProtocolDC } from './Utils';
 import { formats, type MVOutputParamsType, def_mv_pip_params, type SwitchMVPipParamsType } from './Consts';
+import { useUserSession } from "/@src/stores/userSession";
+
+const usStore = useUserSession();
+const templates = computed(() => usStore.settings.mv_template_list || []);
 
 const mv = defineModel<MVOutputParamsType>({
   default: {} as MVOutputParamsType,
@@ -86,17 +90,39 @@ defineExpose({
             <h5>输出布局</h5>
           </div>
           <div class="columns is-multiline">
-            <div class="column is-4">
-              <VField>
+            <div class="column is-12">
+              <VField v-slot="{ field }">
                 <VLabel>布局模板</VLabel>
-                <VControl>
-                  <VInput
-                    v-model="mv.mv_template"
-                  />
-                </VControl>
+                <Multiselect
+                  v-model="mv.mv_template"
+                  placeholder="选择应用类型"
+                  value-prop="path"
+                  label="name"
+                  :max-height="145"
+                  :options="templates"
+                  @change="(val) => field?.setValue(val)"
+                >
+                  <template #singlelabel="{ value }">
+                    <div class="multiselect-single-label">
+                      <span class="select-label-text">
+                        {{ value.name }} ({{ value.path }})
+                      </span>
+                    </div>
+                  </template>
+                  <template #option="{ option }">
+                    <div class="mv-tmpl-dropdown">
+                      <div>
+                        {{ option.name }}
+                      </div>
+                      <div>
+                        {{ option.path }}
+                      </div>
+                    </div>
+                  </template>
+                </Multiselect>
               </VField>
             </div>
-            <div class="column is-4">
+            <div class="column is-6">
               <VField>
                 <VLabel>窗口数量</VLabel>
                 <VControl>
@@ -123,7 +149,7 @@ defineExpose({
                 </VControl>
               </VField>
             </div>
-            <div class="column is-4">
+            <div class="column is-6">
               <VField>
                 <VLabel>tally-屏幕索引</VLabel>
                 <VControl>
@@ -285,3 +311,17 @@ defineExpose({
     </Transition>
   </div>
 </template>
+<style lang="scss">
+.mv-tmpl-dropdown {
+  > div {
+    &:first-child {
+    }
+
+    &:last-child {
+      font-size: 0.9em;
+      color: var(--light-text);
+      font-family: var(--font);
+    }
+  }
+}
+</style>

@@ -1,34 +1,62 @@
 <script setup lang="ts">
-import VField from "../../base/form/VField.vue";
 import { useUserSession } from "/@src/stores/userSession";
 
 const usStore = useUserSession();
 const settings = computed(() => usStore.settings);
 
+/* ------------------------ Auth Service -------------------------- */
 const def_auth_service = {
 	ip: "232.0.0.0",
   port: 6001
 }
 
-const authServices = ref<{ ip: string, port: number }[]>([]);
-
-function parseAuthService() {
-  let services = []
-  try {
-    services = JSON.parse(settings.value.authorization_services || "")
-  } catch (error) {
-    services = []
-  }
-  authServices.value = services
-}
+const authServices = ref<SettingAuthService[]>([]);
 
 watch(() => settings.value.authorization_services, () => {
-  parseAuthService()
+  authServices.value = settings.value.authorization_services || []
 }, { immediate: true })
+
+function addAuthService() {
+  authServices.value.push({ ...def_auth_service })
+  updateProp('authorization_services')
+}
+
+function removeAuthService(idx: number) {
+  authServices.value.splice(idx, 1)
+  updateProp('authorization_services')
+}
+
+/* ----------------------------------------------------------------- */
+
+/* ------------------------ Mv Service -------------------------- */
+const def_mv_template = {
+	name: "vso media software",
+  path: "/opt/vsomediasoftware/config/viewlayout.json"
+}
+
+const mvTemplates = ref<Array<SettingMvTemplate>>([]);
+
+watch(() => settings.value.mv_template_list, () => {
+  mvTemplates.value = settings.value.mv_template_list || []
+}, { immediate: true })
+
+function addMvTemplate() {
+  mvTemplates.value.push({ ...def_mv_template })
+  updateProp('mv_template_list')
+}
+
+function removeMvTemplate(idx: number) {
+  mvTemplates.value.splice(idx, 1)
+  updateProp('mv_template_list')
+}
+
+/* ----------------------------------------------------------------- */
 
 function updateProp(key: string, value?: string) {
   if (key === 'authorization_services') {
     usStore.$updateSettings({ key, value: JSON.stringify(authServices.value) })
+  } else if (key === 'mv_template_list') {
+    usStore.$updateSettings({ key, value: JSON.stringify(mvTemplates.value) })
   } else {
     usStore.$updateSettings({ key, value })
   }
@@ -67,16 +95,6 @@ const vBlurOnEnter = {
   }
 };
 
-function addAuthService() {
-  authServices.value.push({ ...def_auth_service })
-  updateProp('authorization_services')
-}
-
-function removeAuthService(idx: number) {
-  authServices.value.splice(idx, 1)
-  updateProp('authorization_services')
-}
-
 </script>
 
 <template>
@@ -94,7 +112,7 @@ function removeAuthService(idx: number) {
             </div>
           </div>
 
-          <div class="form-section-inner is-horizontal flex-auto">
+          <div class="form-section-inner flex-auto">
             <VField
               class="field-switch"
               horizontal
@@ -209,6 +227,71 @@ function removeAuthService(idx: number) {
           </div>
           <div v-if="authServices.length === 0" class="form-empty">暂时没有添加授权服务</div>
         </div>
+
+        <div class="form-section is-grey">
+          <div class="form-section-header">
+            <div class="left">
+              <h3>多画面布局模板</h3>
+            </div>
+            <button
+              type="button"
+              class="button is-circle is-dark-outlined"
+              @keydown.space.prevent="addMvTemplate"
+              @click.prevent="addMvTemplate"
+            >
+              <span class="icon is-large">
+                <i aria-hidden="true" class="iconify" data-icon="feather:plus" />
+              </span>
+            </button>
+          </div>
+          <div v-for="(mvt, idx) in mvTemplates" :key="idx" class="columns is-multiline">
+            <div class="column is-1">
+              <VField class="index-field">
+                <VLabel>序号</VLabel>
+                <VControl>
+                  <VLabel>{{ idx }}</VLabel>
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-4">
+              <VField id="ip">
+                <VLabel>模板名称</VLabel>
+                <VControl icon="feather:copy">
+                  <input
+                    v-model="mvt.name"
+                    v-blur-on-enter
+                    type="text"
+                    class="input is-primary-focus"
+                    data-key="mv_template_list"
+                  >
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-6">
+              <VField>
+                <VLabel>模板路径及模板文件名</VLabel>
+                <VControl icon="feather:paperclip">
+                  <input
+                    v-model="mvt.path"
+                    v-blur-on-enter
+                    type="text"
+                    class="input is-primary-focus"
+                    data-key="mv_template_list"
+                  >
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-1">
+              <VField>
+                <VLabel>&nbsp;</VLabel>
+                <VControl>
+                  <VIconButton color="warning" light raised circle icon="feather:x" @click="removeMvTemplate(idx)" />
+                </VControl>
+              </VField>
+            </div>
+          </div>
+          <div v-if="mvTemplates.length === 0" class="form-empty">暂时没有添加多画面布局模板</div>
+        </div>
       </div>
     </div>
   </form>
@@ -225,14 +308,15 @@ function removeAuthService(idx: number) {
 }
 
 .form-layout {
-  max-width: 740px;
+  max-width: 876px;
   margin: 0 auto;
 
   &.gconfig {
 
     .form-outer {
       border-radius: 16px;
-      overflow: hidden;
+      height: calc(100vh - 225px);
+      overflow: auto;
     }
 
     .form-empty {

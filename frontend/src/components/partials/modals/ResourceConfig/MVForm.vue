@@ -4,6 +4,14 @@ import { handle, unwrap, watchNmosName, wrap } from "./Utils";
 import pick from 'lodash-es/pick'
 import merge from 'lodash-es/merge'
 import mvData from '/@src/data/vscomponent/mv.json'
+import { useUserSession } from "/@src/stores/userSession";
+
+const usStore = useUserSession();
+const templates = computed(() => usStore.settings.mv_template_list || []);
+
+function mvTemplateIsValid(tmpl: string) {
+  return !!templates.value.find((v) => v.path === tmpl)
+}
 
 const props = defineProps<{
   name: string
@@ -76,6 +84,11 @@ watch(() => mv.value.output_number, (nv) => {
       })
     );
   }
+  outputs.value.forEach(v => {
+    if (v.value.mv_template && !mvTemplateIsValid(v.value.mv_template)) {
+      v.value.mv_template = ''
+    }
+  })
 }, { immediate: true });
 
 function getValue() {
@@ -117,6 +130,9 @@ function setValue(data: typeof mvData) {
   nextTick(() => {
     outputs.value.forEach((optv, idx) => {
       optv.value = merge(def_mv_output_params(), _opData.params[idx])
+      if (optv.value.value.mv_template && !mvTemplateIsValid(optv.value.value.mv_template)) {
+        optv.value.value.mv_template = ''
+      }
     })
   })
 }

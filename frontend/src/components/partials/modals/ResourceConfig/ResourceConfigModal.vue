@@ -101,6 +101,17 @@ const dgi = computed(() => {
   };
 })
 
+function checkRequestParams(params: any) {
+  if (tmpl.value?.typeName === '多画面') {
+    const output = params?.output?.out_params || []
+    if (output.some(opt => !opt.out_mv_template)) {
+      notyf.error("多画面 输出参数 - 输出布局 - 布局模板 不能为空");
+      return false;
+    }
+  }
+  return true;
+}
+
 const loading = ref(false)
 const addInstance = handleSubmit(async () => {
   if (loading.value) return;
@@ -110,8 +121,9 @@ const addInstance = handleSubmit(async () => {
     size: 'medium',
     onConfirm: async (hide) => {
       hide()
-      loading.value = true;
       const params = compRef.value?.getValue()
+      if (!params || !checkRequestParams(params)) return
+      loading.value = true;
       let pro: Promise<any>
       if (dgi.value.created) {
         pro = deviceStore.$updateConfig(deviceName.value, device.value!.id, params)

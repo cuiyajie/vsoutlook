@@ -148,3 +148,20 @@ interface ClustDevice {
   name: string,
   config: string
 }
+
+type Settings = {
+  rds_server_url: string,
+  authorization_services: SettingAuthService[],
+  auto_save_container_config: boolean,
+  mv_template_list: SettingMvTemplate[],
+}
+
+type SettingAuthService = {
+  ip: string,
+  port: number
+}
+
+type SettingMvTemplate = {
+  name: string,
+  path: string
+}
