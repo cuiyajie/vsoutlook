@@ -145,29 +145,54 @@ func GetDevice(c *svcinfra.Context) {
 }
 
 func checkAllocatedCore(c *svcinfra.Context, node *models.Node) {
-	for deviceId := range node.Allocated {
-		device := models.ActiveDevice(deviceId)
-		if device == nil || device.Deleted == def.SelfDeleted || device.AppName == "" || device.Node != node.ID {
-			delete(node.Allocated, deviceId)
+	if node.Allocated == nil {
+		node.Allocated = make(models.MapUint32Slice)
+	} else {
+		for deviceId := range node.Allocated {
+			device := models.ActiveDevice(deviceId)
+			if device == nil || device.Deleted == def.SelfDeleted || device.AppName == "" || device.Node != node.ID {
+				delete(node.Allocated, deviceId)
+			}
 		}
 	}
 	c.Save(&node)
 }
 
-func preInstallation(c *svcinfra.Context, configStr string, tmpl *models.Tmpl, node *models.Node, device *models.Device) (*[]uint32, error) {
+func checkAllocatedDMA(c *svcinfra.Context, node *models.Node) {
+	if node.AllocatedDMA == nil {
+		node.AllocatedDMA = make(models.MapStringSlice)
+	} else {
+		for deviceId := range node.AllocatedDMA {
+			device := models.ActiveDevice(deviceId)
+			if device == nil || device.Deleted == def.SelfDeleted || device.AppName == "" || device.Node != node.ID {
+				delete(node.AllocatedDMA, deviceId)
+			}
+		}
+	}
+	c.Save(&node)
+}
+
+func preInstallation(c *svcinfra.Context, configStr string, tmpl *models.Tmpl, node *models.Node, device *models.Device) (*[]uint32, *[]string, error) {
 	checkAllocatedCore(c, node)
 	cores, err := allocateNodeCore(tmpl, node)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
+	}
+
+	checkAllocatedDMA(c, node)
+	dmas, err := allocateNodeDMA(tmpl, node)
+	if err != nil {
+		return nil, nil, err
 	}
 
 	settings := models.GetSettings()
 
 	coreListStr := utils.IntArrayToString(cores)
+	dmaListStr := strings.Join(dmas, ",")
 	var configFile map[string]interface{}
 	err = json.Unmarshal([]byte(configStr), &configFile)
 	if err != nil {
-		return nil, errors.New("设备配置文件格式错误")
+		return nil, nil, errors.New("设备配置文件格式错误")
 	}
 	fmt.Printf("configFile: %v\n", configFile)
 
@@ -177,12 +202,12 @@ func preInstallation(c *svcinfra.Context, configStr string, tmpl *models.Tmpl, n
 	if paddr, ok := configFile["2110-7_m_local_ip"].(string); ok {
 		data["primaryVFAddress"] = paddr + "/24"
 	} else {
-		return nil, errors.New("设备主网卡地址格式错误")
+		return nil, nil, errors.New("设备主网卡地址格式错误")
 	}
 	if saddr, ok := configFile["2110-7_b_local_ip"].(string); ok {
 		data["secondaryVFAddress"] = saddr + "/24"
 	} else {
-		return nil, errors.New("设备备网卡地址格式错误")
+		return nil, nil, errors.New("设备备网卡地址格式错误")
 	}
 	data["targetNode"] = node.ID
 	data["cpu"] = tmpl.Requirement.CpuNum
@@ -195,13 +220,13 @@ func preInstallation(c *svcinfra.Context, configStr string, tmpl *models.Tmpl, n
 	data["displayName"] = device.Name
 	data["applicationCategory"] = tmplType.Category
 	data["coreList"] = coreListStr
-	data["DMAList"] = node.DMAList
+	data["DMAList"] = dmaListStr
 	if _, ok := configFile["ipservice"]; ok {
 		ipservice := configFile["ipservice"].(map[string]interface{})
 		ipservice["max_bandwidth_percore"] = tmpl.Requirement.MaxRateMbpsByCore
 		ipservice["log_level"] = tmpl.Requirement.LogLevel
 		ipservice["binding_core_list"] = coreListStr
-		ipservice["dma_list"] = node.DMAList
+		ipservice["dma_list"] = dmaListStr
 		ipservice["receive_sessions"] = tmpl.Requirement.ReceiveSessions
 	}
 	if len(device.SeedID) == 0 {
@@ -255,13 +280,13 @@ func preInstallation(c *svcinfra.Context, configStr string, tmpl *models.Tmpl, n
 	if resp2 == nil {
 		fmt.Printf("failed to parse response: %v", err)
 		if err != nil {
-			return nil, fmt.Errorf("部署设备失败: %s", err.Error())
+			return nil, nil, fmt.Errorf("部署设备失败: %s", err.Error())
 		} else {
-			return nil, errors.New("部署节点返回数据格式错误")
+			return nil, nil, errors.New("部署节点返回数据格式错误")
 		}
 	}
 	device.AppName = resp2.Name
-	return &cores, nil
+	return &cores, &dmas, nil
 }
 
 func preUninstallation(c *svcinfra.Context, device *models.Device) error {
@@ -314,7 +339,7 @@ func StartDevice(c *svcinfra.Context) {
 		}
 	}
 
-	cores, err := preInstallation(c, device.Config, tmpl, node, device)
+	cores, dmas, err := preInstallation(c, device.Config, tmpl, node, device)
 	if err != nil {
 		c.GeneralError(err.Error())
 		return
@@ -322,6 +347,7 @@ func StartDevice(c *svcinfra.Context) {
 	device.UpdatedAt = time.Now()
 	c.Save(&device)
 	node.Allocated[device.ID] = *cores
+	node.AllocatedDMA[device.ID] = *dmas
 	c.Save(&node)
 	c.Bye(gin.H{"device": device.AsBasic()})
 }
@@ -375,6 +401,7 @@ func StopDevice(c *svcinfra.Context) {
 	node := models.ActiveNode(device.Node)
 	if node != nil {
 		delete(node.Allocated, device.ID)
+		delete(node.AllocatedDMA, device.ID)
 		c.Save(&node)
 	}
 	c.Save(&device)
@@ -449,6 +476,42 @@ func allocateNodeCore(tmpl *models.Tmpl, node *models.Node) ([]uint32, error) {
 	return result, nil
 }
 
+func allocateNodeDMA(tmpl *models.Tmpl, node *models.Node) ([]string, error) {
+	dma := tmpl.Requirement.DMA
+
+	if dma > 0 && len(node.DMAList) == 0 {
+		return nil, errors.New("节点没有配置DMA通道列表")
+	}
+
+	dmas := strings.Split(node.DMAList, ",")
+	if len(dmas) < dma {
+		return nil, errors.New("节点DMA通道数量不足")
+	}
+
+	allocated := make(map[string]bool)
+	for _, v := range node.AllocatedDMA {
+		for _, v2 := range v {
+			allocated[v2] = true
+		}
+	}
+
+	if len(allocated)+dma > len(dmas) {
+		return nil, errors.New("节点DMA通道数量不足")
+	}
+
+	var result []string
+	for _, v := range dmas {
+		if !allocated[v] {
+			result = append(result, v)
+		}
+		if len(result) == dma {
+			break
+		}
+	}
+
+	return result, nil
+}
+
 func CreateDevice(c *svcinfra.Context) {
 	var req struct {
 		Name string `json:"name"`
@@ -487,7 +550,7 @@ func CreateDevice(c *svcinfra.Context) {
 		Node: req.Node,
 	}
 
-	cores, err := preInstallation(c, req.Body, tmpl, node, &newDevice)
+	cores, dmas, err := preInstallation(c, req.Body, tmpl, node, &newDevice)
 	if err != nil {
 		c.GeneralError(err.Error())
 		return
@@ -499,6 +562,7 @@ func CreateDevice(c *svcinfra.Context) {
 		return
 	}
 	node.Allocated[newDevice.ID] = *cores
+	node.AllocatedDMA[newDevice.ID] = *dmas
 	c.Save(&node)
 	c.Bye(gin.H{"device": newDevice.AsBasic()})
 }
@@ -549,6 +613,7 @@ func DeleteDevice(c *svcinfra.Context) {
 	node := models.ActiveNode(device.Node)
 	if node != nil {
 		delete(node.Allocated, device.ID)
+		delete(node.AllocatedDMA, device.ID)
 		c.Save(&node)
 	}
 

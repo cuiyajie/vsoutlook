@@ -213,6 +213,12 @@ func UpdateNode(c *svcinfra.Context) {
 			c.GeneralError("节点已分配，不可修改")
 			return
 		}
+		if len(node.AllocatedDMA) == 0 {
+			node.DMAList = req.DMAList
+		} else if node.DMAList != req.DMAList {
+			c.GeneralError("DMA通道已分配，不可修改")
+			return
+		}
 		if len(node.Allocated) > int(req.VFCount) {
 			c.GeneralError("VF数量不可小于已分配的数量")
 			return

@@ -9,6 +9,7 @@ interface TmplRequirement {
   cpu: string,
   cpuNum: number,
   dpdkCpu: number,
+  dma: number,
   cpuCore: string,
   hugePage: number,
   memory: number,

@@ -33,6 +33,7 @@ const specsData = ref<TmplRequirement & { description: string }>({
   memory: 0,
   disk: '',
   gpu: '',
+  dma: 0,
   inputBand: '',
   outputBand: '',
   network: '',

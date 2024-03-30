@@ -11,6 +11,7 @@ const nodeInfo = ref<ClustNodeInfo>({ coreList: "", dmaList: "", vfCount: 4 });
 const node = ref<ClustNode | null>(null);
 const nodeStore = useClustNode();
 const coreListRef = ref<any>(null);
+const dmaListRef = ref<any>(null);
 
 useListener(Signal.OpenNodeEdit, (_node: ClustNode) => {
   opened.value = true;
@@ -20,6 +21,7 @@ useListener(Signal.OpenNodeEdit, (_node: ClustNode) => {
   nodeInfo.value.vfCount = _node.vfCount
   nextTick(() => {
     coreListRef.value?.field?.setValue(nodeInfo.value.coreList)
+    dmaListRef.value?.field?.setValue(nodeInfo.value.dmaList)
   })
 });
 
@@ -28,7 +30,9 @@ const zodSchema = z.object({
   coreList: z.string({
     required_error: "请输入隔离核心数",
   }).refine(val => /^(\d+|(\d+-\d+))(,(\d+|(\d+-\d+)))*$/.test(val), "请输入合法的隔离核心数"),
-  dmaList: z.string().optional(),
+  dmaList: z.string({
+    required_error: "请输入DMA通道列表",
+  }),
   vfCount: z.number().optional()
 });
 const validationSchema = toTypedSchema(zodSchema);
@@ -90,13 +94,26 @@ const handleEdit = handleSubmit(async () => {
             </Transition>
           </VControl>
         </VField>
-        <VField label="DMA List">
+        <VField
+          id="dmaList"
+          ref="dmaListRef"
+          v-slot="{ field }"
+          label="DMA通道列表 *"
+        >
           <VControl>
             <VInput
               v-model="nodeInfo.dmaList"
               type="text"
-              placeholder=""
+              placeholder="例如: 0000:00:01.0,0000:00:01.1"
             />
+            <Transition name="fade-slow">
+              <p
+                v-if="field?.errorMessage"
+                class="help is-danger mt-3"
+              >
+                {{ field.errorMessage }}
+              </p>
+            </Transition>
           </VControl>
         </VField>
         <VField label="VF数量">

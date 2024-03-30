@@ -27,6 +27,7 @@ type TmplRequirement struct {
 	Memory               int    `json:"memory,omitempty"`
 	Disk                 string `json:"disk,omitempty"`
 	Gpu                  string `json:"gpu,omitempty"`
+	DMA                  int    `json:"dma"`
 	InputBand            string `json:"inputBand,omitempty"`
 	OutputBand           string `json:"outputBand,omitempty"`
 	Network              string `json:"network,omitempty"`

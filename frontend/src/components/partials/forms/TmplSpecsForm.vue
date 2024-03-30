@@ -44,7 +44,7 @@ const opened = ref(false)
         <!--Fieldset-->
         <div class="form-fieldset">
           <div class="columns is-multiline">
-            <div class="column is-6">
+            <div class="column is-4">
               <VField>
                 <VLabel>CPU 总核心数</VLabel>
                 <VControl>
@@ -57,7 +57,7 @@ const opened = ref(false)
                 </VControl>
               </VField>
             </div>
-            <div class="column is-6">
+            <div class="column is-4">
               <VField>
                 <VLabel>DPKUCPU 核心数</VLabel>
                 <VControl>
@@ -70,7 +70,20 @@ const opened = ref(false)
                 </VControl>
               </VField>
             </div>
-            <div class="column is-6">
+            <div class="column is-4">
+              <VField>
+                <VLabel>DMA通道数量</VLabel>
+                <VControl>
+                  <VInputNumber
+                    v-model="modelValue.dma"
+                    centered
+                    :min="0"
+                    :step="1"
+                  />
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-4">
               <VField>
                 <VLabel>内存 (GB)</VLabel>
                 <VControl>
@@ -83,7 +96,7 @@ const opened = ref(false)
                 </VControl>
               </VField>
             </div>
-            <div class="column is-6">
+            <div class="column is-4">
               <VField>
                 <VLabel>大叶内存 (GB)</VLabel>
                 <VControl>
@@ -96,7 +109,7 @@ const opened = ref(false)
                 </VControl>
               </VField>
             </div>
-            <div class="column is-6">
+            <div class="column is-4">
               <VField>
                 <VLabel>共享内存 (GB)</VLabel>
                 <VControl>
@@ -109,7 +122,7 @@ const opened = ref(false)
                 </VControl>
               </VField>
             </div>
-            <div class="column is-6">
+            <div class="column is-4">
               <VField>
                 <VLabel>日志级别</VLabel>
                 <VControl>
@@ -123,7 +136,7 @@ const opened = ref(false)
                 </VControl>
               </VField>
             </div>
-            <div class="column is-6">
+            <div class="column is-4">
               <VField>
                 <VLabel>单核心最大处理能力(Mb)</VLabel>
                 <VControl>
@@ -136,7 +149,7 @@ const opened = ref(false)
                 </VControl>
               </VField>
             </div>
-            <div class="column is-6">
+            <div class="column is-4">
               <VField>
                 <VLabel>收流会话数</VLabel>
                 <VControl>

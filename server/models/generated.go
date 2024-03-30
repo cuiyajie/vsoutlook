@@ -124,3 +124,43 @@ func (m *MapUint32Slice) Scan(value interface{}) error {
 		return fmt.Errorf("invalid scan type for MapUint32Slice: %T", v)
 	}
 }
+
+func (s StringSlice) Value() (driver.Value, error) {
+	return json.Marshal(s)
+}
+
+func (s *StringSlice) Scan(value interface{}) error {
+	if value == nil {
+		*s = make(StringSlice, 0)
+		return nil
+	}
+
+	switch v := value.(type) {
+	case string:
+		return json.Unmarshal([]byte(v), s)
+	case []byte:
+		return json.Unmarshal(v, s)
+	default:
+		return fmt.Errorf("invalid scan type for StringSlice: %T", v)
+	}
+}
+
+func (m MapStringSlice) Value() (driver.Value, error) {
+	return json.Marshal(m)
+}
+
+func (m *MapStringSlice) Scan(value interface{}) error {
+	if value == nil {
+		*m = make(MapStringSlice)
+		return nil
+	}
+
+	switch v := value.(type) {
+	case string:
+		return json.Unmarshal([]byte(v), m)
+	case []byte:
+		return json.Unmarshal(v, m)
+	default:
+		return fmt.Errorf("invalid scan type for MapStringSlice: %T", v)
+	}
+}

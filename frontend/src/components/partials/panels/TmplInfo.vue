@@ -65,6 +65,14 @@ function viewTmpl() {
       </div>
       <div class="info-block-line">
         <h4 class="dark-inverted">
+          DMA通道数量
+        </h4>
+        <span>
+          {{ tmpld.requirement.dma || '无' }}
+        </span>
+      </div>
+      <div class="info-block-line">
+        <h4 class="dark-inverted">
           内存 (GB)
         </h4>
         <span>

@@ -14,6 +14,18 @@ func Migrate(env string) {
 	m := gormigrate.New(db.DB, gormigrate.DefaultOptions, []*gormigrate.Migration{
 		// 添加新的migration, 参考 https://github.com/go-gormigrate/gormigrate
 		{
+			ID: "20240330-1715",
+			Migrate: func(tx *gorm.DB) error {
+				type Node struct {
+					AllocatedDMA MapStringSlice `gorm:"type:jsonb"`
+				}
+				return tx.AutoMigrate(&Node{})
+			},
+			Rollback: func(tx *gorm.DB) error {
+				return tx.Migrator().DropColumn("nodes", "allocated_dma")
+			},
+		},
+		{
 			ID: "20240314-2149",
 			Migrate: func(tx *gorm.DB) error {
 				return tx.AutoMigrate(&Settings{})
