@@ -46,12 +46,13 @@ type TmplRequirement struct {
 }
 
 type TmplAsBasic struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Type        string `json:"type"`
-	TypeName    string `json:"typeName"`
-	Description string `json:"description"`
-	Listed      int    `json:"listed"`
+	ID           string `json:"id"`
+	Name         string `json:"name"`
+	Type         string `json:"type"`
+	TypeName     string `json:"typeName"`
+	TypeCategory string `json:"typeCategory"`
+	Description  string `json:"description"`
+	Listed       int    `json:"listed"`
 }
 
 func (tmpl Tmpl) IsDeleted() bool {
@@ -63,18 +64,20 @@ func (tmpl *Tmpl) AsBasic() TmplAsBasic {
 	copier.Copy(&result, &tmpl)
 	tmplType := ActiveTmplType(tmpl.Type)
 	result.TypeName = tmplType.Name
+	result.TypeCategory = tmplType.Category
 	return result
 }
 
 func (tmpl *Tmpl) AsDetail() any {
 	tmplType := ActiveTmplType(tmpl.Type)
 	result := utils.Map{
-		"id":          tmpl.ID,
-		"name":        tmpl.Name,
-		"type":        tmpl.Type,
-		"typeName":    tmplType.Name,
-		"description": tmpl.Description,
-		"listed":      tmpl.Listed,
+		"id":           tmpl.ID,
+		"name":         tmpl.Name,
+		"type":         tmpl.Type,
+		"typeName":     tmplType.Name,
+		"typeCategory": tmplType.Category,
+		"description":  tmpl.Description,
+		"listed":       tmpl.Listed,
 	}
 	result["requirement"] = tmpl.Requirement
 	result["flow"] = tmpl.Flow

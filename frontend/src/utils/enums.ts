@@ -8,6 +8,7 @@ export enum Signal {
   OpenAlertDialog,
   OpenNewUser,
   OpenNodeEdit,
+  OpenTmplMetaEdit,
 }
 
 export enum DeviceStatus {

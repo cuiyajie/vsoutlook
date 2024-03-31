@@ -17,17 +17,18 @@ type Device struct {
 }
 
 type DeviceAsBasic struct {
-	ID           string `json:"id"`
-	Name         string `json:"name"`
-	AppName      string `json:"appName"`
-	TmplID       string `json:"tmplID"`
-	TmplName     string `json:"tmplName"`
-	TmplTypeID   string `json:"tmplTypeID"`
-	TmplTypeName string `json:"tmplTypeName"`
-	TmplTypeIcon string `json:"tmplTypeIcon"`
-	Node         string `json:"node"`
-	CreatedAt    int64  `json:"createdAt"`
-	UpdatedAt    int64  `json:"updatedAt"`
+	ID               string `json:"id"`
+	Name             string `json:"name"`
+	AppName          string `json:"appName"`
+	TmplID           string `json:"tmplID"`
+	TmplName         string `json:"tmplName"`
+	TmplTypeID       string `json:"tmplTypeID"`
+	TmplTypeName     string `json:"tmplTypeName"`
+	TmplTypeIcon     string `json:"tmplTypeIcon"`
+	TmplTypeCategory string `json:"tmplTypeCategory"`
+	Node             string `json:"node"`
+	CreatedAt        int64  `json:"createdAt"`
+	UpdatedAt        int64  `json:"updatedAt"`
 }
 
 type DeviceAsDetail struct {
@@ -49,6 +50,7 @@ func (device *Device) AsBasic() DeviceAsBasic {
 	result.TmplName = tmpl.Name
 	result.TmplTypeID = tmplType.ID
 	result.TmplTypeName = tmplType.Name
+	result.TmplTypeCategory = tmplType.Category
 	result.TmplTypeIcon = tmplType.Icon
 	result.CreatedAt = device.CreatedAt.Unix()
 	result.UpdatedAt = device.UpdatedAt.Unix()

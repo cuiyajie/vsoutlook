@@ -7,19 +7,21 @@ import { useNotyf } from "/@src/composable/useNotyf";
 
 const notyf = useNotyf();
 const opened = ref(false);
-const draftTmpl = ref({} as TemplateData);
+const tmpl = ref<TemplateData | null>(null);
 const tmplUtils = useTemplate();
+const tmplRef = ref<any>(null);
 let callbacks: any = {}
 
-useListener(Signal.OpenNewTemplate, (_callbacks?: any) => {
+useListener(Signal.OpenTmplMetaEdit, (p: { callbacks?: any, tmpl: TemplateData }) => {
   opened.value = true;
-  callbacks = _callbacks || {}
+  tmpl.value = { ...p.tmpl };
+  nextTick(() => {
+    tmplRef.value?.field?.setValue(p.tmpl.name)
+  })
+  callbacks = p.callbacks || {}
 });
 
 const zodSchema = z.object({
-  tmplType: z.string({
-    required_error: "请选择应用类型",
-  }),
   name: z.string({
     required_error: "请输入应用名称",
   }),
@@ -28,21 +30,20 @@ const validationSchema = toTypedSchema(zodSchema);
 const { handleSubmit } = useForm({ validationSchema });
 
 const loading = ref(false);
-const handleCreate = handleSubmit(async () => {
-  if (loading.value) return;
+const handleSave = handleSubmit(async () => {
+  if (loading.value || !tmpl.value?.id) return;
 
   loading.value = true;
-  const ntmpl = await tmplUtils.$addTmpl({
-    name: draftTmpl.value.name,
-    type: draftTmpl.value.type,
+  const ntmpl = await tmplUtils.$updateTmpl(tmpl.value?.id, {
+    name: tmpl.value.name
   });
   loading.value = false;
   if (ntmpl) {
     opened.value = false;
-    notyf.success("新建应用成功");
+    notyf.success("修改应用成功");
     callbacks?.success?.(ntmpl);
   } else {
-    notyf.error("新建应用失败");
+    notyf.error("修改应用失败");
   }
 });
 </script>
@@ -53,28 +54,23 @@ const handleCreate = handleSubmit(async () => {
     novalidate
     size="small"
     :open="opened"
-    title="新建应用"
+    title="修改应用"
     actions="right"
     cancel-label="取消"
-    @submit.prevent="handleCreate"
+    @submit.prevent="handleSave"
     @close="opened = false"
   >
     <template #content>
-      <div class="modal-form">
-        <TmplTypeSelect
-          v-model="draftTmpl.type"
-          label="应用类型 *"
-          form-id="tmplType"
-          validate
-        />
+      <div v-if="tmpl" class="modal-form">
         <VField
           id="name"
+          ref="tmplRef"
           v-slot="{ field }"
           label="设备名称 *"
         >
           <VControl>
             <VInput
-              v-model="draftTmpl.name"
+              v-model="tmpl.name"
               type="text"
               placeholder="设备名称"
             />

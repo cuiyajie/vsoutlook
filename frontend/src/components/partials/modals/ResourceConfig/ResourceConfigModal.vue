@@ -95,14 +95,14 @@ const dgi = computed(() => {
     confirmTitle: isCreated ? "更新设备配置" : "部署设备",
     confirmContent: isCreated ? `确定要更新设备 ${device.value?.name} 的配置吗？` : `确定要将 ${deviceName.value} 设备部署到 ${node.value?.id} (${node.value?.ip}) 吗？`,
     confirmMsg: isCreated ? "更新设备配置成功" : "部署设备成功",
-    title: `${isCreated ? "更新设备配置" : "启动设备"}${tmpl.value ? ` - ${tmplConfig.value.name}` : ''}`,
+    title: `${isCreated ? "更新设备配置" : "启动设备"}${tmpl.value ? ` - ${tmpl.value.name}` : ''}`,
     submitText: isCreated ? "更新" : "启动",
     nodeName: isCreated ? device.value?.node : node.value?.id,
   };
 })
 
 function checkRequestParams(params: any) {
-  if (tmpl.value?.typeName === '多画面') {
+  if (tmpl.value?.typeCategory === 'multiv') {
     const output = params?.output?.out_params || []
     if (output.some(opt => !opt.out_mv_template)) {
       notyf.error("多画面 输出参数 - 输出布局 - 布局模板 不能为空");
@@ -187,23 +187,23 @@ function saveSetting() {
 
 const compRef = ref<InstanceType<typeof CodecForm> | null>(null)
 const tmplConfig = computed(() => {
-  switch (tmpl.value?.typeName) {
-    case "编解码":
+  switch (tmpl.value?.typeCategory) {
+    case 'codec':
       return {
         name: '编解码器',
         component: CodecForm
       };
-    case "上下变换":
+    case 'udx':
       return {
         name: '上下变换',
         component: UdxForm
       };
-    case "多画面":
+    case 'multiv':
       return {
         name: '多画面',
         component: MVForm
       };
-    case "切换台":
+    case 'swt':
       return {
         name: '切换台',
         component: SwitchForm

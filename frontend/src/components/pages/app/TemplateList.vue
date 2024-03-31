@@ -110,13 +110,13 @@ function listTmpl(tmpl: TemplateData) {
 
       <div class="buttons">
         <VButtons>
-          <!-- <VButton color="primary" raised @click="createTemplate">
+          <VButton color="primary" raised @click="createTemplate">
             <span class="icon">
               <i aria-hidden="true" class="fas fa-plus" />
             </span>
             <span>新建应用</span>
           </VButton>
-          <VButton color="primary" raised @click="localImport">
+          <!-- <VButton color="primary" raised @click="localImport">
             <span class="icon">
               <i aria-hidden="true" class="fas fa-file-import" />
             </span>

@@ -14,7 +14,24 @@ const disabled = computed(() => !tmpl.value?.id || locked.value)
 const notyf = useNotyf();
 
 function createNewTmpl() {
-  bus.trigger(Signal.OpenNewTemplate);
+  bus.trigger(Signal.OpenNewTemplate, {
+    success: (tmpl: TemplateData) => {
+      tmplStore.navigate(tmpl.id)
+    }
+  });
+}
+
+function updateTmplMeta() {
+  if (tmpl.value?.id) {
+    bus.trigger(Signal.OpenTmplMetaEdit, {
+      tmpl: tmpl.value,
+      callbacks: {
+        success: (_tmpl: TemplateData) => {
+          tmpl.value = _tmpl
+        }
+      }
+    });
+  }
 }
 
 const flowObject = ref<FlowExportObject | null>(null)
@@ -93,6 +110,13 @@ async function save() {
     }
   }
 }
+
+onMounted(() => {
+  if (!route.params?.id) {
+    locked.value = false
+    createNewTmpl()
+  }
+})
 </script>
 
 <template>
@@ -113,7 +137,20 @@ async function save() {
     <div class="column is-8">
       <VCard radius="rounded" class="tmpl-dashboard">
         <div class="title is-5 mb-6 tmpl-title">
-          <h3>{{ tmpl?.name || "未命名应用" }}</h3>
+          <h3>
+            {{ tmpl?.name || "未命名应用" }}
+            <span
+              class="icon ml-2"
+              style="cursor: pointer;"
+              role="button"
+              tabindex="-1"
+              @keyup.space.prevent="updateTmplMeta"
+              @click.prevent="updateTmplMeta"
+            >
+              <i aria-hidden="true" class="fas fa-edit" />
+            </span>
+          </h3>
+
           <VButtons>
             <VButton color="primary" raised :disabled="disabled" @click="save">
               <span class="icon">
@@ -184,6 +221,7 @@ async function save() {
       </VCard>
     </div>
     <NewTemplateModal />
+    <TmplMetaEdit />
   </div>
 </template>
 <style lang="scss">

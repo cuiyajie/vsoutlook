@@ -41,7 +41,7 @@ export const useTemplate = defineStore('template', () => {
     }
   }
 
-  async function $updateTmpl(id: string, info: Pick<TemplateData, 'description' | 'flow' | 'requirement'>) {
+  async function $updateTmpl(id: string, info: Partial<Pick<TemplateData, 'description' | 'flow' | 'requirement' | 'name'>>) {
     const res = await $fetch('/api/tmpl/update', { body: { id, ...info } })
     if (res && res.tmpl) {
       return res.tmpl

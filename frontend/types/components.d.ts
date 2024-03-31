@@ -69,6 +69,7 @@ declare module 'vue' {
     TmplGroupList: typeof import('./../src/components/partials/panels/TmplGroupList.vue')['default']
     TmplGroupTabs: typeof import('./../src/components/partials/panels/TmplGroupTabs.vue')['default']
     TmplInfo: typeof import('./../src/components/partials/panels/TmplInfo.vue')['default']
+    TmplMetaEdit: typeof import('./../src/components/partials/modals/TmplMetaEdit.vue')['default']
     TmplPageDropdown: typeof import('./../src/components/partials/dropdowns/TmplPageDropdown.vue')['default']
     TmplSpecsForm: typeof import('./../src/components/partials/forms/TmplSpecsForm.vue')['default']
     TmplTypeSelect: typeof import('./../src/components/partials/forms/TmplTypeSelect.vue')['default']

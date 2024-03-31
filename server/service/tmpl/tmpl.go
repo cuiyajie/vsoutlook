@@ -1,6 +1,8 @@
 package tmpl
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/mitchellh/mapstructure"
 	"vsoutlook.com/vsoutlook/infra/def"
@@ -64,6 +66,7 @@ func CreateTmpl(c *svcinfra.Context) {
 	}
 	result := models.Create(&newTmpl)
 	if result.Error != nil {
+		fmt.Printf("failed to create tmpl in db: %v", result.Error)
 		c.GeneralError("创建应用失败")
 		return
 	}
@@ -72,10 +75,11 @@ func CreateTmpl(c *svcinfra.Context) {
 
 func UpdateTmpl(c *svcinfra.Context) {
 	var req struct {
-		ID          string    `json:"id"`
-		Flow        string    `json:"flow"`
-		Requirement utils.Map `json:"requirement"`
-		Description string    `json:"description"`
+		ID          string     `json:"id"`
+		Name        *string    `json:"name"`
+		Flow        *string    `json:"flow"`
+		Requirement *utils.Map `json:"requirement"`
+		Description *string    `json:"description"`
 	}
 	c.ShouldBindJSON(&req)
 	tmpl := models.GetTmpl(req.ID)
@@ -83,23 +87,36 @@ func UpdateTmpl(c *svcinfra.Context) {
 		c.GeneralError("应用不存在")
 		return
 	}
-	tmpl.Flow = req.Flow
-	rq := models.TmplRequirement{}
-	decoder, err := mapstructure.NewDecoder(&mapstructure.DecoderConfig{
-		Result:  &rq,
-		TagName: "json",
-	})
-	if err != nil {
-		c.GeneralError("应用配置错误")
-		return
+
+	if req.Name != nil {
+		tmpl.Name = *req.Name
 	}
-	err = decoder.Decode(req.Requirement)
-	if err != nil {
-		c.GeneralError("应用配置错误")
-		return
+
+	if req.Flow != nil {
+		tmpl.Flow = *req.Flow
 	}
-	tmpl.Requirement = rq
-	tmpl.Description = req.Description
+
+	if req.Requirement != nil {
+		rq := models.TmplRequirement{}
+		decoder, err := mapstructure.NewDecoder(&mapstructure.DecoderConfig{
+			Result:  &rq,
+			TagName: "json",
+		})
+		if err != nil {
+			c.GeneralError("应用配置错误")
+			return
+		}
+		err = decoder.Decode(req.Requirement)
+		if err != nil {
+			c.GeneralError("应用配置错误")
+			return
+		}
+		tmpl.Requirement = rq
+	}
+
+	if req.Description != nil {
+		tmpl.Description = *req.Description
+	}
 	models.Save(&tmpl)
 	c.Bye(gin.H{"tmpl": tmpl.AsDetail()})
 }
