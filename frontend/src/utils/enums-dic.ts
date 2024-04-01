@@ -6,6 +6,7 @@ export enum DeviceStatus {
   Terminating = 'Terminating',
   Failed = 'Failed',
   Terminated = 'Terminated',
+  CrashLoopBackOff = 'CrashLoopBackOff',
   Unavailable = 'Unavailable'
 }
 
@@ -13,9 +14,10 @@ export const DeviceStatusDic: Record<string, { text: string, color: string }> = 
   'Running': { text: '运行中', color: 'primary' },
   'Pending': { text: '创建中', color: 'blue' },
   'Terminating': { text: '删除中', color: 'purple' },
-  'Failed': { text: '启动失败', color: 'danger' },
+  'Failed': { text: '启动失败', color: 'orange' },
   'Terminated': { text: '已停止', color: 'warning' },
   'Unavailable': { text: '未知状态', color: 'light' },
+  'CrashLoopBackOff': { text: '失败(Crashed)', color: 'danger' }
 }
 
 // export const DeviceStatusDic = {

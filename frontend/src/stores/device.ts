@@ -28,6 +28,8 @@ export const useDevices = defineStore('device', () => {
       d.status = dic.DeviceStatus.Running
     } else if (d.podsStatus.every((p: any) => [dic.DeviceStatus.Pending, dic.DeviceStatus.Running].includes(p.status))) {
       d.status = dic.DeviceStatus.Pending
+    } else if (d.podsStatus.some((p: any) => p.status === dic.DeviceStatus.CrashLoopBackOff)) {
+      d.status = dic.DeviceStatus.CrashLoopBackOff
     } else if (d.podsStatus.some((p: any) => p.status === dic.DeviceStatus.Terminating)) {
       d.status = dic.DeviceStatus.Terminating
     } else if (d.podsStatus.some((p: any) => p.status === dic.DeviceStatus.Failed)) {
