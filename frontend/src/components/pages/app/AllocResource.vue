@@ -51,6 +51,7 @@ tmplStore.$fetchList();
       </div>
     </div>
     <ResourceConfigModal />
+    <DownloadConfirm />
   </div>
 </template>
 <style lang="scss">

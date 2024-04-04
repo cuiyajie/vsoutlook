@@ -139,7 +139,12 @@ const addInstance = handleSubmit(async () => {
         notyf.success(dgi.value.confirmMsg);
         callbacks.success?.()
         if (usStore.settings.auto_save_container_config) {
-          saveSetting()
+          let config = null
+          try {
+            config = JSON.parse(res.data.config)
+          } catch (err) {
+          }
+          saveSetting(config)
         }
       }
     },
@@ -176,9 +181,20 @@ function onFileImported(e: Event) {
   }
 }
 
-function saveSetting() {
-  const val = compRef.value?.getValue()
-  const fileName = `${tmpl.value?.name}_${deviceName.value || '未命名'}_${dayjs().format('YYYYMMDDHHmmss')}.json`
+function exportSetting() {
+  bus.trigger(Signal.OpenDownloadConfig, {
+    tmpl: tmpl.value,
+    callbacks: {
+      success: (fileName: string) => {
+        saveSetting("", fileName)
+      }
+    }
+  })
+}
+
+function saveSetting(config?: string, name?: string) {
+  const val = config || compRef.value?.getValue()
+  const fileName = name || `${tmpl.value?.name}_${deviceName.value || '未命名'}_${dayjs().format('YYYYMMDDHHmmss')}`
   if (val) {
     downloadJsonFile(val, `${fileName}.json`)
     notyf.success("保存成功");
@@ -357,7 +373,7 @@ const tmplConfig = computed(() => {
         class="btn-setting-save"
         color="primary"
         raised
-        @click="saveSetting"
+        @click="exportSetting"
       >
         保存配置
       </VButton>

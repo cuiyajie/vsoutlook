@@ -54,6 +54,7 @@ watch(() => mv.value.mode, () => {
   if (mv.value.mode === val_udx[0]) {
     inputFormat.value = inputFormat.value !== formatKeys[2] ? inputFormat.value : formatKeys[0]
     output1Format.value = formatKeys[2]
+    output2Format.value = formatKeys[1]
   } else {
     inputFormat.value = formatKeys[2]
     output1Format.value = output1Format.value !== formatKeys[2] ? output1Format.value : formatKeys[1]
@@ -241,6 +242,7 @@ defineExpose({
               v-model:format="output1Format"
               :mode="mv.mode"
               title="第一路输出参数"
+              type="output1"
               :use-backup="output['g_2022-7']"
               :m_local_ip="mv['2110-7_m_local_ip']"
               :b_local_ip="mv['2110-7_b_local_ip']"
@@ -251,6 +253,7 @@ defineExpose({
               v-model:format="output2Format"
               v-model:OPEN="OUT_2_OPEN"
               :mode="mv.mode"
+              type="output2"
               title="第二路输出参数"
               toggle-title="是否启用第二路输出"
               is-last

@@ -101,19 +101,21 @@ export function watchNmosName(watcher: WatchSource<string>, mv: Ref<any>) {
 export function watchModeVFormat(
   watcher: WatchSource<string>,
   shouldFormats: Ref<any[]>,
-  input = true
+  type: 'input' | 'output1' | 'output2',
 ) {
   watch(
     watcher,
     (nv) => {
       if (nv === val_udx[0]) {
-        if (input) {
+        if (type === 'input') {
           shouldFormats.value = formats.slice(0, 2)
-        } else {
+        } else if (type === 'output1') {
           shouldFormats.value = [formats[2]];
+        } else {
+          shouldFormats.value = [formats[1]];
         }
       } else {
-        if (input) {
+        if (type === 'input') {
           shouldFormats.value = formats.slice(-2);
         } else {
           shouldFormats.value = formats.slice(0, 2);

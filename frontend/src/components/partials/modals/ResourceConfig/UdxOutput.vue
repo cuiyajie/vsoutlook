@@ -11,6 +11,7 @@ const mv = defineModel<UdxOutputParamsType>({
 const props = defineProps<{
   mode: string,
   title: string,
+  type: 'output1' | 'output2'
   toggleTitle?: string,
   isLast?: boolean,
   useBackup: boolean,
@@ -34,7 +35,7 @@ const opened = ref(false)
 const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value))
 
 const shouldFormats = ref([...formats])
-watchModeVFormat(() => props.mode, shouldFormats, false)
+watchModeVFormat(() => props.mode, shouldFormats, props.type)
 
 useProtocolDC(mv)
 </script>

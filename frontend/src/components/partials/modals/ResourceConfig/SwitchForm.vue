@@ -148,7 +148,8 @@ watch(() => key.value.ext_key_number, (nv) => {
 const opData= unwrap(switchData.output, 'out_')
 const output = ref<any>({ ...global_config })
 output.value = pick(opData, Object.keys(global_config))
-const outputs = Array.from({ length: 3 }, (_, i) => {
+const outputs = ref<any>([])
+outputs.value = Array.from({ length: 3 }, (_, i) => {
   if (i === 0) {
     return opData.pgm_params ? ref(opData.pgm_params) : ref(def_switch_output_params())
   } else if (i === 1) {
@@ -184,11 +185,11 @@ function getValue() {
     },
     output: {
       ...wrap(output.value, 'out_'),
-      out_pgm_params: wrap(outputs[0].value, 'out_', useb, false, mip, bip),
-      out_pvw_params: wrap(outputs[1].value, 'out_', useb, false, mip, bip),
+      out_pgm_params: wrap(unref(outputs.value[0]), 'out_', useb, false, mip, bip),
+      out_pvw_params: wrap(unref(outputs.value[1]), 'out_', useb, false, mip, bip),
       out_clean_params: {
         out_clean_is_open: OUT_3_OPEN.value,
-        ...(OUT_3_OPEN.value ? wrap(outputs[2].value, 'out_', useb, false, mip, bip) : {})
+        ...(OUT_3_OPEN.value ? wrap(unref(outputs.value[2]), 'out_', useb, false, mip, bip) : {})
       },
     }
   }
@@ -225,10 +226,10 @@ function setValue(data: typeof switchData) {
 
   const _opData = unwrap(data.output, 'out_')
   output.value = pick(_opData, Object.keys(global_config))
-  outputs[0].value = merge(def_switch_output_params(), _opData.pgm_params)
-  outputs[1].value = merge(def_switch_output_params(), _opData.pvw_params)
+  outputs.value[0].value = merge(def_switch_output_params(), _opData.pgm_params)
+  outputs.value[1].value = merge(def_switch_output_params(), _opData.pvw_params)
   OUT_3_OPEN.value = _opData.clean_params.clean_is_open
-  outputs[2].value = merge(def_switch_output_params(), _opData.clean_oarams)
+  outputs.value[2].value = merge(def_switch_output_params(), _opData.clean_params)
 }
 
 defineExpose({

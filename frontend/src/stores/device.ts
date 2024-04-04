@@ -58,7 +58,7 @@ export const useDevices = defineStore('device', () => {
       }
     })
     if (res && res.device) {
-      return { result: 'success' }
+      return { result: 'success', data: res.device }
     } else {
       return { result: 'error', message: res.message }
     }
@@ -73,7 +73,7 @@ export const useDevices = defineStore('device', () => {
       }
     })
     if (res && res.device) {
-      return { result: 'success' }
+      return { result: 'success', data: res.device }
     } else {
       return { result: 'error', message: res.message }
     }

@@ -183,7 +183,23 @@ function listTmpl(tmpl: TemplateData) {
                 </div>
               </div>
               <footer class="card-footer">
-                <span :class="item.listed ? 'is-success' : 'is-danger'">{{
+                <a
+                  tabindex="-1"
+                  role="button"
+                  @keydown.space.prevent="deleteTmpl(item)"
+                  @click.prevent="deleteTmpl(item)"
+                >
+                  删除
+                </a>
+                <a
+                  tabindex="-1"
+                  role="button"
+                  @keydown.space.prevent="tmplStore.navigate(item.id)"
+                  @click.prevent="tmplStore.navigate(item.id)"
+                >
+                  查看
+                </a>
+                <span style="text-align: center;" :class="item.listed ? 'is-success' : 'is-danger'">{{
                   item.listed ? "已授权" : "未授权"
                 }}</span>
                 <!-- <a
@@ -209,13 +225,6 @@ function listTmpl(tmpl: TemplateData) {
                   @keydown.space.prevent="tmplStore.navigate(item.id)"
                   @click.prevent="tmplStore.navigate(item.id)"
                   >编辑</a
-                >
-                <a
-                  tabindex="0"
-                  role="button"
-                  @keydown.space.prevent="deleteTmpl(item)"
-                  @click.prevent="deleteTmpl(item)"
-                  >删除</a
                 > -->
               </footer>
             </div>
@@ -429,8 +438,7 @@ function listTmpl(tmpl: TemplateData) {
           a {
             border-color: var(--dark-sidebar-light-12);
 
-            &:hover,
-            &:focus {
+            &:hover {
               background: var(--dark-sidebar-light-2);
               color: var(--primary);
             }

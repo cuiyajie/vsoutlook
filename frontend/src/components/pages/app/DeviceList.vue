@@ -323,6 +323,7 @@ refresh()
     </template>
   </VFlexTableWrapper>
   <ResourceConfigModal />
+  <DownloadConfirm />
 </template>
 <style lang="scss">
 .flex-table-wrapper.devices-flex-table {

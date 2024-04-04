@@ -112,8 +112,8 @@
           "out_a_dst_address": "239.0.0.6:30000"
         },
         "videoformat": {
-          "out_v_width": 3840,
-          "out_v_height": 2160,
+          "out_v_width": 1920,
+          "out_v_height": 1080,
           "out_v_interlaced": false,
           "out_v_fps": 50,
           "out_v_gamma": "hlg",

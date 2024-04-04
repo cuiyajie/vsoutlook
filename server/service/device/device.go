@@ -500,6 +500,11 @@ func allocateNodeDMA(tmpl *models.Tmpl, node *models.Node) ([]string, error) {
 	}
 
 	var result []string
+
+	if dma == 0 {
+		return result, nil
+	}
+
 	for _, v := range dmas {
 		if !allocated[v] {
 			result = append(result, v)
@@ -564,7 +569,7 @@ func CreateDevice(c *svcinfra.Context) {
 	node.Allocated[newDevice.ID] = *cores
 	node.AllocatedDMA[newDevice.ID] = *dmas
 	c.Save(&node)
-	c.Bye(gin.H{"device": newDevice.AsBasic()})
+	c.Bye(gin.H{"device": newDevice.AsDetail()})
 }
 
 func UpdateDevice(c *svcinfra.Context) {
@@ -589,7 +594,7 @@ func UpdateDevice(c *svcinfra.Context) {
 	device.Config = req.Body
 	c.Save(&device)
 
-	c.Bye(gin.H{"device": device.AsBasic()})
+	c.Bye(gin.H{"device": device.AsDetail()})
 }
 
 func DeleteDevice(c *svcinfra.Context) {
