@@ -84,8 +84,8 @@ func RegisterHooks() {
 	DB.Callback().Create().Before("gorm:create").Register("app:set_hash_id_when_create", func(db *gorm.DB) {
 		var field = db.Statement.Schema.LookUpField("ID")
 		if field != nil {
-			if _, isEmpty := field.ValueOf(db.Statement.ReflectValue); isEmpty {
-				field.Set(db.Statement.ReflectValue, GenerateID())
+			if _, isEmpty := field.ValueOf(db.Statement.Context, db.Statement.ReflectValue); isEmpty {
+				field.Set(db.Statement.Context, db.Statement.ReflectValue, GenerateID())
 			}
 		}
 	})

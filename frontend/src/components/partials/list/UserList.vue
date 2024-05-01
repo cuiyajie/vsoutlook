@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { VTagColor } from "/@src/components/base/tags/VTag.vue";
-import type { VAvatarProps } from "/@src/components/base/avatar/VAvatar.vue";
-import { useUserData } from "/@src/stores/user";
-import { UserRole } from "/@src/utils/enums";
+import type { VTagColor } from "@src/components/base/tags/VTag.vue";
+import type { VAvatarProps } from "@src/components/base/avatar/VAvatar.vue";
+import { useUserData } from "@src/stores/user";
+import { UserRole } from "@src/utils/enums";
 
 export interface UserData extends VAvatarProps {
   name: string;
@@ -115,7 +115,7 @@ userStore.$fetchList();
 </template>
 
 <style lang="scss">
-@import "/@src/scss/abstracts/all";
+@import "@src/scss/abstracts/all";
 
 .list-view-v1 {
   .list-view-item {

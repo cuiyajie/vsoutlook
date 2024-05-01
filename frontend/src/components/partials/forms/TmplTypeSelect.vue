@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useTemplateType } from "/@src/stores/templateType";
+import { useTemplateType } from "@src/stores/templateType";
 
 const tmplTypeStore = useTemplateType();
 

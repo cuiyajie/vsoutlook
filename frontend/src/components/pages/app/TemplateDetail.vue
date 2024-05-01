@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useVueFlow, type FlowExportObject } from "@vue-flow/core";
-import { useTemplate } from "/@src/stores/template";
-import { useTemplateType } from "/@src/stores/templateType";
-import { useNotyf } from "/@src/composable/useNotyf";
+import { useTemplate } from "@src/stores/template";
+import { useTemplateType } from "@src/stores/templateType";
+import { useNotyf } from "@src/composable/useNotyf";
 
 const route = useRoute();
 const tmplTypeStore = useTemplateType();

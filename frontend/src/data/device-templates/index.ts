@@ -1,4 +1,4 @@
-import { DeviceStatus, InputSignal, MirrorType, OutputSignal, PtpStatus } from '/@src/utils/enums'
+import { DeviceStatus, InputSignal, MirrorType, OutputSignal, PtpStatus } from '@src/utils/enums'
 
 export const deviceTemplates = [
   { id: '1', name: 'JPEG-XS解码器', description: '', type: '1', version: 1, mirrorType: MirrorType.Container },

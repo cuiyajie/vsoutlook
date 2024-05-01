@@ -3,7 +3,7 @@ import { watchInput, useFormat, unwrap, getFormat, wrap, watchNmosName, handle }
 import { formatKeys, type UdxInputType, def_udx_output_params, val_udx, def_udx_input, global_config, type NMosConfigType, type SSMAddressType, nmos_config, ssm_address } from './Consts';
 import pick from 'lodash-es/pick'
 import merge from 'lodash-es/merge'
-import udxData from '/@src/data/vscomponent/udx.json'
+import udxData from '@src/data/vscomponent/udx.json'
 
 const props = defineProps<{
   name: string
@@ -269,6 +269,6 @@ defineExpose({
 </template>
 
 <style lang="scss">
-@import "/@src/scss/abstracts/all";
-@import "/@src/scss/components/forms-outer";
+@import "@src/scss/abstracts/all";
+@import "@src/scss/components/forms-outer";
 </style>

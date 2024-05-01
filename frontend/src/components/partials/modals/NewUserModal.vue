@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { z } from "zod";
-import { UserRole } from "/@src/utils/enums";
+import { UserRole } from "@src/utils/enums";
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
-import { useUserData } from "/@src/stores/user";
-import { useNotyf } from "/@src/composable/useNotyf";
+import { useUserData } from "@src/stores/user";
+import { useNotyf } from "@src/composable/useNotyf";
 
 const userStore = useUserData();
 const notyf = useNotyf();

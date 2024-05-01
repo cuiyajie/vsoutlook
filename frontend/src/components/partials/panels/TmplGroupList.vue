@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useTemplateType } from "/@src/stores/templateType";
-import { useTemplate } from "/@src/stores/template";
+import { useTemplateType } from "@src/stores/templateType";
+import { useTemplate } from "@src/stores/template";
 
 const props = defineProps<{
   filterListed?: boolean;

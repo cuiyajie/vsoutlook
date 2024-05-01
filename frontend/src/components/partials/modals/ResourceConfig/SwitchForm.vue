@@ -3,7 +3,7 @@ import { def_switch_input_params, def_switch_output_params, def_switch_input_vid
 import { handle, unwrap, watchNmosName, wrap } from "./Utils";
 import pick from 'lodash-es/pick'
 import merge from 'lodash-es/merge'
-import switchData from '/@src/data/vscomponent/switch.json'
+import switchData from '@src/data/vscomponent/switch.json'
 
 const props = defineProps<{
   name: string
@@ -594,8 +594,8 @@ defineExpose({
 </template>
 
 <style lang="scss">
-@import "/@src/scss/abstracts/all";
-@import "/@src/scss/components/forms-outer";
+@import "@src/scss/abstracts/all";
+@import "@src/scss/components/forms-outer";
 
 .form-layout {
   margin: 0 auto;

@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { useTemplate } from "/@src/stores/template";
+import { useTemplate } from "@src/stores/template";
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
 import { z } from "zod";
-import { useNotyf } from "/@src/composable/useNotyf";
+import { useNotyf } from "@src/composable/useNotyf";
 
 const notyf = useNotyf();
 const opened = ref(false);

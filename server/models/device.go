@@ -37,7 +37,7 @@ type DeviceAsDetail struct {
 }
 
 func (device Device) IsDeleted() bool {
-	return false
+	return device.Deleted > 0
 }
 
 func (device *Device) AsBasic() DeviceAsBasic {

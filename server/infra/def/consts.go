@@ -11,3 +11,8 @@ const (
 	Role_Admin  = 1
 	Role_Normal = 2
 )
+
+const (
+	LSize_4K = 1
+	LSize_HD = 2
+)

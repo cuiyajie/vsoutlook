@@ -114,7 +114,7 @@ interface SystemVerbose extends SystemInfo {
 }
 
 interface UserData {
-  id: string,
+  id: string,c
   name: string,
   role: number
 }
@@ -166,4 +166,65 @@ type SettingAuthService = {
 type SettingMvTemplate = {
   name: string,
   path: string
+}
+
+
+interface Layout {
+  id: string,
+  name: string,
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+  size: import('@src/utils/enums').LayoutSize,
+  published: boolean,
+  location: string,
+  content: LayoutDataItem[],
+  createdAt: number,
+  updatedAt: number
+}
+
+interface LayoutDimension {
+  w: number,
+  h: number
+}
+
+interface LayoutPos {
+  x: number,
+  y: number
+}
+
+interface LayoutRect extends LayoutDimension, LayoutPos {
+}
+
+interface IndexedLayoutRect extends LayoutRect {
+  index: number
+}
+
+interface LayoutTitle extends LayoutRect {
+  text: string,
+  fontSize: number
+}
+
+interface LayoutVol extends LayoutPos {
+  one_w: number,
+  g: number,
+  h: number,
+  cnt: number
+}
+
+interface LayoutTimer extends LayoutRect {
+  text: string,
+  fontSize: number,
+  color: string
+}
+
+type LayoutProps = 'title' | 'vol' | 'timer'
+
+interface TypedLayoutRect extends LayoutRect {
+  type: LayoutProps
+}
+
+interface LayoutDataItem {
+  win: LayoutRect,
+  title: LayoutTitle | null,
+  vol: LayoutVol | null,
+  timer: LayoutTimer | null
 }

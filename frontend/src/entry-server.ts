@@ -2,7 +2,7 @@ import type { H3Event } from 'h3'
 import { renderToString } from 'vue/server-renderer'
 import { renderSSRHead } from '@unhead/ssr'
 
-import { createApp } from '/@src/app'
+import { createApp } from '@src/app'
 
 // this function will run before the app is rendered on the server
 // on each request, so it is a good place to play with headers

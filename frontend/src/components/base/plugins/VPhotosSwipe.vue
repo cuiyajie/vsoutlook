@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import PhotoSwipeLightbox, { type PhotoSwipeOptions } from 'photoswipe/lightbox'
-import { onceImageErrored } from '/@src/utils/via-placeholder'
+import { onceImageErrored } from '@src/utils/via-placeholder'
 import 'photoswipe/style.css'
 
 export interface VPhotoSwipeItem {

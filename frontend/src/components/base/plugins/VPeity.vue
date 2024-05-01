@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { PeityOptions, PeityType } from '/@src/utils/peity'
-import { drawBar, drawLine, drawPie } from '/@src/utils/peity'
+import type { PeityOptions, PeityType } from '@src/utils/peity'
+import { drawBar, drawLine, drawPie } from '@src/utils/peity'
 
 export interface VPeityProps {
   values: number[]

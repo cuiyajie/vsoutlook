@@ -2,7 +2,7 @@
 import type { RouteLocationAsString } from 'unplugin-vue-router'
 import type { PropType } from 'vue'
 import { RouterLink } from 'vue-router/auto'
-import { CssUnitRe } from '/@src/utils/regex'
+import { CssUnitRe } from '@src/utils/regex'
 
 import VPlaceload from '../loader/VPlaceload.vue'
 

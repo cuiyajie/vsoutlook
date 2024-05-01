@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
-import { initDarkmode } from '/@src/stores/darkmode'
+import { initDarkmode } from '@src/stores/darkmode'
 
 // This is the global app setup function
 const { locale } = useI18n()
@@ -122,7 +122,7 @@ useHead(() => ({
 /**
  * Initialize the darkmode watcher
  *
- * @see /@src/stores/darkmode
+ * @see @src/stores/darkmode
  */
 initDarkmode()
 </script>

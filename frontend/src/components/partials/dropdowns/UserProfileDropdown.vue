@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useUserSession } from '/@src/stores/userSession'
-import { useFetch } from "/@src/composable/useFetch";
+import { useUserSession } from '@src/stores/userSession'
+import { useFetch } from "@src/composable/useFetch";
 
 const userSession = useUserSession()
 const router = useRouter()

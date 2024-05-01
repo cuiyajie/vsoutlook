@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useAbilComp } from "/@src/stores/abilityComponent";
+import { useAbilComp } from "@src/stores/abilityComponent";
 
 const acStore = useAbilComp();
 

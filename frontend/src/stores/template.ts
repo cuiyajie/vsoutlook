@@ -9,8 +9,8 @@
 
 import { ref } from 'vue'
 import { acceptHMRUpdate, defineStore } from 'pinia'
-import { useNotyf } from "/@src/composable/useNotyf"
-import { useFetch } from "/@src/composable/useFetch"
+import { useNotyf } from "@src/composable/useNotyf"
+import { useFetch } from "@src/composable/useFetch"
 
 export const useTemplate = defineStore('template', () => {
   const tmpls = ref<TemplateData[]>([])

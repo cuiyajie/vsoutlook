@@ -21,6 +21,15 @@
           </RouterLink>
         </li>
         <li>
+          <RouterLink to="/app/mtv">
+            <i
+              class="mr-1 fas fa-border-all"
+              aria-hidden="true"
+            />
+            多画面布局
+          </RouterLink>
+        </li>
+        <li>
           <RouterLink to="/app/resource">
             <i
               class="mr-1 fas fa-server"

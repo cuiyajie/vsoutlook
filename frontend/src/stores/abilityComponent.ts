@@ -9,7 +9,7 @@
 
 import { ref } from 'vue'
 import { acceptHMRUpdate, defineStore } from 'pinia'
-import acs from '/@src/utils/constants/abilityComps'
+import acs from '@src/utils/constants/abilityComps'
 
 export const useAbilComp = defineStore('abilityComponent', () => {
   const abilComps = ref<AbilityComp[]>(acs)

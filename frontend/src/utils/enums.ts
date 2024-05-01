@@ -9,7 +9,10 @@ export enum Signal {
   OpenNewUser,
   OpenNodeEdit,
   OpenTmplMetaEdit,
-  OpenDownloadConfig
+  OpenDownloadConfig,
+  OpenNewLayout,
+  OpenLayoutCellSetting,
+  LayoutSaveAs,
 }
 
 export enum DeviceStatus {
@@ -40,4 +43,9 @@ export enum MirrorType {
 export enum UserRole {
   Admin = 1,
   Normal = 2
+}
+
+export enum LayoutSize {
+  FK = 1,
+  HD = 2
 }

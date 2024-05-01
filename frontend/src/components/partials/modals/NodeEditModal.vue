@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { z } from "zod";
-import { useNotyf } from "/@src/composable/useNotyf";
-import { useClustNode } from "/@src/stores/node";
+import { useNotyf } from "@src/composable/useNotyf";
+import { useClustNode } from "@src/stores/node";
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
 

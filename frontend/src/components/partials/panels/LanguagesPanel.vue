@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 
-import { usePanels } from '/@src/stores/panels'
+import { usePanels } from '@src/stores/panels'
 
 const panels = usePanels()
 const { locale, t } = useI18n()
@@ -207,12 +207,12 @@ watch(locale, () => {
         <div class="img-wrap has-text-centered">
           <img
             class="light-image"
-            src="/@src/assets/illustrations/right-panel/languages.svg"
+            src="@src/assets/illustrations/right-panel/languages.svg"
             alt=""
           >
           <img
             class="dark-image"
-            src="/@src/assets/illustrations/right-panel/languages-dark.svg"
+            src="@src/assets/illustrations/right-panel/languages-dark.svg"
             alt=""
           >
         </div>

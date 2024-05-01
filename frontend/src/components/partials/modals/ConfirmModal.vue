@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import type { ConfirmDialogOptions } from "/@src/utils/dialog";
+import type { ConfirmDialogOptions } from "@src/utils/dialog";
 const opened = ref(false);
 
 const defaultOptions: ConfirmDialogOptions = {

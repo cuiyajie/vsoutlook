@@ -2,10 +2,10 @@
 import type {
   VFlexTableWrapperSortFunction,
   VFlexTableWrapperFilterFunction,
-} from '/@src/components/base/table/VFlexTableWrapper.vue'
-import { useDevices } from '/@src/stores/device'
-import { useClustNode } from '/@src/stores/node'
-import { useTemplate } from '/@src/stores/template'
+} from '@src/components/base/table/VFlexTableWrapper.vue'
+import { useDevices } from '@src/stores/device'
+import { useClustNode } from '@src/stores/node'
+import { useTemplate } from '@src/stores/template'
 
 const deviceStore = useDevices()
 const nodeStore = useClustNode();

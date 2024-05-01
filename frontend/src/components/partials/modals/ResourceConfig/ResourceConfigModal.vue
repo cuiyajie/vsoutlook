@@ -2,17 +2,17 @@
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
 import { z } from "zod";
-import { useNotyf } from "/@src/composable/useNotyf";
+import { useNotyf } from "@src/composable/useNotyf";
 import CodecForm from "./CodecForm.vue";
 import UdxForm from "./UdxForm.vue";
 import MVForm from "./MVForm.vue";
 import SwitchForm from "./SwitchForm.vue";
-import { confirm } from "/@src/utils/dialog";
-import { useDevices } from '/@src/stores/device'
-import { useTemplate } from "/@src/stores/template";
-import downloadJsonFile from '/@src/utils/download-json'
-import { useClustNode } from "/@src/stores/node";
-import { useUserSession } from "/@src/stores/userSession";
+import { confirm } from "@src/utils/dialog";
+import { useDevices } from '@src/stores/device'
+import { useTemplate } from "@src/stores/template";
+import downloadJsonFile from '@src/utils/download-json'
+import { useClustNode } from "@src/stores/node";
+import { useUserSession } from "@src/stores/userSession";
 import dayjs from "dayjs";
 
 const tmplStore = useTemplate();

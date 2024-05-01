@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useViewWrapper } from "/@src/stores/viewWrapper";
-import { useTemplate } from "/@src/stores/template";
+import { useViewWrapper } from "@src/stores/viewWrapper";
+import { useTemplate } from "@src/stores/template";
 
 const route = useRoute();
 const viewWrapper = useViewWrapper();

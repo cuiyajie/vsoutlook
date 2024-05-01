@@ -9,7 +9,7 @@
 
 import { ref } from 'vue'
 import { acceptHMRUpdate, defineStore } from 'pinia'
-import { useFetch } from "/@src/composable/useFetch";
+import { useFetch } from "@src/composable/useFetch";
 
 export const useTemplateType = defineStore('templateType', () => {
   const tmplTypes = ref<TemplateType[]>([])

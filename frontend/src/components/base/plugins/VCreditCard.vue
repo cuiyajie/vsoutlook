@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 
-import type { VCreditCardColor } from '/@src/composable/useCreditcardMask'
+import type { VCreditCardColor } from '@src/composable/useCreditcardMask'
 
 export interface VCreditCardEmits {
   (e: 'flip'): void

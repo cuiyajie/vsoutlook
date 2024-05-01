@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useTemplate } from "/@src/stores/template";
+import { useTemplate } from "@src/stores/template";
 
 const tmplStore = useTemplate();
 const router = useRouter()

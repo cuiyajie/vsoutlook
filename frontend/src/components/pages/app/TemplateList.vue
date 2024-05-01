@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { useNotyf } from "/@src/composable/useNotyf";
-import { useTemplate } from "/@src/stores/template";
-import { useTemplateType } from "/@src/stores/templateType";
-import { confirm } from "/@src/utils/dialog";
-import sleep from "/@src/utils/sleep";
+import { useNotyf } from "@src/composable/useNotyf";
+import { useTemplate } from "@src/stores/template";
+import { useTemplateType } from "@src/stores/templateType";
+import { confirm } from "@src/utils/dialog";
+import sleep from "@src/utils/sleep";
 
 export interface DeviceTemplateData {
   id: string;

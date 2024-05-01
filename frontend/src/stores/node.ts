@@ -9,8 +9,8 @@
 
 import { ref } from 'vue'
 import { acceptHMRUpdate, defineStore } from 'pinia'
-import { useFetch } from "/@src/composable/useFetch";
-// import * as nodeMock from "/@src/data/node-mock"
+import { useFetch } from "@src/composable/useFetch";
+// import * as nodeMock from "@src/data/node-mock"
 
 const Timeout = 15 * 1000
 export const useClustNode = defineStore('clustNode', () => {

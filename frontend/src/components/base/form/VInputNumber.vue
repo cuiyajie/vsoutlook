@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useVFieldContext } from "/@src/composable/useVFieldContext";
+import { useVFieldContext } from "@src/composable/useVFieldContext";
 
 const isNaN = Number.isNaN || window.isNaN;
 const REGEXP_NUMBER = /^-?(?:\d+|\d+\.\d+|\.\d+)(?:[eE][-+]?\d+)?$/;

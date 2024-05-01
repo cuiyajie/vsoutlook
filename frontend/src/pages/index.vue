@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useUserSession } from "/@src/stores/userSession";
+import { useUserSession } from "@src/stores/userSession";
 
 useHead({
   title: __SITE_NAME__,

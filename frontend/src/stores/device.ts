@@ -9,8 +9,8 @@
 
 import { ref } from 'vue'
 import { acceptHMRUpdate, defineStore } from 'pinia'
-import { useFetch } from "/@src/composable/useFetch"
-import * as dic from "/@src/utils/enums-dic"
+import { useFetch } from "@src/composable/useFetch"
+import * as dic from "@src/utils/enums-dic"
 import { valert } from "../utils/dialog"
 
 export const useDevices = defineStore('device', () => {

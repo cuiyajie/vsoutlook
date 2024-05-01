@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { useTmplDragging } from "/@src/stores/tmplDragging";
-import { useClustNode } from "/@src/stores/node";
-import { useResourceCharts } from "/@src/composable/useResourceChart";
+import { useTmplDragging } from "@src/stores/tmplDragging";
+import { useClustNode } from "@src/stores/node";
+import { useResourceCharts } from "@src/composable/useResourceChart";
 import ApexChart from 'vue3-apexcharts'
 
 const dragContext = useTmplDragging();

@@ -2,7 +2,7 @@
 import { VueFlow, useVueFlow, Position, type GraphNode, type FlowExportObject } from "@vue-flow/core";
 import { Background, BackgroundVariant } from "@vue-flow/background";
 import { MiniMap } from "@vue-flow/minimap";
-import genId from "/@src/utils/id-gen";
+import genId from "@src/utils/id-gen";
 
 const props = defineProps<{
   flow: FlowExportObject | null

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useTemplateType } from "/@src/stores/templateType";
-import { useTemplate } from "/@src/stores/template";
-import { useTmplDragging } from "/@src/stores/tmplDragging";
-import { MirrorType } from "/@src/utils/enums";
+import { useTemplateType } from "@src/stores/templateType";
+import { useTemplate } from "@src/stores/template";
+import { useTmplDragging } from "@src/stores/tmplDragging";
+import { MirrorType } from "@src/utils/enums";
 
 const tmplTypeStore = useTemplateType();
 const tmplStore = useTemplate();

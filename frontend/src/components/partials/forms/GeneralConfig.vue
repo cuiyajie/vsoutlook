@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useUserSession } from "/@src/stores/userSession";
+import { useUserSession } from "@src/stores/userSession";
 
 const usStore = useUserSession();
 const settings = computed(() => usStore.settings);
@@ -298,8 +298,8 @@ const vBlurOnEnter = {
 </template>
 
 <style lang="scss">
-@import "/@src/scss/abstracts/all";
-@import "/@src/scss/components/forms-outer";
+@import "@src/scss/abstracts/all";
+@import "@src/scss/components/forms-outer";
 
 .is-navbar {
   .form-layout {

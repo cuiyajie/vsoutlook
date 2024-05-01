@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useVFieldContext } from '/@src/composable/useVFieldContext'
+import { useVFieldContext } from '@src/composable/useVFieldContext'
 
 export type VSwitchBlockColor = 'primary' | 'info' | 'success' | 'warning' | 'danger'
 

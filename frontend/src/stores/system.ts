@@ -9,7 +9,7 @@
 
 import { ref } from 'vue'
 import { acceptHMRUpdate, defineStore } from 'pinia'
-import * as data from '/@src/data/system-templates'
+import * as data from '@src/data/system-templates'
 import { useDevices } from './device'
 
 export const useSystems = defineStore('system', () => {

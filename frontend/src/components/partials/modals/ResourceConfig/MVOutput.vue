@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import { useFormat, getFormat, useProtocolDC } from './Utils';
 import { formats, type MVOutputParamsType, def_mv_pip_params, type SwitchMVPipParamsType } from './Consts';
-import { useUserSession } from "/@src/stores/userSession";
+import { useUserSession } from "@src/stores/userSession";
 
 const usStore = useUserSession();
 const templates = computed(() => usStore.settings.mv_template_list || []);

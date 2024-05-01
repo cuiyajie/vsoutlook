@@ -20,7 +20,7 @@
           <div class="image-container">
             <img
               class="dark-image"
-              src="/@src/assets/placeholders/template.svg"
+              src="@src/assets/placeholders/template.svg"
               alt=""
             >
           </div>
@@ -38,7 +38,7 @@
           <div class="image-container">
             <img
               class="dark-image"
-              src="/@src/assets/placeholders/device.svg"
+              src="@src/assets/placeholders/device.svg"
               alt=""
             >
           </div>
@@ -56,7 +56,7 @@
           <div class="image-container">
             <img
               class="dark-image"
-              src="/@src/assets/placeholders/resource.svg"
+              src="@src/assets/placeholders/resource.svg"
               alt=""
             >
           </div>
@@ -74,7 +74,7 @@
           <div class="image-container">
             <img
               class="dark-image"
-              src="/@src/assets/placeholders/system.svg"
+              src="@src/assets/placeholders/system.svg"
               alt=""
             >
           </div>
@@ -90,7 +90,7 @@
 </template>
 
 <style lang="scss">
-@import '/@src/scss/abstracts/all';
+@import '@src/scss/abstracts/all';
 
 .is-navbar {
   .onboarding-wrapper {

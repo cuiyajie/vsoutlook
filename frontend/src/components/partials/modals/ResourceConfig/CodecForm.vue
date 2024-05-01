@@ -3,7 +3,7 @@ import { getFormat, handle, unwrap, useFormat, watchInput, watchNmosName, wrap }
 import { def_codec_input, def_codec_output, v_protocols, val_codec, type NMosConfigType, nmos_config, type SSMAddressType, ssm_address } from './Consts';
 import pick from 'lodash-es/pick'
 import merge from 'lodash-es/merge'
-import codecData from '/@src/data/vscomponent/codec.json'
+import codecData from '@src/data/vscomponent/codec.json'
 
 const props = defineProps<{
   name: string
@@ -217,6 +217,6 @@ defineExpose({
 </template>
 
 <style lang="scss">
-@import "/@src/scss/abstracts/all";
-@import "/@src/scss/components/forms-outer";
+@import "@src/scss/abstracts/all";
+@import "@src/scss/components/forms-outer";
 </style>

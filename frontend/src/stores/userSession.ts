@@ -1,6 +1,6 @@
 import { acceptHMRUpdate, defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { useFetch } from "/@src/composable/useFetch"
+import { useFetch } from "@src/composable/useFetch"
 
 export type UserData = {
   id: string,

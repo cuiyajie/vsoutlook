@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-// import { DeviceStatus } from '/@src/utils/enums'
-import { confirm } from "/@src/utils/dialog";
-import { useNotyf } from "/@src/composable/useNotyf";
-import { useDevices } from '/@src/stores/device'
-import { useClustNode } from '/@src/stores/node'
-import { useTemplate } from '/@src/stores/template'
-import { DeviceStatus } from "/@src/utils/enums-dic";
+// import { DeviceStatus } from '@src/utils/enums'
+import { confirm } from "@src/utils/dialog";
+import { useNotyf } from "@src/composable/useNotyf";
+import { useDevices } from '@src/stores/device'
+import { useClustNode } from '@src/stores/node'
+import { useTemplate } from '@src/stores/template'
+import { DeviceStatus } from "@src/utils/enums-dic";
 
 const props = defineProps<{
   device: DeviceDetail

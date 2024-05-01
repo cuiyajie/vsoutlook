@@ -55,6 +55,15 @@
           </RouterLink>
         </li>
         <li>
+          <RouterLink to="/app/mtv">
+            <i
+              class="mr-1 fas fa-border-all"
+              aria-hidden="true"
+            />
+            多画面布局
+          </RouterLink>
+        </li>
+        <li>
           <RouterLink to="/app/config">
             <i
               class="mr-1 fas fa-users-cog"
@@ -69,5 +78,5 @@
 </template>
 
 <style lang="scss">
-@import '/@src/scss/layout/sidebar-panel';
+@import '@src/scss/layout/sidebar-panel';
 </style>

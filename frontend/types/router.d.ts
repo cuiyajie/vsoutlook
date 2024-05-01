@@ -45,6 +45,8 @@ declare module 'vue-router/auto/routes' {
     '/app/': RouteRecordInfo<'/app/', '/app', Record<never, never>, Record<never, never>>,
     '/app/config': RouteRecordInfo<'/app/config', '/app/config', Record<never, never>, Record<never, never>>,
     '/app/devices': RouteRecordInfo<'/app/devices', '/app/devices', Record<never, never>, Record<never, never>>,
+    '/app/mtv/': RouteRecordInfo<'/app/mtv/', '/app/mtv', Record<never, never>, Record<never, never>>,
+    '/app/mtv/[id]': RouteRecordInfo<'/app/mtv/[id]', '/app/mtv/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
     '/app/resource': RouteRecordInfo<'/app/resource', '/app/resource', Record<never, never>, Record<never, never>>,
     '/app/template/': RouteRecordInfo<'/app/template/', '/app/template', Record<never, never>, Record<never, never>>,
     '/app/template/[id]': RouteRecordInfo<'/app/template/[id]', '/app/template/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,

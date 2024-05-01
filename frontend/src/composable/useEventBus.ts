@@ -1,6 +1,6 @@
 import { Subscription } from 'rxjs';
 import { onMounted, onUnmounted } from 'vue'
-import { type Signal } from '/@src/utils/enums'
+import { type Signal } from '@src/utils/enums'
 
 type InternalEventHanlder = (data: unknown) => void;
 type InternalEventListenersPair = [Signal, InternalEventHanlder]

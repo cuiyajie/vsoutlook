@@ -1,14 +1,14 @@
-import { useFetch } from '/@src/composable/useFetch'
-import { definePlugin } from '/@src/app'
-import { useUserSession } from '/@src/stores/userSession'
+import { useFetch } from '@src/composable/useFetch'
+import { definePlugin } from '@src/app'
+import { useUserSession } from '@src/stores/userSession'
 
 /**
  * Here we are setting up two router navigation guards
  * (note that we can have multiple guards in multiple plugins)
  *
  * We can add meta to pages either by declaring them manualy in the
- * routes declaration (see /@src/router.ts)
- * or by adding a <route> tag into .vue files (see /@src/pages/sidebar/dashboards.ts)
+ * routes declaration (see @src/router.ts)
+ * or by adding a <route> tag into .vue files (see @src/pages/sidebar/dashboards.ts)
  *
  * <route lang="yaml">
  * meta:

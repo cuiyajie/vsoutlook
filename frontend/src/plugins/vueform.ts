@@ -1,4 +1,4 @@
-import { definePlugin } from '/@src/app'
+import { definePlugin } from '@src/app'
 import { defineAsyncComponent } from 'vue'
 
 export default definePlugin(({ app }) => {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import genAvatar from "/@src/utils/avatar-gen";
-import { useTemplateType } from "/@src/stores/templateType";
+import genAvatar from "@src/utils/avatar-gen";
+import { useTemplateType } from "@src/stores/templateType";
 
 const tmplTypeUtils = useTemplateType();
 

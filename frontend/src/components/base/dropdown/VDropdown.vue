@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useDropdown, type DropdownOptions } from '/@src/composable/useDropdown'
+import { useDropdown, type DropdownOptions } from '@src/composable/useDropdown'
 
 export type VDropdownColor = 'primary' | 'info' | 'success' | 'warning' | 'danger'
 export interface VDropdownProps {

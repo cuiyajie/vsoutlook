@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useSystems } from "/@src/stores/system";
+import { useSystems } from "@src/stores/system";
 
 const sysStore = useSystems()
 

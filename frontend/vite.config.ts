@@ -129,7 +129,7 @@ export default defineConfig({
   resolve: {
     alias: [
       {
-        find: '/@src/',
+        find: '@src/',
         replacement: `/src/`,
       },
     ],
@@ -204,9 +204,9 @@ export default defineConfig({
     AutoImport({
       dts: './types/imports.d.ts',
       imports: ['vue', '@vueuse/core', VueRouterAutoImports, unheadVueComposablesImports, {
-        '/@src/utils/enums': ['Signal'],
-        '/@src/utils/bus': ['bus'],
-        '/@src/composable/useEventBus': ['useListener', 'useListeners'],
+        '@src/utils/enums': ['Signal'],
+        '@src/utils/bus': ['bus'],
+        '@src/composable/useEventBus': ['useListener', 'useListeners'],
       }],
     }),
 

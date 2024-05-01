@@ -68,6 +68,18 @@ func (Settings) TableName() string {
 	return "settings"
 }
 
+var GetLayout = Get[Layout]
+var ActiveLayout = Active[Layout]
+var LayoutBy = QueryOne[Layout]
+var LayoutsBy = QueryMulti[Layout]
+var LayoutsBy3 = QueryMulti3[Layout]
+var LayoutsBy4 = QueryMulti4[Layout]
+var LayoutsByIDs = ByIDs[Layout]
+
+func (Layout) TableName() string {
+	return "layouts"
+}
+
 // for gorm
 func (d TmplRequirement) Value() (driver.Value, error) {
 	return json.Marshal(d)

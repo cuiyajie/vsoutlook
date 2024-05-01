@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { useTemplateType } from "/@src/stores/templateType";
-import { useTemplate } from "/@src/stores/template";
+import { useTemplateType } from "@src/stores/templateType";
+import { useTemplate } from "@src/stores/template";
 
 const tmplTypeStore = useTemplateType();
 const tmplStore = useTemplate();

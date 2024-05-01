@@ -11,6 +11,7 @@ import (
 	"vsoutlook.com/vsoutlook/infra/track"
 	"vsoutlook.com/vsoutlook/service/cluster"
 	"vsoutlook.com/vsoutlook/service/device"
+	"vsoutlook.com/vsoutlook/service/layout"
 	"vsoutlook.com/vsoutlook/service/settings"
 	"vsoutlook.com/vsoutlook/service/site"
 	"vsoutlook.com/vsoutlook/service/svcinfra"
@@ -78,6 +79,18 @@ func SetupRouter() *gin.Engine {
 	{
 		member := group(root, "api", authenticated)
 		post(member, "settings/update", settings.UpdateSetting)
+	}
+
+	{
+		member := group(root, "api", authenticated)
+		post(member, "layout/list", layout.GetLayoutList)
+		post(member, "layout/detail", layout.GetLayout)
+		post(member, "layout/create", layout.CreateLayout)
+		post(member, "layout/update", layout.UpdateLayout)
+		post(member, "layout/delete", layout.DeleteLayout)
+		post(member, "layout/publish", layout.PublishLayout)
+		post(member, "layout/update.location", layout.UpdateLayoutLocation)
+		post(member, "layout/update.content", layout.UpdateLayoutContent)
 	}
 
 	router.NoRoute(h(site.FallbackHandler))

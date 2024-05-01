@@ -1,4 +1,4 @@
-import { definePlugin } from '/@src/app'
+import { definePlugin } from '@src/app'
 import { plugin as VueTippy } from 'vue-tippy'
 
 export default definePlugin(({ app }) => {

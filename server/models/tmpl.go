@@ -56,7 +56,7 @@ type TmplAsBasic struct {
 }
 
 func (tmpl Tmpl) IsDeleted() bool {
-	return false
+	return tmpl.Deleted > 0
 }
 
 func (tmpl *Tmpl) AsBasic() TmplAsBasic {

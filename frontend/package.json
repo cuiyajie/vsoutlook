@@ -135,11 +135,13 @@
     "vivus": "0.4.6",
     "vue": "3.3.4",
     "vue-accessible-color-picker": "4.1.4",
+    "vue-draggable-resizable": "^3.0.0",
     "vue-i18n": "9.3.0-beta.25",
     "vue-router": "4.2.4",
     "vue-scrollto": "2.20.0",
     "vue-tippy": "6.3.1",
     "vue3-apexcharts": "1.4.4",
+    "vue3-colorpicker": "^2.3.0",
     "zod": "3.22.2"
   },
   "devDependencies": {

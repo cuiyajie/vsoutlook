@@ -60,7 +60,8 @@ module.exports = {
         'vue/no-setup-props-destructure': 'off',
 
         'vue/singleline-html-element-content-newline': 'off',
-        'vue/max-attributes-per-line': 'off'
+        'vue/max-attributes-per-line': 'off',
+        'vue/no-v-html ': 'off',
       },
     },
   ],

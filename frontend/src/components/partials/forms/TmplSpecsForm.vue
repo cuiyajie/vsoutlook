@@ -419,8 +419,8 @@ const opened = ref(false)
 </template>
 
 <style lang="scss">
-@import "/@src/scss/abstracts/all";
-@import "/@src/scss/components/forms-outer";
+@import "@src/scss/abstracts/all";
+@import "@src/scss/components/forms-outer";
 
 .specs-form.form-layout {
   max-width: 740px;

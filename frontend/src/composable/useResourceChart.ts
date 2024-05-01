@@ -1,4 +1,4 @@
-import { useThemeColors } from '/@src/composable/useThemeColors'
+import { useThemeColors } from '@src/composable/useThemeColors'
 
 const baseOptions = (themeColors: ReturnType<typeof useThemeColors>) => ({
   chart: {

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useDarkmode } from "/@src/stores/darkmode";
-import { useUserSession } from "/@src/stores/userSession";
-import { useNotyf } from "/@src/composable/useNotyf";
-import { useFetch } from "/@src/composable/useFetch";
+import { useDarkmode } from "@src/stores/darkmode";
+import { useUserSession } from "@src/stores/userSession";
+import { useNotyf } from "@src/composable/useNotyf";
+import { useFetch } from "@src/composable/useFetch";
 
 const isLoading = ref(false);
 const darkmode = useDarkmode();

@@ -17,7 +17,7 @@ import { createApp } from './app'
 /**
  * We create our app and mount it when it is ready
  *
- * @see /@src/app.ts for more detailed informations
+ * @see @src/app.ts for more detailed informations
  */
 createApp().then(async (vuero) => {
   // @ts-ignore
