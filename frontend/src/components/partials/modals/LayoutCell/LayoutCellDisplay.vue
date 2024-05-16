@@ -76,12 +76,19 @@ watch(mv, () => {
 // })
 
 function selectComponent(type: LayoutProps) {
-  syncComponentData(type)
+  activeComponent.value = null
+  nextTick(() => {
+    syncComponentData(type)
+  })
 }
 
 watch(activeComponent, (v) => {
   emit('active', v?.type || null)
 }, { immediate: true })
+
+defineExpose({
+  clearComponent: () => activeComponent.value = null
+})
 </script>
 <template>
   <div class="layout-display draggable">
@@ -98,6 +105,7 @@ watch(activeComponent, (v) => {
       :handles="activeComponent.type === 'vol' ? ['tm', 'bm'] : ['tl', 'tm', 'tr', 'mr', 'br', 'bm', 'bl', 'ml']"
       :parent="true"
       :active="true"
+      :prevent-deactivation="true"
       :drag-handle="`.drag-handle`"
       :max-width="bound.w"
       :max-height="bound.h"

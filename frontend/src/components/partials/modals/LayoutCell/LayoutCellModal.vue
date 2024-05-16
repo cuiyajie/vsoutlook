@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useNotyf } from "@src/composable/useNotyf";
 import { draftVol, draftTitle, draftTimer } from '@src/components/pages/app/MtvLayouts/utils';
+import type { GlobalComponents } from "vue";
 
 const props = defineProps<{
   index: number,
@@ -42,9 +43,17 @@ function activeComponent(type: LayoutProps | null) {
   activeType.value = type
 }
 
+const displayRef = ref<InstanceType<GlobalComponents['LayoutCellDisplay']> | null>(null)
 function resetCell() {
   if (!originData.value) return
   data.value = JSON.parse(JSON.stringify(originData.value))
+}
+
+function deleteCell() {
+  if (!activeType.value || !data.value) return
+  data.value[activeType.value] = null
+  activeComponent(null)
+  displayRef.value?.clearComponent()
 }
 
 function addComponent(type: LayoutProps) {
@@ -95,19 +104,14 @@ function onClose() {
               窗口名称
               <div class="add-mask"><i aria-hidden="true" class="fas fa-plus" /></div>
             </div>
-            <div class="lc-control" role="button" tabindex="-1" @click.prevent="addComponent('timer')" @keyup.enter.prevent="addComponent('timer')">
-              <i class="iconify" data-icon="feather:clock" aria-hidden="true" />
-              数字时钟
-              <div class="add-mask"><i aria-hidden="true" class="fas fa-plus" /></div>
-            </div>
           </div>
           <div class="lc-display-inner" :style="{ width: `${bounding.w}px`, height: `${bounding.h}px` }">
-            <layout-cell-display v-if="data" v-model="data" :bound="bounding" @active="activeComponent" />
+            <layout-cell-display v-if="data" ref="displayRef" v-model="data" :bound="bounding" @active="activeComponent" />
           </div>
         </div>
         <div class="lc-divider" />
         <div class="lc-setting" data-role="LayoutSetting">
-          <layout-cell-setting v-if="data" v-model="data" :type="activeType" :base="base" @reset="resetCell" />
+          <layout-cell-setting v-if="data" v-model="data" :type="activeType" :base="base" @reset="resetCell" @delete="deleteCell" />
         </div>
       </div>
     </template>

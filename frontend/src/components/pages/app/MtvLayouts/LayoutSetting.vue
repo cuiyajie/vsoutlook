@@ -58,19 +58,6 @@ const vol = computed({
   }
 })
 
-const reservedTimer = ref<LayoutDataItem['timer']>(null)
-const timer = computed({
-  get: () => Boolean(props.modelValue.timer),
-  set: (v: boolean) => {
-    if (v) {
-      reservedTimer.value = reservedTimer.value || draftTimer(props.modelValue.win.w * props.bound.w, props.bound)
-    } else {
-      reservedTimer.value = props.modelValue.timer
-    }
-    emit('update:model-value', { ...props.modelValue, timer: v ? reservedTimer.value : null })
-  }
-})
-
 </script>
 <template>
   <div className="layout-panel">
@@ -92,11 +79,11 @@ const timer = computed({
         <div class="layout-row-inner">
           <div class="layout-cell half">
             <label for="winw">w</label>
-            <input v-model="winw" name="winw" type="number" min="0" :max="base.w">
+            <input id="winw" v-model="winw" type="number" min="0" :max="base.w">
           </div>
           <div class="layout-cell half">
             <label for="winh">h</label>
-            <input v-model="winh" name="winh" type="number" min="0" :max="base.h">
+            <input id="winh" v-model="winh" type="number" min="0" :max="base.h">
           </div>
         </div>
       </section>
@@ -105,11 +92,11 @@ const timer = computed({
         <div class="layout-row-inner">
           <div class="layout-cell half">
             <label for="winx">x</label>
-            <input v-model="winx" name="winx" type="number" min="0" :max="base.w">
+            <input id="winx" v-model="winx" type="number" min="0" :max="base.w">
           </div>
           <div class="layout-cell half">
             <label for="winy">y</label>
-            <input v-model="winy" name="winy" type="number" min="0" :max="base.h">
+            <input id="winy" v-model="winy" type="number" min="0" :max="base.h">
           </div>
         </div>
       </section>
@@ -126,14 +113,6 @@ const timer = computed({
           <div class="layout-cell">
             <div>显示音柱</div>
             <VCheckbox v-model="vol" />
-          </div>
-        </div>
-      </section>
-      <section class="layout-row">
-        <div class="layout-row-inner">
-          <div class="layout-cell">
-            <div>显示时钟</div>
-            <VCheckbox v-model="timer" />
           </div>
         </div>
       </section>

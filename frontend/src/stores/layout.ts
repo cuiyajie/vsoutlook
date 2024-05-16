@@ -10,10 +10,12 @@
 import { ref } from 'vue'
 import { acceptHMRUpdate, defineStore } from 'pinia'
 import { useFetch } from "@src/composable/useFetch"
+import { useUserSession } from './userSession';
 
 export const useLayout = defineStore('layout', () => {
   const layouts = ref<Layout[]>([])
   const $fetch  = useFetch()
+  const userSession = useUserSession()
 
   async function $fetchList() {
     const res = await $fetch('/api/layout/list')
@@ -24,34 +26,56 @@ export const useLayout = defineStore('layout', () => {
 
   async function $addLayout(layout: Pick<Layout, 'name' | 'size'>) {
     const res = await $fetch('/api/layout/create', { body: layout })
-    if (res && res.layout) {
-      layouts.value.push(res.layout)
-      return res.layout
+    if (res) {
+      if (res.layout) {
+        layouts.value.push(res.layout)
+      }
+      if (res.settings) {
+        userSession.updateMtvSettings(res.settings)
+      }
     }
+    return res
   }
 
   async function $deleteLayout(id: string) {
     const res = await $fetch('/api/layout/delete', { body: { id } })
-    if (res && res.result === 'ok') {
-      layouts.value = layouts.value.filter(layout => layout.id !== id)
-      return 'success'
+    if (res) {
+      if (res.settings) {
+        userSession.updateMtvSettings(res.settings)
+      }
+      if (res.result === 'ok') {
+        layouts.value = layouts.value.filter(layout => layout.id !== id)
+        return 'success'
+      }
     }
+    return res?.message
   }
 
   async function $updateLayout(layout: Pick<Layout, 'id' | 'name' | 'size'>) {
     const res = await $fetch('/api/layout/update', { body: layout })
-    if (res && res.layout) {
-      const index = layouts.value.findIndex(l => l.id === layout.id)
-      layouts.value[index] = res.layout
-      return 'success'
+    if (res) {
+      if (res.layout) {
+        const index = layouts.value.findIndex(l => l.id === layout.id)
+        layouts.value[index] = res.layout
+      }
+      if (res.settings) {
+        userSession.updateMtvSettings(res.settings)
+      }
     }
+    return res
   }
 
-  async function $updateLocation(id: string, location: string) {
-    const res = await $fetch('/api/layout/update.location', { body: { id, location } })
-    if (res && res.layout) {
-      return res.layout
+  async function $duplicate(id: string, name: string) {
+    const res = await $fetch('/api/layout/duplicate', { body: { id, name } })
+    if (res) {
+      if (res.layout) {
+        layouts.value.push(res.layout)
+      }
+      if (res.settings) {
+        userSession.updateMtvSettings(res.settings)
+      }
     }
+    return res
   }
 
   async function $updateContent(id: string, content: any[]) {
@@ -63,10 +87,16 @@ export const useLayout = defineStore('layout', () => {
 
   async function $publish(layout: Layout) {
     const res = await $fetch('/api/layout/publish', { body: { id: layout.id } })
-    if (res && res.result === 'ok') {
-      layout.published = true
-      return 'success'
+    if (res) {
+      if (res.settings) {
+        userSession.updateMtvSettings(res.settings)
+      }
+      if (res.result === 'ok') {
+        layout.published = true
+        return 'success'
+      }
     }
+    return res?.message
   }
 
   return {
@@ -75,7 +105,7 @@ export const useLayout = defineStore('layout', () => {
     $addLayout,
     $deleteLayout,
     $updateLayout,
-    $updateLocation,
+    $duplicate,
     $updateContent,
     $publish
   } as const

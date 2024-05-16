@@ -21,6 +21,12 @@ type SettingsAsBasic struct {
 	Value string `json:"value"`
 }
 
+type MtvSetting struct {
+	Name string `json:"name"`
+	Path string `json:"path"`
+	ID   string `json:"id,omitempty"`
+}
+
 func (settings *Settings) AsBasic() SettingsAsBasic {
 	var result SettingsAsBasic
 	copier.Copy(&result, &settings)

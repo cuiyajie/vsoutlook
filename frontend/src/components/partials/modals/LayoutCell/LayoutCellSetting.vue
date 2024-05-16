@@ -10,7 +10,8 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'reset'): void,
-  (e: 'update:model-value', value: LayoutDataItem): void
+  (e: 'delete'): void,
+  (e: 'update:model-value', value: LayoutDataItem): void,
 }>()
 
 const ac = computed<LayoutTitle | LayoutVol | LayoutTimer | null>({
@@ -93,14 +94,23 @@ const acnt = computed({
   <div className="layout-panel">
     <div class="layout-header mb-4">
       <h3 class="title is-5">属性设置</h3>
-      <a
-        v-if="ac"
-        role="button"
-        class="action-link"
-        tabindex="0"
-        @keydown.space.prevent="emit('reset')"
-        @click.prevent="emit('reset')"
-      >重置</a>
+      <div v-if="ac">
+        <a
+          v-if="type !== 'timer'"
+          role="button"
+          class="action-link is-warning mr-4"
+          tabindex="0"
+          @keydown.space.prevent="emit('delete')"
+          @click.prevent="emit('delete')"
+        >删除</a>
+        <a
+          role="button"
+          class="action-link"
+          tabindex="0"
+          @keydown.space.prevent="emit('reset')"
+          @click.prevent="emit('reset')"
+        >重置</a>
+      </div>
     </div>
     <div v-if="ac" class="layout-form">
       <section class="layout-row">
@@ -108,11 +118,11 @@ const acnt = computed({
         <div class="layout-row-inner">
           <div v-if="type !== 'vol'" class="layout-cell half">
             <label for="acw">w</label>
-            <input v-model="acw" name="acw" type="number" min="0" :max="base.w">
+            <input id="acw" v-model="acw" type="number" min="0" :max="base.w">
           </div>
           <div class="layout-cell half">
             <label for="ach">h</label>
-            <input v-model="ach" name="ach" type="number" min="0" :max="base.h">
+            <input id="ach" v-model="ach" type="number" min="0" :max="base.h">
           </div>
         </div>
       </section>
@@ -121,11 +131,11 @@ const acnt = computed({
         <div class="layout-row-inner">
           <div class="layout-cell half">
             <label for="acx">X</label>
-            <input v-model="acx" name="acx" type="number" min="0" :max="base.w">
+            <input id="acx" v-model="acx" type="number" min="0" :max="base.w">
           </div>
           <div class="layout-cell half">
             <label for="acy">Y</label>
-            <input v-model="acy" name="acy" type="number" min="0" :max="base.h">
+            <input id="acy" v-model="acy" type="number" min="0" :max="base.h">
           </div>
         </div>
       </section>
@@ -158,15 +168,15 @@ const acnt = computed({
         <div class="layout-row-inner">
           <div class="layout-cell half">
             <label for="acow">柱宽</label>
-            <input v-model="acow" name="acow" type="number" min="0" :max="base.w">
+            <input id="acow" v-model="acow" type="number" min="0" :max="base.w">
           </div>
           <div class="layout-cell half">
             <label for="acgp">间距</label>
-            <input v-model="acgp" name="acgp" type="number" min="0" :max="base.w">
+            <input id="acgp" v-model="acgp" type="number" min="0" :max="base.w">
           </div>
           <div class="layout-cell half">
             <label for="acnt">数量</label>
-            <input v-model="acnt" name="acnt" type="number" min="0">
+            <input id="acnt" v-model="acnt" type="number" min="0">
           </div>
         </div>
       </section>

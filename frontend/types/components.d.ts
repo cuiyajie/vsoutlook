@@ -42,7 +42,6 @@ declare module 'vue' {
     LayoutList: typeof import('./../src/components/pages/app/MtvLayouts/LayoutList.vue')['default']
     LayoutSaveModal: typeof import('./../src/components/partials/modals/LayoutSaveModal.vue')['default']
     LayoutSetting: typeof import('./../src/components/pages/app/MtvLayouts/LayoutSetting.vue')['default']
-    LayoutWinSetting: typeof import('./../src/components/partials/modals/LayoutWinSetting.vue')['default']
     Logo: typeof import('./../src/components/svg/Logo.vue')['default']
     MobileNavbar: typeof import('./../src/components/navigation/mobile/MobileNavbar.vue')['default']
     MobileSidebar: typeof import('./../src/components/navigation/mobile/MobileSidebar.vue')['default']

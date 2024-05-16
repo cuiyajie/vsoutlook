@@ -3,6 +3,7 @@ import { useUserSession } from "@src/stores/userSession";
 
 const usStore = useUserSession();
 const settings = computed(() => usStore.settings);
+const router = useRouter();
 
 /* ------------------------ Auth Service -------------------------- */
 const def_auth_service = {
@@ -29,10 +30,10 @@ function removeAuthService(idx: number) {
 /* ----------------------------------------------------------------- */
 
 /* ------------------------ Mv Service -------------------------- */
-const def_mv_template = {
-	name: "vso media software",
-  path: "/opt/vsomediasoftware/config/viewlayout.json"
-}
+// const def_mv_template = {
+// 	name: "vso media software",
+//   path: "/opt/vsomediasoftware/config/viewlayout.json"
+// }
 
 const mvTemplates = ref<Array<SettingMvTemplate>>([]);
 
@@ -41,8 +42,9 @@ watch(() => settings.value.mv_template_list, () => {
 }, { immediate: true })
 
 function addMvTemplate() {
-  mvTemplates.value.push({ ...def_mv_template })
-  updateProp('mv_template_list')
+  // mvTemplates.value.push({ ...def_mv_template })
+  // updateProp('mv_template_list')
+  router.push('/app/mtv')
 }
 
 function removeMvTemplate(idx: number) {
@@ -261,6 +263,7 @@ const vBlurOnEnter = {
                     v-model="mvt.name"
                     v-blur-on-enter
                     type="text"
+                    readonly
                     class="input is-primary-focus"
                     data-key="mv_template_list"
                   >
@@ -275,6 +278,7 @@ const vBlurOnEnter = {
                     v-model="mvt.path"
                     v-blur-on-enter
                     type="text"
+                    readonly
                     class="input is-primary-focus"
                     data-key="mv_template_list"
                   >

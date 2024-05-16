@@ -53,3 +53,9 @@ func LayoutList() []LayoutAsBasic {
 	}
 	return result
 }
+
+func PublishedLayoutList() []Layout {
+	var layouts []Layout
+	db.DB.Where("published=1 and deleted=0").Find(&layouts)
+	return layouts
+}

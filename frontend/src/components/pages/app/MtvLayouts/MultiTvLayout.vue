@@ -2,9 +2,10 @@
 import { useNotyf } from "@src/composable/useNotyf";
 import { confirm } from "@src/utils/dialog";
 import { useElementBounding, useElementSize } from '@vueuse/core'
-import { DefaultLayouts, draftTimer, draftTitle, draftVol } from './utils';
+import { DefaultLayouts, draftTitle, draftVol, draftTimer, ds2db, db2ds } from './utils';
 import { useLayout } from "@src/stores/layout";
 import { LayoutSize } from "@src/utils/enums";
+import IsEqual from "lodash-es/isEqual";
 import { type WatchStopHandle } from "vue"
 
 const notyf = useNotyf();
@@ -92,12 +93,14 @@ onBeforeRouteLeave(routeGuard)
 function parseLayoutContent() {
   if (currLayout.value) {
     currLayoutSample.value = null
-    dataset.value = currLayout.value.content || []
-    originDataset.value = JSON.parse(JSON.stringify(dataset.value))
+    const str = JSON.stringify(db2ds(currLayout.value.content || [], base.value))
+    dataset.value = JSON.parse(str)
+    originDataset.value = JSON.parse(str)
     unwatch?.()
     changed.value = false
+    activeCell.value = null
     unwatch = watch(dataset, () => {
-      changed.value = true
+      changed.value = !IsEqual(dataset.value, originDataset.value)
     }, { deep: true })
   }
 }
@@ -115,7 +118,7 @@ function initLayout() {
     win: { x: 0, y: 0, w: 0, h: 0 },
     title: draftTitle(base.value.w, base.value.h, bounding.value),
     vol: draftVol(base.value.h, bounding.value),
-    timer: draftTimer(base.value.w, bounding.value)
+    timer: null
   }))
 }
 
@@ -131,7 +134,7 @@ function redrawLayout() {
       dataset.value[index].win = { x: (x - origin.x) / w, y: (y - origin.y) / h, w: width / w, h: height / h }
       dataset.value[index].title = draftTitle(width, height, bounding.value)
       dataset.value[index].vol = draftVol(height, bounding.value)
-      dataset.value[index].timer = draftTimer(width, bounding.value)
+      dataset.value[index].timer = null
     })
     originDataset.value = JSON.parse(JSON.stringify(dataset.value))
   })
@@ -217,18 +220,43 @@ function editCell(didx: number) {
 //   activeCell.value = null
 // })
 
+function createWinCell(timer: boolean) {
+  const { w, h } = bounding.value
+  const cell: LayoutDataItem = {
+    win: { x: 0.25, y: 0.25, w: 0.5, h: 0.5 },
+    title: null,
+    timer: null,
+    vol: null
+  }
+  if (timer) {
+    cell.timer = draftTimer(w * 0.5, bounding.value)
+  } else {
+    cell.title = draftTitle(w * 0.5, h * 0.5, bounding.value)
+    cell.vol = draftVol(h * 0.5, bounding.value)
+  }
+  return cell
+}
+
 function createWin() {
   if (!currLayoutSample.value && dataset.value.length === 0) {
     notyf.error('请先选择布局')
     return
   }
-  const { w, h } = bounding.value
-  const cell = {
-    win: { x: 0.25, y: 0.25, w: 0.5, h: 0.5 },
-    title: draftTitle(w * 0.5, h * 0.5, bounding.value),
-    timer: draftTimer(w * 0.5, bounding.value),
-    vol: draftVol(h * 0.5, bounding.value)
+  const cell = createWinCell(false)
+  dataset.value.push(cell)
+  selectCell(cell, dataset.value.length - 1)
+}
+
+function createTimerWin() {
+  if (!currLayoutSample.value && dataset.value.length === 0) {
+    notyf.error('请先选择布局')
+    return
   }
+  if (dataset.value.filter(d => d.timer).length > 0) {
+    notyf.error('只能添加一个时间窗口')
+    return
+  }
+  const cell = createWinCell(true)
   dataset.value.push(cell)
   selectCell(cell, dataset.value.length - 1)
 }
@@ -287,7 +315,7 @@ function deleteLayout(ly: Layout) {
         notyf.success('删除成功')
         hide()
       } else {
-        notyf.error('删除失败')
+        notyf.error(res || '删除失败')
       }
     },
   });
@@ -295,7 +323,7 @@ function deleteLayout(ly: Layout) {
 
 async function saveLayoutData() {
   if (!currLayout.value) return
-  const res = await layoutStore.$updateContent(currLayout.value.id, dataset.value)
+  const res = await layoutStore.$updateContent(currLayout.value.id, ds2db(dataset.value, base.value))
   if (res) {
     notyf.success('保存布局成功')
   } else {
@@ -314,7 +342,7 @@ function publish(ly: Layout) {
         notyf.success('推送成功')
         hide()
       } else {
-        notyf.error('推送失败')
+        notyf.error(res || '推送失败')
       }
     },
   });
@@ -330,11 +358,20 @@ function publish(ly: Layout) {
           </div>
           <div class="add-mask"><i aria-hidden="true" class="fas fa-plus" /></div>
         </div>
-        <div role="button" tabindex="-1" class="area-btn" @click.prevent="createWin" @keyup.enter.prevent="createWin">
-          <span class="icon mr-2">
-            <i aria-hidden="true" class="fas fa-plus" />
-          </span>
-          <span>新建窗口</span>
+        <div class="area-sep" />
+        <div class="area-btns">
+          <div role="button" tabindex="-1" class="area-btn" @click.prevent="createWin" @keyup.enter.prevent="createWin">
+            <span class="icon mr-2">
+              <i aria-hidden="true" class="fas fa-plus" />
+            </span>
+            <span>新建默认窗口</span>
+          </div>
+          <div role="button" tabindex="-1" class="area-btn" @click.prevent="createTimerWin" @keyup.enter.prevent="createTimerWin">
+            <span class="icon mr-2">
+              <i aria-hidden="true" class="fas fa-plus" />
+            </span>
+            <span>新建时间窗口</span>
+          </div>
         </div>
       </VCard>
     </Transition>
@@ -365,9 +402,9 @@ function publish(ly: Layout) {
                 <template v-if="currLayout">
                   <VButton color="primary" raised @click="saveAs">
                     <span class="icon">
-                      <i aria-hidden="true" class="fas fa-file-import" />
+                      <i aria-hidden="true" class="fas fa-copy" />
                     </span>
-                    <span>另存为</span>
+                    <span>复制</span>
                   </VButton>
                   <VButton v-if="!currLayout.published" color="primary" raised @click="publish">
                     <span class="icon">
@@ -433,6 +470,7 @@ function publish(ly: Layout) {
                 v-if="activeCell"
                 :parent="true"
                 :active="true"
+                :prevent-deactivation="true"
                 :drag-handle="`.drag-handle`"
                 :max-width="bounding.w"
                 :max-height="bounding.h"
@@ -492,9 +530,23 @@ function publish(ly: Layout) {
     width: calc(100% + 1rem);
   }
 
+  .area-sep {
+    width: 1px;
+    height: 80%;
+    background: var(--dark-sidebar-light-18);
+  }
+
+  .area-btns {
+    display: flex;
+    gap: 12px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
   .area-btn {
-    width: 176px;
-    height: 99px;
+    width: 150px;
+    height: 36px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -503,7 +555,7 @@ function publish(ly: Layout) {
     transition: background 0.3s;
 
     &:hover {
-      background: var(--dark-sidebar-light-8);
+      background: var(--dark-sidebar-light-2);
     }
   }
 }

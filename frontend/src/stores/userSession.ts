@@ -45,6 +45,13 @@ export const useUserSession = defineStore('userSession', () => {
     settings.value = Object.assign({}, settings.value, newSettings)
   }
 
+  function updateMtvSettings(mtvList: string) {
+    settings.value = {
+      ...settings.value,
+      'mv_template_list' : parseJsonString(mtvList, settings.value.mv_template_list || [])
+    }
+  }
+
   function setLoading(newLoading: boolean) {
     loading.value = newLoading
   }
@@ -72,7 +79,8 @@ export const useUserSession = defineStore('userSession', () => {
     setUser,
     setLoading,
     setSettings,
-    $updateSettings
+    $updateSettings,
+    updateMtvSettings
   } as const
 })
 

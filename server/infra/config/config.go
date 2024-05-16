@@ -89,6 +89,7 @@ func SetupEnv() {
 		if fileExists(configPath) {
 			fname = configPath
 		}
+		AppDataDir = maybeAppDataDir
 	}
 	if len(fname) == 0 {
 		fname = filepath.Join(AppDataDir, "config.yaml")

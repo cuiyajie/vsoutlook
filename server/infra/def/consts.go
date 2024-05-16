@@ -16,3 +16,10 @@ const (
 	LSize_4K = 1
 	LSize_HD = 2
 )
+
+const SettingKey_Mtv = "mv_template_list"
+
+var LSizeStr = map[uint8]string{
+	LSize_4K: "4K",
+	LSize_HD: "HD",
+}

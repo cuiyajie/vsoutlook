@@ -3398,16 +3398,8 @@ code {
   color: rgb(42, 172, 142);
 }
 
-.action-link:hover {
-  color: rgb(42, 172, 142);
-}
-
 .is-dark .action-link {
   color: rgb(42, 172, 142);
-}
-
-.is-dark .action-link::after {
-  border-bottom-color: rgb(42, 172, 142);
 }
 
 .user-list .user-list-status.is-online {

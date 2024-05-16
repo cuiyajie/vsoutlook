@@ -14,6 +14,17 @@ const nameRef = ref<any>(null);
 const sizeRef = ref<any>(null);
 let callbacks: any = {}
 
+const zodSchema = z.object({
+  name: z.string({
+    required_error: "请输入布局名称",
+  }),
+  size: z.number({
+    required_error: "请输入屏幕大小",
+  }),
+});
+const validationSchema = toTypedSchema(zodSchema);
+const { handleSubmit, resetForm, validate } = useForm({ validationSchema });
+
 useListener(Signal.OpenNewLayout, (p: any) => {
   opened.value = true;
   const def = Object.assign({ size: LayoutSize.FK, name: '' }, p?.layout)
@@ -25,23 +36,13 @@ useListener(Signal.OpenNewLayout, (p: any) => {
   })
 });
 
-const zodSchema = z.object({
-  name: z.string({
-    required_error: "请输入布局名称",
-  }),
-  size: z.number({
-    required_error: "请输入屏幕大小",
-  }),
-});
-const validationSchema = toTypedSchema(zodSchema);
-const { handleSubmit } = useForm({ validationSchema });
 
 const loading = ref(false);
 const handleCreate = handleSubmit(async () => {
   if (loading.value) return;
 
   loading.value = true;
-  const nlayout = await (draftLayout.value.id ? layoutUtils.$updateLayout({
+  const res = await (draftLayout.value.id ? layoutUtils.$updateLayout({
     id: draftLayout.value.id,
     name: draftLayout.value.name,
     size: draftLayout.value.size,
@@ -51,12 +52,12 @@ const handleCreate = handleSubmit(async () => {
   }));
   loading.value = false;
   const act = draftLayout.value.id ? "修改" : "新建";
-  if (nlayout) {
+  if (res?.layout) {
     opened.value = false;
     notyf.success(`${act}布局成功`);
-    callbacks?.success?.(nlayout);
+    callbacks?.success?.(res.layout);
   } else {
-    notyf.error(`${act}布局失败`);
+    notyf.error(res?.error ? res.message : `${act}布局失败`);
   }
 });
 </script>
@@ -87,10 +88,7 @@ const handleCreate = handleSubmit(async () => {
               type="text"
               placeholder="布局名称"
             />
-            <p
-              v-if="field?.errorMessage"
-              class="help is-danger"
-            >
+            <p v-if="field?.errorMessage" class="help is-danger">
               {{ field.errorMessage }}
             </p>
           </VControl>

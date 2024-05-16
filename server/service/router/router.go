@@ -78,6 +78,7 @@ func SetupRouter() *gin.Engine {
 
 	{
 		member := group(root, "api", authenticated)
+		post(member, "settings/list", settings.GetSettings)
 		post(member, "settings/update", settings.UpdateSetting)
 	}
 
@@ -89,7 +90,7 @@ func SetupRouter() *gin.Engine {
 		post(member, "layout/update", layout.UpdateLayout)
 		post(member, "layout/delete", layout.DeleteLayout)
 		post(member, "layout/publish", layout.PublishLayout)
-		post(member, "layout/update.location", layout.UpdateLayoutLocation)
+		post(member, "layout/duplicate", layout.Duplicate)
 		post(member, "layout/update.content", layout.UpdateLayoutContent)
 	}
 

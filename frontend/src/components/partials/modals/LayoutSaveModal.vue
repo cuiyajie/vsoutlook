@@ -8,39 +8,41 @@ import { useLayout } from "@src/stores/layout";
 const notyf = useNotyf();
 const opened = ref(false);
 const layout = ref({} as Layout);
+const layoutName = ref('')
 const layoutUtils = useLayout();
-const locationRef = ref<any>(null);
 let callbacks: any = {}
 
+const initialValues = ref({} as Layout)
 useListener(Signal.LayoutSaveAs, (p: any) => {
   opened.value = true;
   layout.value = p?.layout || {};
+  initialValues.value = { ...layout.value }
   callbacks = p?._callbacks || {}
   nextTick(() => {
   })
 });
 
 const zodSchema = z.object({
-  location: z.string({
-    required_error: "请输入存储位置",
+  name: z.string({
+    required_error: "布局名称不能为空",
   }),
 });
 const validationSchema = toTypedSchema(zodSchema);
-const { handleSubmit } = useForm({ validationSchema });
+const { handleSubmit } = useForm({ validationSchema, initialValues });
 
 const loading = ref(false);
 const handleSave = handleSubmit(async () => {
   if (loading.value) return;
 
   loading.value = true;
-  const nlayout = await layoutUtils.$updateLocation(layout.value.id, layout.value.location);
+  const res = await layoutUtils.$duplicate(layout.value.id, layoutName.value);
   loading.value = false;
-  if (nlayout) {
+  if (res?.layout) {
     opened.value = false;
-    notyf.success("布局存储成功");
-    callbacks?.success?.(nlayout);
+    notyf.success("布局复制成功");
+    callbacks?.success?.(res.layout);
   } else {
-    notyf.error("布局存储失败");
+    notyf.error(res?.error ? res.message : "布局复制失败");
   }
 });
 </script>
@@ -51,7 +53,7 @@ const handleSave = handleSubmit(async () => {
     novalidate
     size="small"
     :open="opened"
-    title="另存到"
+    title="复制布局"
     actions="right"
     cancel-label="取消"
     @submit.prevent="handleSave"
@@ -60,27 +62,15 @@ const handleSave = handleSubmit(async () => {
     <template #content>
       <div class="modal-form">
         <VField
+          id="name"
+          v-slot="{ field }"
           label="布局名称"
         >
           <VControl>
             <VInput
-              v-model="layout.name"
-              readonly
+              v-model="layoutName"
               type="text"
-            />
-          </VControl>
-        </VField>
-        <VField
-          id="location"
-          ref="locationRef"
-          v-slot="{ field }"
-          label="存储位置"
-        >
-          <VControl>
-            <VInput
-              v-model="layout.location"
-              type="text"
-              placeholder="存储位置"
+              placeholder="布局名称"
             />
             <p
               v-if="field?.errorMessage"
