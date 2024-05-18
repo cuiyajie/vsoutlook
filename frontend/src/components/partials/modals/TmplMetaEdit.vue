@@ -9,25 +9,20 @@ const notyf = useNotyf();
 const opened = ref(false);
 const tmpl = ref<TemplateData | null>(null);
 const tmplUtils = useTemplate();
-const tmplRef = ref<any>(null);
 let callbacks: any = {}
 
 useListener(Signal.OpenTmplMetaEdit, (p: { callbacks?: any, tmpl: TemplateData }) => {
   opened.value = true;
   tmpl.value = { ...p.tmpl };
-  nextTick(() => {
-    tmplRef.value?.field?.setValue(p.tmpl.name)
-  })
+  setFieldValue("name", p.tmpl.name)
   callbacks = p.callbacks || {}
 });
 
 const zodSchema = z.object({
-  name: z.string({
-    required_error: "请输入应用名称",
-  }),
+  name: z.string({ required_error: "请输入应用名称" }).trim().nonempty("请输入应用名称")
 });
 const validationSchema = toTypedSchema(zodSchema);
-const { handleSubmit } = useForm({ validationSchema });
+const { handleSubmit, setFieldValue } = useForm({ validationSchema });
 
 const loading = ref(false);
 const handleSave = handleSubmit(async () => {
@@ -64,7 +59,6 @@ const handleSave = handleSubmit(async () => {
       <div v-if="tmpl" class="modal-form">
         <VField
           id="name"
-          ref="tmplRef"
           v-slot="{ field }"
           label="设备名称 *"
         >

@@ -12,23 +12,17 @@ const layoutName = ref('')
 const layoutUtils = useLayout();
 let callbacks: any = {}
 
-const initialValues = ref({} as Layout)
-useListener(Signal.LayoutSaveAs, (p: any) => {
+useListener(Signal.LayoutSaveAs, p => {
   opened.value = true;
   layout.value = p?.layout || {};
-  initialValues.value = { ...layout.value }
   callbacks = p?._callbacks || {}
-  nextTick(() => {
-  })
 });
 
 const zodSchema = z.object({
-  name: z.string({
-    required_error: "布局名称不能为空",
-  }),
+  name: z.string({ required_error: "布局名称不能为空" }).trim().nonempty("布局名称不能为空")
 });
 const validationSchema = toTypedSchema(zodSchema);
-const { handleSubmit } = useForm({ validationSchema, initialValues });
+const { handleSubmit } = useForm({ validationSchema });
 
 const loading = ref(false);
 const handleSave = handleSubmit(async () => {

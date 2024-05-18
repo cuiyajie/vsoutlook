@@ -12,7 +12,7 @@ const defaultOptions: ConfirmDialogOptions = {
 };
 const dopts = ref<ConfirmDialogOptions>(defaultOptions);
 
-useListener(Signal.OpenConfirmDialog, (payload: any) => {
+useListener(Signal.OpenConfirmDialog, payload => {
   dopts.value = { ...defaultOptions, ...payload };
   opened.value = true;
 });

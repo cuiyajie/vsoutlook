@@ -6,25 +6,20 @@ import { z } from "zod";
 
 const opened = ref(false);
 const fileName = ref('');
-const nameRef = ref<any>(null);
 let callbacks: any = {}
 
 useListener(Signal.OpenDownloadConfig, (p: { callbacks?: any, tmpl: TemplateData }) => {
   opened.value = true;
   fileName.value = `${p.tmpl.typeCategory}_${dayjs().format('YYYYMMDDHHmmss')}`;
-  nextTick(() => {
-    nameRef.value?.field?.setValue(fileName.value)
-  })
+  setFieldValue('name', fileName.value)
   callbacks = p.callbacks || {}
 });
 
 const zodSchema = z.object({
-  name: z.string({
-    required_error: "请输入文件名称",
-  }),
+  name: z.string({ required_error: "请输入文件名称" }).trim().nonempty("请输入文件名称"),
 });
 const validationSchema = toTypedSchema(zodSchema);
-const { handleSubmit } = useForm({ validationSchema });
+const { handleSubmit, setFieldValue } = useForm({ validationSchema });
 
 const handleSave = handleSubmit(async () => {
   if (!fileName.value) return;
@@ -49,7 +44,6 @@ const handleSave = handleSubmit(async () => {
       <div class="modal-form">
         <VField
           id="name"
-          ref="nameRef"
           v-slot="{ field }"
           label="文件名称 *"
         >

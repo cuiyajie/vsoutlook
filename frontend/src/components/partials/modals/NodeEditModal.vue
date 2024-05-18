@@ -10,8 +10,6 @@ const opened = ref(false);
 const nodeInfo = ref<ClustNodeInfo>({ coreList: "", dmaList: "", vfCount: 4 });
 const node = ref<ClustNode | null>(null);
 const nodeStore = useClustNode();
-const coreListRef = ref<any>(null);
-const dmaListRef = ref<any>(null);
 
 useListener(Signal.OpenNodeEdit, (_node: ClustNode) => {
   opened.value = true;
@@ -19,24 +17,22 @@ useListener(Signal.OpenNodeEdit, (_node: ClustNode) => {
   nodeInfo.value.coreList = _node.coreList
   nodeInfo.value.dmaList = _node.dmaList
   nodeInfo.value.vfCount = _node.vfCount
-  nextTick(() => {
-    coreListRef.value?.field?.setValue(nodeInfo.value.coreList)
-    dmaListRef.value?.field?.setValue(nodeInfo.value.dmaList)
+  setValues({
+    coreList: _node.coreList,
+    dmaList: _node.dmaList,
+    vfCount: _node.vfCount
   })
 });
 
 const loading = ref(false);
 const zodSchema = z.object({
-  coreList: z.string({
-    required_error: "请输入隔离核心数",
-  }).refine(val => /^(\d+|(\d+-\d+))(,(\d+|(\d+-\d+)))*$/.test(val), "请输入合法的隔离核心数"),
-  dmaList: z.string({
-    required_error: "请输入DMA通道列表",
-  }),
+  coreList: z.string({ required_error: "请输入隔离核心数" }).nonempty("请输入隔离核心数")
+    .refine(val => /^(\d+|(\d+-\d+))(,(\d+|(\d+-\d+)))*$/.test(val), "请输入合法的隔离核心数"),
+  dmaList: z.string({ required_error: "请输入DMA通道列表" }).trim().nonempty("请输入DMA通道列表"),
   vfCount: z.number().optional()
 });
 const validationSchema = toTypedSchema(zodSchema);
-const { handleSubmit } = useForm({ validationSchema });
+const { handleSubmit, setValues } = useForm({ validationSchema });
 
 const handleEdit = handleSubmit(async () => {
   if (loading.value) return;
@@ -74,7 +70,6 @@ const handleEdit = handleSubmit(async () => {
       <div class="modal-form">
         <VField
           id="coreList"
-          ref="coreListRef"
           v-slot="{ field }"
           label="隔离核心数 *"
         >
@@ -96,7 +91,6 @@ const handleEdit = handleSubmit(async () => {
         </VField>
         <VField
           id="dmaList"
-          ref="dmaListRef"
           v-slot="{ field }"
           label="DMA通道列表 *"
         >

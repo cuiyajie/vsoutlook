@@ -21,9 +21,7 @@ const userDraft = computed<Partial<UserData> & { password: string; repassword: s
 
 const zodSchema = z
   .object({
-    name: z.string({
-      required_error: "用户名称不能为空",
-    }),
+    name: z.string({ required_error: "用户名称不能为空" }).trim().nonempty("用户名称不能为空"),
     password: z
       .string({
         required_error: "密码不能为空",

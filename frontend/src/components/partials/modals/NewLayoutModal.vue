@@ -10,45 +10,43 @@ const notyf = useNotyf();
 const opened = ref(false);
 const draftLayout = ref({ size: LayoutSize.FK } as Layout);
 const layoutUtils = useLayout();
-const nameRef = ref<any>(null);
-const sizeRef = ref<any>(null);
 let callbacks: any = {}
 
 const zodSchema = z.object({
-  name: z.string({
-    required_error: "请输入布局名称",
-  }),
-  size: z.number({
-    required_error: "请输入屏幕大小",
+  name: z.string({ required_error: "请输入布局名称" }).trim().nonempty("请输入布局名称"),
+  size: z.union([z.literal(LayoutSize.FK), z.literal(LayoutSize.HD)], {
+    errorMap: issue => {
+      if (issue.code === z.ZodIssueCode.invalid_union) {
+        return { message: "请选择 4K 或 HD" }
+      }
+      return { message: "请选择屏幕大小" }
+    }
   }),
 });
 const validationSchema = toTypedSchema(zodSchema);
-const { handleSubmit, resetForm, validate } = useForm({ validationSchema });
+const { handleSubmit, setValues } = useForm({ validationSchema });
 
-useListener(Signal.OpenNewLayout, (p: any) => {
+useListener(Signal.OpenNewLayout, p => {
   opened.value = true;
   const def = Object.assign({ size: LayoutSize.FK, name: '' }, p?.layout)
   draftLayout.value = def
   callbacks = p?._callbacks || {}
-  nextTick(() => {
-    nameRef.value?.field?.setValue(def.name)
-    sizeRef.value?.field?.setValue(def.size)
-  })
+  setValues(def)
 });
 
 
 const loading = ref(false);
-const handleCreate = handleSubmit(async () => {
+const handleCreate = handleSubmit(async (values) => {
   if (loading.value) return;
 
   loading.value = true;
   const res = await (draftLayout.value.id ? layoutUtils.$updateLayout({
     id: draftLayout.value.id,
-    name: draftLayout.value.name,
-    size: draftLayout.value.size,
+    name: values.name,
+    size: values.size,
   }) : layoutUtils.$addLayout({
-    name: draftLayout.value.name,
-    size: draftLayout.value.size,
+    name: values.name,
+    size: values.size,
   }));
   loading.value = false;
   const act = draftLayout.value.id ? "修改" : "新建";
@@ -78,13 +76,11 @@ const handleCreate = handleSubmit(async () => {
       <div class="modal-form">
         <VField
           id="name"
-          ref="nameRef"
           v-slot="{ field }"
           label="布局名称 *"
         >
           <VControl>
             <VInput
-              v-model="draftLayout.name"
               type="text"
               placeholder="布局名称"
             />
@@ -95,12 +91,11 @@ const handleCreate = handleSubmit(async () => {
         </VField>
         <VField
           id="size"
-          ref="sizeRef"
           v-slot="{ field }"
           label="屏幕大小 *"
         >
           <VControl>
-            <VSelect v-model="draftLayout.size">
+            <VSelect>
               <VOption :value="LayoutSize.FK">
                 4K
               </VOption>
@@ -117,6 +112,7 @@ const handleCreate = handleSubmit(async () => {
     </template>
     <template #action>
       <VButton
+        :loading="loading"
         type="submit"
         color="primary"
         raised

@@ -100,7 +100,7 @@ defineExpose({
                   label="name"
                   :max-height="145"
                   :options="templates"
-                  @change="(val) => field?.setValue(val)"
+                  @change="(val: any) => field?.setValue(val)"
                 >
                   <template #singlelabel="{ value }">
                     <div class="multiselect-single-label">

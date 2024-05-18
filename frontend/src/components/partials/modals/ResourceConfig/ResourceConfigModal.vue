@@ -24,7 +24,6 @@ const notyf = useNotyf();
 const opened = ref(false);
 
 const deviceName = ref("");
-const deviceInput = ref<any>(null);
 const tmpl = ref<TemplateData | null>(null)
 const node = ref<ClustNode | null>(null)
 const device = ref<ClustDevice | null>(null)
@@ -61,7 +60,7 @@ useListener(Signal.OpenResourceConfig, (p?: { tmpl: TemplateData, node: ClustNod
     deviceName.value = ""
   }
   nextTick(() => {
-    deviceInput.value?.field?.setValue(deviceName.value)
+    setFieldValue("deviceName", deviceName.value)
     if (p.device?.config) {
       const val = JSON.parse(p.device.config)
       compRef.value?.setValue(val)
@@ -86,7 +85,7 @@ const validationSchema = computed(() => {
   }
   return toTypedSchema(z.object(rules))
 })
-const { handleSubmit } = useForm({ validationSchema });
+const { handleSubmit, setFieldValue } = useForm({ validationSchema });
 
 const dgi = computed(() => {
   const isCreated = device.value != null;
@@ -252,7 +251,6 @@ const tmplConfig = computed(() => {
       <div class="modal-form">
         <VField
           id="deviceName"
-          ref="deviceInput"
           v-slot="{ field }"
           label="设备名称 *"
           class="device-name"

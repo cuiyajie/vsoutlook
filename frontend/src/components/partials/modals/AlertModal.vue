@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const opened = ref(false)
 const info = ref<any>({})
-useListener(Signal.OpenAlertDialog, (payload: any) => {
+useListener(Signal.OpenAlertDialog, payload => {
   info.value = payload
   opened.value = true;
 });

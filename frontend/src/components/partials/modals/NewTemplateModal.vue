@@ -17,12 +17,8 @@ useListener(Signal.OpenNewTemplate, (_callbacks?: any) => {
 });
 
 const zodSchema = z.object({
-  tmplType: z.string({
-    required_error: "请选择应用类型",
-  }),
-  name: z.string({
-    required_error: "请输入应用名称",
-  }),
+  tmplType: z.string({ required_error: "请选择应用类型" }).trim().nonempty("请选择应用类型"),
+  name: z.string({ required_error: "请输入应用名称" }).trim().nonempty("请输入应用名称")
 });
 const validationSchema = toTypedSchema(zodSchema);
 const { handleSubmit } = useForm({ validationSchema });
