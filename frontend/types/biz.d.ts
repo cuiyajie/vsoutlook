@@ -199,7 +199,6 @@ interface IndexedLayoutRect extends LayoutRect {
 }
 
 interface LayoutTitle extends LayoutRect {
-  text: string,
   fontSize: number
 }
 
@@ -211,7 +210,6 @@ interface LayoutVol extends LayoutPos {
 }
 
 interface LayoutTimer extends LayoutRect {
-  text: string,
   fontSize: number,
   color: string
 }

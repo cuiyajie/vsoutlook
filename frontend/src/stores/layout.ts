@@ -81,6 +81,8 @@ export const useLayout = defineStore('layout', () => {
   async function $updateContent(id: string, content: any[]) {
     const res = await $fetch('/api/layout/update.content', { body: { id, content } })
     if (res && res.layout) {
+      const index = layouts.value.findIndex(l => l.id === res.layout.id)
+      layouts.value[index] = res.layout
       return res.layout
     }
   }

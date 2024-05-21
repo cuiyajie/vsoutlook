@@ -2,7 +2,7 @@
 import { useNotyf } from "@src/composable/useNotyf";
 import { confirm } from "@src/utils/dialog";
 import { useElementBounding, useElementSize } from '@vueuse/core'
-import { DefaultLayouts, draftTitle, draftVol, draftTimer, ds2db, db2ds } from './utils';
+import { DefaultLayouts, draftTitle, draftVol, draftTimer, ds2db, db2ds, resizeTitle, resizeVol, resizeTimer } from './utils';
 import { useLayout } from "@src/stores/layout";
 import { LayoutSize } from "@src/utils/enums";
 import IsEqual from "lodash-es/isEqual";
@@ -23,6 +23,8 @@ layoutStore.$fetchList().then(() => {
   if (route.query.layout) {
     currLayout.value = layouts.value.find(l => l.id === route.query.layout) || null
     parseLayoutContent()
+  } else if (layouts.value.length > 0) {
+    selectLayout(layouts.value[layouts.value.length - 1])
   }
 })
 
@@ -153,9 +155,25 @@ const ads = computed<LayoutDataItem | null>({
       w: v.win.w * w,
       h: v.win.h * h
     }
+    resizeComponents(v.win, dataset.value[activeCell.value.index].win)
     dataset.value[activeCell.value.index] = v
   }
 })
+
+function resizeComponents(nv: LayoutDimension, ov: LayoutDimension) {
+  if (nv && ov && (nv.w !== ov.w || nv.h !== ov.h)) {
+    const rw = nv.w / ov.w
+    const rh = nv.h / ov.h
+    if (activeCell.value) {
+      const _ads = dataset.value[activeCell.value.index]
+      Object.assign(dataset.value[activeCell.value.index], {
+        title: _ads.title ? resizeTitle(_ads.title, rw, rh) : null,
+        vol: _ads.vol ? resizeVol(_ads.vol, rw, rh) : null,
+        timer: _ads.timer ? resizeTimer(_ads.timer, rw, rh) : null
+      })
+    }
+  }
+}
 
 function resetActiveCell() {
   if (!activeCell.value) return
@@ -175,12 +193,14 @@ function handleActiveCell(x: number, y: number, pw: number, ph: number) {
   }
   const { w, h } = bounding.value
   const ac = activeCell.value
-  dataset.value[activeCell.value.index].win = {
+  const nv = {
     x: ac.x / w,
     y: ac.y / h,
     w: ac.w / w,
     h: ac.h / h
   }
+  resizeComponents(nv, dataset.value[activeCell.value.index].win)
+  dataset.value[activeCell.value.index].win = nv
 }
 
 function selectCell(di: LayoutDataItem, didx: number) {
@@ -326,6 +346,8 @@ async function saveLayoutData() {
   const res = await layoutStore.$updateContent(currLayout.value.id, ds2db(dataset.value, base.value))
   if (res) {
     notyf.success('保存布局成功')
+    currLayout.value = res
+    parseLayoutContent()
   } else {
     notyf.error('保存布局失败')
   }
@@ -390,14 +412,17 @@ function publish(ly: Layout) {
           class="layouts-middle"
         >
           <h3 class="title is-5 mb-0 layouts-header">
-            容器平台
+            <span>
+              {{ currLayout ? currLayout.name : '布局' }}
+              <span v-if="currLayout" class="ml-2" style="font-size: 1rem; font-weight: 500;">{{ currLayout.size === LayoutSize.HD ? 'HD' : '4K' }}_{{ currLayout.id }}</span>
+            </span>
             <div class="buttons">
               <VButtons>
                 <VButton color="primary" raised @click="createLayout">
                   <span class="icon">
                     <i aria-hidden="true" class="fas fa-plus" />
                   </span>
-                  <span>新建应用</span>
+                  <span>新建布局</span>
                 </VButton>
                 <template v-if="currLayout">
                   <VButton color="primary" raised @click="saveAs">
@@ -406,7 +431,7 @@ function publish(ly: Layout) {
                     </span>
                     <span>复制</span>
                   </VButton>
-                  <VButton v-if="!currLayout.published" color="primary" raised @click="publish">
+                  <VButton color="primary" raised @click="publish(currLayout)">
                     <span class="icon">
                       <i class="fas fa-cloud-upload-alt" aria-hidden="true" />
                     </span>
@@ -668,6 +693,7 @@ function publish(ly: Layout) {
 
   .layouts-container {
     flex: 1;
+    min-height: 0;
   }
 }
 
@@ -765,8 +791,8 @@ function publish(ly: Layout) {
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 9999px;
     background-color: var(--dark-sidebar-light-10);
+    text-wrap: nowrap;
   }
 
   .layout-vol {
@@ -786,8 +812,8 @@ function publish(ly: Layout) {
     align-items: center;
     justify-content: center;
     text-align: center;
-    border-radius: 8px;
     background: var(--dark-sidebar-light-2);
+    text-wrap: nowrap;
   }
 
   &.draggable {

@@ -54,13 +54,6 @@ const acfz = computed({
   }
 })
 
-const actl = computed({
-  get: () => ac.value && 'text' in ac.value ? ac.value.text : '',
-  set: (v: string) => {
-    if (ac.value) ac.value = { ...ac.value, text: v }
-  }
-})
-
 const acolor = computed({
   get: () => ac.value && 'color' in ac.value ? ac.value.color : '',
   set: (v: string) => {
@@ -144,14 +137,6 @@ const acnt = computed({
           <div class="layout-cell">
             <div>字体</div>
             <input v-model="acfz" type="number" min="0">
-          </div>
-        </div>
-      </section>
-      <section v-if="type === 'title'" class="layout-row">
-        <div class="layout-row-inner">
-          <div class="layout-cell">
-            <div>内容</div>
-            <input v-model="actl" type="text" style="width: auto;">
           </div>
         </div>
       </section>

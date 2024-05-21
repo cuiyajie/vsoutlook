@@ -51,7 +51,6 @@ function selectLayout(ly: Layout) {
             </div>
           </a>
           <a
-            v-if="!ly.published"
             role="menuitem"
             href="#"
             class="dropdown-item is-media"

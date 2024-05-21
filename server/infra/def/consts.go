@@ -23,3 +23,5 @@ var LSizeStr = map[uint8]string{
 	LSize_4K: "4K",
 	LSize_HD: "HD",
 }
+
+const DefLayoutPath = "/opt/vsomediasoftware/layout/"

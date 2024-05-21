@@ -93,7 +93,7 @@ function onClose() {
     <template #content>
       <div class="lc-body">
         <div ref="layoutContainer" class="lc-display" :style="{'--padding': `${PADDING}px`}">
-          <div class="lc-controls">
+          <div v-if="!data?.timer" class="lc-controls">
             <div class="lc-control" role="button" tabindex="-1" @click.prevent="addComponent('vol')" @keyup.enter.prevent="addComponent('vol')">
               <i class="iconify" data-icon="feather:bar-chart-2" aria-hidden="true" />
               音柱
@@ -105,6 +105,7 @@ function onClose() {
               <div class="add-mask"><i aria-hidden="true" class="fas fa-plus" /></div>
             </div>
           </div>
+          <div v-else :style="{ height: `${PADDING}px` }" />
           <div class="lc-display-inner" :style="{ width: `${bounding.w}px`, height: `${bounding.h}px` }">
             <layout-cell-display v-if="data" ref="displayRef" v-model="data" :bound="bounding" @active="activeComponent" />
           </div>

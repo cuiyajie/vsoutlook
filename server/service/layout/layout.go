@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/datatypes"
@@ -41,6 +42,7 @@ func DeleteLayout(c *svcinfra.Context) {
 	if !c.Save(&layout) {
 		return
 	}
+	deleteLayoutJson(layout)
 	settings := syncLayoutToMvtSetting(layout, true)
 	c.Bye(gin.H{"result": "ok", "settings": settings.Value})
 }
@@ -189,6 +191,15 @@ func saveLayoutToJson(layout *models.Layout) {
 	}
 }
 
+func deleteLayoutJson(layout *models.Layout) {
+	path := config.AppDataDir + "/layouts"
+	filePath := fmt.Sprintf("%s/%s_%s.json", path, def.LSizeStr[layout.Size], layout.ID)
+	err := os.Remove(filePath)
+	if err != nil {
+		log.Printf("failed to delete layout json: %v", err)
+	}
+}
+
 func syncLayoutToMvtSetting(layout *models.Layout, deleted bool) *models.Settings {
 	settings := models.QuerySetting(def.SettingKey_Mtv)
 	if layout.Published == 0 {
@@ -214,7 +225,7 @@ func syncLayoutToMvtSetting(layout *models.Layout, deleted bool) *models.Setting
 				deletedIndex = i
 			} else {
 				mtvList[i].Name = layout.Name
-				mtvList[i].Path = fmt.Sprintf("%s_%s.json", def.LSizeStr[layout.Size], layout.ID)
+				mtvList[i].Path = fmt.Sprintf("%s%s_%s.json", def.DefLayoutPath, def.LSizeStr[layout.Size], layout.ID)
 			}
 			exist = true
 			break
@@ -224,7 +235,7 @@ func syncLayoutToMvtSetting(layout *models.Layout, deleted bool) *models.Setting
 		mtvList = append(mtvList, models.MtvSetting{
 			ID:   layout.ID,
 			Name: layout.Name,
-			Path: fmt.Sprintf("%s_%s.json", def.LSizeStr[layout.Size], layout.ID),
+			Path: fmt.Sprintf("%s%s_%s.json", def.DefLayoutPath, def.LSizeStr[layout.Size], layout.ID),
 		})
 	}
 	if exist && deleted {
