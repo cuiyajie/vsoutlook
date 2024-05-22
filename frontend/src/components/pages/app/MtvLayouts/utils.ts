@@ -85,20 +85,24 @@ export function ds2db(ds: LayoutDataItem[], base: LayoutDimension) {
   return ds.map((d, i) => {
     const rects = []
     let fontSize = round(base.w * defaultFontSize)
+    let pos: LayoutPos = { x: 0, y: 0 }
     if (d.win) {
+      const x = round(d.win.x * base.w)
+      const y = round(d.win.y * base.h)
       rects.push({
         type: 0,
-        x: round(d.win.x * base.w),
-        y: round(d.win.y * base.h),
+        x,
+        y,
         w: round(d.win.w * base.w),
         h: round(d.win.h * base.h),
       })
+      pos = { x, y }
     }
     if (d.title) {
       rects.push({
         type: 1,
-        x: round(d.title.x * base.w),
-        y: round(d.title.y * base.h),
+        x: round(d.title.x * base.w) + pos.x,
+        y: round(d.title.y * base.h) + pos.y,
         w: round(d.title.w * base.w),
         h: round(d.title.h * base.h)
       })
@@ -107,8 +111,8 @@ export function ds2db(ds: LayoutDataItem[], base: LayoutDimension) {
     if (d.vol) {
       rects.push({
         type: 2,
-        x: round(d.vol.x * base.w),
-        y: round(d.vol.y * base.h),
+        x: round(d.vol.x * base.w) + pos.x,
+        y: round(d.vol.y * base.h) + pos.y,
         one_w: round(d.vol.one_w * base.w),
         g: round(d.vol.g * base.w),
         h: round(d.vol.h * base.h),
@@ -130,6 +134,7 @@ export function db2ds(db: any[], base: LayoutDimension): LayoutDataItem[] {
     const title = d.rects.find((r: any) => r.type === 1)
     const vol = d.rects.find((r: any) => r.type === 2)
     const fontSize = d.fontsize || round(base.w * defaultFontSize)
+    const pos = win ? { x: win.x / base.w, y: win.y / base.h } : { x: 0, y: 0 }
     return {
       win: win ? {
         x: win.x / base.w,
@@ -138,15 +143,15 @@ export function db2ds(db: any[], base: LayoutDimension): LayoutDataItem[] {
         h: win.h / base.h,
       } : null,
       title: title ? {
-        x: title.x / base.w,
-        y: title.y / base.h,
+        x: title.x / base.w - pos.x,
+        y: title.y / base.h - pos.y,
         w: title.w / base.w,
         h: title.h / base.h,
         fontSize: fontSize / base.w,
       } : null,
       vol: vol ? {
-        x: vol.x / base.w,
-        y: vol.y / base.h,
+        x: vol.x / base.w - pos.x,
+        y: vol.y / base.h - pos.y,
         one_w: vol.one_w / base.w,
         g: vol.g / base.w,
         h: vol.h / base.h,
