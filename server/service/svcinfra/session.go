@@ -26,9 +26,7 @@ func NewCookieStore(keyPairs ...[]byte) *sessions.CookieStore {
 		// https://stackoverflow.com/a/67001424
 		HttpOnly: true,
 	}
-	if config.Dev {
-		opts.SameSite = http.SameSiteNoneMode
-	}
+
 	cs := &sessions.CookieStore{
 		Codecs:  securecookie.CodecsFromPairs(keyPairs...),
 		Options: &opts,

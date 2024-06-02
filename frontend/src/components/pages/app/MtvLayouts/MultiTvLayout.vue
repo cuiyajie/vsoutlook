@@ -148,15 +148,31 @@ const ads = computed<LayoutDataItem | null>({
   set: (v) => {
     if (!activeCell.value || !v) return
     const { w, h } = bounding.value
-    activeCell.value = {
-      ...activeCell.value,
-      x: v.win.x * w,
-      y: v.win.y * h,
-      w: v.win.w * w,
-      h: v.win.h * h
+    if (v.timer) {
+      nextTick(() => {
+        if (activeCell.value && v.timer) {
+          const timerEl = layoutsRef.value?.querySelector<HTMLElement>(`[data-cell-index="${activeCell.value.index}"]`)
+          activeCell.value = {
+            ...activeCell.value,
+            x: v.timer.x * w,
+            y: v.timer.y * h,
+            w: timerEl?.clientWidth || 0,
+            h: timerEl?.clientHeight || 0
+          }
+        }
+      })
+      dataset.value[activeCell.value.index] = v
+    } else {
+      activeCell.value = {
+        ...activeCell.value,
+        x: v.win.x * w,
+        y: v.win.y * h,
+        w: v.win.w * w,
+        h: v.win.h * h
+      }
+      resizeComponents(v.win, dataset.value[activeCell.value.index].win)
+      dataset.value[activeCell.value.index] = v
     }
-    resizeComponents(v.win, dataset.value[activeCell.value.index].win)
-    dataset.value[activeCell.value.index] = v
   }
 })
 
@@ -168,8 +184,7 @@ function resizeComponents(nv: LayoutDimension, ov: LayoutDimension) {
       const _ads = dataset.value[activeCell.value.index]
       Object.assign(dataset.value[activeCell.value.index], {
         title: _ads.title ? resizeTitle(_ads.title, rw, rh) : null,
-        vol: _ads.vol ? resizeVol(_ads.vol, rw, rh) : null,
-        timer: _ads.timer ? resizeTimer(_ads.timer, rw, rh) : null
+        vol: _ads.vol ? resizeVol(_ads.vol, rw, rh) : null
       })
     }
   }
@@ -199,18 +214,36 @@ function handleActiveCell(x: number, y: number, pw: number, ph: number) {
     w: ac.w / w,
     h: ac.h / h
   }
-  resizeComponents(nv, dataset.value[activeCell.value.index].win)
-  dataset.value[activeCell.value.index].win = nv
+  if (dataset.value[activeCell.value.index].timer) {
+    Object.assign(dataset.value[activeCell.value.index].timer!, {
+      x: nv.x,
+      y: nv.y
+    })
+  } else {
+    resizeComponents(nv, dataset.value[activeCell.value.index].win)
+    dataset.value[activeCell.value.index].win = nv
+  }
 }
 
 function selectCell(di: LayoutDataItem, didx: number) {
   const { w, h } = bounding.value
-  activeCell.value = {
-    index: didx,
-    x: di.win.x * w,
-    y: di.win.y * h,
-    w: di.win.w * w,
-    h: di.win.h * h
+  if (di.timer) {
+    const timerEl = layoutsRef.value?.querySelector<HTMLElement>(`[data-cell-index="${didx}"]`)
+    activeCell.value = {
+      index: didx,
+      x: di.timer.x * w,
+      y: di.timer.y * h,
+      w: timerEl?.clientWidth || 0,
+      h: timerEl?.clientHeight || 0
+    }
+  } else {
+    activeCell.value = {
+      index: didx,
+      x: di.win.x * w,
+      y: di.win.y * h,
+      w: di.win.w * w,
+      h: di.win.h * h
+    }
   }
 }
 
@@ -249,7 +282,7 @@ function createWinCell(timer: boolean) {
     vol: null
   }
   if (timer) {
-    cell.timer = draftTimer(w * 0.5, bounding.value)
+    cell.timer = draftTimer()
   } else {
     cell.title = draftTitle(w * 0.5, h * 0.5, bounding.value)
     cell.vol = draftVol(h * 0.5, bounding.value)
@@ -285,6 +318,7 @@ function selectLayoutSample(ly: [number, number][]) {
   currLayoutSample.value = ly
   initLayout()
   redrawLayout()
+  activeCell.value = null
 }
 
 function confirmSelectLayout(ly: [number, number][]) {
@@ -475,32 +509,53 @@ function publish(ly: Layout) {
                   />
                 </div>
               </div>
-              <div
-                v-for="(ds, cidx) in dataset"
-                :key="cidx"
-                role="button"
-                tabindex="0"
-                class="data-cell"
-                :style="{left: `${ds.win.x * 100}%`, top: `${ds.win.y * 100}%`, width: `${ds.win.w * 100}%`, height: `${ds.win.h * 100}%`}"
-                :class="{actived: activeCell && activeCell.index === cidx}"
-                @click.prevent="selectCell(ds, cidx)"
-                @keyup.enter.prevent="selectCell(ds, cidx)"
-              >
-                <layout-display :no="cidx + 1" :bound="bounding" :data="ds">
-                  <VIconButton color="white" outlined circle icon="feather:x" class="cell-x" @click.prevent="deleteCell(cidx)" />
-                  <VIconButton color="white" outlined circle icon="feather:edit-3" class="cell-edit" @click.prevent="editCell(cidx)" />
-                </layout-display>
-              </div>
+              <template v-for="(ds, cidx) in dataset" :key="cidx">
+                <div
+                  v-if="ds.timer"
+                  role="button"
+                  tabindex="0"
+                  class="timer-cell"
+                  data-role="timer-cell"
+                  :data-cell-index="cidx"
+                  :style="{left: `${ds.timer.x * 100}%`, top: `${ds.timer.y * 100}%`}"
+                  :class="{actived: activeCell && activeCell.index === cidx}"
+                  @click.prevent="selectCell(ds, cidx)"
+                  @keyup.enter.prevent="selectCell(ds, cidx)"
+                >
+                  <layout-timer-display :no="cidx" :bound="bounding" :data="ds">
+                    <VIconButton color="white" outlined circle icon="feather:x" class="timer-cell-x" @click.prevent.stop="deleteCell(cidx)" />
+                  </layout-timer-display>
+                </div>
+                <div
+                  v-else
+                  role="button"
+                  tabindex="0"
+                  class="data-cell"
+                  data-role="data-cell"
+                  :data-cell-index="cidx"
+                  :style="{left: `${ds.win.x * 100}%`, top: `${ds.win.y * 100}%`, width: `${ds.win.w * 100}%`, height: `${ds.win.h * 100}%`}"
+                  :class="{actived: activeCell && activeCell.index === cidx}"
+                  @click.prevent="selectCell(ds, cidx)"
+                  @keyup.enter.prevent="selectCell(ds, cidx)"
+                >
+                  <layout-display :no="cidx" :bound="bounding" :data="ds">
+                    <VIconButton color="white" outlined circle icon="feather:x" class="cell-x" @click.prevent="deleteCell(cidx)" />
+                    <VIconButton color="white" outlined circle icon="feather:edit-3" class="cell-edit" @click.prevent="editCell(cidx)" />
+                  </layout-display>
+                </div>
+              </template>
               <vue-draggable-resizable
                 v-if="activeCell"
+                :key="activeCell.index"
                 :parent="true"
                 :active="true"
+                :handles="ads?.timer ? [] : ['tl','tm','tr','mr','br','bm','bl','ml']"
                 :prevent-deactivation="true"
                 :drag-handle="`.drag-handle`"
                 :max-width="bounding.w"
                 :max-height="bounding.h"
-                :min-width="100"
-                :min-height="100"
+                :min-width="ads?.timer ? 0 : 100"
+                :min-height="ads?.timer ? 0 : 100"
                 :w="activeCell.w"
                 :h="activeCell.h"
                 :x="activeCell.x"
@@ -510,8 +565,11 @@ function publish(ly: Layout) {
                 @dragging="handleActiveCell"
                 @drag-stop="handleActiveCell"
               >
-                <div ref="dragHandle" class="drag-handle">
-                  <layout-display :no="activeCell.index + 1" :bound="bounding" :data="ads">
+                <div ref="dragHandle" class="drag-handle fixed-width">
+                  <layout-timer-display v-if="ads?.timer" :no="activeCell.index" :bound="bounding" :data="ads">
+                    <VIconButton color="white" outlined circle icon="feather:x" class="timer-cell-x" @click.prevent="deleteCell(activeCell.index)" />
+                  </layout-timer-display>
+                  <layout-display v-else :no="activeCell.index" :bound="bounding" :data="ads">
                     <VIconButton color="white" outlined circle icon="feather:x" class="cell-x" @click.prevent="deleteCell(activeCell.index)" />
                     <VIconButton color="white" outlined circle icon="feather:edit-3" class="cell-edit" @click.prevent="editCell(activeCell.index)" />
                   </layout-display>
@@ -522,7 +580,7 @@ function publish(ly: Layout) {
         </VCard>
       </div>
       <div class="column is-2" data-role="LayoutSetting">
-        <VCard radius="rounded">
+        <VCard radius="rounded" :class="{ 'is-timer': ads?.timer }">
           <layout-setting v-if="ads" v-model="ads" :bound="bounding" :base="base" @reset="resetActiveCell" />
           <div v-else className="layout-panel">
             <div class="layout-header mb-4">
@@ -679,6 +737,12 @@ function publish(ly: Layout) {
 
     > .l-card {
       height: 100%;
+      transition: none;
+
+      &.is-timer {
+        overflow: auto;
+        padding-top: 0;
+      }
     }
   }
 }
@@ -753,6 +817,17 @@ function publish(ly: Layout) {
     }
   }
 
+  .timer-cell {
+    z-index: 5;
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.1);
+    border: 1px dashed rgba(255, 255, 255, 0.5);
+
+    &.actived {
+      visibility: hidden;
+    }
+  }
+
   .cell-title {
     position: absolute;
     top: 4px;
@@ -777,6 +852,12 @@ function publish(ly: Layout) {
     right: 4px;
   }
 
+  .timer-cell-x {
+    position: absolute;
+    top: 0px;
+    right: -28px;
+  }
+
   .cell-edit {
     position: absolute;
     bottom: 4px;
@@ -785,6 +866,14 @@ function publish(ly: Layout) {
 }
 
 .layout-display {
+
+  .layout-no {
+    position: absolute;
+    left: 20px;
+    top: 4px;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
 
   .layout-title {
     position: absolute;
@@ -807,16 +896,17 @@ function publish(ly: Layout) {
   }
 
   .layout-timer {
-    position: absolute;
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
-    background: var(--dark-sidebar-light-2);
     text-wrap: nowrap;
+    cursor: default;
+    line-height: 1.35;
   }
 
-  &.draggable {
+  .draggable {
     width: 100%;
     height: 100%;
 
@@ -838,7 +928,7 @@ function publish(ly: Layout) {
     background-color: transparent;
   }
 
-  .drag-handle {
+  .drag-handle.fixed-width {
     position: absolute;
     top: 0;
     left: 0;

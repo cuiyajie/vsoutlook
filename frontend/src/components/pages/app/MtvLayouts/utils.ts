@@ -1,3 +1,7 @@
+import { useUserSession } from "@src/stores/userSession";
+import parseRGB from "@src/utils/parse-rgb";
+import stringRGB from '@src/utils/string-rgb';
+
 export const draftVol = (h: number, bound: LayoutDimension) => {
   const { h: bh } = bound
   return {
@@ -16,6 +20,7 @@ export const draftTitle = (w: number, h: number, bound: LayoutDimension) => {
   const { w: bw, h: bh } = bound
   return {
     fontSize: 24 / 1920,
+    fontFamily: getFontFamily(),
     color: '#FFFFFF',
     x: (w - nw * bw) / (2 * bw),
     y: (h - nh * bh - 10) / bh,
@@ -24,17 +29,19 @@ export const draftTitle = (w: number, h: number, bound: LayoutDimension) => {
   }
 }
 
-export const draftTimer = (w: number, bound: LayoutDimension) => {
-  const nw = 192 / 1920
-  const nh = 54 / 1080
-  const { w: bw, h: bh } = bound
+export const defaultTimerColor = 'rgb(255, 0, 0)'
+export const draftTimer = () => {
   return {
-    fontSize: 16 / 1920,
-    color: '#ff0000',
-    x: (w - nw * bw) / (2 * bw),
-    y: 10 / bh,
-    w: nw,
-    h: nh
+    fontSize: 64 / 1920,
+    color: defaultTimerColor,
+    x: 800 / 1920,
+    y: 100 / 1920,
+    showDate: true,
+    dateNewLine: 0,
+    dateDisplayType: 0,
+    showFrame: 0,
+    time24: 24,
+    fontFamily: getFontFamily(),
   }
 }
 
@@ -65,8 +72,6 @@ export const resizeTimer = (timer: LayoutTimer, rw: number, rh: number) => {
     ...timer,
     x: timer.x * rw,
     y: timer.y * rh,
-    w: timer.w * rw,
-    h: timer.h * rh,
     fontSize: timer.fontSize * rw,
   }
 }
@@ -78,11 +83,37 @@ export const DefaultLayouts: [number, number][][] = [
   [[2, 1], [4, 2]],
 ]
 
+export const defaultFontSize = 24 / 1920
+export const defaultFontFamily = 'Noto Serif CJK'
+
+export function getFontFamily() {
+  return useUserSession().settings.mv_template_font || defaultFontFamily
+}
+
 const round = Math.round
-const defaultFontSize = 24 / 1920
-const defaultFontFamily = 'Noto Serif CJK'
 export function ds2db(ds: LayoutDataItem[], base: LayoutDimension) {
+  const fontFamily = getFontFamily()
   return ds.map((d, i) => {
+    if (d.timer) {
+      return {
+        index: i,
+        is_clock: 1,
+        clock_params: {
+          show_date: d.timer.showDate ? 1 : 0,
+          date_new_line: d.timer.dateNewLine,
+          date_display_type: d.timer.dateDisplayType,
+          showframe: d.timer.showFrame,
+          "24/12": d.timer.time24,
+          fontname: fontFamily,
+          fontsize: round(d.timer.fontSize * base.w),
+          fontcolour: parseRGB(d.timer.color),
+          top: {
+            x: round(d.timer.x * base.w),
+            y: round(d.timer.y * base.h),
+          },
+        }
+      }
+    }
     const rects = []
     let fontSize = round(base.w * defaultFontSize)
     let pos: LayoutPos = { x: 0, y: 0 }
@@ -123,13 +154,33 @@ export function ds2db(ds: LayoutDataItem[], base: LayoutDimension) {
       index: i,
       rects,
       fontsize: fontSize,
-      fontname: defaultFontFamily
+      fontname: fontFamily
     }
   })
 }
 
 export function db2ds(db: any[], base: LayoutDimension): LayoutDataItem[] {
   return db.map(d => {
+    if (d.is_clock) {
+      const parmas = d.clock_params
+      return {
+        win: { x: 0, y: 0, w: -1, h: -1 },
+        title: null,
+        vol: null,
+        timer: {
+          x: Number(parmas.top.x / base.w),
+          y: Number(parmas.top.y / base.h),
+          fontSize: Number(parmas.fontsize / base.w),
+          fontFamily: String(parmas.fontname),
+          color: stringRGB(parmas.fontcolour),
+          showDate: parmas.show_date === 1,
+          dateNewLine: Number(parmas.date_new_line),
+          dateDisplayType: Number(parmas.date_display_type),
+          showFrame: Number(parmas.showframe),
+          time24: Number(parmas["24/12"]),
+        }
+      }
+    }
     const win = d.rects.find((r: any) => r.type === 0)
     const title = d.rects.find((r: any) => r.type === 1)
     const vol = d.rects.find((r: any) => r.type === 2)
@@ -148,6 +199,7 @@ export function db2ds(db: any[], base: LayoutDimension): LayoutDataItem[] {
         w: title.w / base.w,
         h: title.h / base.h,
         fontSize: fontSize / base.w,
+        fontFamily: d.fontname
       } : null,
       vol: vol ? {
         x: vol.x / base.w - pos.x,

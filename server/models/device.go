@@ -45,13 +45,15 @@ func (device *Device) AsBasic() DeviceAsBasic {
 	result.ID = device.ID
 	result.Name = device.Name
 	tmpl := ActiveTmpl(device.Tmpl)
-	tmplType := ActiveTmplType(tmpl.Type)
-	result.TmplID = tmpl.ID
-	result.TmplName = tmpl.Name
-	result.TmplTypeID = tmplType.ID
-	result.TmplTypeName = tmplType.Name
-	result.TmplTypeCategory = tmplType.Category
-	result.TmplTypeIcon = tmplType.Icon
+	if tmpl != nil {
+		tmplType := ActiveTmplType(tmpl.Type)
+		result.TmplID = tmpl.ID
+		result.TmplName = tmpl.Name
+		result.TmplTypeID = tmplType.ID
+		result.TmplTypeName = tmplType.Name
+		result.TmplTypeCategory = tmplType.Category
+		result.TmplTypeIcon = tmplType.Icon
+	}
 	result.CreatedAt = device.CreatedAt.Unix()
 	result.UpdatedAt = device.UpdatedAt.Unix()
 	result.AppName = device.AppName

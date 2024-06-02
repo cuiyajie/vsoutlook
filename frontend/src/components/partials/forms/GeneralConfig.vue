@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useUserSession } from "@src/stores/userSession";
+import { confirm } from "@src/utils/dialog";
 
 const usStore = useUserSession();
 const settings = computed(() => usStore.settings);
@@ -23,8 +24,15 @@ function addAuthService() {
 }
 
 function removeAuthService(idx: number) {
-  authServices.value.splice(idx, 1)
-  updateProp('authorization_services')
+  confirm({
+    title: "确认",
+    content: `确定要删除授权服务地址 ${idx} 吗？`,
+    onConfirm: async (hide) => {
+      authServices.value.splice(idx, 1)
+      updateProp('authorization_services')
+      hide()
+    },
+  });
 }
 
 /* ----------------------------------------------------------------- */
@@ -48,8 +56,15 @@ function addMvTemplate() {
 }
 
 function removeMvTemplate(idx: number) {
-  mvTemplates.value.splice(idx, 1)
-  updateProp('mv_template_list')
+  confirm({
+    title: "确认",
+    content: `确定要删除多画面布局 ${mvTemplates.value[idx]?.name} 吗？`,
+    onConfirm: async (hide) => {
+      mvTemplates.value.splice(idx, 1)
+      updateProp('mv_template_list')
+      hide()
+    },
+  });
 }
 
 /* ----------------------------------------------------------------- */
@@ -233,8 +248,42 @@ const vBlurOnEnter = {
         <div class="form-section is-grey">
           <div class="form-section-header">
             <div class="left">
-              <h3>多画面布局模板</h3>
+              <h3>多画面布局</h3>
             </div>
+            <button
+              type="button"
+              class="button is-circle is-dark-outlined"
+              @keydown.space.prevent="addMvTemplate"
+              @click.prevent="addMvTemplate"
+            >
+              <span class="icon is-large">
+                <i aria-hidden="true" class="iconify" data-icon="feather:plus" />
+              </span>
+            </button>
+          </div>
+          <div class="form-section-inner flex-auto">
+            <VField
+              horizontal
+              label="多画面模板字体"
+            >
+              <VControl
+                icon="lnir lnir-text"
+              >
+                <VInput
+                  v-model="settings.mv_template_font"
+                  v-blur-on-enter
+                  type="url"
+                  placeholder="Noto Serif CJK"
+                  inputmode="url"
+                  data-key="mv_template_font"
+                  style="width: 300px;"
+                />
+              </VControl>
+              <VLabel class="font-test-label" :style="{fontFamily: `'${settings.mv_template_font}'`}">字体示例，Font Sample.</VLabel>
+            </VField>
+          </div>
+          <div class="form-section-inner row-with-button">
+            <div class="left">多画面布局模板</div>
             <button
               type="button"
               class="button is-circle is-dark-outlined"
@@ -390,6 +439,28 @@ const vBlurOnEnter = {
                 flex-basis: auto;
                 flex-shrink: 0;
                 flex-grow: 0;
+              }
+            }
+
+            .font-test-label {
+              font-size: 1rem;
+              color: var(--light-text);
+              font-weight: 400;
+              padding-top: 10px;
+              margin-left: 20px;
+            }
+
+            &.row-with-button {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              padding: 30px 12px 30px 0;
+
+              .left {
+                font-family: var(--font);
+                font-size: 0.9rem;
+                color: var(--light-text) !important;
+                font-weight: 400;
               }
             }
 

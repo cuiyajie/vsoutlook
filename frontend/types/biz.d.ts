@@ -156,6 +156,7 @@ type Settings = {
   authorization_services: SettingAuthService[],
   auto_save_container_config: boolean,
   mv_template_list: SettingMvTemplate[],
+  mv_template_font: string,
 }
 
 type SettingAuthService = {
@@ -200,6 +201,7 @@ interface IndexedLayoutRect extends LayoutRect {
 
 interface LayoutTitle extends LayoutRect {
   fontSize: number
+  fontFamily: string
 }
 
 interface LayoutVol extends LayoutPos {
@@ -209,9 +211,15 @@ interface LayoutVol extends LayoutPos {
   cnt: number
 }
 
-interface LayoutTimer extends LayoutRect {
+interface LayoutTimer extends LayoutPos {
   fontSize: number,
-  color: string
+  fontFamily: string,
+  color: string,
+  showDate: boolean,
+  dateNewLine: number,
+  dateDisplayType: number,
+  showFrame: number,
+  time24: number,
 }
 
 type LayoutProps = 'title' | 'vol' | 'timer'

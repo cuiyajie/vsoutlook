@@ -63,7 +63,7 @@ func CreateLayout(c *svcinfra.Context) {
 	}
 	ly := models.QueryOne4[models.Layout]("name", req.Name, "deleted", 0)
 	if ly != nil {
-		c.GeneralError("设备名称已存在")
+		c.GeneralError("布局名称已存在")
 		return
 	}
 	newLayout := models.Layout{
@@ -100,7 +100,7 @@ func UpdateLayout(c *svcinfra.Context) {
 	if req.Name != layout.Name {
 		ly := models.QueryOne4[models.Layout]("name", req.Name, "deleted", 0)
 		if ly != nil {
-			c.GeneralError("设备名称已存在")
+			c.GeneralError("布局名称已存在")
 			return
 		}
 	}
@@ -132,7 +132,7 @@ func Duplicate(c *svcinfra.Context) {
 	}
 	ly := models.QueryOne4[models.Layout]("name", req.Name, "deleted", 0)
 	if ly != nil {
-		c.GeneralError("设备名称已存在")
+		c.GeneralError("布局名称已存在")
 		return
 	}
 	duplicated := models.Layout{

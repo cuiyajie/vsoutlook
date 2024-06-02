@@ -90,13 +90,13 @@ defineExpose({
 </script>
 <template>
   <div class="layout-display draggable">
-    <div v-if="mv.title" data-role="title" class="layout-title" :style="{left: `${mv.title.x * ratiow}px`, top: `${mv.title.y * ratioh}px`, width: `${mv.title.w * ratiow}px`, height: `${mv.title.h * ratioh}px`, fontSize: `${mv.title.fontSize * ratiow}px`}" role="button" tabindex="0" @click.prevent="selectComponent('title')" @keyup.enter.prevent="selectComponent('title')">
+    <div v-if="mv.title" data-role="title" class="layout-title" :style="{left: `${mv.title.x * ratiow}px`, top: `${mv.title.y * ratioh}px`, width: `${mv.title.w * ratiow}px`, height: `${mv.title.h * ratioh}px`, fontSize: `${mv.title.fontSize * ratiow}px`, fontFamily:`'${mv.title.fontFamily}'`}" role="button" tabindex="0" @click.prevent="selectComponent('title')" @keyup.enter.prevent="selectComponent('title')">
       窗口名称
     </div>
     <div v-if="mv.vol" class="layout-vol" :style="{left: `${mv.vol.x * ratiow}px`, top: `${mv.vol.y * ratioh}px`, height: `${mv.vol.h * ratioh}px`, gap: `${mv.vol.g * ratiow}px`}" role="button" tabindex="0" @click.prevent="selectComponent('vol')" @keyup.enter.prevent="selectComponent('vol')">
       <div v-for="(v, vi) in new Array(mv.vol.cnt).fill(0)" :key="vi" class="vol" :style="{width: `${mv.vol.one_w * ratiow}px`}" />
     </div>
-    <div v-if="mv.timer" data-role="timer" class="layout-timer" :style="{left: `${mv.timer.x * ratiow}px`, top: `${mv.timer.y * ratioh}px`, width: `${mv.timer.w * ratiow}px`, height: `${mv.timer.h * ratioh}px`, fontSize: `${mv.timer.fontSize * ratiow}px`, color: mv.timer.color}" role="button" tabindex="0" @click.prevent="selectComponent('timer')" @keyup.enter.prevent="selectComponent('timer')">
+    <div v-if="mv.timer" data-role="timer" class="layout-timer" :style="{left: `${mv.timer.x * ratiow}px`, top: `${mv.timer.y * ratioh}px`, fontSize: `${mv.timer.fontSize * ratiow}px`, color: mv.timer.color}" role="button" tabindex="0" @click.prevent="selectComponent('timer')" @keyup.enter.prevent="selectComponent('timer')">
       16:00:00<br>2024-04-12
     </div>
     <vue-draggable-resizable

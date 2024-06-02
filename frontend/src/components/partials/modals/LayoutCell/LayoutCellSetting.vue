@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import { ColorPicker } from "vue3-colorpicker";
-import "vue3-colorpicker/style.css";
 
 const props = defineProps<{
   modelValue: LayoutDataItem,
@@ -51,13 +49,6 @@ const acfz = computed({
   get: () => ac.value && 'fontSize' in ac.value ? Math.round(ac.value.fontSize * props.base.w) : 0,
   set: (v: number) => {
     if (ac.value) ac.value = { ...ac.value, fontSize: v / props.base.w }
-  }
-})
-
-const acolor = computed({
-  get: () => ac.value && 'color' in ac.value ? ac.value.color : '',
-  set: (v: string) => {
-    if (ac.value) ac.value = { ...ac.value, color: v }
   }
 })
 
@@ -132,19 +123,11 @@ const acnt = computed({
           </div>
         </div>
       </section>
-      <section v-if="type === 'title' || type === 'timer'" class="layout-row">
+      <section v-if="type === 'title'" class="layout-row">
         <div class="layout-row-inner">
           <div class="layout-cell">
             <div>字体</div>
             <input v-model="acfz" type="number" min="0">
-          </div>
-        </div>
-      </section>
-      <section v-if="type === 'timer'" class="layout-row">
-        <div class="layout-row-inner">
-          <div class="layout-cell">
-            <div>颜色</div>
-            <color-picker v-model:pureColor="acolor" format="rgb" shape="square" theme="black" picker-type="chrome" />
           </div>
         </div>
       </section>
@@ -170,14 +153,5 @@ const acnt = computed({
 </template>
 <style lang="scss">
 .layout-panel {
-}
-
-.vc-display .vc-color-input input,
-.vc-display .vc-alpha-input__inner {
-  color: #fff !important;
-}
-
-.vc-display .vc-input-toggle:hover {
-  background-color: transparent !important;
 }
 </style>

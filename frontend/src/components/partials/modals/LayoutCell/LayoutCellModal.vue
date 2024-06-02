@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useNotyf } from "@src/composable/useNotyf";
-import { draftVol, draftTitle, draftTimer } from '@src/components/pages/app/MtvLayouts/utils';
+import { draftVol, draftTitle } from '@src/components/pages/app/MtvLayouts/utils';
 import type { GlobalComponents } from "vue";
 
 const props = defineProps<{
@@ -68,8 +68,6 @@ function addComponent(type: LayoutProps) {
     data.value[type] = draftVol(h, props.parent)
   } else if (type === 'title') {
     data.value[type] = draftTitle(w, h, props.parent)
-  } else if (type === 'timer') {
-    data.value[type] = draftTimer(w, props.parent)
   }
   activeComponent(type)
 }
@@ -85,7 +83,7 @@ function onClose() {
     size="big"
     noclose
     :open="opened"
-    :title="`窗口序号${index + 1}`"
+    :title="`窗口序号${index}`"
     cancel-label="取消"
     dialog-class="layout-cell-setting"
     @close="onClose"

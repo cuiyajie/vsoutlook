@@ -47,21 +47,25 @@ function onNodeSelect(field?: any, val?: any) {
 useListener(Signal.OpenResourceConfig, (p?: { tmpl: TemplateData, node: ClustNode, device: DeviceDetail, callbacks: any }) => {
   opened.value = true;
   callbacks = p?.callbacks || {}
-  inited.value = (!!p?.tmpl && !!p?.node) || !!p?.device
-  if ((!p?.tmpl || !p?.node) && !p?.device) return
-  if (p.device) {
+  inited.value = (!p?.tmpl || !p?.node) && !p?.device
+  if (p?.device) {
     device.value = p.device;
     deviceName.value = p.device?.name || ""
     tmpl.value = tmpls.value.find(t => t.id === p.device.tmplID) || null
     node.value = nodes.value.find(n => n.id === p.device.node) || null
   } else {
-    tmpl.value = p.tmpl;
-    node.value = p.node;
+    tmpl.value = p?.tmpl || null;
+    node.value = p?.node || null;
     deviceName.value = ""
+    device.value = null
   }
   nextTick(() => {
-    setFieldValue("deviceName", deviceName.value)
-    if (p.device?.config) {
+    setValues({
+      deviceName: deviceName.value,
+      tmpl: tmpl.value?.id || null,
+      node: node.value?.id || null
+    })
+    if (p?.device?.config) {
       const val = JSON.parse(p.device.config)
       compRef.value?.setValue(val)
     }
@@ -85,7 +89,7 @@ const validationSchema = computed(() => {
   }
   return toTypedSchema(z.object(rules))
 })
-const { handleSubmit, setFieldValue } = useForm({ validationSchema });
+const { handleSubmit, setValues } = useForm({ validationSchema });
 
 const dgi = computed(() => {
   const isCreated = device.value != null;
@@ -272,7 +276,7 @@ const tmplConfig = computed(() => {
             </Transition>
           </VControl>
         </VField>
-        <div v-if="!inited" class="columns">
+        <div v-if="inited" class="columns">
           <div class="column is-6 mt-4">
             <VField
               id="tmpl"

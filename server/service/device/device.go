@@ -332,6 +332,10 @@ func StartDevice(c *svcinfra.Context) {
 	}
 
 	tmpl := models.ActiveTmpl(device.Tmpl)
+	if tmpl == nil {
+		c.GeneralError("设备类型不存在")
+		return
+	}
 	node := models.ActiveNode(device.Node)
 	if node == nil {
 		node = &models.Node{
@@ -542,6 +546,10 @@ func CreateDevice(c *svcinfra.Context) {
 	}
 
 	tmpl := models.ActiveTmpl(req.Tmpl)
+	if tmpl == nil {
+		c.GeneralError("设备类型不存在")
+		return
+	}
 	node := models.ActiveNode(req.Node)
 	if node == nil {
 		node = &models.Node{
