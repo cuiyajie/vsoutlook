@@ -229,12 +229,33 @@ function selectCell(di: LayoutDataItem, didx: number) {
   const { w, h } = bounding.value
   if (di.timer) {
     const timerEl = layoutsRef.value?.querySelector<HTMLElement>(`[data-cell-index="${didx}"]`)
-    activeCell.value = {
-      index: didx,
-      x: di.timer.x * w,
-      y: di.timer.y * h,
-      w: timerEl?.clientWidth || 0,
-      h: timerEl?.clientHeight || 0
+    if (timerEl) {
+      activeCell.value = {
+        index: didx,
+        x: di.timer.x * w,
+        y: di.timer.y * h,
+        w: timerEl.clientWidth,
+        h: timerEl.clientHeight
+      }
+    } else {
+      activeCell.value = {
+        index: didx,
+        x: di.timer.x * w,
+        y: di.timer.y * h,
+        w: 10,
+        h: 10
+      }
+      nextTick(() => {
+        const timerEl = layoutsRef.value?.querySelector<HTMLElement>(`[data-cell-index="${didx}"]`)
+        if (timerEl && activeCell.value) {
+          handleActiveCell(
+            bounding.value.w / 2 - timerEl.clientWidth / 2,
+            activeCell.value.y,
+            timerEl.clientWidth,
+            timerEl.clientHeight
+          )
+        }
+      })
     }
   } else {
     activeCell.value = {

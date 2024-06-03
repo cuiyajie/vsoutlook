@@ -34,7 +34,7 @@ export const draftTimer = () => {
   return {
     fontSize: 64 / 1920,
     color: defaultTimerColor,
-    x: 800 / 1920,
+    x: 0,
     y: 100 / 1920,
     showDate: true,
     dateNewLine: 0,
