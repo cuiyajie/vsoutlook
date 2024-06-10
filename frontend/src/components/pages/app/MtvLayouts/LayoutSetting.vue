@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 import { ColorPicker } from "vue3-colorpicker";
 import "vue3-colorpicker/style.css";
-import { draftVol, draftTitle, defaultTimerColor, defaultFontFamily } from './utils';
+import { draftVol, draftTitle, defaultTimerColor } from './utils';
+import { clamp } from "@vueuse/core";
 
 const props = defineProps<{
   modelValue: LayoutDataItem,
@@ -84,13 +85,14 @@ const fz = computed({
   get: () => props.modelValue?.timer ? Math.round(props.modelValue.timer.fontSize * props.base.w) : 0,
   set: (v: number) => {
     if (props.modelValue?.timer) {
-      emit('update:model-value', { ...props.modelValue, timer: { ...props.modelValue.timer, fontSize: v / props.base.w } })
+      const realV = clamp(v, 0, Math.floor(props.base.w / 5))
+      emit('update:model-value', { ...props.modelValue, timer: { ...props.modelValue.timer, fontSize: realV / props.base.w } })
     }
   }
 })
 
 const fa = computed({
-  get: () => props.modelValue?.timer?.fontFamily || defaultFontFamily,
+  get: () => props.modelValue?.timer?.fontFamily || '',
   set: (v: string) => {
     if (props.modelValue?.timer) {
       emit('update:model-value', { ...props.modelValue, timer: { ...props.modelValue.timer, fontFamily: v } })
@@ -186,7 +188,7 @@ const time24 = computed({
           <div class="layout-row-inner">
             <div class="layout-cell">
               <div>字体大小</div>
-              <input v-model="fz" type="number" min="0">
+              <input v-model="fz" type="number" min="0" :max="Math.floor(props.base.w / 5)">
             </div>
           </div>
         </section>

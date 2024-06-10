@@ -22,9 +22,9 @@ const dateText = computed(() => {
 })
 </script>
 <template>
-  <div v-if="data?.timer" data-role="timer" class="layout-timer" :style="{fontSize: `${data.timer.fontSize * bound.w}px`, color: data.timer.color, fontFamily: data.timer.fontFamily}">
+  <div v-if="data?.timer" data-role="timer" class="layout-timer" :style="{fontSize: `${data.timer.fontSize * bound.w}px`, color: data.timer.color, fontFamily: data.timer.fontFamily}" style="max-width: 100%;">
     <slot />
-    <span v-html="dateText" />
+    <span style="max-width: 100%; overflow: hidden;" v-html="dateText" />
   </div>
 </template>
 <style lang="scss">

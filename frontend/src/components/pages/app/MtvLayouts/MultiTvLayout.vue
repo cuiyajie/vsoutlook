@@ -2,7 +2,7 @@
 import { useNotyf } from "@src/composable/useNotyf";
 import { confirm } from "@src/utils/dialog";
 import { useElementBounding, useElementSize } from '@vueuse/core'
-import { DefaultLayouts, draftTitle, draftVol, draftTimer, ds2db, db2ds, resizeTitle, resizeVol, resizeTimer } from './utils';
+import { DefaultLayouts, draftTitle, draftVol, draftTimer, ds2db, db2ds, resizeTitle, resizeVol } from './utils';
 import { useLayout } from "@src/stores/layout";
 import { LayoutSize } from "@src/utils/enums";
 import IsEqual from "lodash-es/isEqual";
@@ -142,6 +142,24 @@ function redrawLayout() {
   })
 }
 
+function resizeTimerComponent(v: LayoutDataItem) {
+  requestAnimationFrame(() => {
+    const { w, h } = bounding.value
+    nextTick(() => {
+      if (activeCell.value && v.timer) {
+        const timerEl = layoutsRef.value?.querySelector<HTMLElement>(`[data-cell-index="${activeCell.value.index}"]`)
+        activeCell.value = {
+          ...activeCell.value,
+          x: v.timer.x * w,
+          y: v.timer.y * h,
+          w: (timerEl?.clientWidth || 0) + 2,
+          h: (timerEl?.clientHeight || 0) + 2
+        }
+      }
+    })
+  })
+}
+
 const activeCell = ref<IndexedLayoutRect | null>(null)
 const ads = computed<LayoutDataItem | null>({
   get: () => activeCell.value ? dataset.value[activeCell.value.index] : null,
@@ -149,18 +167,7 @@ const ads = computed<LayoutDataItem | null>({
     if (!activeCell.value || !v) return
     const { w, h } = bounding.value
     if (v.timer) {
-      nextTick(() => {
-        if (activeCell.value && v.timer) {
-          const timerEl = layoutsRef.value?.querySelector<HTMLElement>(`[data-cell-index="${activeCell.value.index}"]`)
-          activeCell.value = {
-            ...activeCell.value,
-            x: v.timer.x * w,
-            y: v.timer.y * h,
-            w: timerEl?.clientWidth || 0,
-            h: timerEl?.clientHeight || 0
-          }
-        }
-      })
+      resizeTimerComponent(v)
       dataset.value[activeCell.value.index] = v
     } else {
       activeCell.value = {
@@ -195,6 +202,7 @@ function resetActiveCell() {
   const aidx = activeCell.value.index
   dataset.value[aidx] = JSON.parse(JSON.stringify(originDataset.value[aidx]))
   selectCell(dataset.value[aidx], aidx)
+  resizeTimerComponent(dataset.value[aidx])
 }
 
 function handleActiveCell(x: number, y: number, pw: number, ph: number) {
@@ -234,8 +242,8 @@ function selectCell(di: LayoutDataItem, didx: number) {
         index: didx,
         x: di.timer.x * w,
         y: di.timer.y * h,
-        w: timerEl.clientWidth,
-        h: timerEl.clientHeight
+        w: timerEl.clientWidth + 2,
+        h: timerEl.clientHeight + 2
       }
     } else {
       activeCell.value = {
@@ -245,16 +253,18 @@ function selectCell(di: LayoutDataItem, didx: number) {
         w: 10,
         h: 10
       }
-      nextTick(() => {
-        const timerEl = layoutsRef.value?.querySelector<HTMLElement>(`[data-cell-index="${didx}"]`)
-        if (timerEl && activeCell.value) {
-          handleActiveCell(
-            bounding.value.w / 2 - timerEl.clientWidth / 2,
-            activeCell.value.y,
-            timerEl.clientWidth,
-            timerEl.clientHeight
-          )
-        }
+      requestAnimationFrame(() => {
+        nextTick(() => {
+          const timerEl = layoutsRef.value?.querySelector<HTMLElement>(`[data-cell-index="${didx}"]`)
+          if (timerEl && activeCell.value) {
+            handleActiveCell(
+              bounding.value.w / 2 - (timerEl.clientWidth + 2) / 2,
+              activeCell.value.y,
+              timerEl.clientWidth + 2,
+              timerEl.clientHeight + 2
+            )
+          }
+        })
       })
     }
   } else {
@@ -273,6 +283,7 @@ function deleteCell(didx: number) {
     activeCell.value = null
   }
   dataset.value.splice(didx, 1)
+  originDataset.value.splice(didx, 1)
 }
 
 function editCell(didx: number) {
@@ -318,6 +329,7 @@ function createWin() {
   }
   const cell = createWinCell(false)
   dataset.value.push(cell)
+  originDataset.value.push(cell)
   selectCell(cell, dataset.value.length - 1)
 }
 
@@ -332,6 +344,7 @@ function createTimerWin() {
   }
   const cell = createWinCell(true)
   dataset.value.push(cell)
+  originDataset.value.push(cell)
   selectCell(cell, dataset.value.length - 1)
 }
 
@@ -543,7 +556,7 @@ function publish(ly: Layout) {
                   @click.prevent="selectCell(ds, cidx)"
                   @keyup.enter.prevent="selectCell(ds, cidx)"
                 >
-                  <layout-timer-display :no="cidx" :bound="bounding" :data="ds">
+                  <layout-timer-display :no="cidx" :bound="bounding" :data="ds" :max-width="activeCell?.w">
                     <VIconButton color="white" outlined circle icon="feather:x" class="timer-cell-x" @click.prevent.stop="deleteCell(cidx)" />
                   </layout-timer-display>
                 </div>
