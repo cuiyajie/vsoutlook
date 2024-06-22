@@ -42,6 +42,10 @@ export const useUserSession = defineStore('userSession', () => {
       settings.value.mv_template_list = parseJsonString(newSettings.mv_template_list, [])
       delete newSettings.mv_template_list
     }
+    if (newSettings['endswt_titles']) {
+      settings.value.endswt_titles = parseJsonString(newSettings.endswt_titles, [])
+      delete newSettings.endswt_titles
+    }
     settings.value = Object.assign({}, settings.value, newSettings)
   }
 
@@ -64,11 +68,14 @@ export const useUserSession = defineStore('userSession', () => {
       const s = res.settings
       setSettings({ [s.key]: s.value } as any)
     }
+    return res?.settings
   }
 
   async function logoutUser() {
     user.value = undefined
   }
+
+const endSwitchTitles = computed(() => settings.value.endswt_titles?.length === 5 ? settings.value.endswt_titles : Array.from({ length: 5 }).map(() => ""));
 
   return {
     user,
@@ -80,6 +87,7 @@ export const useUserSession = defineStore('userSession', () => {
     setLoading,
     setSettings,
     $updateSettings,
+    endSwitchTitles,
     updateMtvSettings
   } as const
 })

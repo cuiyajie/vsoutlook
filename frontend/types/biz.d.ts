@@ -157,6 +157,8 @@ type Settings = {
   auto_save_container_config: boolean,
   mv_template_list: SettingMvTemplate[],
   mv_template_font: string,
+  endswt_api: string,
+  endswt_titles: string[]
 }
 
 type SettingAuthService = {

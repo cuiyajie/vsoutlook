@@ -13,6 +13,8 @@ export enum Signal {
   OpenNewLayout,
   OpenLayoutCellSetting,
   LayoutSaveAs,
+  OpenApiServerPort,
+  OpenEndSwtTitle,
 }
 
 export enum DeviceStatus {

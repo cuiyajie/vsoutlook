@@ -30,6 +30,15 @@
           </RouterLink>
         </li>
         <li>
+          <RouterLink to="/app/endswt">
+            <i
+              class="mr-1 fas fa-exchange-alt"
+              aria-hidden="true"
+            />
+            末级切换模版
+          </RouterLink>
+        </li>
+        <li>
           <RouterLink to="/app/resource">
             <i
               class="mr-1 fas fa-server"

@@ -219,7 +219,7 @@ refresh()
               <span>全部删除</span>
             </VButton>
           </VButtons> -->
-          </vbuttons>
+          </VButtons>
         </template>
       </VFlexTableToolbar>
 
