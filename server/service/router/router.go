@@ -11,6 +11,7 @@ import (
 	"vsoutlook.com/vsoutlook/infra/track"
 	"vsoutlook.com/vsoutlook/service/cluster"
 	"vsoutlook.com/vsoutlook/service/device"
+	"vsoutlook.com/vsoutlook/service/endswt"
 	"vsoutlook.com/vsoutlook/service/layout"
 	"vsoutlook.com/vsoutlook/service/settings"
 	"vsoutlook.com/vsoutlook/service/site"
@@ -52,6 +53,7 @@ func SetupRouter() *gin.Engine {
 		member := group(root, "api", authenticated)
 		// member := group(root, "api")
 		post(member, "tmpl_type/list", tmpl.GetTmplTypeList)
+		post(member, "tmpl_type/create", tmpl.CreateTmplType)
 		post(member, "tmpl/list", tmpl.GetTmplList)
 		post(member, "tmpl/info", tmpl.GetTmpl)
 		post(member, "tmpl/create", tmpl.CreateTmpl)
@@ -92,6 +94,12 @@ func SetupRouter() *gin.Engine {
 		post(member, "layout/publish", layout.PublishLayout)
 		post(member, "layout/duplicate", layout.Duplicate)
 		post(member, "layout/update.content", layout.UpdateLayoutContent)
+	}
+
+	{
+		member := group(root, "api", authenticated)
+		post(member, "endswt/target", endswt.GetEndSwtTarget)
+		post(member, "endswt/switch", endswt.SwitchTarget)
 	}
 
 	router.NoRoute(h(site.FallbackHandler))

@@ -18,6 +18,7 @@ const (
 )
 
 const SettingKey_Mtv = "mv_template_list"
+const SettingKey_EndSwtApi = "endswt_api"
 
 var LSizeStr = map[uint8]string{
 	LSize_4K: "4K",

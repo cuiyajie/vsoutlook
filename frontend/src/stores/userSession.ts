@@ -33,19 +33,22 @@ export const useUserSession = defineStore('userSession', () => {
     if (newSettings['auto_save_container_config']) {
       settings.value.auto_save_container_config = String(newSettings.auto_save_container_config) === 'true'
       delete newSettings.auto_save_container_config
-    }
-    if (newSettings['authorization_services']) {
-      settings.value.authorization_services = parseJsonString(newSettings.authorization_services, [])
-      delete newSettings.authorization_services
-    }
-    if (newSettings['mv_template_list']) {
-      settings.value.mv_template_list = parseJsonString(newSettings.mv_template_list, [])
-      delete newSettings.mv_template_list
-    }
-    if (newSettings['endswt_titles']) {
-      settings.value.endswt_titles = parseJsonString(newSettings.endswt_titles, [])
-      delete newSettings.endswt_titles
-    }
+    };
+    (
+      [
+        'authorization_services',
+        'mv_template_list',
+        'endswt_titles',
+        'endswt_panel_types',
+        'lut_upscale_names',
+        'lut_downscale_names',
+      ] as Array<keyof Settings>
+    ).forEach((key) => {
+      if (newSettings[key]) {
+        settings.value[key] = parseJsonString<any>(newSettings[key]!, [])
+        delete newSettings[key]
+      }
+    })
     settings.value = Object.assign({}, settings.value, newSettings)
   }
 

@@ -4,6 +4,11 @@ import { formatKeys, type UdxInputType, def_udx_output_params, val_udx, def_udx_
 import pick from 'lodash-es/pick'
 import merge from 'lodash-es/merge'
 import udxData from '@src/data/vscomponent/udx.json'
+import { useUserSession } from "@src/stores/userSession";
+
+const usStore = useUserSession();
+const lutUpsaleNames = computed(() => usStore.settings.lut_upscale_names || []);
+const lutDownscaleNames = computed(() => usStore.settings.lut_downscale_names || []);
 
 const props = defineProps<{
   name: string
@@ -12,6 +17,9 @@ const props = defineProps<{
 const mv = defineModel<{
   moudle: string,
   mode: string,
+  hdr_convert_mode: string,
+  lut_filename: string,
+  dynamic_mode: number,
   "2110-7_m_local_ip": string,
   "2110-7_b_local_ip": string,
   nmos: NMosConfigType,
@@ -20,6 +28,8 @@ const mv = defineModel<{
   default: {
     moudle: "udx",
     mode: "upscale",
+    hdr_convert_mode: "dynamic",
+    dynamic_mode: 1,
     "2110-7_m_local_ip": "",
     "2110-7_b_local_ip": "",
     nmos: { ...nmos_config },
@@ -29,7 +39,19 @@ const mv = defineModel<{
 });
 const advanceOpened = ref(false)
 
-mv.value = pick(udxData, ['moudle', 'mode', '2110-7_m_local_ip', '2110-7_b_local_ip', 'nmos', 'ssm_address_range', 'authorization_service'])
+mv.value = pick(udxData, ['moudle', 'mode', 'hdr_convert_mode', 'dynamic_mode', 'lut_filename', '2110-7_m_local_ip', '2110-7_b_local_ip', 'nmos', 'ssm_address_range', 'authorization_service'])
+
+const hdrModeOptions = [
+  { value: 'lut', label: 'LUT' },
+  { value: 'dynamic', label: '动态HDR' },
+]
+const computedHdrModeOptions = computed(() => {
+  return mv.value.mode === val_udx[0] ? hdrModeOptions.slice(0, 1) : hdrModeOptions
+})
+
+const scaleNames = computed(() => {
+  return mv.value.mode === val_udx[0] ? lutUpsaleNames.value : lutDownscaleNames.value
+})
 
 const input = ref<UdxInputType>(def_udx_input());
 input.value = unwrap(udxData.input, 'in_')
@@ -50,7 +72,7 @@ const output2Format = useFormat(outputs.value[1], getFormat(opData.params[1]))
 watchNmosName(() => props.name, mv)
 watchInput('audioformat', input, outputs.value.map(o => o), { deep: true })
 
-watch(() => mv.value.mode, () => {
+watch(() => mv.value.mode, (nv, ov) => {
   if (mv.value.mode === val_udx[0]) {
     inputFormat.value = inputFormat.value !== formatKeys[2] ? inputFormat.value : formatKeys[0]
     output1Format.value = formatKeys[2]
@@ -59,6 +81,9 @@ watch(() => mv.value.mode, () => {
     inputFormat.value = formatKeys[2]
     output1Format.value = output1Format.value !== formatKeys[2] ? output1Format.value : formatKeys[1]
     output2Format.value = output2Format.value !== formatKeys[2] ? output2Format.value : formatKeys[1]
+  }
+  if (nv !== ov && mv.value.hdr_convert_mode === 'lut') {
+    mv.value.lut_filename = ''
   }
 }, { immediate: true })
 
@@ -78,7 +103,7 @@ function getValue() {
 }
 
 function setValue(data: typeof udxData) {
-  mv.value = pick(data, ['moudle', 'mode', '2110-7_m_local_ip', '2110-7_b_local_ip', 'nmos', 'ssm_address_range', 'authorization_service'])
+  mv.value = pick(data, ['moudle', 'mode', 'hdr_convert_mode', 'dynamic_mode', 'lut_filename', '2110-7_m_local_ip', '2110-7_b_local_ip', 'nmos', 'ssm_address_range', 'authorization_service'])
   input.value = merge(def_udx_input(), unwrap(data.input, 'in_'))
   inputFormat.value = getFormat(input.value)
 
@@ -145,6 +170,67 @@ defineExpose({
                   <VInput
                     v-model="mv.nmos.host_addresses"
                   />
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-6">
+              <VField>
+                <VLabel>HDR变换模式</VLabel>
+                <VControl>
+                  <VSelect
+                    v-model="mv.hdr_convert_mode"
+                    class="is-rounded"
+                  >
+                    <VOption v-for="opt in computedHdrModeOptions" :key="opt.value" :value="opt.value">
+                      {{ opt.label }}
+                    </VOption>
+                  </VSelect>
+                </VControl>
+              </VField>
+            </div>
+            <div v-if="mv.hdr_convert_mode === 'lut'" class="column is-6">
+              <VField v-slot="{ field }">
+                <VLabel>LUT表名称</VLabel>
+                <Multiselect
+                  v-model="mv.lut_filename"
+                  placeholder="选择LUT表名称"
+                  value-prop="name"
+                  label="name"
+                  :max-height="145"
+                  :options="scaleNames"
+                  @change="(val: any) => field?.setValue(val)"
+                >
+                  <template #singlelabel="{ value }">
+                    <div class="multiselect-single-label">
+                      <span class="select-label-text">
+                        {{ value.name }}
+                      </span>
+                    </div>
+                  </template>
+                  <template #option="{ option }">
+                    <div class="mv-tmpl-dropdown">
+                      <div>
+                        {{ option.name }}
+                      </div>
+                      <div>
+                        {{ option.remark }}
+                      </div>
+                    </div>
+                  </template>
+                </Multiselect>
+              </VField>
+            </div>
+            <div v-if="mv.hdr_convert_mode === 'dynamic'" class="column is-6">
+              <VField>
+                <VLabel>动态HDR模式</VLabel>
+                <VControl>
+                  <VSelect
+                    v-model="mv.dynamic_mode"
+                    class="is-rounded"
+                  >
+                    <VOption :value="1">模式1</VOption>
+                    <VOption :value="2">模式2</VOption>
+                  </VSelect>
                 </VControl>
               </VField>
             </div>

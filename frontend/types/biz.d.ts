@@ -37,7 +37,7 @@ interface TemplateData {
   name: string,
   type: string,
   typeName: string,
-  typeCategory: 'codec' | 'udx' | 'multiv' | 'swt',
+  typeCategory: 'codec' | 'udx' | 'multiv' | 'swt' | 'bcswt' | 'endswt',
   description: string,
   listed: boolean,
   requirement: TmplRequirement,
@@ -158,7 +158,10 @@ type Settings = {
   mv_template_list: SettingMvTemplate[],
   mv_template_font: string,
   endswt_api: string,
-  endswt_titles: string[]
+  endswt_titles: string[],
+  endswt_panel_types: SettingEndSwtPanelType[],
+  lut_upscale_names: SettingLutScaleName[],
+  lut_downscale_names: SettingLutScaleName[],
 }
 
 type SettingAuthService = {
@@ -166,11 +169,19 @@ type SettingAuthService = {
   port: number
 }
 
+type SettingEndSwtPanelType = {
+  type: string
+}
+
+type SettingLutScaleName = {
+  name: string,
+  remark: string
+}
+
 type SettingMvTemplate = {
   name: string,
   path: string
 }
-
 
 interface Layout {
   id: string,

@@ -3,6 +3,9 @@
   "mode": "upscale",
   "2110-7_m_local_ip": "192.168.1.1",
   "2110-7_b_local_ip": "192.168.1.2",
+  "hdr_convert_mode": "lut",
+  "lut_filename": "",
+  "dynamic_mode": 1,
   "nmos": {
     "nmos_enable":true,
     "rds_server_url":"192.168.1.112:8010",

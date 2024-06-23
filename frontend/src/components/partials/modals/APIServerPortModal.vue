@@ -10,9 +10,11 @@ const settings = computed(() => usStore.settings);
 const notyf = useNotyf();
 const opened = ref(false);
 const apiServerPort = ref("");
+let callbacks: any = {}
 
-useListener(Signal.OpenApiServerPort, () => {
+useListener(Signal.OpenApiServerPort, (_callback: any) => {
   opened.value = true
+  callbacks = _callback || {}
   setFieldValue("apiServerPort", settings.value.endswt_api || '')
 });
 
@@ -35,6 +37,7 @@ const handleCommit = handleSubmit(async () => {
   if (res) {
     opened.value = false;
     notyf.success("保存设置成功");
+    callbacks.success?.();
   } else {
     notyf.error("保存设置失败");
   }

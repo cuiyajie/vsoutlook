@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/rand"
+	"net"
 	"net/mail"
 	"path/filepath"
 	"reflect"
@@ -158,4 +159,23 @@ func KeysOf(m map[string]interface{}) []string {
 		keys = append(keys, k)
 	}
 	return keys
+}
+
+func IsValidIPv4WithPort(input string) bool {
+	host, port, err := net.SplitHostPort(input)
+	if err != nil {
+		return false
+	}
+
+	ip := net.ParseIP(host)
+	if ip == nil || ip.To4() == nil {
+		return false
+	}
+
+	_, err = strconv.Atoi(port)
+	if err != nil {
+		return false
+	}
+
+	return true
 }

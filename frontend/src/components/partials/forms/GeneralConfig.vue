@@ -69,11 +69,85 @@ function removeMvTemplate(idx: number) {
 
 /* ----------------------------------------------------------------- */
 
+/* ------------------------ End switch panel type -------------------------- */
+const def_endswt_panel_type = {
+	type: "panel-web"
+}
+
+const endSwtPanelTypes = ref<Array<SettingEndSwtPanelType>>([]);
+
+watch(() => settings.value.endswt_panel_types, () => {
+  endSwtPanelTypes.value = settings.value.endswt_panel_types || []
+}, { immediate: true })
+
+function addEndSwtPanelType() {
+  endSwtPanelTypes.value.push({ ...def_endswt_panel_type })
+  updateProp('endswt_panel_types')
+}
+
+function removeEndSwtPanelType(idx: number) {
+  confirm({
+    title: "确认",
+    content: `确定要末级切换可用面板 ${endSwtPanelTypes.value[idx]?.type} 吗？`,
+    onConfirm: async (hide) => {
+      endSwtPanelTypes.value.splice(idx, 1)
+      updateProp('endswt_panel_types')
+      hide()
+    },
+  });
+}
+/* ----------------------------------------------------------------- */
+
+/* ------------------------ Lut upscale table -------------------------- */
+const def_scale_name = {
+	name: "",
+  remark: ""
+}
+
+const lutUpscaleNames = ref<Array<SettingLutScaleName>>([]);
+const lutDownscaleNames = ref<Array<SettingLutScaleName>>([]);
+
+watch(() => settings.value.lut_upscale_names, () => {
+  lutUpscaleNames.value = settings.value.lut_upscale_names || []
+}, { immediate: true })
+
+watch(() => settings.value.lut_downscale_names, () => {
+  lutDownscaleNames.value = settings.value.lut_downscale_names || []
+}, { immediate: true })
+
+function addScaleName(key: 'lut_upscale_names' | 'lut_downscale_names') {
+  (key === 'lut_upscale_names' ? lutUpscaleNames : lutDownscaleNames).value.push({ ...def_scale_name })
+  updateProp(key)
+}
+
+function removeScaleName(idx: number, key: 'lut_upscale_names' | 'lut_downscale_names') {
+  const lutNames = key === 'lut_upscale_names' ? lutUpscaleNames : lutDownscaleNames
+  const lutTitle = key === 'lut_upscale_names' ? '上变换LUT表' : '下变换LUT表'
+  confirm({
+    title: "确认",
+    content: `确定要删除${lutTitle}名 ${lutNames.value[idx]?.name} 吗？`,
+    onConfirm: async (hide) => {
+      lutNames.value.splice(idx, 1)
+      updateProp( key)
+      hide()
+    },
+  });
+}
+/* ----------------------------------------------------------------- */
+
+/* ----------------------------------------------------------------- */
+
 function updateProp(key: string, value?: string) {
   if (key === 'authorization_services') {
     usStore.$updateSettings({ key, value: JSON.stringify(authServices.value) })
   } else if (key === 'mv_template_list') {
     usStore.$updateSettings({ key, value: JSON.stringify(mvTemplates.value) })
+  } else if (key === 'endswt_panel_types') {
+    usStore.$updateSettings({ key, value: JSON.stringify(endSwtPanelTypes.value) })
+  } else if (key === 'lut_upscale_names') {
+    usStore.$updateSettings({ key, value: JSON.stringify(lutUpscaleNames.value) })
+  } else if (key === 'lut_downscale_names') {
+    usStore.$updateSettings({ key, value: JSON.stringify(lutDownscaleNames.value) })
   } else {
     usStore.$updateSettings({ key, value })
   }
@@ -344,6 +418,186 @@ const vBlurOnEnter = {
             </div>
           </div>
           <div v-if="mvTemplates.length === 0" class="form-empty">暂时没有添加多画面布局模板</div>
+        </div>
+
+        <div class="form-section is-grey">
+          <div class="form-section-header">
+            <div class="left">
+              <h3>末级切换可用面板清单</h3>
+            </div>
+            <button
+              type="button"
+              class="button is-circle is-dark-outlined"
+              @keydown.space.prevent="addEndSwtPanelType"
+              @click.prevent="addEndSwtPanelType"
+            >
+              <span class="icon is-large">
+                <i aria-hidden="true" class="iconify" data-icon="feather:plus" />
+              </span>
+            </button>
+          </div>
+          <div v-for="(espt, idx) in endSwtPanelTypes" :key="idx" class="columns is-multiline">
+            <div class="column is-1">
+              <VField class="index-field">
+                <VLabel>序号</VLabel>
+                <VControl>
+                  <VLabel>{{ idx }}</VLabel>
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-6">
+              <VField id="ip">
+                <VLabel>面板类型</VLabel>
+                <VControl icon="feather:clipboard">
+                  <input
+                    v-model="espt.type"
+                    v-blur-on-enter
+                    type="text"
+                    :placeholder="def_endswt_panel_type.type"
+                    class="input is-primary-focus"
+                    data-key="endswt_panel_types"
+                  >
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-1">
+              <VField>
+                <VLabel>&nbsp;</VLabel>
+                <VControl>
+                  <VIconButton color="warning" light raised circle icon="feather:x" @click="removeEndSwtPanelType(idx)" />
+                </VControl>
+              </VField>
+            </div>
+          </div>
+          <div v-if="endSwtPanelTypes.length === 0" class="form-empty">暂时没有添加面板类型</div>
+        </div>
+
+        <div class="form-section is-grey">
+          <div class="form-section-header">
+            <div class="left">
+              <h3>LUT表名称</h3>
+            </div>
+          </div>
+          <div class="form-section-inner row-with-button">
+            <div class="left">上变换LUT表</div>
+            <button
+              type="button"
+              class="button is-circle is-dark-outlined"
+              @keydown.space.prevent="addScaleName('lut_upscale_names')"
+              @click.prevent="addScaleName('lut_upscale_names')"
+            >
+              <span class="icon is-large">
+                <i aria-hidden="true" class="iconify" data-icon="feather:plus" />
+              </span>
+            </button>
+          </div>
+          <div v-for="(lut, idx) in lutUpscaleNames" :key="idx" class="columns is-multiline">
+            <div class="column is-1">
+              <VField class="index-field">
+                <VLabel>序号</VLabel>
+                <VControl>
+                  <VLabel>{{ idx }}</VLabel>
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-4">
+              <VField id="ip">
+                <VLabel>LUT表名称</VLabel>
+                <VControl icon="feather:list">
+                  <input
+                    v-model="lut.name"
+                    v-blur-on-enter
+                    type="text"
+                    class="input is-primary-focus"
+                    data-key="lut_upscale_names"
+                  >
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-6">
+              <VField>
+                <VLabel>备注</VLabel>
+                <VControl>
+                  <input
+                    v-model="lut.remark"
+                    v-blur-on-enter
+                    type="text"
+                    class="input is-primary-focus"
+                    data-key="lut_upscale_names"
+                  >
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-1">
+              <VField>
+                <VLabel>&nbsp;</VLabel>
+                <VControl>
+                  <VIconButton color="warning" light raised circle icon="feather:x" @click="removeScaleName(idx, 'lut_upscale_names')" />
+                </VControl>
+              </VField>
+            </div>
+          </div>
+          <div v-if="lutUpscaleNames.length === 0" class="form-empty">暂时没有添加上变换LUT表名称</div>
+          <div class="form-section-inner row-with-button">
+            <div class="left">下变换LUT表</div>
+            <button
+              type="button"
+              class="button is-circle is-dark-outlined"
+              @keydown.space.prevent="addScaleName('lut_downscale_names')"
+              @click.prevent="addScaleName('lut_downscale_names')"
+            >
+              <span class="icon is-large">
+                <i aria-hidden="true" class="iconify" data-icon="feather:plus" />
+              </span>
+            </button>
+          </div>
+          <div v-for="(lut, idx) in lutDownscaleNames" :key="idx" class="columns is-multiline">
+            <div class="column is-1">
+              <VField class="index-field">
+                <VLabel>序号</VLabel>
+                <VControl>
+                  <VLabel>{{ idx }}</VLabel>
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-4">
+              <VField id="ip">
+                <VLabel>LUT表名称</VLabel>
+                <VControl icon="feather:list">
+                  <input
+                    v-model="lut.name"
+                    v-blur-on-enter
+                    type="text"
+                    class="input is-primary-focus"
+                    data-key="lut_downscale_names"
+                  >
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-6">
+              <VField>
+                <VLabel>备注</VLabel>
+                <VControl>
+                  <input
+                    v-model="lut.remark"
+                    v-blur-on-enter
+                    type="text"
+                    class="input is-primary-focus"
+                    data-key="lut_downscale_names"
+                  >
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-1">
+              <VField>
+                <VLabel>&nbsp;</VLabel>
+                <VControl>
+                  <VIconButton color="warning" light raised circle icon="feather:x" @click="removeScaleName(idx, 'lut_downscale_names')" />
+                </VControl>
+              </VField>
+            </div>
+          </div>
+          <div v-if="lutUpscaleNames.length === 0" class="form-empty">暂时没有添加下变换LUT表名称</div>
         </div>
       </div>
     </div>

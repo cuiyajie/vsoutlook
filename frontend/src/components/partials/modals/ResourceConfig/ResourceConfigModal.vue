@@ -7,6 +7,8 @@ import CodecForm from "./CodecForm.vue";
 import UdxForm from "./UdxForm.vue";
 import MVForm from "./MVForm.vue";
 import SwitchForm from "./SwitchForm.vue";
+import BCSwitchForm from "./BCSwitchForm.vue";
+import EndSwitchForm from "./EndSwitchForm.vue";
 import { confirm } from "@src/utils/dialog";
 import { useDevices } from '@src/stores/device'
 import { useTemplate } from "@src/stores/template";
@@ -226,6 +228,16 @@ const tmplConfig = computed(() => {
       return {
         name: '切换台',
         component: SwitchForm
+      };
+    case 'bcswt':
+      return {
+        name: '播出切换台',
+        component: BCSwitchForm
+      };
+    case 'endswt':
+      return {
+        name: '末级切换',
+        component: EndSwitchForm
       };
     default:
       return {

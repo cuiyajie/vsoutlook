@@ -1,24 +1,42 @@
 <script setup lang="ts">
+import { useEndSwtApi } from "@src/stores/endswt";
 import { useUserSession } from "@src/stores/userSession";
 
+const endSwtApi = useEndSwtApi()
 const locked = useLocalStorage('endswitch-dashboard-locked', false)
-const boards = ref(
-  Array.from({ length: 4 }, () => ({
-    actived: false,
-    status: 0
-  }))
-)
+const endSwtInfo = computed(() => endSwtApi.endSwtInfo)
 
 const usStore = useUserSession();
 const titles = computed(() => usStore.settings.endswt_titles || []);
+const boards = computed(() => new Array(4).fill(0).map((_, idx) => {
+  return {
+    actived: endSwtInfo.value.source === idx,
+    status: endSwtInfo.value.status
+  }
+}))
 
 function configure() {
-  bus.trigger(Signal.OpenApiServerPort)
+  bus.trigger(Signal.OpenApiServerPort, {
+    success: () => {
+      endSwtApi.$startQuery()
+    }
+  })
 }
 
 function updateEndSwtTitle(idx: number) {
   bus.trigger(Signal.OpenEndSwtTitle, idx)
 }
+
+function switchTarget(idx: number) {
+  endSwtApi.$switchTarget(idx)
+}
+
+endSwtApi.$startQuery()
+
+onBeforeRouteLeave(() => {
+  endSwtApi.$stopQuery()
+  return true
+})
 </script>
 
 <template>
@@ -70,6 +88,7 @@ function updateEndSwtTitle(idx: number) {
         <VButton
           :color="board.actived ? 'success' : 'dark'"
           :disabled="locked"
+          @click.prevent="switchTarget(idx)"
         >
           {{ idx + 1 }}
         </VButton>
