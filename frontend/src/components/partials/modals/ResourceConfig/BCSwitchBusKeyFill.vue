@@ -27,7 +27,7 @@ const keyfill_opened = ref(false)
       @keydown.space.prevent="keyfill_opened = !keyfill_opened"
       @click.prevent="keyfill_opened = !keyfill_opened"
     >
-      <h4>第{{ index }}路{{ name }}键输入母线</h4>
+      <h4>第{{ index }}路{{ name }}键输入</h4>
       <div class="collapse-icon">
         <VIcon icon="feather:chevron-down" />
       </div>
@@ -38,9 +38,9 @@ const keyfill_opened = ref(false)
         class="form-fieldset"
       >
         <div class="columns is-multiline">
-          <div class="column is-4">
+          <div class="column is-6">
             <VField>
-              <VLabel>{{ name }}key母线组播源IP（含端口）</VLabel>
+              <VLabel>{{ name }}key组播源IP（含端口）</VLabel>
               <VControl>
                 <VInput
                   v-model="mv.key_src_address"
@@ -48,9 +48,9 @@ const keyfill_opened = ref(false)
               </VControl>
             </VField>
           </div>
-          <div class="column is-4">
+          <div class="column is-6">
             <VField>
-              <VLabel>{{ name }}key母线组播目标IP（含端口）</VLabel>
+              <VLabel>{{ name }}key组播目标IP（含端口）</VLabel>
               <VControl>
                 <VInput
                   v-model="mv.key_dst_address"
@@ -58,9 +58,9 @@ const keyfill_opened = ref(false)
               </VControl>
             </VField>
           </div>
-          <div class="column is-4">
+          <div class="column is-6">
             <VField>
-              <VLabel>{{ name }}fill母线组播源IP（含端口）</VLabel>
+              <VLabel>{{ name }}fill组播源IP（含端口）</VLabel>
               <VControl>
                 <VInput
                   v-model="mv.fill_src_address"
@@ -68,9 +68,9 @@ const keyfill_opened = ref(false)
               </VControl>
             </VField>
           </div>
-          <div class="column is-4">
+          <div class="column is-6">
             <VField>
-              <VLabel>{{ name }}fill母线组播目标IP（含端口）</VLabel>
+              <VLabel>{{ name }}fill组播目标IP（含端口）</VLabel>
               <VControl>
                 <VInput
                   v-model="mv.fill_dst_address"

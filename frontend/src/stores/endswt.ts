@@ -43,35 +43,48 @@ export const useEndSwtApi = defineStore('endSwtApi', () => {
 
   async function $fetchList() {
     if (!usStore.settings.endswt_api) return
-    endSwtInfo.value = await $fetch('/api/endswt/target').then(res => {
-      if (res.error) {
-        return {
-          target: 0,
-          source: -1,
-          status: 1,
+    try {
+      endSwtInfo.value = await $fetch('/api/endswt/target', { timeout: 15 * 1000 }).then(res => {
+        if (res?.data) {
+          return res.data
+        } else {
+          return def_endswt_info()
         }
-      } else {
-        return res.data
-      }
-    })
+      })
+    } catch {
+      endSwtInfo.value = def_endswt_info()
+    }
   }
 
   async function $switchTarget(v: number) {
     if (!usStore.settings.endswt_api) return
-    const res = await $fetch('/api/endswt/switch', {
-      body: {
+    try {
+      endSwtInfo.value = {
         target: 0,
         source: v,
+        status: 0,
       }
-    })
-    if (res.error) {
-      notyf.error('Failed to switch target: ' + res.message)
+      const res = await $fetch('/api/endswt/switch', {
+        body: {
+          target: 0,
+          source: v,
+        },
+        timeout: 15 * 1000
+      })
+      if (res.error) {
+        notyf.error('Failed to switch target: ' + res.message)
+        endSwtInfo.value = def_endswt_info()
+      } else {
+        if (timer) {
+          clearTimeout(timer)
+          timer = null
+        }
+        $startQuery()
+      }
+    } catch {
+      notyf.error('请求失败，请检查对外 API 地址设置')
+      endSwtInfo.value = def_endswt_info()
     }
-    if (timer) {
-      clearTimeout(timer)
-      timer = null
-    }
-    $startQuery()
   }
 
   return {

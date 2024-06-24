@@ -37,7 +37,7 @@ const opened = ref(false)
         v-show="opened"
         class="form-fieldset-nested"
       >
-        <div class="form-fieldset seperator">
+        <div class="form-fieldset">
           <div class="fieldset-heading">
             <h5>IP流参数</h5>
           </div>
@@ -58,6 +58,26 @@ const opened = ref(false)
                 <VControl>
                   <VInput
                     v-model="mv.ipstream_master.v_dst_address"
+                  />
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-6">
+              <VField>
+                <VLabel>主音频流组播源IP（含端口）</VLabel>
+                <VControl>
+                  <VInput
+                    v-model="mv.ipstream_master.a_src_address"
+                  />
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-6">
+              <VField>
+                <VLabel>主音频流组播目标IP(含端口)</VLabel>
+                <VControl>
+                  <VInput
+                    v-model="mv.ipstream_master.a_dst_address"
                   />
                 </VControl>
               </VField>
@@ -87,6 +107,36 @@ const opened = ref(false)
                   <VControl>
                     <VInput
                       v-model="mv.ipstream_backup.v_dst_address"
+                    />
+                  </VControl>
+                </VField>
+              </div>
+            </Transition>
+            <Transition name="fade-slow">
+              <div
+                v-if="useBackup"
+                class="column is-6"
+              >
+                <VField>
+                  <VLabel>备音频流组播源IP（含端口）</VLabel>
+                  <VControl>
+                    <VInput
+                      v-model="mv.ipstream_backup.a_src_address"
+                    />
+                  </VControl>
+                </VField>
+              </div>
+            </Transition>
+            <Transition name="fade-slow">
+              <div
+                v-if="useBackup"
+                class="column is-6"
+              >
+                <VField>
+                  <VLabel>备音频流组播目标IP（含端口）</VLabel>
+                  <VControl>
+                    <VInput
+                      v-model="mv.ipstream_backup.a_dst_address"
                     />
                   </VControl>
                 </VField>

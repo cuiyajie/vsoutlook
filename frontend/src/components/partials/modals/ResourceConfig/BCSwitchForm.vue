@@ -414,40 +414,34 @@ defineExpose({
           <div class="form-header">
             <div class="form-header-inner">
               <div class="left">
-                <h4>内部母线输入参数</h4>
+                <h4>键输入</h4>
               </div>
             </div>
           </div>
-          <div class="form-body is-nested-2">
-            <div class="form-fieldset form-outer">
-              <div class="fieldset-heading">
-                <h4>键输入母线</h4>
-              </div>
-              <div class="form-fieldset-nested-2">
-                <div class="seperator">
-                  <BCSwitchBusKeyFill
-                    v-for="(ipt, idx) in masterBusKeyFills"
-                    :key="`master_${ipt.index}`"
-                    v-model="ipt.value"
-                    name="主"
-                    :index="ipt.index"
-                    :is-last="idx === masterBusKeyFills.length - 1"
-                  />
-                </div>
-                <Transition name="fade-slow">
-                  <div v-if="input['g_2022-7']">
-                    <BCSwitchBusKeyFill
-                      v-for="(ipt, idx) in backupBusKeyFills"
-                      :key="`backup_${ipt.index}`"
-                      v-model="ipt.value"
-                      name="备"
-                      :index="ipt.index"
-                      :is-last="idx === backupBusKeyFills.length - 1"
-                    />
-                  </div>
-                </Transition>
-              </div>
+          <div class="form-body">
+            <!--Fieldset-->
+            <div class="seperator">
+              <BCSwitchBusKeyFill
+                v-for="(ipt, idx) in masterBusKeyFills"
+                :key="`master_${ipt.index}`"
+                v-model="ipt.value"
+                name="主"
+                :index="ipt.index"
+                :is-last="idx === masterBusKeyFills.length - 1"
+              />
             </div>
+            <Transition name="fade-slow">
+              <div v-if="input['g_2022-7']">
+                <BCSwitchBusKeyFill
+                  v-for="(ipt, idx) in backupBusKeyFills"
+                  :key="`backup_${ipt.index}`"
+                  v-model="ipt.value"
+                  name="备"
+                  :index="ipt.index"
+                  :is-last="idx === backupBusKeyFills.length - 1"
+                />
+              </div>
+            </Transition>
           </div>
         </div>
         <!--Fieldset-->
