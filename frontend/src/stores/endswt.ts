@@ -20,6 +20,7 @@ export const useEndSwtApi = defineStore('endSwtApi', () => {
   let timer: NodeJS.Timeout | null = null
   const endSwtInfo = ref(def_endswt_info())
   const usStore = useUserSession()
+  let controller: AbortController | null = null
 
   function $startQuery() {
     if (timer) {
@@ -44,7 +45,11 @@ export const useEndSwtApi = defineStore('endSwtApi', () => {
   async function $fetchList() {
     if (!usStore.settings.endswt_api) return
     try {
-      endSwtInfo.value = await $fetch('/api/endswt/target', { timeout: 15 * 1000 }).then(res => {
+      controller = new AbortController()
+      endSwtInfo.value = await $fetch('/api/endswt/target', {
+        timeout: 15 * 1000,
+        signal: controller.signal
+      }).then(res => {
         if (res?.data) {
           return res.data
         } else {
@@ -52,6 +57,7 @@ export const useEndSwtApi = defineStore('endSwtApi', () => {
         }
       })
     } catch {
+      if (controller?.signal.aborted) return
       endSwtInfo.value = def_endswt_info()
     }
   }
@@ -59,6 +65,9 @@ export const useEndSwtApi = defineStore('endSwtApi', () => {
   async function $switchTarget(v: number) {
     if (!usStore.settings.endswt_api) return
     try {
+      if (controller) {
+        controller.abort()
+      }
       endSwtInfo.value = {
         target: 0,
         source: v,

@@ -23,6 +23,24 @@ type UserReq struct {
 const intlInvalidLogin = "请输入正确的用户名和密码。"
 const intlUnknownError = "未知错误。"
 
+func Init(c *svcinfra.Context) {
+	if len(models.UserList()) == 0 {
+		var newUser = models.User{
+			Name:     "admin",
+			Password: "admin",
+			Role:     def.Role_Admin,
+		}
+		result := models.Create(&newUser)
+		if result.Error != nil {
+			err := fmt.Errorf("create user failed: %w", result.Error)
+			log.Println(err)
+			c.GeneralError(intlUnknownError)
+			return
+		}
+	}
+	c.Bye(nil)
+}
+
 func CreateUser(c *svcinfra.Context) {
 	var req UserReq
 	c.ShouldBindJSON(&req)

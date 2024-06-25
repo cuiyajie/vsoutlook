@@ -35,6 +35,7 @@ func SetupRouter() *gin.Engine {
 	{
 		guest := group(root, "api")
 		post(guest, "login", userSvc.Login)
+		get(guest, "internal/init", userSvc.Init)
 	}
 
 	{
