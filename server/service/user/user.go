@@ -25,9 +25,16 @@ const intlUnknownError = "未知错误。"
 
 func Init(c *svcinfra.Context) {
 	if len(models.UserList()) == 0 {
+		hashedPwd, err := models.HashPassword("admin")
+		if err != nil {
+			err := fmt.Errorf("hash password failed: %w", err)
+			log.Println(err)
+			c.GeneralError(intlUnknownError)
+			return
+		}
 		var newUser = models.User{
 			Name:     "admin",
-			Password: "admin",
+			Password: hashedPwd,
 			Role:     def.Role_Admin,
 		}
 		result := models.Create(&newUser)

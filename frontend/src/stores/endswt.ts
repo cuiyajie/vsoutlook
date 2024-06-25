@@ -88,7 +88,9 @@ export const useEndSwtApi = defineStore('endSwtApi', () => {
           clearTimeout(timer)
           timer = null
         }
-        $startQuery()
+        setTimeout(() => {
+          $startQuery()
+        }, 500)
       }
     } catch {
       notyf.error('请求失败，请检查对外 API 地址设置')
