@@ -183,6 +183,10 @@ func Migrate(env string) {
 			&User{},
 			&TmplType{},
 			&Tmpl{},
+			&Device{},
+			&Node{},
+			&Settings{},
+			&Layout{},
 		)
 		if err != nil {
 			return err
