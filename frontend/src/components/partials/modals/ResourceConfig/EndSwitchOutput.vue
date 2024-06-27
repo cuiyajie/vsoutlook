@@ -88,6 +88,25 @@ useProtocolDC(mv)
                 </VControl>
               </VField>
             </div>
+            <div class="column is-6">
+              <VField>
+                <VLabel>主音频流组播源IP（含端口）</VLabel>
+                <AddrAddon
+                  v-model="mv.ipstream_master.a_src_address"
+                  :host="m_local_ip"
+                />
+              </VField>
+            </div>
+            <div class="column is-6">
+              <VField>
+                <VLabel>主音频流组播目标IP(含端口)</VLabel>
+                <VControl>
+                  <VInput
+                    v-model="mv.ipstream_master.a_dst_address"
+                  />
+                </VControl>
+              </VField>
+            </div>
             <Transition name="fade-slow">
               <div
                 v-if="useBackup"
@@ -112,6 +131,35 @@ useProtocolDC(mv)
                   <VControl>
                     <VInput
                       v-model="mv.ipstream_backup.v_dst_address"
+                    />
+                  </VControl>
+                </VField>
+              </div>
+            </Transition>
+            <Transition name="fade-slow">
+              <div
+                v-if="useBackup"
+                class="column is-6"
+              >
+                <VField>
+                  <VLabel>备音频流组播源IP（含端口）</VLabel>
+                  <AddrAddon
+                    v-model="mv.ipstream_backup.a_src_address"
+                    :host="b_local_ip"
+                  />
+                </VField>
+              </div>
+            </Transition>
+            <Transition name="fade-slow">
+              <div
+                v-if="useBackup"
+                class="column is-6"
+              >
+                <VField>
+                  <VLabel>备音频流组播目标IP（含端口）</VLabel>
+                  <VControl>
+                    <VInput
+                      v-model="mv.ipstream_backup.a_dst_address"
                     />
                   </VControl>
                 </VField>
@@ -204,12 +252,9 @@ useProtocolDC(mv)
               <VField>
                 <VLabel>声道数</VLabel>
                 <VControl>
-                  <VInputNumber
+                  <VInput
                     v-model="mv.audioformat.a_channels_number"
-                    centered
-                    :min="0"
-                    :max="64"
-                    :step="1"
+                    readonly
                   />
                 </VControl>
               </VField>
@@ -218,20 +263,10 @@ useProtocolDC(mv)
               <VField>
                 <VLabel>量化比特</VLabel>
                 <VControl>
-                  <VSelect
+                  <VInput
                     v-model="mv.audioformat.a_bits"
-                    class="is-rounded"
-                  >
-                    <VOption :value="16">
-                      16
-                    </VOption>
-                    <VOption :value="24">
-                      24
-                    </VOption>
-                    <VOption :value="32">
-                      32
-                    </VOption>
-                  </VSelect>
+                    readonly
+                  />
                 </VControl>
               </VField>
             </div>

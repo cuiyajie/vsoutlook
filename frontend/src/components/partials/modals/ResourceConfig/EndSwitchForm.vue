@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { def_endswitch_input_params, def_endswitch_output_params, def_endswitch_input_video_params, type EndSwitchInputParamsType, global_config, type NMosConfigType, type SSMAddressType, nmos_config, ssm_address } from './Consts';
-import { handle, unwrap, watchNmosName, wrap } from "./Utils";
+import { handle, unwrap, watchInput, watchNmosName, wrap } from "./Utils";
 import pick from 'lodash-es/pick'
 import merge from 'lodash-es/merge'
 import endSwitchData from '@src/data/vscomponent/endswitch.json'
@@ -88,6 +88,8 @@ watch(() => output.value.number, (nv) => {
     );
   }
 }, { immediate: true });
+
+watchInput('audioformat', input, outputs.value.map(o => o), { deep: true })
 
 function getValue() {
   const mip = mv.value['2110-7_m_local_ip']
