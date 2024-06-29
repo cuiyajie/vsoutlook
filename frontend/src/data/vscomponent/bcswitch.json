@@ -239,21 +239,29 @@
     "video_bus_master": [
       {
         "bus_in_v_src_address": "",
-        "bus_in_v_dst_address": ""
+        "bus_in_v_dst_address": "",
+        "bus_in_a_src_address": "",
+        "bus_in_a_dst_address": ""
       },
       {
         "bus_in_v_src_address": "",
-        "bus_in_v_dst_address": ""
+        "bus_in_v_dst_address": "",
+        "bus_in_a_src_address": "",
+        "bus_in_a_dst_address": ""
       }
     ],
     "video_bus_backup": [
       {
         "bus_in_v_src_address": "",
-        "bus_in_v_dst_address": ""
+        "bus_in_v_dst_address": "",
+        "bus_in_a_src_address": "",
+        "bus_in_a_dst_address": ""
       },
       {
         "bus_in_v_src_address": "",
-        "bus_in_v_dst_address": ""
+        "bus_in_v_dst_address": "",
+        "bus_in_a_src_address": "",
+        "bus_in_a_dst_address": ""
       }
     ],
     "keyfill_bus_master": [

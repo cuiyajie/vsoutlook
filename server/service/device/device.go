@@ -244,6 +244,9 @@ func preInstallation(c *svcinfra.Context, configStr string, tmpl *models.Tmpl, n
 				if tallyPort, ok2 := configFile["tally_port"].(float64); ok2 {
 					externalPorts = append(externalPorts, int(tallyPort))
 				}
+				if apiServerPort, ok3 := configFile["api_server_port"].(float64); ok3 {
+					externalPorts = append(externalPorts, int(apiServerPort))
+				}
 				fmt.Printf("externalPorts: %v\n", externalPorts)
 				if len(externalPorts) > 0 {
 					data["externalPorts"] = externalPorts

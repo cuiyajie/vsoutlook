@@ -14,30 +14,32 @@ tmplStore.$fetchList();
   <div>
     <div class="columns is-multiline resource-page">
       <div class="column is-3">
-        <VCard radius="rounded">
-          <h3 class="title is-5 mb-4">
-            应用列表
-          </h3>
-          <TmplGroupTabs v-model="selectedTmpl" />
-        </VCard>
-        <VCard
-          radius="rounded"
-          class="mt-2"
-        >
-          <h3 class="title is-5 mb-4">
-            应用属性
-          </h3>
-          <TmplInfo
-            v-if="selectedTmpl"
-            :tmpl="selectedTmpl"
-          />
-          <h3
-            v-else
-            class="dark-inverted"
+        <div class="column-container">
+          <VCard radius="rounded">
+            <h3 class="title is-5 mb-4">
+              应用列表
+            </h3>
+            <TmplGroupTabs v-model="selectedTmpl" />
+          </VCard>
+          <VCard
+            radius="rounded"
+            class="mt-2"
           >
-            未选择应用
-          </h3>
-        </VCard>
+            <h3 class="title is-5 mb-4">
+              应用属性
+            </h3>
+            <TmplInfo
+              v-if="selectedTmpl"
+              :tmpl="selectedTmpl"
+            />
+            <h3
+              v-else
+              class="dark-inverted"
+            >
+              未选择应用
+            </h3>
+          </VCard>
+        </div>
       </div>
       <div class="column is-9 container-page">
         <VCard
@@ -56,8 +58,14 @@ tmplStore.$fetchList();
 </template>
 <style lang="scss">
 .resource-page {
-  .column {
+  > .column {
     padding: 0.25rem;
+  }
+
+  .column-container {
+    max-height: calc(100vh - 160px);
+    overflow: auto;
+    border-radius: 17px;
   }
 
   .tmpl-list {
@@ -87,7 +95,8 @@ tmplStore.$fetchList();
 }
 
 .is-dark .resource-page {
-  .column > .l-card {
+  .column > .l-card,
+  .column-container > .l-card {
     background-color: var(--dark-sidebar-light-2);
   }
 }
