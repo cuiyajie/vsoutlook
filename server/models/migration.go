@@ -199,3 +199,24 @@ func Migrate(env string) {
 	}
 	log.Printf("Migration did run successfully")
 }
+
+func SetInitialData() {
+	var count int64
+	db.DB.Model(&TmplType{}).Count(&count)
+	if count == 0 {
+		tmplTypes := []TmplType{
+			{Name: "编解码", Icon: "codec.svg", Category: "codec"},
+			{Name: "上下变换", Icon: "udx.svg", Category: "udx"},
+			{Name: "多画面", Icon: "mv.svg", Category: "multiv"},
+			{Name: "切换台", Icon: "switch.svg", Category: "swt"},
+			{Name: "播出切换台", Icon: "bcswitch.svg", Category: "bcswt"},
+			{Name: "末级切换", Icon: "endswitch.svg", Category: "endswt"},
+		}
+		for _, tmplType := range tmplTypes {
+			db.DB.Create(&tmplType)
+		}
+		log.Print("Initial data for tmpl_types created")
+	} else {
+		log.Print("Initial data for tmpl_types already exists")
+	}
+}

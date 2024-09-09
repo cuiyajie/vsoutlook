@@ -31,6 +31,7 @@ func (cmd *dbCmd) Execute(_ context.Context, fs *flag.FlagSet, _ ...any) subcomm
 	if len(args) > 0 && args[0] == "migrate" {
 		models.ReadyDB()
 		models.Migrate("")
+		models.SetInitialData()
 	}
 	if len(args) > 0 && args[0] == "migrate-testdb" {
 		models.ReadyMaintainTestDB()
