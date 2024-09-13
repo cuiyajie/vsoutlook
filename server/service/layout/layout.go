@@ -202,15 +202,16 @@ func deleteLayoutJson(layout *models.Layout) {
 
 func syncLayoutToMvtSetting(layout *models.Layout, deleted bool) *models.Settings {
 	settings := models.QuerySetting(def.SettingKey_Mtv)
+	if settings == nil {
+		settings = &models.Settings{
+			Key:   def.SettingKey_Mtv,
+			Value: "[]",
+		}
+	}
 	if layout.Published == 0 {
 		return settings
 	}
-	var sVal string
-	if settings == nil {
-		sVal = "[]"
-	} else {
-		sVal = settings.Value
-	}
+	sVal := settings.Value
 
 	var mtvList []models.MtvSetting
 	if err := json.Unmarshal([]byte(sVal), &mtvList); err != nil {
