@@ -27,9 +27,9 @@ export function useFetch() {
         options.credentials = 'include'
       }
       options.headers = {
-        ...options.headers,
         'Content-Type': 'application/json',
         'X-Signature': `${timestamp},${sig}`,
+        ...options.headers,
       }
     },
   })

@@ -16,6 +16,7 @@ declare module 'vue' {
     AppLayout: typeof import('./../src/layouts/AppLayout.vue')['default']
     AuthLayout: typeof import('./../src/layouts/AuthLayout.vue')['default']
     AuthorizationService: typeof import('./../src/components/partials/modals/ResourceConfig/AuthorizationService.vue')['default']
+    BackupBlock: typeof import('./../src/components/partials/panels/BackupBlock.vue')['default']
     BCSwitchBusKeyFill: typeof import('./../src/components/partials/modals/ResourceConfig/BCSwitchBusKeyFill.vue')['default']
     BCSwitchForm: typeof import('./../src/components/partials/modals/ResourceConfig/BCSwitchForm.vue')['default']
     BCSwitchInput: typeof import('./../src/components/partials/modals/ResourceConfig/BCSwitchInput.vue')['default']

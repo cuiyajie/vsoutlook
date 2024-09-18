@@ -9,6 +9,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"vsoutlook.com/vsoutlook/infra/track"
+	"vsoutlook.com/vsoutlook/service/backup"
 	"vsoutlook.com/vsoutlook/service/cluster"
 	"vsoutlook.com/vsoutlook/service/device"
 	"vsoutlook.com/vsoutlook/service/endswt"
@@ -101,6 +102,12 @@ func SetupRouter() *gin.Engine {
 		member := group(root, "api", authenticated)
 		post(member, "endswt/target", endswt.GetEndSwtTarget)
 		post(member, "endswt/switch", endswt.SwitchTarget)
+	}
+
+	{
+		member := group(root, "api", authenticated)
+		post(member, "backup/export", backup.ExportData)
+		post(member, "backup/import", backup.ImportData)
 	}
 
 	router.NoRoute(h(site.FallbackHandler))

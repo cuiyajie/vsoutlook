@@ -6,7 +6,8 @@
     align="centered"
     :tabs="[
       { label: '通用', value: 'general' },
-      { label: '用户', value: 'users' }
+      { label: '用户', value: 'users' },
+      { label: '备份', value: 'backup' },
     ]"
   >
     <template #tab="{ activeValue }">
@@ -15,6 +16,9 @@
       </p>
       <p v-else-if="activeValue === 'users'">
         <UserList />
+      </p>
+      <p v-else-if="activeValue === 'backup'">
+        <BackupBlock />
       </p>
     </template>
   </VTabs>
