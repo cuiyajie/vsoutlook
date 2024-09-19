@@ -21,7 +21,7 @@ const rtlCodes = [
 ]
 
 useHead(() => ({
-  title: 'Vuero - Vue 3 Admin and Webapp UI Kit',
+  title: __SITE_NAME__,
   link: [
     {
       rel: 'icon',
@@ -71,24 +71,20 @@ useHead(() => ({
     {
       name: 'description',
       content:
-        'Vuero is more than a dashboard template, it is design system built with Vue, Bulma and Typescript. It ships with more than 200+ demo pages and a components.',
+        'Live Media Mesh 平台（LM2）',
     },
     // Open Graph
     {
       property: 'og:site_name',
-      content: 'Vuero by Css Ninja',
+      content: 'Live Media Mesh 平台（LM2）',
     },
     {
       property: 'og:locale',
-      content: 'en_US',
+      content: 'zh_CN',
     },
     {
       property: 'og:type',
       content: 'article',
-    },
-    {
-      property: 'og:url',
-      content: 'https://vuero.cssninja.io/',
     },
     {
       property: 'og:image:type',
@@ -105,12 +101,7 @@ useHead(() => ({
     {
       property: 'og:image',
       content:
-        'https://media.cssninja.io/embed/marketplace/product/wide.png?headline=Vue%203%20Admin%20and%20Webapp%20UI%20Kit&url=https%3A%2F%2Fcdn.schema.io%2Fcssninja%2F62671c0f1bfb2b0019e066aa%2F5badfba048f6ec5250e5e1a4e35cc5d2&previewUrl=https%3A%2F%2Fcdn.schema.io%2Fcssninja%2F62509cb6c752bf01326ee966%2Fa0c4a94938866331845447c595aacef2',
-    },
-    // Twitter
-    {
-      name: 'twitter:site',
-      content: '@cssninjaStudio',
+        '',
     },
   ],
   htmlAttrs: {

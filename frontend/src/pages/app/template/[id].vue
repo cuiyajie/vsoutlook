@@ -14,7 +14,7 @@ useHead({
 const tmpl = computed(() => tmplStore.getById((route.params as any).id));
 const breadcrumbItems = computed(() => [
   {
-    label: "Vuero",
+    label: __SITE_NAME__,
     hideLabel: true,
     icon: "feather:home",
     to: "/app",

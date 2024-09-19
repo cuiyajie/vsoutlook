@@ -7,6 +7,8 @@ viewWrapper.setPageTitle("新建应用");
 useHead({
   title: `新建应用 - ${__SITE_NAME__}`,
 });
+
+const siteName = __SITE_NAME__
 </script>
 
 <template>
@@ -16,7 +18,7 @@ useHead({
       separator="arrow"
       :items="[
         {
-          label: 'Vuero',
+          label: siteName,
           hideLabel: true,
           icon: 'feather:home',
           to: '/app',

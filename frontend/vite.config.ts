@@ -26,6 +26,8 @@ const MINIFY_IMAGES = process.env.MINIFY ? process.env.MINIFY === 'true' : false
 
 const isProd = process.env.NODE_ENV === 'production'
 
+const siteName = "深视维讯"
+
 /**
  * This is the main configuration file for vitejs
  *
@@ -53,7 +55,7 @@ export default defineConfig({
    * Define allow to replace string in the code at build time.
    */
   define: {
-    '__SITE_NAME__': JSON.stringify('深视维讯')
+    '__SITE_NAME__': JSON.stringify(siteName)
   },
   /**
    * By default, Vite will crawl your index.html to detect dependencies that
@@ -307,8 +309,8 @@ export default defineConfig({
       base: '/',
       includeAssets: ['favicon.svg', 'favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
       manifest: {
-        name: 'Vuero - A complete Vue 3 design system',
-        short_name: 'Vuero',
+        name: siteName,
+        short_name: siteName,
         start_url: '/?utm_source=pwa',
         display: 'standalone',
         theme_color: '#ffffff',
