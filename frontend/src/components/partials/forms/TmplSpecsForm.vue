@@ -59,7 +59,7 @@ const opened = ref(false)
             </div>
             <div class="column is-4">
               <VField>
-                <VLabel>DPKUCPU 核心数</VLabel>
+                <VLabel>DPKU CPU 核心数</VLabel>
                 <VControl>
                   <VInputNumber
                     v-model="modelValue.dpdkCpu"
@@ -98,7 +98,7 @@ const opened = ref(false)
             </div>
             <div class="column is-4">
               <VField>
-                <VLabel>大叶内存 (GB)</VLabel>
+                <VLabel>大页内存 (GB)</VLabel>
                 <VControl>
                   <VInputNumber
                     v-model="modelValue.hugePage"

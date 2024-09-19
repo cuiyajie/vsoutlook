@@ -53,7 +53,7 @@ export default defineConfig({
    * Define allow to replace string in the code at build time.
    */
   define: {
-    '__SITE_NAME__': JSON.stringify('维视远景')
+    '__SITE_NAME__': JSON.stringify('深视维讯')
   },
   /**
    * By default, Vite will crawl your index.html to detect dependencies that

@@ -14,6 +14,7 @@ const redirect = route.query.redirect as string;
 const $fetch = useFetch();
 const username = ref("");
 const password = ref("");
+const siteName = `${__SITE_NAME__}`
 
 const handleLogin = async () => {
   if (!isLoading.value) {
@@ -101,7 +102,7 @@ useHead({
                   fullwidth
                   raised
                 >
-                  登陆
+                  登录
                 </VButton>
               </div>
             </div>
@@ -109,7 +110,7 @@ useHead({
         </div>
 
         <div class="auth-footer">
-          <p>由深思远景提供技术服务</p>
+          <p>由{{ siteName }}提供技术服务</p>
         </div>
       </div>
     </div>

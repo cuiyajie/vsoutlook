@@ -89,7 +89,7 @@ function viewTmpl() {
       </div> -->
       <div class="info-block-line">
         <h4 class="dark-inverted">
-          大叶内存 (GB)
+          大页内存 (GB)
         </h4>
         <span>
           {{ tmpld.requirement.hugePage || '无' }}
