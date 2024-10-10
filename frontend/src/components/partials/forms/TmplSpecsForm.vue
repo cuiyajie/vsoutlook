@@ -59,7 +59,7 @@ const opened = ref(false)
             </div>
             <div class="column is-4">
               <VField>
-                <VLabel>DPKU CPU 核心数</VLabel>
+                <VLabel>DPDK CPU 核心</VLabel>
                 <VControl>
                   <VInputNumber
                     v-model="modelValue.dpdkCpu"

@@ -90,11 +90,11 @@ async function save() {
     return
   }
   if (specsData.value.dpdkCpu === 0) {
-    notyf.error('DPDKCPU 核心数不能为 0')
+    notyf.error('DPDK CPU 核心不能为 0')
     return
   }
   if (specsData.value.cpuNum <= specsData.value.dpdkCpu) {
-    notyf.error('CPU 总核心数不能小于等于 DPDKCPU 核心数')
+    notyf.error('CPU 总核心数不能小于等于 DPDK CPU 核心')
     return
   }
   if (tmpl.value?.id) {

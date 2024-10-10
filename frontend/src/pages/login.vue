@@ -64,7 +64,7 @@ useHead({
       <div class="inner-wrap">
         <!--Form Title-->
         <div class="auth-head">
-          <h2>欢迎使用 Live Media Mesh 平台（LM2）</h2>
+          <h2>欢迎使用 Live Media Mesh 平台（LM²）</h2>
         </div>
 
         <!--Form-->

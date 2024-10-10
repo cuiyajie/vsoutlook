@@ -57,7 +57,7 @@ function viewTmpl() {
       </div>
       <div class="info-block-line">
         <h4 class="dark-inverted">
-          DPDKCPU 核心数
+          DPDK CPU 核心
         </h4>
         <span>
           {{ tmpld.requirement.dpdkCpu || '无' }}

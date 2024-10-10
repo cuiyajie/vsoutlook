@@ -71,12 +71,12 @@ useHead(() => ({
     {
       name: 'description',
       content:
-        'Live Media Mesh 平台（LM2）',
+        'Live Media Mesh 平台（LM²）',
     },
     // Open Graph
     {
       property: 'og:site_name',
-      content: 'Live Media Mesh 平台（LM2）',
+      content: 'Live Media Mesh 平台（LM²）',
     },
     {
       property: 'og:locale',
