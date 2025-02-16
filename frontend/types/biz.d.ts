@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/consistent-type-imports */
 interface TemplateType {
   id: string,
   name: string,
@@ -209,19 +210,21 @@ interface LayoutRect extends LayoutDimension, LayoutPos {
 }
 
 interface IndexedLayoutRect extends LayoutRect {
-  index: number
+  index: number,
+  isSecondary?: boolean
 }
 
-interface LayoutTitle extends LayoutRect {
-  fontSize: number
-  fontFamily: string
+interface LayoutWinBorder {
+  top: number,
+  bottom: number,
+  left: number,
+  right: number,
+  color: string,
 }
 
-interface LayoutVol extends LayoutPos {
-  one_w: number,
-  g: number,
-  h: number,
-  cnt: number
+interface LayoutWin extends LayoutRect {
+  border: LayoutWinBorder,
+  showBorder: boolean,
 }
 
 interface LayoutTimer extends LayoutPos {
@@ -229,21 +232,97 @@ interface LayoutTimer extends LayoutPos {
   fontFamily: string,
   color: string,
   showDate: boolean,
-  dateNewLine: number,
-  dateDisplayType: number,
-  showFrame: number,
+  dateDisplayType: import('src/utils/enums').DateDisplayType,
+  clockDisplayType: import('src/utils/enums').CLockDisplayType,
   time24: number,
+  fontHeight: number,
+  fontGap: number,
+  timeColor: string,
+  timePosition: LayoutPos,
 }
 
-type LayoutProps = 'title' | 'vol' | 'timer'
+interface LayoutTextRect {
+  fontSize: number,
+  fontFamily: string,
+  color: string,
+  bgColor: string,
+}
 
-interface TypedLayoutRect extends LayoutRect {
-  type: LayoutProps
+interface LayoutText extends LayoutRect {
+  gap: number,
+  rect1: LayoutTextRect,
+  rect2: LayoutTextRect,
+}
+
+interface LayoutSingleVol extends LayoutPos {
+  one_w: number,
+  g: number,
+  h: number,
+  start: number,
+  end: number,
+}
+
+interface LayoutVol {
+  vols: LayoutSingleVol[],
+  len: number,
+  alpha: number,
+}
+
+interface LayoutTitle extends LayoutRect {
+  fontSize: number,
+  fontFamily: string,
+  bgColor: string,
+  color: string,
+  isVertial: boolean,
+  tallyType: import('@src/utils/enums').TallyType,
+  tallyBorderWidth: number,
+  tallyBorderColor: string,
+  tallyBgColor: string,
+}
+
+interface LayoutArea extends LayoutRect {
+  alpha: number
+}
+
+interface LayoutAlarmBorder extends LayoutRect {
+  width: number,
+  color: string,
+  interval: number,
+}
+
+interface LayoutAlarm extends LayoutRect {
+  fontSize: number,
+  color: string,
+  bgColor: string,
+  border: LayoutAlarmBorder,
+  lang: import('@src/utils/enums').AlarmLang,
+}
+
+interface LayoutMeta extends LayoutRect {
+  fontSize: number,
+  color: string,
+  bgColor: string,
+}
+
+type LayoutProps = 'win' | 'timer' | 'text' | 'vol' | 'title' | 'vector' | 'oscillogram' | 'alarm' | 'meta'
+
+interface TypedLayoutInfo {
+  type: LayoutProps,
+  index: number,
+}
+
+interface TypedLayoutRect extends LayoutRect, TypedLayoutInfo {
+  rotated?: boolean
 }
 
 interface LayoutDataItem {
-  win: LayoutRect,
-  title: LayoutTitle | null,
+  win: LayoutWin,
+  timer: LayoutTimer | null,
+  text: LayoutText | null,
   vol: LayoutVol | null,
-  timer: LayoutTimer | null
+  title: LayoutTitle | null,
+  vector: LayoutArea | null,
+  oscillogram: LayoutArea | null,
+  alarm: LayoutAlarm | null,
+  meta: LayoutMeta | null,
 }

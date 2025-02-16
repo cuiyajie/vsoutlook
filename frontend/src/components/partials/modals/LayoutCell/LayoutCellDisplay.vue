@@ -16,7 +16,25 @@ const mv = computed({
 
 const ratiow = computed(() => props.bound.w / mv.value.win.w)
 const ratioh = computed(() => props.bound.h / mv.value.win.h)
-const activeComponent = ref<TypedLayoutRect | null>(null)
+const defWin = () => ({ type: 'win', index: 0, x: 0, y: 0, w: 1, h: 1 } as TypedLayoutRect)
+const activeComponent = ref<TypedLayoutRect>(defWin())
+const isResizing = ref(false)
+const isAlarmBorder = computed(() => activeComponent.value?.type === 'alarm' && activeComponent.value.index === 0)
+const isAlarmText = computed(() => activeComponent.value?.type === 'alarm' && activeComponent.value.index === 1)
+const alarmTextWidth = computed(() => mv.value.alarm!.w * ratiow.value)
+const alarmTextHeight = computed(() => mv.value.alarm!.h * ratioh.value)
+
+function onResizing(x: number, y: number, pw: number, ph: number) {
+  isResizing.value = true
+  handleComponent(x, y, pw, ph)
+}
+
+function onResizeStop(x: number, y: number, pw: number, ph: number) {
+  handleComponent(x, y, pw, ph)
+  requestAnimationFrame(() => {
+    isResizing.value = false
+  })
+}
 
 function handleComponent(x: number, y: number, pw: number, ph: number) {
   if (!activeComponent.value) return
@@ -28,99 +46,199 @@ function handleComponent(x: number, y: number, pw: number, ph: number) {
     h: ph || activeComponent.value.h
   }
   const ac = activeComponent.value
-  mv.value = {
-    ...mv.value,
-    [activeComponent.value.type]: {
-      ...mv.value[activeComponent.value.type],
-      x: ac.x / ratiow.value,
-      y: ac.y / ratioh.value,
-      w: ac.w / ratiow.value,
-      h: ac.h / ratioh.value
+  if (activeComponent.value.type === 'vol') {
+    const idx = ac.index || 0
+    mv.value = {
+      ...mv.value,
+      vol: {
+        ...mv.value.vol!,
+        vols: mv.value.vol!.vols.map((vol, i) => {
+          if (i === idx) {
+            return {
+              ...vol,
+              x: ac.x / ratiow.value,
+              y: ac.y / ratioh.value,
+              h: ac.h / ratioh.value,
+            }
+          }
+          return vol
+        })
+      }
+    }
+  } else if (activeComponent.value.type === 'alarm') {
+    if (ac.index === 0) {
+      mv.value = {
+        ...mv.value,
+        alarm: {
+          ...mv.value.alarm!,
+          border: {
+            ...mv.value.alarm!.border,
+            x: ac.x / ratiow.value,
+            y: ac.y / ratioh.value,
+            w: ac.w / ratiow.value,
+            h: ac.h / ratioh.value
+          }
+        }
+      }
+    } else {
+      mv.value = {
+        ...mv.value,
+        alarm: {
+          ...mv.value.alarm!,
+          x: ac.x / ratiow.value,
+          y: ac.y / ratioh.value,
+          w: ac.w / ratiow.value,
+          h: ac.h / ratioh.value
+        }
+      }
+    }
+  } else {
+    mv.value = {
+      ...mv.value,
+      [ac.type]: {
+        ...mv.value[ac.type],
+        x: ac.x / ratiow.value,
+        y: ac.y / ratioh.value,
+        w: ac.w / ratiow.value,
+        h: ac.h / ratioh.value
+      }
     }
   }
 }
 
-function syncComponentData(type: LayoutProps) {
-  let rect = mv.value[type]
-  if (!rect) return
-  let rectw: number
+function syncComponentData(type: LayoutProps, componentIndex?: number) {
   if (type === 'vol') {
-    rect = rect as LayoutVol
-    rectw = rect.one_w * rect.cnt + rect.g * (rect.cnt - 1)
+    syncVolData(componentIndex || 0)
+  } else if (type === 'alarm') {
+    syncAlarmData(componentIndex || 0)
   } else {
-    rect = rect as LayoutTitle
-    rectw = rect.w
+    let rect = mv.value[type] as LayoutRect
+    if (!rect) return
+    activeComponent.value = {
+      type,
+      index: 0,
+      x: rect.x * ratiow.value,
+      y: rect.y * ratioh.value,
+      w: rect.w * ratiow.value,
+      h: rect.h * ratioh.value,
+      rotated: type === 'title' && (rect as LayoutTitle).isVertial
+    }
   }
+}
+
+function syncVolData(index: number) {
+  const vol = mv.value.vol!.vols[index]
+  const cnt = vol.end - vol.start + 1
+  const rectw = vol.one_w * cnt + vol.g * (cnt - 1)
   activeComponent.value = {
-    type,
+    type: 'vol',
+    index,
+    x: vol.x * ratiow.value,
+    y: vol.y * ratioh.value,
+    w: rectw * ratiow.value,
+    h: vol.h * ratioh.value
+  }
+}
+
+function syncAlarmData(index: number) {
+  const rect = (index === 0 ? mv.value.alarm!.border : mv.value.alarm) as LayoutRect
+  activeComponent.value = {
+    type: 'alarm',
+    index,
     x: rect.x * ratiow.value,
     y: rect.y * ratioh.value,
-    w: rectw * ratiow.value,
+    w: rect.w * ratiow.value,
     h: rect.h * ratioh.value
   }
 }
 
 watch(mv, () => {
   if (!activeComponent.value) return
-  syncComponentData(activeComponent.value.type)
+  syncComponentData(activeComponent.value.type, activeComponent.value.index)
 }, { immediate: true })
 
-// const dragHandle = ref<HTMLElement | null>(null)
-// onClickOutside(dragHandle, (event) => {
-//   if (!activeComponent.value) return null
-//   const target = event.target as HTMLElement
-//   if (target.closest('.vdr, [data-role=LayoutSetting], .vc-colorpicker')) return
-//   activeComponent.value = null
-// })
+watch(() => mv.value.vol?.len, (nv) => {
+  if (!nv) return
+  const ac = activeComponent.value
+  if (ac && ac.type === 'vol' && ac.index! >= nv) {
+    selectComponent('win')
+  }
+}, { immediate: true })
 
-function selectComponent(type: LayoutProps) {
-  activeComponent.value = null
+const dragHandle = ref<HTMLElement | null>(null)
+onClickOutside(dragHandle, (event) => {
+  if (!activeComponent.value || isResizing.value) return
+  const target = event.target as HTMLElement
+  if (target.closest('.vdr, [data-role=LayoutSetting], .vc-colorpicker')) return
+  selectComponent('win')
+})
+
+function selectComponent(type: LayoutProps, componentIndex = 0) {
+  activeComponent.value = defWin()
   nextTick(() => {
-    syncComponentData(type)
+    syncComponentData(type, componentIndex)
   })
 }
+
+const resizeHandles = computed(() => {
+  const ac = activeComponent.value
+  if (!ac || ac.type === 'win') return []
+  if (ac.type === 'vol') return ['tm', 'bm']
+  if (ac.type === 'vector') return ['tl', 'tr', 'br', 'bl']
+  return ['tl', 'tm', 'tr', 'mr', 'br', 'bm', 'bl', 'ml']
+})
 
 watch(activeComponent, (v) => {
   emit('active', v?.type || null)
 }, { immediate: true })
 
 defineExpose({
-  clearComponent: () => activeComponent.value = null
+  selectComponent,
+  clearComponent: () => selectComponent('win')
 })
 </script>
 <template>
   <div class="layout-display draggable">
-    <div v-if="mv.title" data-role="title" class="layout-title" :style="{left: `${mv.title.x * ratiow}px`, top: `${mv.title.y * ratioh}px`, width: `${mv.title.w * ratiow}px`, height: `${mv.title.h * ratioh}px`, fontSize: `${mv.title.fontSize * ratiow}px`, fontFamily:`'${mv.title.fontFamily}'`}" role="button" tabindex="0" @click.prevent="selectComponent('title')" @keyup.enter.prevent="selectComponent('title')">
-      窗口名称
-    </div>
-    <div v-if="mv.vol" class="layout-vol" :style="{left: `${mv.vol.x * ratiow}px`, top: `${mv.vol.y * ratioh}px`, height: `${mv.vol.h * ratioh}px`, gap: `${mv.vol.g * ratiow}px`}" role="button" tabindex="0" @click.prevent="selectComponent('vol')" @keyup.enter.prevent="selectComponent('vol')">
-      <div v-for="(v, vi) in new Array(mv.vol.cnt).fill(0)" :key="vi" class="vol" :style="{width: `${mv.vol.one_w * ratiow}px`}" />
-    </div>
-    <div v-if="mv.timer" data-role="timer" class="layout-timer" :style="{left: `${mv.timer.x * ratiow}px`, top: `${mv.timer.y * ratioh}px`, fontSize: `${mv.timer.fontSize * ratiow}px`, color: mv.timer.color}" role="button" tabindex="0" @click.prevent="selectComponent('timer')" @keyup.enter.prevent="selectComponent('timer')">
-      16:00:00<br>2024-04-12
-    </div>
+    <border-display v-model="mv" :bound="bound" />
+    <title-display v-if="mv.title" v-model="mv" :bound="bound" @select="selectComponent('title')" />
+    <vol-display v-if="mv.vol" v-model="mv" :bound="bound" @select="selectComponent('vol', $event)" />
+    <vector-display v-if="mv.vector" v-model="mv" :bound="bound" @select="selectComponent('vector')" />
+    <oscillogram-display v-if="mv.oscillogram" v-model="mv" :bound="bound" @select="selectComponent('oscillogram')" />
+    <meta-display v-if="mv.meta" v-model="mv" :bound="bound" @select="selectComponent('meta')" />
+    <alarm-display
+      v-if="mv.alarm"
+      v-model="mv"
+      v-model:active-rect="activeComponent"
+      :bound="bound"
+      @select="selectComponent('alarm', $event)"
+      @reset-active-rect="selectComponent('win')"
+    />
     <vue-draggable-resizable
-      v-if="activeComponent"
+      v-if="activeComponent && activeComponent.type !== 'win' && !isAlarmText"
       class-name="vdr in-modal"
-      :handles="activeComponent.type === 'vol' ? ['tm', 'bm'] : ['tl', 'tm', 'tr', 'mr', 'br', 'bm', 'bl', 'ml']"
+      :style="{'--vdr-rotate': activeComponent.rotated ? '90deg' : '0deg'}"
+      :handles="resizeHandles"
       :parent="true"
       :active="true"
       :prevent-deactivation="true"
       :drag-handle="`.drag-handle`"
+      :draggable="!isAlarmBorder"
       :max-width="bound.w"
       :max-height="bound.h"
-      :min-width="10"
-      :min-height="10"
+      :min-width="isAlarmBorder ? alarmTextWidth: 10"
+      :min-height="isAlarmBorder ? alarmTextHeight : 10"
+      :lock-aspect-ratio="activeComponent.type === 'vector'"
+      :centered-scaling="isAlarmBorder"
       :w="activeComponent.w"
       :h="activeComponent.h"
       :x="activeComponent.x"
       :y="activeComponent.y"
-      @resizing="handleComponent"
-      @resize-stop="handleComponent"
+      @resizing="onResizing"
+      @resize-stop="onResizeStop"
       @dragging="handleComponent"
       @drag-stop="handleComponent"
     >
-      <div ref="dragHandle" class="drag-handle" />
+      <div ref="dragHandle" class="drag-handle fixed-width" />
     </vue-draggable-resizable>
   </div>
 </template>

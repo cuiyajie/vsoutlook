@@ -5,13 +5,13 @@ import { InferSeoMetaPlugin } from '@unhead/addons'
 import { createPinia } from 'pinia'
 import { createRouter } from './router'
 import VueroApp from './VueroApp.vue'
-import VueDraggableResizable from 'vue-draggable-resizable'
+import { ColorPicker } from "vue3-colorpicker";
 import './styles'
 /* import the required styles */
 import "@vue-flow/core/dist/style.css";
 /* import the default theme (optional) */
 import "@vue-flow/core/dist/theme-default.css";
-import "vue-draggable-resizable/style.css";
+import "vue3-colorpicker/style.css";
 
 export type VueroAppContext = Awaited<ReturnType<typeof createApp>>
 export type VueroPlugin = (vuero: VueroAppContext) => void | Promise<void>
@@ -43,7 +43,7 @@ export async function createApp() {
   }
 
   app.provide('vuero', vuero)
-  app.component('VueDraggableResizable', VueDraggableResizable)
+  app.component('ColorPicker', ColorPicker)
 
   for (const path in plugins) {
     try {

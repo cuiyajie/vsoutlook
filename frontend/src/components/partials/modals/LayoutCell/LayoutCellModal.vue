@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useNotyf } from "@src/composable/useNotyf";
-import { draftVol, draftTitle } from '@src/components/pages/app/MtvLayouts/utils';
+import { draftVol, draftTitle, draftVector, draftOscillogram, draftMeta, draftAlarm } from '@src/components/pages/app/MtvLayouts/utils';
 import type { GlobalComponents } from "vue";
 
 const props = defineProps<{
@@ -24,6 +24,16 @@ const bounding = computed(() => {
   let rh = rw * ratio
   return { w: rw, h: rh }
 })
+watch(bounding, () => {
+  nextTick(() => {
+    if (layoutContainer.value) {
+      const parent = layoutContainer.value.parentElement
+      if (parent) {
+        parent.style.setProperty('--available-height', `${parent.getBoundingClientRect().height}px`)
+      }
+    }
+  })
+}, { immediate: true })
 
 const { pause, resume } = useIntervalFn(() => {
   callbacks?.update?.(data.value)
@@ -50,7 +60,7 @@ function resetCell() {
 }
 
 function deleteCell() {
-  if (!activeType.value || !data.value) return
+  if (!activeType.value || !data.value || activeType.value === 'win') return
   data.value[activeType.value] = null
   activeComponent(null)
   displayRef.value?.clearComponent()
@@ -68,8 +78,16 @@ function addComponent(type: LayoutProps) {
     data.value[type] = draftVol(h, props.parent)
   } else if (type === 'title') {
     data.value[type] = draftTitle(w, h, props.parent)
+  } else if (type === 'vector') {
+    data.value[type] = draftVector(w, h, props.parent)
+  } else if (type === 'oscillogram') {
+    data.value[type] = draftOscillogram(w, h, props.parent)
+  } else if (type === 'meta') {
+    data.value[type] = draftMeta(w, h, props.parent)
+  } else if (type === 'alarm') {
+    data.value[type] = draftAlarm(w, h, props.parent)
   }
-  activeComponent(type)
+  displayRef.value?.selectComponent(type, 0)
 }
 
 function onClose() {
@@ -80,6 +98,7 @@ function onClose() {
 </script>
 <template>
   <VModal
+    id="layout-cell-modal"
     size="big"
     noclose
     :open="opened"
@@ -93,13 +112,33 @@ function onClose() {
         <div ref="layoutContainer" class="lc-display" :style="{'--padding': `${PADDING}px`}">
           <div v-if="!data?.timer" class="lc-controls">
             <div class="lc-control" role="button" tabindex="-1" @click.prevent="addComponent('vol')" @keyup.enter.prevent="addComponent('vol')">
-              <i class="iconify" data-icon="feather:bar-chart-2" aria-hidden="true" />
-              音柱
+              <i class="iconify" data-icon="feather:columns" aria-hidden="true" />
+              UV表
               <div class="add-mask"><i aria-hidden="true" class="fas fa-plus" /></div>
             </div>
             <div class="lc-control" role="button" tabindex="-1" @click.prevent="addComponent('title')" @keyup.enter.prevent="addComponent('title')">
-              <i class="iconify" data-icon="feather:calendar" aria-hidden="true" />
-              窗口名称
+              <i class="iconify" data-icon="feather:airplay" aria-hidden="true" />
+              窗口名称及Tally
+              <div class="add-mask"><i aria-hidden="true" class="fas fa-plus" /></div>
+            </div>
+            <div class="lc-control" role="button" tabindex="-1" @click.prevent="addComponent('vector')" @keyup.enter.prevent="addComponent('title')">
+              <i class="fas fa-chart-pie" aria-hidden="true" />
+              色度矢量图
+              <div class="add-mask"><i aria-hidden="true" class="fas fa-plus" /></div>
+            </div>
+            <div class="lc-control" role="button" tabindex="-1" @click.prevent="addComponent('oscillogram')" @keyup.enter.prevent="addComponent('title')">
+              <i class="fas fa-sun" aria-hidden="true" />
+              亮度波形图
+              <div class="add-mask"><i aria-hidden="true" class="fas fa-plus" /></div>
+            </div>
+            <div class="lc-control" role="button" tabindex="-1" @click.prevent="addComponent('alarm')" @keyup.enter.prevent="addComponent('title')">
+              <i class="fas fa-bell" aria-hidden="true" />
+              报警
+              <div class="add-mask"><i aria-hidden="true" class="fas fa-plus" /></div>
+            </div>
+            <div class="lc-control" role="button" tabindex="-1" @click.prevent="addComponent('meta')" @keyup.enter.prevent="addComponent('title')">
+              <i class="fas fa-file-video" aria-hidden="true" />
+              视频信息
               <div class="add-mask"><i aria-hidden="true" class="fas fa-plus" /></div>
             </div>
           </div>
@@ -109,7 +148,7 @@ function onClose() {
           </div>
         </div>
         <div class="lc-divider" />
-        <div class="lc-setting" data-role="LayoutSetting">
+        <div class="lc-setting is-scrollable" data-role="LayoutSetting">
           <layout-cell-setting v-if="data" v-model="data" :type="activeType" :base="base" @reset="resetCell" @delete="deleteCell" />
         </div>
       </div>
@@ -129,6 +168,7 @@ function onClose() {
   }
 
   .lc-body {
+    --available-height: 200px;
     display: flex;
     flex-wrap: nowrap;
 
@@ -151,7 +191,7 @@ function onClose() {
         gap: 16px;
 
         .lc-control {
-          width: 120px;
+          width: 128px;
           height: 40px;
           border-radius: 8px;
           background-color: var(--dark-sidebar-light-2);
@@ -194,7 +234,15 @@ function onClose() {
 
       .lc-display-inner {
         position: relative;
-        border: 1px solid rgba(255, 255, 255, .5);
+
+        &:before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          border: 1px solid rgba(255, 255, 255, .5);
+          z-index: 100;
+          pointer-events: none;
+        }
       }
     }
 
@@ -207,7 +255,11 @@ function onClose() {
       border: 1px dashed var(--dark-sidebar-light-20);
       border-radius: 4px;
       overflow: hidden;
-      padding: 16px;
+      max-height: var(--available-height);
+
+      &.is-scrollable {
+        overflow: auto;
+      }
     }
   }
 

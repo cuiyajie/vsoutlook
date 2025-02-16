@@ -51,3 +51,24 @@ export enum LayoutSize {
   FK = 1,
   HD = 2
 }
+
+export enum CLockDisplayType {
+  Digital = 0,
+  LED = 1
+}
+
+export enum DateDisplayType {
+  Chinese = 0,
+  Hyphen = 1
+}
+
+export enum TallyType {
+  Text = 0,
+  Light = 1,
+  Border = 2,
+}
+
+export enum AlarmLang {
+  English = 0,
+  Chinese = 1,
+}
