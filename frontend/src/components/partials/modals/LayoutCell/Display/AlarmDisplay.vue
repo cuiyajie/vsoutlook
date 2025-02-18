@@ -5,7 +5,7 @@ import { AlarmLang } from "@src/utils/enums";
 const props = defineProps<{
   modelValue: LayoutDataItem,
   bound: LayoutDimension,
-  activeRect: TypedLayoutRect,
+  activeRect?: TypedLayoutRect,
 }>()
 
 const emit = defineEmits<{
@@ -21,7 +21,7 @@ const mv = computed({
 })
 
 const activeRect = computed({
-  get: () => props.activeRect,
+  get: () => props.activeRect || { type: 'win', index: 0, x: 0, y: 0, w: 0, h: 0 },
   set: (v: TypedLayoutRect) => emit('update:active-rect', v)
 })
 

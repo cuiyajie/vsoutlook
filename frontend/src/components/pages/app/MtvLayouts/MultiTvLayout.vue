@@ -798,7 +798,7 @@ function publish(ly: Layout) {
                   @click.prevent="selectCell(ds, cidx)"
                   @keyup.enter.prevent="selectCell(ds, cidx)"
                 >
-                  <normal-display :no="cidx" :bound="bounding" :data="ds">
+                  <normal-display :no="cidx" :bound="{w: ds.win.w * bounding.w, h:ds.win.h * bounding.h}" :data="ds">
                     <VIconButton
                       color="white"
                       outlined
@@ -881,9 +881,9 @@ function publish(ly: Layout) {
                     />
                   </text-display>
                   <normal-display
-                    v-else
+                    v-else-if="ads"
                     :no="activeCell.index"
-                    :bound="bounding"
+                    :bound="{w: ads.win.w * bounding.w, h:ads.win.h * bounding.h}"
                     :data="ads"
                   >
                     <VIconButton
