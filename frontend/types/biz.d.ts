@@ -163,6 +163,10 @@ type Settings = {
   endswt_panel_types: SettingEndSwtPanelType[],
   lut_upscale_names: SettingLutScaleName[],
   lut_downscale_names: SettingLutScaleName[],
+  video_formats: VideoFormat[],
+  audio_formats: AudioFormat[],
+  audio_mappings: AudioMapping[],
+  tech_reviews: TechReview[],
 }
 
 type SettingAuthService = {
@@ -326,3 +330,57 @@ interface LayoutDataItem {
   alarm: LayoutAlarm | null,
   meta: LayoutMeta | null,
 }
+
+interface VideoFormat {
+  name: string,
+  format: string,
+  resolution: string,
+  frameRate: string,
+  gamma: string,
+  colorSpace: string,
+  encodeFormat: string,
+  bitRate: string,
+  bframe: number,
+  gop: number,
+}
+
+interface AudioFormat {
+  name: string,
+  channels: number,
+  quantBits: number,
+  sampleRate: number,
+  encodeFormat: string,
+  txInterval: number,
+  bitRate: string,
+  childType: string,
+}
+
+interface AudioMapping {
+  name: string,
+  mute: string,
+  copys: [number, number][],
+}
+
+interface VideoReviewRule {
+  name: string,
+  threshold?: number,
+  duration?: number,
+  missingDuration?: number,
+}
+
+interface AudioReviewRule {
+  name: string,
+  channels?: string,
+  duration?: number,
+  missingDuration?: number,
+  threshold?: number,
+}
+
+interface TechReview {
+  name: string,
+  videoRules: VideoReviewRule[],
+  audioRules: AudioReviewRule[],
+  anyChannels: string,
+  allChannels: string,
+}
+

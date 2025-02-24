@@ -15,6 +15,10 @@ export enum Signal {
   LayoutSaveAs,
   OpenApiServerPort,
   OpenEndSwtTitle,
+  OpenNewVideoFormat,
+  OpenNewAudioFormat,
+  OpenNewTechReview,
+  OpenNewAudioMapping,
 }
 
 export enum DeviceStatus {

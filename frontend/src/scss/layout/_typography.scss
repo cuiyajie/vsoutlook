@@ -74,6 +74,13 @@ div {
   color: var(--dark-text);
 }
 
+.is-dark {
+
+  div {
+    color: var(--light-text);
+  }
+}
+
 var {
   font-style: normal;
 }

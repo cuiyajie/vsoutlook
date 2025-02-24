@@ -42,6 +42,10 @@ export const useUserSession = defineStore('userSession', () => {
         'endswt_panel_types',
         'lut_upscale_names',
         'lut_downscale_names',
+        'video_formats',
+        'audio_formats',
+        'audio_mappings',
+        'tech_reviews'
       ] as Array<keyof Settings>
     ).forEach((key) => {
       if (newSettings[key]) {
