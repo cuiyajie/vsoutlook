@@ -77,7 +77,11 @@ func SetupRouter() *gin.Engine {
 		post(member, "cluster/pod.delete", cluster.DeletePod)
 		post(member, "cluster/nodes", cluster.GetNodes)
 		post(member, "cluster/node.detail", cluster.GetNodeDetail)
-		post(member, "cluster/node.update", cluster.UpdateNode)
+		post(member, "cluster/nics", cluster.GetNodeNics)
+		post(member, "cluster/nic.create", cluster.CreateNic)
+		post(member, "cluster/nic.update", cluster.UpdateNic)
+		post(member, "cluster/nic.delete", cluster.DeleteNic)
+		post(member, "cluster/nmos", cluster.GetNMosNodes)
 	}
 
 	{

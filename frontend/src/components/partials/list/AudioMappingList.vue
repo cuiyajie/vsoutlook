@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import { useUserSession } from "@src/stores/userSession";
-import { confirm } from "@src/utils/dialog";
-import { numberRangeToArray } from "../modals/PresetConfig/Utils";
+import { useUserSession } from '@src/stores/userSession'
+import { confirm } from '@src/utils/dialog'
+import { numberRangeToArray } from '../modals/PresetConfig/Utils'
 
-const usStore = useUserSession();
-const audioMappings = computed(() => usStore.settings.audio_mappings || []);
-const parsedAudioMappings = computed(() => audioMappings.value.map(mapping => ({
-  ...mapping,
-  muteArray: numberRangeToArray(mapping.mute)
-})))
+const usStore = useUserSession()
+const audioMappings = computed(() => usStore.settings.audio_mappings || [])
+const parsedAudioMappings = computed(() =>
+  audioMappings.value.map((mapping) => ({
+    ...mapping,
+    muteArray: numberRangeToArray(mapping.mute_channels),
+  }))
+)
 const page = ref(1)
 
 function create() {
@@ -18,37 +20,31 @@ function create() {
 function remove(idx: number) {
   const mapping = audioMappings.value[idx]
   confirm({
-    title: "确认",
+    title: '确认',
     content: `确定要删除音频映射模版 ${mapping.name} 吗？`,
     onConfirm: async (hide) => {
       audioMappings.value.splice(idx, 1)
       usStore.$updateSettings({
         key: 'audio_mappings',
-        value: JSON.stringify(audioMappings.value)
+        value: JSON.stringify(audioMappings.value),
       })
       hide()
     },
-  });
+  })
 }
 
 function edit(idx: number) {
   bus.trigger(Signal.OpenNewAudioMapping, {
-    index: idx
+    index: idx,
   })
 }
-
 </script>
 
 <template>
   <div>
     <div class="datatable-toolbar">
       <VButtons>
-        <VButton
-          color="primary"
-          icon="fas fa-plus"
-          elevated
-          @click="create"
-        >
+        <VButton color="primary" icon="fas fa-plus" elevated @click="create">
           新建
         </VButton>
       </VButtons>
@@ -63,10 +59,7 @@ function edit(idx: number) {
             <th>操作</th>
           </thead>
           <tbody>
-            <tr
-              v-for="(mapping, aidx) in parsedAudioMappings"
-              :key="mapping.name"
-            >
+            <tr v-for="(mapping, aidx) in parsedAudioMappings" :key="mapping.name">
               <td>{{ mapping.name }}</td>
               <td>
                 <div class="mapping-cols scrollbar-hide">
@@ -74,9 +67,13 @@ function edit(idx: number) {
                     <div>源声道</div>
                     <div>目标声道</div>
                   </div>
-                  <div v-for="(copy, ci) in mapping.copys" :key="ci" class="mapping-col with-border">
-                    <div class="mapping-cell is-source">{{ copy[0] }}</div>
-                    <div class="mapping-cell">{{ copy[1] }}</div>
+                  <div
+                    v-for="(channel, ci) in mapping.channels"
+                    :key="ci"
+                    class="mapping-col with-border"
+                  >
+                    <div class="mapping-cell is-source">{{ channel.src_channel }}</div>
+                    <div class="mapping-cell">{{ channel.dst_channel }}</div>
                   </div>
                 </div>
               </td>
@@ -124,7 +121,6 @@ function edit(idx: number) {
   table-layout: fixed;
 
   thead {
-
     th:first-child {
       width: 180px;
     }
@@ -139,7 +135,6 @@ function edit(idx: number) {
       width: 80px;
     }
   }
-
 
   .mapping-cols {
     display: flex;
@@ -185,7 +180,7 @@ function edit(idx: number) {
       color: #000;
 
       &.is-source {
-        background-color: #66FF00;
+        background-color: #66ff00;
       }
     }
   }

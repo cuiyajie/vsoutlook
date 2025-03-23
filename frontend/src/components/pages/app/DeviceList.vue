@@ -8,8 +8,8 @@ import { useClustNode } from '@src/stores/node'
 import { useTemplate } from '@src/stores/template'
 
 const deviceStore = useDevices()
-const nodeStore = useClustNode();
-const tmplStore = useTemplate();
+const nodeStore = useClustNode()
+const tmplStore = useTemplate()
 const devices = computed(() => deviceStore.devices)
 const loading = ref(false)
 
@@ -22,12 +22,21 @@ const tmplNameSorter: VFlexTableWrapperSortFunction<DeviceDetail> = ({ order, a,
   return 0
 }
 
-const tmplNameFilter: VFlexTableWrapperFilterFunction<DeviceDetail> = ({ searchTerm, row }) => {
+const tmplNameFilter: VFlexTableWrapperFilterFunction<DeviceDetail> = ({
+  searchTerm,
+  row,
+}) => {
   if (!searchTerm) return true
-  return row.tmplName.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase()) || row.appName.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
+  return (
+    row.tmplName.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase()) ||
+    row.appName.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
+  )
 }
 
-const nameFilter: VFlexTableWrapperFilterFunction<DeviceDetail> = ({ searchTerm, row }) => {
+const nameFilter: VFlexTableWrapperFilterFunction<DeviceDetail> = ({
+  searchTerm,
+  row,
+}) => {
   if (!searchTerm) return true
   return row.name.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
 }
@@ -41,7 +50,10 @@ const nodeSorter: VFlexTableWrapperSortFunction<DeviceDetail> = ({ order, a, b }
   return 0
 }
 
-const nodeFilter: VFlexTableWrapperFilterFunction<DeviceDetail> = ({ searchTerm, row }) => {
+const nodeFilter: VFlexTableWrapperFilterFunction<DeviceDetail> = ({
+  searchTerm,
+  row,
+}) => {
   if (!searchTerm) return true
   return row.node.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
 }
@@ -55,27 +67,27 @@ const updateAtSorter: VFlexTableWrapperSortFunction<DeviceDetail> = ({ order, a,
   return 0
 }
 
-
-const formatDate = (t: number) => new Date(t * 1000).toLocaleString('zh-CN', {
-  year: 'numeric',
-  month: '2-digit',
-  day: '2-digit',
-  hour: '2-digit',
-  minute: '2-digit',
-  second: '2-digit'
-})
+const formatDate = (t: number) =>
+  new Date(t * 1000).toLocaleString('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  })
 
 const columns = {
   icon: {
     label: '图标',
-    align: 'center'
+    align: 'center',
   },
   name: {
     label: '设备名称',
     grow: true,
     searchable: true,
     sortable: false,
-    filter: nameFilter
+    filter: nameFilter,
   },
   tmplName: {
     label: '应用名称',
@@ -83,7 +95,7 @@ const columns = {
     searchable: true,
     sortable: true,
     sort: tmplNameSorter,
-    filter: tmplNameFilter
+    filter: tmplNameFilter,
   },
   node: {
     label: '运行节点',
@@ -91,7 +103,7 @@ const columns = {
     searchable: true,
     sortable: true,
     sort: nodeSorter,
-    filter: nodeFilter
+    filter: nodeFilter,
   },
   updatedAt: {
     label: '更新时间',
@@ -104,7 +116,7 @@ const columns = {
     label: '状态',
     sortable: true,
     searchable: true,
-    align: 'center'
+    align: 'center',
   },
   // input: {
   //   label: '入信号',
@@ -126,11 +138,11 @@ const columns = {
   // },
   action: {
     label: '操作',
-    align: 'center'
-  }
+    align: 'center',
+  },
 } as const
 
-async function refresh () {
+async function refresh() {
   loading.value = true
   await deviceStore.$fetchList()
   loading.value = false
@@ -138,26 +150,21 @@ async function refresh () {
 
 function deployApp() {
   nodeStore.$fetchList()
-  tmplStore.$fetchList();
+  tmplStore.$fetchList()
   bus.trigger(Signal.OpenResourceConfig, {
     callbacks: {
       success: () => {
         refresh()
-      }
-    }
-  });
+      },
+    },
+  })
 }
 
 refresh()
-
 </script>
 
 <template>
-  <VFlexTableWrapper
-    class="devices-flex-table"
-    :columns="columns"
-    :data="devices"
-  >
+  <VFlexTableWrapper class="devices-flex-table" :columns="columns" :data="devices">
     <!--
       Here we retrieve the internal wrapperState.
       Note that we can not destructure it
@@ -174,35 +181,21 @@ refresh()
                 type="text"
                 class="input"
                 placeholder="搜索"
-              >
+              />
             </VControl>
           </VField>
         </template>
         <template #right>
           <VButtons>
-            <VButton
-              color="primary"
-              raised
-              @click="deployApp"
-            >
+            <VButton color="primary" raised @click="deployApp">
               <span class="icon">
-                <i
-                  class="lnir lnir-plus"
-                  aria-hidden="true"
-                />
+                <i class="lnir lnir-plus" aria-hidden="true" />
               </span>
               <span>新建设备</span>
             </VButton>
-            <VButton
-              color="primary"
-              raised
-              @click="refresh"
-            >
+            <VButton color="primary" raised @click="refresh">
               <span class="icon">
-                <i
-                  class="lnir lnir-reload"
-                  aria-hidden="true"
-                />
+                <i class="lnir lnir-reload" aria-hidden="true" />
               </span>
               <span>刷新列表</span>
             </VButton>
@@ -223,11 +216,7 @@ refresh()
         </template>
       </VFlexTableToolbar>
 
-      <VLoader
-        size="small"
-        translucent
-        :active="loading"
-      >
+      <VLoader size="small" translucent :active="loading">
         <!--
         The VFlexTable "data" and "columns" props
         will be inherited from parent VFlexTableWrapper
@@ -242,28 +231,20 @@ refresh()
               class="is-tt-icon"
               :picture="`/images/tmpl/${row.tmplTypeIcon}`"
             />
-            <div
-              v-else-if="column.key === 'name'"
-              class="dark-text"
-            >
+            <div v-else-if="column.key === 'name'" class="dark-text">
               <span>{{ row.name }}</span>
               <div v-if="row.appName" class="subcell">( {{ row.appName }} )</div>
             </div>
-            <span
-              v-else-if="column.key === 'tmplName'"
-              class="dark-text"
-            >{{ row.tmplName }}</span>
-            <div
-              v-else-if="column.key === 'node'"
-              class="dark-text"
-            >
+            <span v-else-if="column.key === 'tmplName'" class="dark-text">{{
+              row.tmplName
+            }}</span>
+            <div v-else-if="column.key === 'node'" class="dark-text">
               <span>{{ row.node }}</span>
               <div v-if="row.nodeIP" class="subcell">( {{ row.nodeIP }} )</div>
             </div>
-            <span
-              v-else-if="column.key === 'updatedAt'"
-              class="dark-text"
-            >{{ formatDate(row.updatedAt) }}</span>
+            <span v-else-if="column.key === 'updatedAt'" class="dark-text">{{
+              formatDate(row.updatedAt)
+            }}</span>
             <VTag
               v-else-if="column.key === 'status'"
               rounded
@@ -301,7 +282,6 @@ refresh()
         </VFlexTable>
         <!-- content ... --->
       </VLoader>
-
 
       <VPlaceholderPage
         :class="[(wrapperState.data.length !== 0 || loading) && 'is-hidden']"

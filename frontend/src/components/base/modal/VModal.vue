@@ -19,8 +19,8 @@ export interface VModalProps {
   noscroll?: boolean
   noclose?: boolean
   tabs?: boolean
-  cancelLabel?: string,
-  dialogClass?: string,
+  cancelLabel?: string
+  dialogClass?: string
 }
 
 defineOptions({
@@ -33,7 +33,7 @@ const props = withDefaults(defineProps<VModalProps>(), {
   size: undefined,
   actions: undefined,
   cancelLabel: undefined,
-  dialogClass: ""
+  dialogClass: '',
 })
 
 const { t } = useI18n()
@@ -64,10 +64,7 @@ onUnmounted(() => {
 
 <template>
   <Teleport to="body">
-    <FocusTrap
-      v-if="open"
-      :initial-focus="() => ($refs.closeButton as any)?.el"
-    >
+    <FocusTrap v-if="open" :initial-focus="() => ($refs.closeButton as any)?.el">
       <component
         :is="is"
         role="dialog"
@@ -87,6 +84,7 @@ onUnmounted(() => {
           <div class="modal-card">
             <header class="modal-card-head">
               <h3>{{ title }}</h3>
+              <slot name="header-action" />
               <button
                 ref="closeButton"
                 type="button"
@@ -96,17 +94,10 @@ onUnmounted(() => {
                 @keydown.space.prevent="emit('close')"
                 @click="emit('close')"
               >
-                <i
-                  aria-hidden="true"
-                  class="iconify"
-                  data-icon="feather:x"
-                />
+                <i aria-hidden="true" class="iconify" data-icon="feather:x" />
               </button>
             </header>
-            <div
-              class="modal-card-body"
-              :class="[props.tabs && 'has-tabs']"
-            >
+            <div class="modal-card-body" :class="[props.tabs && 'has-tabs']">
               <div class="inner-content">
                 <slot name="content" />
               </div>
@@ -118,10 +109,7 @@ onUnmounted(() => {
                 actions === 'right' && 'is-end',
               ]"
             >
-              <slot
-                name="cancel"
-                :close="() => emit('close')"
-              >
+              <slot name="cancel" :close="() => emit('close')">
                 <a
                   tabindex="0"
                   role="button"
@@ -133,10 +121,7 @@ onUnmounted(() => {
                   {{ cancelLabel }}
                 </a>
               </slot>
-              <slot
-                name="action"
-                :close="() => emit('close')"
-              />
+              <slot name="action" :close="() => emit('close')" />
             </div>
           </div>
         </div>
@@ -148,6 +133,14 @@ onUnmounted(() => {
 <style lang="scss">
 .modal {
   transition: all 0.5s;
+
+  &.is-overflow-visible {
+    .modal-content,
+    .modal-card,
+    .modal-card-body {
+      overflow: visible;
+    }
+  }
 
   &.is-big {
     .modal-content {

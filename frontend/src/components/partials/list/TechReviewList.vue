@@ -2,6 +2,7 @@
 import { useUserSession } from "@src/stores/userSession";
 import { confirm } from "@src/utils/dialog";
 import { VideoReviewKeys, AudioReviewKeys } from "@src/components/partials/modals/PresetConfig/Consts";
+import { VideoReviewKeyName, AudioReviewKeyName } from '../modals/PresetConfig/Consts';
 
 const usStore = useUserSession();
 const techReviews = computed(() => usStore.settings.tech_reviews || []);
@@ -10,10 +11,10 @@ const techReviewsRef = computed(() => {
     const videoRules: Record<string, VideoReviewRule> = {}
     const audioRules: Record<string, AudioReviewRule> = {}
     tr.videoRules?.forEach((vr) => {
-      videoRules[vr.name] = vr
+      videoRules[vr.key] = vr
     })
     tr.audioRules?.forEach((ar) => {
-      audioRules[ar.name] = ar
+      audioRules[ar.key] = ar
     })
     return {
       ...tr,
@@ -71,8 +72,8 @@ function edit(idx: number) {
         <table class="table datatable-table is-fullwidth tech-review-table">
           <thead>
             <th align="center">模版名称</th>
-            <th v-for="vk in VideoReviewKeys" :key="vk" align="center">{{ vk }}</th>
-            <th v-for="ak in AudioReviewKeys" :key="ak" align="center">{{ ak }}</th>
+            <th v-for="vk in VideoReviewKeys" :key="vk" align="center">{{ VideoReviewKeyName[vk] }}</th>
+            <th v-for="ak in AudioReviewKeys" :key="ak" align="center">{{ AudioReviewKeyName[ak] }}</th>
             <th>操作</th>
           </thead>
           <tbody>
@@ -83,18 +84,18 @@ function edit(idx: number) {
               <td>{{ tr.name }}</td>
               <td v-for="vk in VideoReviewKeys" :key="vk">
                 <template v-if="tr.videoRules?.[vk]">
-                  <span v-if="tr.videoRules[vk].threshold">阈值 {{ tr.videoRules[vk].threshold }}</span>
-                  <span v-if="tr.videoRules[vk].duration">时长 {{ tr.videoRules[vk].duration }} 帧</span>
-                  <span v-if="tr.videoRules[vk].missingDuration">时长 {{ tr.videoRules[vk].missingDuration }} ms</span>
+                  <span v-if="tr.videoRules[vk].threshold_percentage">阈值 {{ tr.videoRules[vk].threshold_percentage }}</span>
+                  <span v-if="tr.videoRules[vk].duration_frames">时长 {{ tr.videoRules[vk].duration_frames }} 帧</span>
+                  <span v-if="tr.videoRules[vk].duration_ms">时长 {{ tr.videoRules[vk].duration_ms }} ms</span>
                 </template>
                 <span v-else>-</span>
               </td>
               <td v-for="ak in AudioReviewKeys" :key="ak">
                 <template v-if="tr.audioRules?.[ak]">
-                  <span v-if="tr.audioRules[ak].channels">声道 {{ tr.audioRules[ak].channels }}</span>
-                  <span v-if="tr.audioRules[ak].duration">时长 {{ tr.audioRules[ak].duration }} 帧</span>
-                  <span v-if="tr.audioRules[ak].threshold">阈值 {{ tr.audioRules[ak].threshold }}</span>
-                  <span v-if="tr.audioRules[ak].missingDuration">时长 {{ tr.audioRules[ak].missingDuration }} ms</span>
+                  <span v-if="tr.audioRules[ak].detect_channels">声道 {{ tr.audioRules[ak].detect_channels }}</span>
+                  <span v-if="tr.audioRules[ak].duration_frames">时长 {{ tr.audioRules[ak].duration_frames }} 帧</span>
+                  <span v-if="tr.audioRules[ak].threshold_dbfs">阈值 {{ tr.audioRules[ak].threshold_dbfs }}</span>
+                  <span v-if="tr.audioRules[ak].duration_ms">时长 {{ tr.audioRules[ak].duration_ms }} ms</span>
                 </template>
                 <span v-else>-</span>
               </td>

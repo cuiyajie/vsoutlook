@@ -1,0 +1,65 @@
+.device-form.form-layout {
+  .field.api-addons.has-addons {
+    .field-addon-body {
+      .control:last-child {
+        flex-basis: 140px;
+      }
+    }
+  }
+}
+
+.button.v-button.addon-conn {
+  padding: 8px;
+  background: var(--dark-sidebar-light-2);
+  border-color: var(--dark-sidebar-light-4);
+}
+
+.device-form.form-layout {
+  .field.switch-2-group {
+    .control.switch-2 {
+      width: 40%;
+      display: inline-block;
+
+      .switch-block {
+        padding: 5px 0;
+      }
+    }
+  }
+
+  .tippy-select.multiselect {
+    .iconify {
+      font-size: 1rem;
+      margin-left: 24px;
+    }
+    .multiselect-options {
+      .multiselect-option {
+        & + .multiselect-option {
+          margin-top: 6px;
+        }
+
+        span[data-v-tippy] {
+          display: flex;
+          align-items: center;
+        }
+      }
+    }
+  }
+
+  .multiselect {
+    .multiselect-no-options {
+      padding-bottom: 28px;
+      text-align: center;
+      font-size: 0.875rem;
+    }
+  }
+}
+
+.format-item-container {
+  padding: 20px 0;
+
+  &.tags {
+    [data-v-tippy]:not(:last-child) {
+      margin-inline-end: 0.5rem;
+    }
+  }
+}

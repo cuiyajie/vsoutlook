@@ -59,6 +59,12 @@ type AuthService struct {
 	Port int    `json:"port"`
 }
 
+type DpdkInterface struct {
+	Index    float64 `json:"physicalNicNumber"`
+	MainIP   string  `json:"activeIPAddress"`
+	BackupIP string  `json:"backupIPAddress"`
+}
+
 func generateDeviceSeedID() string {
 	// Generate a version 4 (random) UUID
 	u := uuid.New()
@@ -83,14 +89,14 @@ func GetDeviceList(c *svcinfra.Context) {
 	clustQuery := map[string]interface{}{
 		"release_status": "true",
 	}
-	resp2, _ := cluster.BuildProxyReq[[]ClustReleaseApp](c, "GET", "/apps", &clustQuery, nil)
+	resp2, _ := cluster.BuildProxyReq[[]ClustReleaseApp](c, "GET", "/apps", &clustQuery, nil, "")
 	if resp2 == nil {
 		fmt.Printf("failed to get device list")
 		c.Bye(gin.H{"devices": devices})
 		return
 	}
 
-	resp3, _ := cluster.BuildProxyReq[[]cluster.ClusterNodeInfo](c, "GET", "/nodes", nil, nil)
+	resp3, _ := cluster.BuildProxyReq[[]cluster.ClusterNodeInfo](c, "GET", "/nodes", nil, nil, "")
 	nodesMap := make(map[string]cluster.ClusterNodeInfo)
 	if resp3 != nil {
 		for _, v := range *resp3 {
@@ -144,71 +150,98 @@ func GetDevice(c *svcinfra.Context) {
 	c.Bye(gin.H{"device": device.AsDetail()})
 }
 
-func checkAllocatedCore(c *svcinfra.Context, node *models.Node) {
-	if node.Allocated == nil {
-		node.Allocated = make(models.MapUint32Slice)
+func checkAllocatedCore(c *svcinfra.Context, nic *models.Nic) {
+	if nic.AllocatedCore == nil {
+		nic.AllocatedCore = make(models.MapUint32Slice)
 	} else {
-		for deviceId := range node.Allocated {
+		for deviceId := range nic.AllocatedCore {
 			device := models.ActiveDevice(deviceId)
-			if device == nil || device.Deleted == def.SelfDeleted || device.AppName == "" || device.Node != node.ID {
-				delete(node.Allocated, deviceId)
+			if device == nil || device.Deleted == def.SelfDeleted || device.AppName == "" || device.Node != nic.NodeID {
+				delete(nic.AllocatedCore, deviceId)
 			}
 		}
 	}
-	c.Save(&node)
+	c.Save(&nic)
 }
 
-func checkAllocatedDMA(c *svcinfra.Context, node *models.Node) {
-	if node.AllocatedDMA == nil {
-		node.AllocatedDMA = make(models.MapStringSlice)
+func checkAllocatedDMA(c *svcinfra.Context, nic *models.Nic) {
+	if nic.AllocatedDMA == nil {
+		nic.AllocatedDMA = make(models.MapStringSlice)
 	} else {
-		for deviceId := range node.AllocatedDMA {
+		for deviceId := range nic.AllocatedDMA {
 			device := models.ActiveDevice(deviceId)
-			if device == nil || device.Deleted == def.SelfDeleted || device.AppName == "" || device.Node != node.ID {
-				delete(node.AllocatedDMA, deviceId)
+			if device == nil || device.Deleted == def.SelfDeleted || device.AppName == "" || device.Node != nic.NodeID {
+				delete(nic.AllocatedDMA, deviceId)
 			}
 		}
 	}
-	c.Save(&node)
+	c.Save(&nic)
 }
 
-func preInstallation(c *svcinfra.Context, configStr string, tmpl *models.Tmpl, node *models.Node, device *models.Device) (*[]uint32, *[]string, error) {
-	checkAllocatedCore(c, node)
-	cores, err := allocateNodeCore(tmpl, node)
+func preInstallation(c *svcinfra.Context, configStr string, tmpl *models.Tmpl, node *models.Node, device *models.Device) (*map[string][]uint32, *map[string][]string, error) {
+	var configFile map[string]interface{}
+	err := json.Unmarshal([]byte(configStr), &configFile)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, errors.New("设备配置文件格式错误")
 	}
+	fmt.Printf("configFile before handle: %v\n", configFile)
 
-	checkAllocatedDMA(c, node)
-	dmas, err := allocateNodeDMA(tmpl, node)
-	if err != nil {
-		return nil, nil, err
+	var coreMap = make(map[string][]uint32)
+	var dmaMap = make(map[string][]string)
+	coreListStr := ""
+	dmaListStr := ""
+	dpdkinterfaces := make([]DpdkInterface, 0)
+	if _, ok := configFile["nic_list"]; ok {
+		nicTempList, ok1 := configFile["nic_list"].([]interface{})
+		if !ok1 {
+			return nil, nil, errors.New("设备网卡配置错误")
+		}
+		var nicList []map[string]interface{}
+		for _, item := range nicTempList {
+			if m, ok := item.(map[string]interface{}); ok {
+				nicList = append(nicList, m)
+			} else {
+				return nil, nil, errors.New("设备网卡配置错误")
+			}
+		}
+		if len(nicList) != 0 {
+			// 循环网卡，有 error 就返回错误
+			for nidx, nicItem := range nicList {
+				nicId := nicItem["id"].(string)
+				nic := models.ActiveNic(nicId)
+				if nic == nil {
+					return nil, nil, fmt.Errorf("设备配置的网卡 %d 不存在", nidx)
+				}
+				checkAllocatedCore(c, nic)
+				cores, err := allocateNodeCore(tmpl, nic, nidx)
+				if err != nil {
+					return nil, nil, err
+				}
+				coreMap[nic.ID] = cores
+
+				checkAllocatedDMA(c, nic)
+				dmas, err := allocateNodeDMA(tmpl, nic, nidx)
+				if err != nil {
+					return nil, nil, err
+				}
+				dmaMap[nic.ID] = dmas
+
+				dpdkinterfaces = append(dpdkinterfaces, DpdkInterface{
+					Index:    nicItem["nicIndex"].(float64),
+					MainIP:   nicItem["2110-7_m_local_ip"].(string),
+					BackupIP: nicItem["2110-7_b_local_ip"].(string),
+				})
+			}
+			coreListStr = utils.FormatUint32Array(utils.MergeMapArrays(coreMap))
+			dmaListStr = strings.Join(utils.MergeMapArrays(dmaMap), ",")
+		}
 	}
 
 	settings := models.GetSettings()
 
-	coreListStr := utils.IntArrayToString(cores)
-	dmaListStr := strings.Join(dmas, ",")
-	var configFile map[string]interface{}
-	err = json.Unmarshal([]byte(configStr), &configFile)
-	if err != nil {
-		return nil, nil, errors.New("设备配置文件格式错误")
-	}
-	fmt.Printf("configFile: %v\n", configFile)
-
 	tmplType := models.ActiveTmplType(tmpl.Type)
 	data := make(map[string]interface{})
 
-	if paddr, ok := configFile["2110-7_m_local_ip"].(string); ok {
-		data["primaryVFAddress"] = paddr + "/24"
-	} else {
-		return nil, nil, errors.New("设备主网卡地址格式错误")
-	}
-	if saddr, ok := configFile["2110-7_b_local_ip"].(string); ok {
-		data["secondaryVFAddress"] = saddr + "/24"
-	} else {
-		return nil, nil, errors.New("设备备网卡地址格式错误")
-	}
 	data["targetNode"] = node.ID
 	data["cpu"] = tmpl.Requirement.CpuNum
 	data["memory"] = tmpl.Requirement.Memory
@@ -218,9 +251,22 @@ func preInstallation(c *svcinfra.Context, configStr string, tmpl *models.Tmpl, n
 	data["MaxRateMbpsByCore"] = tmpl.Requirement.MaxRateMbpsByCore
 	data["RXsessioncnt"] = tmpl.Requirement.ReceiveSessions
 	data["displayName"] = device.Name
-	data["applicationCategory"] = tmplType.Category
+	data["applicationCategory"] = tmplType.AppCategory
+	data["sendAVFrameNodeCount"] = tmpl.Requirement.SendAVFrameNodeCount
+	data["recvFrameCount"] = tmpl.Requirement.RecvframeCount
 	data["coreList"] = coreListStr
 	data["DMAList"] = dmaListStr
+	data["dpdkinterfaces"] = dpdkinterfaces
+	if _, ok := configFile["used_signal_type"]; ok {
+		usedSignalType := configFile["used_signal_type"].(float64)
+		if usedSignalType == 1 {
+			data["disableDPDKInterfaceAutoAllocation"] = true
+			data["hostNetwork"] = true
+		} else {
+			data["disableDPDKInterfaceAutoAllocation"] = false
+			data["hostNetwork"] = false
+		}
+	}
 	if _, ok := configFile["ipservice"]; ok {
 		ipservice := configFile["ipservice"].(map[string]interface{})
 		ipservice["max_bandwidth_percore"] = tmpl.Requirement.MaxRateMbpsByCore
@@ -273,23 +319,24 @@ func preInstallation(c *svcinfra.Context, configStr string, tmpl *models.Tmpl, n
 		}
 		configFile["authorization_service"] = authServiceData
 	}
+	fmt.Printf("configFile after handle: %v\n", configFile)
 	configJson := utils.MapToString(configFile)
 	data["configFile"] = configJson
 	device.Config = configJson
 
-	resp2, err := cluster.BuildProxyReq[struct {
-		Name string `json:"name"`
-	}](c, "POST", "/install", nil, &data)
-	if resp2 == nil {
-		fmt.Printf("failed to parse response: %v", err)
-		if err != nil {
-			return nil, nil, fmt.Errorf("部署设备失败: %s", err.Error())
-		} else {
-			return nil, nil, errors.New("部署节点返回数据格式错误")
-		}
-	}
-	device.AppName = resp2.Name
-	return &cores, &dmas, nil
+	// resp2, err := cluster.BuildProxyReq[struct {
+	// 	Name string `json:"name"`
+	// }](c, "POST", "/install", nil, &data, "")
+	// if resp2 == nil {
+	// 	fmt.Printf("failed to parse response: %v", err)
+	// 	if err != nil {
+	// 		return nil, nil, fmt.Errorf("部署设备失败: %s", err.Error())
+	// 	} else {
+	// 		return nil, nil, errors.New("部署节点返回数据格式错误")
+	// 	}
+	// }
+	// device.AppName = resp2.Name
+	return &coreMap, &dmaMap, nil
 }
 
 func preUninstallation(c *svcinfra.Context, device *models.Device) error {
@@ -298,11 +345,11 @@ func preUninstallation(c *svcinfra.Context, device *models.Device) error {
 	}
 	respQ, _ := cluster.BuildProxyReq[ClustReleaseAppDetail](c, "GET", "/app", &map[string]interface{}{
 		"release_name": device.AppName,
-	}, nil)
+	}, nil, "")
 	if respQ != nil {
 		resp2, err := cluster.BuildProxyReq[struct {
 			Name string `json:"name"`
-		}](c, "POST", "/uninstall", nil, &data)
+		}](c, "POST", "/uninstall", nil, &data, "")
 		if resp2 == nil {
 			if err != nil {
 				return fmt.Errorf("请求删除设备失败: %s", err.Error())
@@ -353,9 +400,22 @@ func StartDevice(c *svcinfra.Context) {
 	}
 	device.UpdatedAt = time.Now()
 	c.Save(&device)
-	node.Allocated[device.ID] = *cores
-	node.AllocatedDMA[device.ID] = *dmas
-	c.Save(&node)
+
+	for nicID, core := range *cores {
+		nic := models.ActiveNic(nicID)
+		if nic != nil {
+			nic.AllocatedCore[device.ID] = core
+			c.Save(&nic)
+		}
+	}
+	for nicID, dma := range *dmas {
+		nic := models.ActiveNic(nicID)
+		if nic != nil {
+			nic.AllocatedDMA[device.ID] = dma
+			c.Save(&nic)
+		}
+	}
+
 	c.Bye(gin.H{"device": device.AsBasic()})
 }
 
@@ -375,7 +435,7 @@ func StartDevice2(c *svcinfra.Context) {
 		"release_name":  device.AppName,
 		"release_scale": "2",
 	}
-	resp2, err := cluster.BuildProxyReq[any](c, "GET", "/start", &data, nil)
+	resp2, err := cluster.BuildProxyReq[any](c, "GET", "/start", &data, nil, "")
 	// start udx-i5urluof successfully with scale 2
 	if (resp2 == nil && err == nil) || (err != nil && !strings.Contains(err.Error(), "successfully")) {
 		c.GeneralError("请求启动设备失败")
@@ -407,9 +467,11 @@ func StopDevice(c *svcinfra.Context) {
 	device.AppName = ""
 	node := models.ActiveNode(device.Node)
 	if node != nil {
-		delete(node.Allocated, device.ID)
-		delete(node.AllocatedDMA, device.ID)
-		c.Save(&node)
+		nics := node.Nics()
+		for _, nic := range nics {
+			delete(nic.AllocatedCore, device.ID)
+			delete(nic.AllocatedDMA, device.ID)
+		}
 	}
 	c.Save(&device)
 	c.Bye(gin.H{"result": "ok"})
@@ -430,7 +492,7 @@ func StopDevice2(c *svcinfra.Context) {
 	data := map[string]interface{}{
 		"release_name": device.AppName,
 	}
-	resp2, err := cluster.BuildProxyReq[any](c, "GET", "/stop", &data, nil)
+	resp2, err := cluster.BuildProxyReq[any](c, "GET", "/stop", &data, nil, "")
 	// stop udx-i5urluof successfully with scale 2
 	if (resp2 == nil && err == nil) || (err != nil && !strings.Contains(err.Error(), "successfully")) {
 		c.GeneralError("请求停止设备失败")
@@ -440,39 +502,47 @@ func StopDevice2(c *svcinfra.Context) {
 	c.Bye(gin.H{"result": "ok"})
 }
 
-func allocateNodeCore(tmpl *models.Tmpl, node *models.Node) ([]uint32, error) {
-	dpdkCpu := tmpl.Requirement.DPDKCpu
+func allocateNodeCore(tmpl *models.Tmpl, nic *models.Nic, nidx int) ([]uint32, error) {
+	nicConfig := tmpl.Requirement.NicConfig
+	if nicConfig == nil {
+		return nil, errors.New("该应用没有设置网卡配置")
+	}
+	iConfig := &nicConfig[nidx]
+	if iConfig == nil {
+		return nil, fmt.Errorf("第 %d 块网卡没有配置", nidx)
+	}
+	dpdkCpu := iConfig.DPDKCpu
 	if dpdkCpu <= 0 {
 		return nil, errors.New("该应用没有设置cpu数量")
 	}
 
-	if len(node.CoreList) == 0 {
-		return nil, errors.New("节点没有配置核心列表")
+	if len(nic.CoreList) == 0 {
+		return nil, fmt.Errorf("网卡 %d 没有配置核心列表", nidx)
 	}
 
-	if len(node.Allocated) >= int(node.VFCount) {
-		return nil, errors.New("节点VF数量已满")
+	if len(nic.AllocatedCore) >= int(nic.VFCount) {
+		return nil, fmt.Errorf("网卡 %d VF数量已满", nidx)
 	}
 
-	cores := utils.ParseCoreListString(node.CoreList)
+	cores := utils.ParseCoreListString(nic.CoreList)
 	if len(cores) < int(dpdkCpu) {
-		return nil, errors.New("节点核心数不足")
+		return nil, fmt.Errorf("网卡 %d 核心数不足", nidx)
 	}
 
-	allocated := make(map[uint32]bool)
-	for _, v := range node.Allocated {
+	allocatedCore := make(map[uint32]bool)
+	for _, v := range nic.AllocatedCore {
 		for _, v2 := range v {
-			allocated[v2] = true
+			allocatedCore[v2] = true
 		}
 	}
 
-	if len(allocated)+dpdkCpu > len(cores) {
-		return nil, errors.New("节点核心数不足")
+	if len(allocatedCore)+dpdkCpu > len(cores) {
+		return nil, fmt.Errorf("网卡 %d 核心数不足", nidx)
 	}
 
 	var result []uint32
 	for _, v := range cores {
-		if !allocated[uint32(v)] {
+		if !allocatedCore[uint32(v)] {
 			result = append(result, uint32(v))
 		}
 		if len(result) == int(dpdkCpu) {
@@ -483,27 +553,35 @@ func allocateNodeCore(tmpl *models.Tmpl, node *models.Node) ([]uint32, error) {
 	return result, nil
 }
 
-func allocateNodeDMA(tmpl *models.Tmpl, node *models.Node) ([]string, error) {
-	dma := tmpl.Requirement.DMA
+func allocateNodeDMA(tmpl *models.Tmpl, nic *models.Nic, nidx int) ([]string, error) {
+	nicConfig := tmpl.Requirement.NicConfig
+	if nicConfig == nil {
+		return nil, errors.New("该应用没有设置网卡配置")
+	}
+	iConfig := &nicConfig[nidx]
+	if iConfig == nil {
+		return nil, fmt.Errorf("第 %d 块网卡没有配置", nidx)
+	}
+	dma := iConfig.DMA
 
-	if dma > 0 && len(node.DMAList) == 0 {
-		return nil, errors.New("节点没有配置DMA通道列表")
+	if dma > 0 && len(nic.DMAList) == 0 {
+		return nil, fmt.Errorf("网卡 %d 没有配置DMA列表", nidx)
 	}
 
-	dmas := strings.Split(node.DMAList, ",")
+	dmas := strings.Split(nic.DMAList, ",")
 	if len(dmas) < dma {
-		return nil, errors.New("节点DMA通道数量不足")
+		return nil, fmt.Errorf("网卡 %d DMA通道数量不足", nidx)
 	}
 
 	allocated := make(map[string]bool)
-	for _, v := range node.AllocatedDMA {
+	for _, v := range nic.AllocatedDMA {
 		for _, v2 := range v {
 			allocated[v2] = true
 		}
 	}
 
 	if len(allocated)+dma > len(dmas) {
-		return nil, errors.New("节点DMA通道数量不足")
+		return nil, fmt.Errorf("网卡 %d DMA通道数量不足", nidx)
 	}
 
 	var result []string
@@ -577,9 +655,20 @@ func CreateDevice(c *svcinfra.Context) {
 		c.GeneralError("部署设备失败")
 		return
 	}
-	node.Allocated[newDevice.ID] = *cores
-	node.AllocatedDMA[newDevice.ID] = *dmas
-	c.Save(&node)
+	for nicID, core := range *cores {
+		nic := models.ActiveNic(nicID)
+		if nic != nil {
+			nic.AllocatedCore[newDevice.ID] = core
+			c.Save(&nic)
+		}
+	}
+	for nicID, dma := range *dmas {
+		nic := models.ActiveNic(nicID)
+		if nic != nil {
+			nic.AllocatedDMA[newDevice.ID] = dma
+			c.Save(&nic)
+		}
+	}
 	c.Bye(gin.H{"device": newDevice.AsDetail()})
 }
 
@@ -628,9 +717,11 @@ func DeleteDevice(c *svcinfra.Context) {
 
 	node := models.ActiveNode(device.Node)
 	if node != nil {
-		delete(node.Allocated, device.ID)
-		delete(node.AllocatedDMA, device.ID)
-		c.Save(&node)
+		nics := node.Nics()
+		for _, nic := range nics {
+			delete(nic.AllocatedCore, device.ID)
+			delete(nic.AllocatedDMA, device.ID)
+		}
 	}
 
 	device.AppName = ""

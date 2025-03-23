@@ -3,8 +3,7 @@ const modelValue = defineModel<TmplRequirement & { description: string }>({
   default: {
     cpu: "",
     cpuNum: 0,
-    dpdkCpu: 0,
-    cpuCore: '',
+    cpuCore: "",
     hugePage: 0,
     memory: 0,
     disk: "",
@@ -21,24 +20,33 @@ const modelValue = defineModel<TmplRequirement & { description: string }>({
     utfOffset: 37,
     recvAVFrameNodeCount: 2,
     sendAVFrameNodeCount: 2,
-    recvframeCnt: 2,
+    recvFrameCount: 2,
     maxRateMbpsByCore: 9000,
     receiveSessions: 18,
-    shm: 0
+    shm: 0,
+    nicCount: 1,
+    nicConfig: []
   },
   local: true,
 });
 
-const opened = ref(false)
+const fullNicConfig = ref<TmplNicConfig[]>(Array(4).fill(1).map(() => ({ dpdkCpu: 1, dma: 1 })));
+
+watch(() => modelValue.value.nicConfig, (nv) => {
+  nv.forEach((v, i) => {
+    Object.assign(fullNicConfig.value[i], v);
+  });
+}, { immediate: true });
+
+const onNicCountChange = (e: Event) => {
+  modelValue.value.nicConfig = fullNicConfig.value.slice(0, +(e.target as HTMLSelectElement).value);
+};
+
+const opened = ref(false);
 </script>
 
 <template>
-  <form
-    method="post"
-    novalidate
-    class="form-layout specs-form"
-    @submit.prevent=""
-  >
+  <form method="post" novalidate class="form-layout specs-form" @submit.prevent="">
     <div class="form-outer">
       <div class="form-body">
         <!--Fieldset-->
@@ -48,38 +56,7 @@ const opened = ref(false)
               <VField>
                 <VLabel>CPU 总核心数</VLabel>
                 <VControl>
-                  <VInputNumber
-                    v-model="modelValue.cpuNum"
-                    centered
-                    :min="0"
-                    :step="1"
-                  />
-                </VControl>
-              </VField>
-            </div>
-            <div class="column is-4">
-              <VField>
-                <VLabel>DPDK CPU 核心</VLabel>
-                <VControl>
-                  <VInputNumber
-                    v-model="modelValue.dpdkCpu"
-                    centered
-                    :min="0"
-                    :step="1"
-                  />
-                </VControl>
-              </VField>
-            </div>
-            <div class="column is-4">
-              <VField>
-                <VLabel>DMA通道数量</VLabel>
-                <VControl>
-                  <VInputNumber
-                    v-model="modelValue.dma"
-                    centered
-                    :min="0"
-                    :step="1"
-                  />
+                  <VInputNumber v-model="modelValue.cpuNum" centered :min="0" :step="1" />
                 </VControl>
               </VField>
             </div>
@@ -87,12 +64,7 @@ const opened = ref(false)
               <VField>
                 <VLabel>内存 (GB)</VLabel>
                 <VControl>
-                  <VInputNumber
-                    v-model="modelValue.memory"
-                    centered
-                    :min="0"
-                    :step="1"
-                  />
+                  <VInputNumber v-model="modelValue.memory" centered :min="0" :step="1" />
                 </VControl>
               </VField>
             </div>
@@ -113,12 +85,7 @@ const opened = ref(false)
               <VField>
                 <VLabel>共享内存 (GB)</VLabel>
                 <VControl>
-                  <VInputNumber
-                    v-model="modelValue.shm"
-                    centered
-                    :min="0"
-                    :step="1"
-                  />
+                  <VInputNumber v-model="modelValue.shm" centered :min="0" :step="1" />
                 </VControl>
               </VField>
             </div>
@@ -162,6 +129,69 @@ const opened = ref(false)
                 </VControl>
               </VField>
             </div>
+            <div class="column is-4">
+              <VField>
+                <VLabel>SendAVFrameNodeCount</VLabel>
+                <VControl>
+                  <VInputNumber
+                    v-model="modelValue.sendAVFrameNodeCount"
+                    centered
+                    :min="0"
+                    :step="1"
+                  />
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-4">
+              <VField>
+                <VLabel>RecvFrameCount</VLabel>
+                <VControl>
+                  <VInputNumber
+                    v-model="modelValue.recvFrameCount"
+                    centered
+                    :min="0"
+                    :step="1"
+                  />
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-4">
+              <VField>
+                <VLabel>需要使用的网卡数量</VLabel>
+                <VControl>
+                  <VSelect v-model="modelValue.nicCount" class="is-rounded" @change="onNicCountChange">
+                    <VOption v-for="count in Array(4).fill(1).map((v, i) => v + i)" :key="count" :value="count">
+                      {{ count }}
+                    </VOption>
+                  </VSelect>
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-8" />
+            <template v-for="(config, cidx) in fullNicConfig.slice(0, modelValue.nicCount)" :key="cidx">
+              <div class="column is-2">
+                <VField>
+                  <VLabel>序号</VLabel>
+                  <VControl class="is-indexed" static>{{ cidx }}</VControl>
+                </VField>
+              </div>
+              <div class="column is-5">
+                <VField>
+                  <VLabel>DPDK CPU核心数</VLabel>
+                  <VControl>
+                    <VInputNumber v-model="config.dpdkCpu" centered :min="0" :step="1" />
+                  </VControl>
+                </VField>
+              </div>
+              <div class="column is-5">
+                <VField>
+                  <VLabel>DMA数量</VLabel>
+                  <VControl>
+                    <VInputNumber v-model="config.dma" centered :min="0" :step="1" />
+                  </VControl>
+                </VField>
+              </div>
+            </template>
             <!-- <div class="column is-4">
               <VField>
                 <VLabel>CPU主频</VLabel>
@@ -375,7 +405,7 @@ const opened = ref(false)
                     <VLabel>Recvframe Cnt</VLabel>
                     <VControl>
                       <VInputNumber
-                        v-model="modelValue.recvframeCnt"
+                        v-model="modelValue.recvFrameCount"
                         centered
                         :min="0"
                         :step="1"
@@ -489,6 +519,14 @@ const opened = ref(false)
         box-shadow: var(--light-box-shadow);
       }
     }
+  }
+
+  .control.is-indexed {
+    line-height: 36px;
+    background-color: var(--dark-sidebar-light-2);
+    border: 1px solid var(--dark-sidebar-light-4);
+    border-radius: var(--radius);
+    text-align: center;
   }
 }
 

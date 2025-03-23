@@ -1,31 +1,34 @@
 <script setup lang="ts">
-import { toTypedSchema } from "@vee-validate/zod";
-import { useForm } from "vee-validate";
-import { z } from "zod";
-import { useNotyf } from "@src/composable/useNotyf";
-import CodecForm from "./CodecForm.vue";
-import UdxForm from "./UdxForm.vue";
-import MVForm from "./MVForm.vue";
-import SwitchForm from "./SwitchForm.vue";
-import BCSwitchForm from "./BCSwitchForm.vue";
-import EndSwitchForm from "./EndSwitchForm.vue";
-import { confirm } from "@src/utils/dialog";
+import { toTypedSchema } from '@vee-validate/zod'
+import { useForm } from 'vee-validate'
+import { z } from 'zod'
+import { useNotyf } from '@src/composable/useNotyf'
+import CodecForm from './Codec/CodecForm.vue'
+import UdxForm from './Udx/UdxForm.vue'
+import MVForm_V1 from './MVForm_V1/MVForm_V1.vue'
+import MVForm from './MVForm/MVForm.vue'
+import SwitchForm from './Switch/SwitchForm.vue'
+import BCSwitchForm from './BCSwitch/BCSwitchForm.vue'
+import EndSwitchForm from './EndSwitch/EndSwitchForm.vue'
+import RecorderForm from './Recorder/RecorderForm.vue'
+import MediaGateForm from "./MediaGate/MediaGateForm.vue"
+import { confirm } from '@src/utils/dialog'
 import { useDevices } from '@src/stores/device'
-import { useTemplate } from "@src/stores/template";
+import { useTemplate } from '@src/stores/template'
 import downloadJsonFile from '@src/utils/download-json'
-import { useClustNode } from "@src/stores/node";
-import { useUserSession } from "@src/stores/userSession";
-import dayjs from "dayjs";
+import { useClustNode } from '@src/stores/node'
+import { useUserSession } from '@src/stores/userSession'
+import dayjs from 'dayjs'
 
-const tmplStore = useTemplate();
+const tmplStore = useTemplate()
 const deviceStore = useDevices()
-const nodeStore = useClustNode();
-const usStore = useUserSession();
+const nodeStore = useClustNode()
+const usStore = useUserSession()
 
-const notyf = useNotyf();
-const opened = ref(false);
+const notyf = useNotyf()
+const opened = ref(false)
 
-const deviceName = ref("");
+const deviceName = ref('')
 const tmpl = ref<TemplateData | null>(null)
 const node = ref<ClustNode | null>(null)
 const device = ref<ClustDevice | null>(null)
@@ -38,88 +41,127 @@ const nodes = computed(() => nodeStore.nodes)
 
 function onTmplSelect(field?: any, val?: any) {
   field?.setValue(val)
-  tmpl.value = tmpls.value.find(t => t.id === val) || null
+  tmpl.value = tmpls.value.find((t) => t.id === val) || null
 }
 
 function onNodeSelect(field?: any, val?: any) {
-  field?.setValue(val);
-  node.value = nodes.value.find(n => n.id === val) || null
+  field?.setValue(val)
+  node.value = nodes.value.find((n) => n.id === val) || null
 }
 
-useListener(Signal.OpenResourceConfig, (p?: { tmpl: TemplateData, node: ClustNode, device: DeviceDetail, callbacks: any }) => {
-  opened.value = true;
-  callbacks = p?.callbacks || {}
-  inited.value = (!p?.tmpl || !p?.node) && !p?.device
-  if (p?.device) {
-    device.value = p.device;
-    deviceName.value = p.device?.name || ""
-    tmpl.value = tmpls.value.find(t => t.id === p.device.tmplID) || null
-    node.value = nodes.value.find(n => n.id === p.device.node) || null
-  } else {
-    tmpl.value = p?.tmpl || null;
-    node.value = p?.node || null;
-    deviceName.value = ""
-    device.value = null
-  }
-  nextTick(() => {
-    setValues({
-      deviceName: deviceName.value,
-      tmpl: tmpl.value?.id || null,
-      node: node.value?.id || null
-    })
-    if (p?.device?.config) {
-      const val = JSON.parse(p.device.config)
-      compRef.value?.setValue(val)
+useListener(
+  Signal.OpenResourceConfig,
+  (p?: { tmpl: TemplateData; node: ClustNode; device: DeviceDetail; callbacks: any }) => {
+    opened.value = true
+    callbacks = p?.callbacks || {}
+    inited.value = (!p?.tmpl || !p?.node) && !p?.device
+    if (p?.device) {
+      device.value = p.device
+      deviceName.value = p.device?.name || ''
+      tmpl.value = tmpls.value.find((t) => t.id === p.device.tmplID) || null
+      node.value = nodes.value.find((n) => n.id === p.device.node) || null
+    } else {
+      tmpl.value = p?.tmpl || null
+      node.value = p?.node || null
+      deviceName.value = ''
+      device.value = null
     }
-  })
-});
+    if (tmpl.value?.id) {
+      tmplStore.$getTmplById(tmpl.value.id).then(res => {
+        if (res) {
+          tmpl.value = res
+        }
+      })
+    }
+    if (node.value) {
+      nodeStore.$getNodeNics(node.value.id)
+    }
+    nextTick(() => {
+      setValues({
+        deviceName: deviceName.value,
+        tmpl: tmpl.value?.id || null,
+        node: node.value?.id || null,
+      })
+      if (p?.device?.config) {
+        const val = JSON.parse(p.device.config)
+        compRef.value?.setValue(val)
+      }
+    })
+  }
+)
 
 const validationSchema = computed(() => {
   const rules: any = {
-    deviceName: z.string({
-      required_error: "请输入设备名称",
-    }).refine(val => /^[A-Za-z0-9]([-A-Za-z0-9]*[A-Za-z0-9])?(\.[A-Za-z0-9]([-A-Za-z0-9]*[A-Za-z0-9])?)*$/.test(val), "请输入合法的设备名称")
-    .refine(val => val.length <= 53, "设备名称不能大于53个字符"),
-  };
+    deviceName: z
+      .string({
+        required_error: '请输入设备名称',
+      })
+      .refine(
+        (val) =>
+          /^[A-Za-z0-9]([-A-Za-z0-9]*[A-Za-z0-9])?(\.[A-Za-z0-9]([-A-Za-z0-9]*[A-Za-z0-9])?)*$/.test(
+            val
+          ),
+        '请输入合法的设备名称'
+      )
+      .refine((val) => val.length <= 53, '设备名称不能大于53个字符'),
+  }
   if (!inited.value) {
-    rules.tmpl = z.string({
-      required_error: "请选择应用",
-    }).nullable().refine(v => v !== null, "请选择应用");
-    rules.node = z.string({
-      required_error: "请选择容器",
-    }).nullable().refine(v => v !== null, "请选择容器");
+    rules.tmpl = z
+      .string({
+        required_error: '请选择应用',
+      })
+      .nullable()
+      .refine((v) => v !== null, '请选择应用')
+    rules.node = z
+      .string({
+        required_error: '请选择容器',
+      })
+      .nullable()
+      .refine((v) => v !== null, '请选择容器')
   }
   return toTypedSchema(z.object(rules))
 })
-const { handleSubmit, setValues } = useForm({ validationSchema });
+const { handleSubmit, setValues } = useForm({ validationSchema })
 
 const dgi = computed(() => {
-  const isCreated = device.value != null;
+  const isCreated = device.value != null
   return {
     created: isCreated,
-    confirmTitle: isCreated ? "更新设备配置" : "部署设备",
-    confirmContent: isCreated ? `确定要更新设备 ${device.value?.name} 的配置吗？` : `确定要将 ${deviceName.value} 设备部署到 ${node.value?.id} (${node.value?.ip}) 吗？`,
-    confirmMsg: isCreated ? "更新设备配置成功" : "部署设备成功",
-    title: `${isCreated ? "更新设备配置" : "启动设备"}${tmpl.value ? ` - ${tmpl.value.name}` : ''}`,
-    submitText: isCreated ? "更新" : "启动",
+    confirmTitle: isCreated ? '更新设备配置' : '部署设备',
+    confirmContent: isCreated
+      ? `确定要更新设备 ${device.value?.name} 的配置吗？`
+      : `确定要将 ${deviceName.value} 设备部署到 ${node.value?.id} (${node.value?.ip}) 吗？`,
+    confirmMsg: isCreated ? '更新设备配置成功' : '部署设备成功',
+    title: `${isCreated ? '更新设备配置' : '启动设备'}${
+      tmpl.value ? ` - ${tmpl.value.name}` : ''
+    }`,
+    submitText: isCreated ? '更新' : '启动',
     nodeName: isCreated ? device.value?.node : node.value?.id,
-  };
+  }
 })
 
 function checkRequestParams(params: any) {
   if (tmpl.value?.typeCategory === 'multiv') {
     const output = params?.output?.out_params || []
-    if (output.some(opt => !opt.out_mv_template)) {
-      notyf.error("多画面 输出参数 - 输出布局 - 布局模板 不能为空");
-      return false;
+    if (output.some((opt: any) => !opt.out_mv_template)) {
+      notyf.error('多画面 输出参数 - 输出布局 - 布局模板 不能为空')
+      return false
     }
   }
-  return true;
+  const nicCount = tmpl.value?.requirement.nicCount || 0
+  if (nicCount > 0) {
+    const nics = params?.nic_list || []
+    if (nics.length !== nicCount) {
+      notyf.error(`${tmpl.value?.name} 需要配置 ${nicCount} 个网卡`)
+      return false
+    }
+  }
+  return true
 }
 
 const loading = ref(false)
 const addInstance = handleSubmit(async () => {
-  if (loading.value) return;
+  if (loading.value) return
   confirm({
     title: dgi.value.confirmTitle,
     content: dgi.value.confirmContent,
@@ -128,33 +170,37 @@ const addInstance = handleSubmit(async () => {
       hide()
       const params = compRef.value?.getValue()
       if (!params || !checkRequestParams(params)) return
-      loading.value = true;
+      loading.value = true
       let pro: Promise<any>
       if (dgi.value.created) {
         pro = deviceStore.$updateConfig(deviceName.value, device.value!.id, params)
       } else {
-        pro = deviceStore.$deploy(deviceName.value, tmpl.value!.id, node.value!.id, params)
+        pro = deviceStore.$deploy(
+          deviceName.value,
+          tmpl.value!.id,
+          node.value!.id,
+          params
+        )
       }
       const res = await pro
-      loading.value = false;
+      loading.value = false
       if (res.result === 'error') {
-        notyf.error(res.message);
+        notyf.error(res.message)
       } else {
-        opened.value = false;
-        notyf.success(dgi.value.confirmMsg);
+        opened.value = false
+        notyf.success(dgi.value.confirmMsg)
         callbacks.success?.()
         if (usStore.settings.auto_save_container_config) {
           let config = null
           try {
             config = JSON.parse(res.data.config)
-          } catch (err) {
-          }
+          } catch (err) {}
           saveSetting(config)
         }
       }
     },
-  });
-});
+  })
+})
 
 function importSetting() {
   fileInput.value?.click()
@@ -170,19 +216,19 @@ function onFileImported(e: Event) {
         try {
           const val = JSON.parse(res as string)
           compRef.value?.setValue(val)
-          notyf.success("导入配置成功");
+          notyf.success('导入配置成功')
         } catch (err) {
           console.log(err)
-          notyf.error("解析文件格式错误");
+          notyf.error('解析文件格式错误')
         }
         return
       } else {
-        notyf.error("导入配置失败");
+        notyf.error('导入配置失败')
       }
     }
     reader.readAsText(file)
   } else {
-    notyf.error("导入配置失败");
+    notyf.error('导入配置失败')
   }
 }
 
@@ -191,18 +237,22 @@ function exportSetting() {
     tmpl: tmpl.value,
     callbacks: {
       success: (fileName: string) => {
-        saveSetting("", fileName)
-      }
-    }
+        saveSetting('', fileName)
+      },
+    },
   })
 }
 
 function saveSetting(config?: string, name?: string) {
   const val = config || compRef.value?.getValue()
-  const fileName = name || `${tmpl.value?.name}_${deviceName.value || '未命名'}_${dayjs().format('YYYYMMDDHHmmss')}`
+  const fileName =
+    name ||
+    `${tmpl.value?.name}_${deviceName.value || '未命名'}_${dayjs().format(
+      'YYYYMMDDHHmmss'
+    )}`
   if (val) {
     downloadJsonFile(val, `${fileName}.json`)
-    notyf.success("保存成功");
+    notyf.success('保存成功')
   }
 }
 
@@ -212,38 +262,53 @@ const tmplConfig = computed(() => {
     case 'codec':
       return {
         name: '编解码器',
-        component: CodecForm
-      };
+        component: CodecForm,
+      }
     case 'udx':
       return {
         name: '上下变换',
-        component: UdxForm
-      };
+        component: UdxForm,
+      }
     case 'multiv':
       return {
         name: '多画面',
-        component: MVForm
-      };
+        component: MVForm_V1,
+      }
     case 'swt':
       return {
         name: '切换台',
-        component: SwitchForm
-      };
+        component: SwitchForm,
+      }
     case 'bcswt':
       return {
         name: '播出切换台',
-        component: BCSwitchForm
-      };
+        component: BCSwitchForm,
+      }
     case 'endswt':
       return {
         name: '末级切换',
-        component: EndSwitchForm
-      };
+        component: EndSwitchForm,
+      }
+    case 'recorder':
+      return {
+        name: '录放机',
+        component: RecorderForm,
+      }
+    case 'media_gateway':
+      return {
+        name: '全媒体网关',
+        component: MediaGateForm
+      }
+    case 'mv':
+      return {
+        name: '多画面',
+        component: MVForm
+      }
     default:
       return {
         name: '编解码器',
-        component: CodecForm
-      };
+        component: CodecForm,
+      }
   }
 })
 </script>
@@ -265,12 +330,7 @@ const tmplConfig = computed(() => {
   >
     <template #content>
       <div class="modal-form">
-        <VField
-          id="deviceName"
-          v-slot="{ field }"
-          label="设备名称 *"
-          class="device-name"
-        >
+        <VField id="deviceName" v-slot="{ field }" label="设备名称 *" class="device-name">
           <VControl fullwidth>
             <VInput
               v-model="deviceName"
@@ -279,10 +339,7 @@ const tmplConfig = computed(() => {
               :readonly="dgi.created"
             />
             <Transition name="fade-slow">
-              <p
-                v-if="field?.errorMessage"
-                class="help is-danger mt-3"
-              >
+              <p v-if="field?.errorMessage" class="help is-danger mt-3">
                 {{ field.errorMessage }}
               </p>
             </Transition>
@@ -290,11 +347,7 @@ const tmplConfig = computed(() => {
         </VField>
         <div v-if="inited" class="columns">
           <div class="column is-6 mt-4">
-            <VField
-              id="tmpl"
-              v-slot="{ field }"
-              label="应用类型 *"
-            >
+            <VField id="tmpl" v-slot="{ field }" label="应用类型 *">
               <VControl fullwidth>
                 <Multiselect
                   placeholder="选择应用"
@@ -317,21 +370,14 @@ const tmplConfig = computed(() => {
                     </span>
                   </template>
                 </Multiselect>
-                <p
-                  v-if="field?.errorMessage"
-                  class="help is-danger"
-                >
+                <p v-if="field?.errorMessage" class="help is-danger">
                   {{ field.errorMessage }}
                 </p>
               </VControl>
             </VField>
           </div>
           <div class="column is-6 mt-4">
-            <VField
-              id="node"
-              v-slot="{ field }"
-              label="部署节点 *"
-            >
+            <VField id="node" v-slot="{ field }" label="部署节点 *">
               <VControl fullwidth>
                 <Multiselect
                   placeholder="选择节点"
@@ -354,41 +400,42 @@ const tmplConfig = computed(() => {
                     </span>
                   </template>
                 </Multiselect>
-                <p
-                  v-if="field?.errorMessage"
-                  class="help is-danger"
-                >
+                <p v-if="field?.errorMessage" class="help is-danger">
                   {{ field.errorMessage }}
                 </p>
               </VControl>
             </VField>
           </div>
         </div>
-        <tmplConfig.component v-if="tmpl" ref="compRef" :name="deviceName" :requiredment="tmpl?.requirement" />
+        <tmplConfig.component
+          v-if="tmpl"
+          ref="compRef"
+          :name="deviceName"
+          :requiredment="tmpl?.requirement"
+          :nics="node?.nics"
+        />
         <input
           ref="fileInput"
           type="file"
           accept=".json"
-          style="width: 0; height: 0; opacity: 0; position: absolute; top: -100px; left: -100px; z-index: -1;"
+          style="
+            width: 0;
+            height: 0;
+            opacity: 0;
+            position: absolute;
+            top: -100px;
+            left: -100px;
+            z-index: -1;
+          "
           @change="onFileImported"
-        >
+        />
       </div>
     </template>
     <template #action>
-      <VButton
-        class="btn-setting-import"
-        color="primary"
-        raised
-        @click="importSetting"
-      >
+      <VButton class="btn-setting-import" color="primary" raised @click="importSetting">
         导入配置
       </VButton>
-      <VButton
-        class="btn-setting-save"
-        color="primary"
-        raised
-        @click="exportSetting"
-      >
+      <VButton class="btn-setting-save" color="primary" raised @click="exportSetting">
         保存配置
       </VButton>
       <VButton
@@ -419,6 +466,11 @@ const tmplConfig = computed(() => {
 }
 
 .v-modal.resource-config-modal {
+
+  &.modal.is-big .modal-content {
+    max-width: 960px;
+  }
+
   .modal-card-body {
     min-height: 400px;
   }

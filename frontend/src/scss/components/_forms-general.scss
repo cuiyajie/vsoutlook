@@ -95,7 +95,6 @@ label[for] {
 }
 
 .v-input-number {
-
   &__wrapper {
     display: block;
     font-size: 0;
@@ -1060,6 +1059,21 @@ select {
 
       label {
         color: var(--dark-dark-text);
+      }
+    }
+  }
+}
+
+.field.has-addons {
+  &.is-input-number {
+    .control {
+      .input:not([disabled]):hover,
+      .input:not([disabled]).is-hovered,
+      .input:not([disabled]):active,
+      .input:not([disabled]).is-active,
+      .input:not([disabled]):focus,
+      .input:not([disabled]).is-focused {
+        z-index: 0;
       }
     }
   }

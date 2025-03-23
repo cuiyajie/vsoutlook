@@ -57,8 +57,8 @@ importers:
         specifier: ^1.2.0
         version: 1.2.0(@vue-flow/core@1.23.0(vue@3.3.4))
       '@vueform/multiselect':
-        specifier: 2.6.2
-        version: 2.6.2
+        specifier: 2.6.11
+        version: 2.6.11
       '@vueform/slider':
         specifier: 2.1.7
         version: 2.1.7
@@ -2145,8 +2145,8 @@ packages:
   '@vue/typescript@1.8.8':
     resolution: {integrity: sha512-jUnmMB6egu5wl342eaUH236v8tdcEPXXkPgj+eI/F6JwW/lb+yAU6U07ZbQ3MVabZRlupIlPESB7ajgAGixhow==}
 
-  '@vueform/multiselect@2.6.2':
-    resolution: {integrity: sha512-4BFvXyzyi0Pqi/lsYdGwONsQy+ypiVzuQbmoDUlttTxuoujFtf9AdeHi1ZhfIorXG9BiysK1HcQSfYB6USgwfQ==}
+  '@vueform/multiselect@2.6.11':
+    resolution: {integrity: sha512-iG4TGfqE3baftbSGF0PhoS+xZOCnV0ChkDo9rwhJ/Qi2YlCdb6tyQCjvyug3jnzncga8+d85kx0WvG7rDYFqiA==}
 
   '@vueform/slider@2.1.7':
     resolution: {integrity: sha512-wKyiVVN03RKTV2vp7r50PDq5hcM4kVVzUO2ex+BAAtrn5oX08iU5NzWTWCuH7dCkiLMDRUVravDu3B0NwaxZMQ==}
@@ -9118,7 +9118,7 @@ snapshots:
       '@types/node': 20.4.7
       chalk: 4.1.2
       cosmiconfig: 8.2.0
-      cosmiconfig-typescript-loader: 4.4.0(@types/node@20.4.7)(cosmiconfig@8.2.0)(ts-node@10.9.1(@types/node@20.4.5)(typescript@5.2.2))(typescript@5.2.2)
+      cosmiconfig-typescript-loader: 4.4.0(@types/node@20.4.7)(cosmiconfig@8.2.0)(ts-node@10.9.1(@types/node@20.4.7)(typescript@5.2.2))(typescript@5.2.2)
       lodash.isplainobject: 4.0.6
       lodash.merge: 4.6.2
       lodash.uniq: 4.5.0
@@ -10123,7 +10123,7 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  '@vueform/multiselect@2.6.2': {}
+  '@vueform/multiselect@2.6.11': {}
 
   '@vueform/slider@2.1.7': {}
 
@@ -10970,7 +10970,7 @@ snapshots:
       object-assign: 4.1.1
       vary: 1.1.2
 
-  cosmiconfig-typescript-loader@4.4.0(@types/node@20.4.7)(cosmiconfig@8.2.0)(ts-node@10.9.1(@types/node@20.4.5)(typescript@5.2.2))(typescript@5.2.2):
+  cosmiconfig-typescript-loader@4.4.0(@types/node@20.4.7)(cosmiconfig@8.2.0)(ts-node@10.9.1(@types/node@20.4.7)(typescript@5.2.2))(typescript@5.2.2):
     dependencies:
       '@types/node': 20.4.7
       cosmiconfig: 8.2.0

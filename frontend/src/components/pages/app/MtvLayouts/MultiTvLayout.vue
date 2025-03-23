@@ -1,19 +1,36 @@
 <script lang="ts" setup>
-import { useNotyf } from "@src/composable/useNotyf";
-import { confirm } from "@src/utils/dialog";
+import { useNotyf } from '@src/composable/useNotyf'
+import { confirm } from '@src/utils/dialog'
 import { useElementBounding, useElementSize } from '@vueuse/core'
-import { DefaultLayouts, draftTitle, draftVol, draftTimer, ds2db, db2ds, resizeTitle, resizeVol, draftText, defLayoutItem, draftWin, resizeWinBorder } from './utils';
-import { useLayout } from "@src/stores/layout";
-import { LayoutSize } from "@src/utils/enums";
-import IsEqual from "lodash-es/isEqual";
-import { type WatchStopHandle } from "vue"
+import {
+  DefaultLayouts,
+  draftTitle,
+  draftVol,
+  draftTimer,
+  ds2db,
+  db2ds,
+  resizeTitle,
+  resizeVol,
+  draftText,
+  defLayoutItem,
+  draftWin,
+  resizeWinBorder,
+} from './utils'
+import { useLayout } from '@src/stores/layout'
+import { LayoutSize } from '@src/utils/enums'
+import IsEqual from 'lodash-es/isEqual'
+import { type WatchStopHandle } from 'vue'
 
-const notyf = useNotyf();
-const layoutSamples = ref<[number, number][][]>(DefaultLayouts);
-const currLayoutSample = ref<[number, number][] | null>(null);
-const cellCount = computed(() => currLayoutSample.value ? currLayoutSample.value.reduce((acc, [row, column]) => acc + row * column, 0) : 0)
+const notyf = useNotyf()
+const layoutSamples = ref<[number, number][][]>(DefaultLayouts)
+const currLayoutSample = ref<[number, number][] | null>(null)
+const cellCount = computed(() =>
+  currLayoutSample.value
+    ? currLayoutSample.value.reduce((acc, [row, column]) => acc + row * column, 0)
+    : 0
+)
 
-const layoutStore = useLayout();
+const layoutStore = useLayout()
 const layouts = computed(() => layoutStore.layouts)
 const router = useRouter()
 const route = useRoute()
@@ -21,19 +38,22 @@ const currLayout = ref<Layout | null>(null)
 const originDataset = ref<LayoutDataItem[]>([])
 layoutStore.$fetchList().then(() => {
   if (route.query.layout) {
-    currLayout.value = layouts.value.find(l => l.id === route.query.layout) || null
+    currLayout.value = layouts.value.find((l) => l.id === route.query.layout) || null
     parseLayoutContent()
   } else if (layouts.value.length > 0) {
     selectLayout(layouts.value[layouts.value.length - 1])
   }
 })
 
-watch(() => route.query.layout, () => {
-  if (route.query.layout) {
-    currLayout.value = layouts.value.find(l => l.id === route.query.layout) || null
-    parseLayoutContent()
+watch(
+  () => route.query.layout,
+  () => {
+    if (route.query.layout) {
+      currLayout.value = layouts.value.find((l) => l.id === route.query.layout) || null
+      parseLayoutContent()
+    }
   }
-})
+)
 
 const base = computed(() => {
   if (currLayout.value?.size === LayoutSize.FK) {
@@ -51,36 +71,40 @@ const bounding = computed(() => {
   const ratio = containerW.value / containerH.value
   if (ratio > 16 / 9) {
     return {
-      w: containerH.value * 16 / 9,
-      h: containerH.value
+      w: (containerH.value * 16) / 9,
+      h: containerH.value,
     }
   } else {
     return {
       w: containerW.value,
-      h: containerW.value * 9 / 16
+      h: (containerW.value * 9) / 16,
     }
   }
 })
 const changed = ref(false)
-const dataset = ref<LayoutDataItem[]>([]);
+const dataset = ref<LayoutDataItem[]>([])
 
 let unwatch: WatchStopHandle | null = null
 
 const beforeUnloadHandler = (event: BeforeUnloadEvent) => {
   // Recommended
-  event.preventDefault();
+  event.preventDefault()
 
   // Included for legacy support, e.g. Chrome/Edge < 119
-  event.returnValue = true;
-};
+  event.returnValue = true
+}
 
-watch(changed, () => {
-  if (changed.value) {
-    window.addEventListener('beforeunload', beforeUnloadHandler)
-  } else {
-    window.removeEventListener('beforeunload', beforeUnloadHandler)
-  }
-}, { immediate: true })
+watch(
+  changed,
+  () => {
+    if (changed.value) {
+      window.addEventListener('beforeunload', beforeUnloadHandler)
+    } else {
+      window.removeEventListener('beforeunload', beforeUnloadHandler)
+    }
+  },
+  { immediate: true }
+)
 
 const routeGuard = () => {
   let answer = true
@@ -95,15 +119,21 @@ onBeforeRouteLeave(routeGuard)
 function parseLayoutContent() {
   if (currLayout.value) {
     currLayoutSample.value = null
-    const str = JSON.stringify(db2ds(currLayout.value.content || [], base.value, bounding.value))
+    const str = JSON.stringify(
+      db2ds(currLayout.value.content || [], base.value, bounding.value)
+    )
     dataset.value = JSON.parse(str)
     originDataset.value = JSON.parse(str)
     unwatch?.()
     changed.value = false
     activeCell.value = null
-    unwatch = watch(dataset, () => {
-      changed.value = !IsEqual(dataset.value, originDataset.value)
-    }, { deep: true })
+    unwatch = watch(
+      dataset,
+      () => {
+        changed.value = !IsEqual(dataset.value, originDataset.value)
+      },
+      { deep: true }
+    )
   }
 }
 
@@ -116,29 +146,40 @@ function selectLayout(ly: Layout) {
 }
 
 function initLayout() {
-  dataset.value = Array.from({ length: cellCount.value }, () => ({
-    win: draftWin(0, 0, 0, 0),
-    title: draftTitle(base.value.w, base.value.h, bounding.value),
-    vol: draftVol(base.value.h, bounding.value),
-    timer: null,
-    text: null,
-    vector: null,
-    oscillogram: null,
-    alarm: null,
-    meta: null,
-  } as LayoutDataItem))
+  dataset.value = Array.from(
+    { length: cellCount.value },
+    () =>
+      ({
+        win: draftWin(0, 0, 0, 0),
+        title: draftTitle(base.value.w, base.value.h, bounding.value),
+        vol: draftVol(base.value.h, bounding.value),
+        timer: null,
+        text: null,
+        vector: null,
+        oscillogram: null,
+        alarm: null,
+        meta: null,
+      }) as LayoutDataItem
+  )
 }
 
 function redrawLayout() {
   nextTick(() => {
-    const guideTable = layoutsRef.value?.querySelector('[data-role="guide-table"]') as HTMLElement
+    const guideTable = layoutsRef.value?.querySelector(
+      '[data-role="guide-table"]'
+    ) as HTMLElement
     if (!guideTable) return
     const origin = guideTable.getBoundingClientRect()
     const cells = guideTable.querySelectorAll('[data-role="guide-cell"]')
     const { w, h } = bounding.value
     cells.forEach((cell, index) => {
       const { x, y, width, height } = cell.getBoundingClientRect()
-      dataset.value[index].win = draftWin((x - origin.x) / w, (y - origin.y) / h, width / w, height / h)
+      dataset.value[index].win = draftWin(
+        (x - origin.x) / w,
+        (y - origin.y) / h,
+        width / w,
+        height / h
+      )
       dataset.value[index].title = draftTitle(width, height, bounding.value)
       dataset.value[index].vol = draftVol(height, bounding.value)
     })
@@ -166,7 +207,7 @@ function resizeTimerComponent(v: LayoutDataItem) {
           x: pos.x * w,
           y: pos.y * h,
           w: (timerEl?.clientWidth || 0) + 2,
-          h: (timerEl?.clientHeight || 0) + 2
+          h: (timerEl?.clientHeight || 0) + 2,
         }
       }
     })
@@ -175,7 +216,7 @@ function resizeTimerComponent(v: LayoutDataItem) {
 
 const activeCell = ref<IndexedLayoutRect | null>(null)
 const ads = computed<LayoutDataItem | null>({
-  get: () => activeCell.value ? dataset.value[activeCell.value.index] : null,
+  get: () => (activeCell.value ? dataset.value[activeCell.value.index] : null),
   set: (v) => {
     if (!activeCell.value || !v) return
     const { w, h } = bounding.value
@@ -188,7 +229,7 @@ const ads = computed<LayoutDataItem | null>({
         x: v.text.x * w,
         y: v.text.y * h,
         w: v.text.w * w,
-        h: v.text.h * h
+        h: v.text.h * h,
       }
       dataset.value[activeCell.value.index] = v
     } else {
@@ -197,12 +238,12 @@ const ads = computed<LayoutDataItem | null>({
         x: v.win.x * w,
         y: v.win.y * h,
         w: v.win.w * w,
-        h: v.win.h * h
+        h: v.win.h * h,
       }
       resizeComponents(v.win, dataset.value[activeCell.value.index].win)
       dataset.value[activeCell.value.index] = v
     }
-  }
+  },
 })
 
 function resizeComponents(nv: LayoutDimension, ov: LayoutDimension) {
@@ -214,7 +255,7 @@ function resizeComponents(nv: LayoutDimension, ov: LayoutDimension) {
       Object.assign(dataset.value[activeCell.value.index], {
         win: resizeWinBorder(_ads.win, rw),
         title: _ads.title ? resizeTitle(_ads.title, rw, rh) : null,
-        vol: _ads.vol ? resizeVol(_ads.vol, rw, rh) : null
+        vol: _ads.vol ? resizeVol(_ads.vol, rw, rh) : null,
       })
     }
   }
@@ -243,7 +284,7 @@ function handleActiveCell(x: number, y: number, pw: number, ph: number) {
     x,
     y,
     w: pw || activeCell.value.w,
-    h: ph || activeCell.value.h
+    h: ph || activeCell.value.h,
   }
   const { w, h } = bounding.value
   const ac = activeCell.value
@@ -251,19 +292,24 @@ function handleActiveCell(x: number, y: number, pw: number, ph: number) {
     x: ac.x / w,
     y: ac.y / h,
     w: ac.w / w,
-    h: ac.h / h
+    h: ac.h / h,
   }
   const _ads = dataset.value[activeCell.value.index]
   if (_ads.timer) {
-    Object.assign(_ads.timer!, activeCell.value.isSecondary ? {
-      timePosition: {
-        x: nv.x,
-        y: nv.y
-      }
-    } : {
-      x: nv.x,
-      y: nv.y
-    })
+    Object.assign(
+      _ads.timer!,
+      activeCell.value.isSecondary
+        ? {
+            timePosition: {
+              x: nv.x,
+              y: nv.y,
+            },
+          }
+        : {
+            x: nv.x,
+            y: nv.y,
+          }
+    )
   } else if (_ads.text) {
     Object.assign(_ads.text, nv)
   } else {
@@ -274,8 +320,12 @@ function handleActiveCell(x: number, y: number, pw: number, ph: number) {
 function selectCell(di: LayoutDataItem, didx: number, isSecondary = false) {
   const { w, h } = bounding.value
   if (di.timer) {
-    const timerEl = layoutsRef.value?.querySelector<HTMLElement>(`[data-cell-index="${didx}"].${isSecondary ? 'is-secondary' : 'is-base'}`)
-    const pos = isSecondary ? { x: di.timer.timePosition.x, y: di.timer.timePosition.y } : { x: di.timer.x, y: di.timer.y }
+    const timerEl = layoutsRef.value?.querySelector<HTMLElement>(
+      `[data-cell-index="${didx}"].${isSecondary ? 'is-secondary' : 'is-base'}`
+    )
+    const pos = isSecondary
+      ? { x: di.timer.timePosition.x, y: di.timer.timePosition.y }
+      : { x: di.timer.x, y: di.timer.y }
     if (timerEl) {
       activeCell.value = {
         index: didx,
@@ -283,7 +333,7 @@ function selectCell(di: LayoutDataItem, didx: number, isSecondary = false) {
         x: pos.x * w,
         y: pos.y * h,
         w: timerEl.clientWidth + 2,
-        h: timerEl.clientHeight + 2
+        h: timerEl.clientHeight + 2,
       }
     } else {
       activeCell.value = {
@@ -292,15 +342,20 @@ function selectCell(di: LayoutDataItem, didx: number, isSecondary = false) {
         x: pos.x * w,
         y: pos.y * h,
         w: 10,
-        h: 10
+        h: 10,
       }
       requestAnimationFrame(() => {
         nextTick(() => {
           if (!activeCell.value) return
-          const dateEl = layoutsRef.value?.querySelector<HTMLElement>(`[data-cell-index="${didx}"].is-base`)
-          const timerEl = layoutsRef.value?.querySelector<HTMLElement>(`[data-cell-index="${didx}"].is-secondary`)
+          const dateEl = layoutsRef.value?.querySelector<HTMLElement>(
+            `[data-cell-index="${didx}"].is-base`
+          )
+          const timerEl = layoutsRef.value?.querySelector<HTMLElement>(
+            `[data-cell-index="${didx}"].is-secondary`
+          )
           const gap = 12
-          const containerW = (dateEl?.clientWidth || 0) + gap + (timerEl?.clientWidth || 0)
+          const containerW =
+            (dateEl?.clientWidth || 0) + gap + (timerEl?.clientWidth || 0)
           const baseX = bounding.value.w / 2 - (containerW + 2) / 2
           const baseY = activeCell.value.y
           const secondaryX = baseX + (dateEl?.clientWidth || 0) + gap
@@ -308,7 +363,7 @@ function selectCell(di: LayoutDataItem, didx: number, isSecondary = false) {
           if (isSecondary) {
             Object.assign(dataset.value[activeCell.value.index].timer!, {
               x: baseX / w,
-              y: baseY / h
+              y: baseY / h,
             })
             handleActiveCell(
               secondaryX,
@@ -326,8 +381,8 @@ function selectCell(di: LayoutDataItem, didx: number, isSecondary = false) {
             Object.assign(dataset.value[activeCell.value.index].timer!, {
               timePosition: {
                 x: secondaryX / w,
-                y: secondaryY / h
-              }
+                y: secondaryY / h,
+              },
             })
           }
         })
@@ -339,7 +394,7 @@ function selectCell(di: LayoutDataItem, didx: number, isSecondary = false) {
       x: di.text.x * w,
       y: di.text.y * h,
       w: di.text.w * w,
-      h: di.text.h * h
+      h: di.text.h * h,
     }
   } else {
     activeCell.value = {
@@ -347,7 +402,7 @@ function selectCell(di: LayoutDataItem, didx: number, isSecondary = false) {
       x: di.win.x * w,
       y: di.win.y * h,
       w: di.win.w * w,
-      h: di.win.h * h
+      h: di.win.h * h,
     }
   }
 }
@@ -366,8 +421,8 @@ function editCell(didx: number) {
     callbacks: {
       update: (v: LayoutDataItem) => {
         dataset.value[didx] = v
-      }
-    }
+      },
+    },
   })
 }
 
@@ -379,7 +434,7 @@ function editCell(didx: number) {
 //   activeCell.value = null
 // })
 
-function createWinCell(options: { timer?: boolean, text?: boolean } = {}) {
+function createWinCell(options: { timer?: boolean; text?: boolean } = {}) {
   const { w, h } = bounding.value
   const cell = defLayoutItem(0.25, 0.25, 0.5, 0.5)
   if (options.timer) {
@@ -415,7 +470,7 @@ function createWin() {
 
 function createTimerWin() {
   if (!preCreateWin()) return
-  if (dataset.value.filter(d => d.timer).length > 0) {
+  if (dataset.value.filter((d) => d.timer).length > 0) {
     notyf.error('只能添加一个时间窗口')
     return
   }
@@ -425,7 +480,7 @@ function createTimerWin() {
 
 function createTextWin() {
   if (!preCreateWin()) return
-  if (dataset.value.filter(d => d.text).length > 0) {
+  if (dataset.value.filter((d) => d.text).length > 0) {
     notyf.error('只能添加一个文字窗口')
     return
   }
@@ -443,26 +498,30 @@ function selectLayoutSample(ly: [number, number][]) {
 function confirmSelectLayout(ly: [number, number][]) {
   if (currLayoutSample.value || dataset.value.length > 0) {
     confirm({
-      title: "选择布局",
-      content: "确认选择该布局替换现有布局么？",
+      title: '选择布局',
+      content: '确认选择该布局替换现有布局么？',
       size: 'small',
       onConfirm: async (hide) => {
         hide()
         selectLayoutSample(ly)
       },
-    });
+    })
   } else {
     selectLayoutSample(ly)
   }
 }
 
-watch(currLayout, (newV, oldV) => {
-  if (!oldV && newV) {
-    setTimeout(() => {
-      updateBounding()
-    }, 200)
-  }
-}, { immediate: true })
+watch(
+  currLayout,
+  (newV, oldV) => {
+    if (!oldV && newV) {
+      setTimeout(() => {
+        updateBounding()
+      }, 200)
+    }
+  },
+  { immediate: true }
+)
 
 function createLayout() {
   bus.trigger(Signal.OpenNewLayout)
@@ -479,8 +538,8 @@ function editLayout(ly: Layout) {
 
 function deleteLayout(ly: Layout) {
   confirm({
-    title: "删除布局",
-    content: "确认删除？",
+    title: '删除布局',
+    content: '确认删除？',
     size: 'small',
     onConfirm: async (hide) => {
       const res = await layoutStore.$deleteLayout(ly.id)
@@ -491,12 +550,15 @@ function deleteLayout(ly: Layout) {
         notyf.error(res || '删除失败')
       }
     },
-  });
+  })
 }
 
 async function saveLayoutData() {
   if (!currLayout.value) return
-  const res = await layoutStore.$updateContent(currLayout.value.id, ds2db(dataset.value, base.value))
+  const res = await layoutStore.$updateContent(
+    currLayout.value.id,
+    ds2db(dataset.value, base.value)
+  )
   if (res) {
     notyf.success('保存布局成功')
     currLayout.value = res
@@ -508,8 +570,8 @@ async function saveLayoutData() {
 
 function publish(ly: Layout) {
   confirm({
-    title: "推送布局",
-    content: "确认推送？推送后可在部署多画面应用时选择该布局",
+    title: '推送布局',
+    content: '确认推送？推送后可在部署多画面应用时选择该布局',
     size: 'small',
     onConfirm: async (hide) => {
       const res = await layoutStore.$publish(ly)
@@ -520,7 +582,7 @@ function publish(ly: Layout) {
         notyf.error(res || '推送失败')
       }
     },
-  });
+  })
 }
 </script>
 <template>
@@ -617,12 +679,15 @@ function publish(ly: Layout) {
         <VCard radius="rounded" class="layouts-middle">
           <h3 class="title is-5 mb-0 layouts-header">
             <span>
-              {{ currLayout ? currLayout.name : "布局" }}
+              {{ currLayout ? currLayout.name : '布局' }}
               <span
                 v-if="currLayout"
                 class="ml-2"
                 style="font-size: 1rem; font-weight: 500"
-              >{{ currLayout.size === LayoutSize.HD ? "HD" : "4K" }}_{{ currLayout.id }}</span>
+                >{{ currLayout.size === LayoutSize.HD ? 'HD' : '4K' }}_{{
+                  currLayout.id
+                }}</span
+              >
             </span>
             <div class="buttons">
               <VButtons>
@@ -667,7 +732,7 @@ function publish(ly: Layout) {
               class="is-empty"
             >
               <h3 class="dark-inverted">
-                {{ !currLayout ? "请选择一个布局" : "请选择布局类型添加到该区域" }}
+                {{ !currLayout ? '请选择一个布局' : '请选择布局类型添加到该区域' }}
               </h3>
             </div>
             <div
@@ -711,7 +776,13 @@ function publish(ly: Layout) {
                     data-role="timer-cell"
                     :data-cell-index="cidx"
                     :style="{ left: `${ds.timer.x * 100}%`, top: `${ds.timer.y * 100}%` }"
-                    :class="{ actived: activeCell && activeCell.index === cidx && !activeCell.isSecondary, 'is-hidden': !ds.timer.showDate }"
+                    :class="{
+                      actived:
+                        activeCell &&
+                        activeCell.index === cidx &&
+                        !activeCell.isSecondary,
+                      'is-hidden': !ds.timer.showDate,
+                    }"
                     @click.prevent="selectCell(ds, cidx)"
                     @keyup.enter.prevent="selectCell(ds, cidx)"
                   >
@@ -730,8 +801,14 @@ function publish(ly: Layout) {
                     class="timer-cell is-secondary"
                     data-role="timer-cell"
                     :data-cell-index="cidx"
-                    :style="{ left: `${ds.timer.timePosition.x * 100}%`, top: `${ds.timer.timePosition.y * 100}%` }"
-                    :class="{ actived: activeCell && activeCell.index === cidx && activeCell.isSecondary }"
+                    :style="{
+                      left: `${ds.timer.timePosition.x * 100}%`,
+                      top: `${ds.timer.timePosition.y * 100}%`,
+                    }"
+                    :class="{
+                      actived:
+                        activeCell && activeCell.index === cidx && activeCell.isSecondary,
+                    }"
                     @click.prevent="selectCell(ds, cidx, true)"
                     @keyup.enter.prevent="selectCell(ds, cidx, true)"
                   >
@@ -798,7 +875,11 @@ function publish(ly: Layout) {
                   @click.prevent="selectCell(ds, cidx)"
                   @keyup.enter.prevent="selectCell(ds, cidx)"
                 >
-                  <normal-display :no="cidx" :bound="{w: ds.win.w * bounding.w, h:ds.win.h * bounding.h}" :data="ds">
+                  <normal-display
+                    :no="cidx"
+                    :bound="{ w: ds.win.w * bounding.w, h: ds.win.h * bounding.h }"
+                    :data="ds"
+                  >
                     <VIconButton
                       color="white"
                       outlined
@@ -830,8 +911,8 @@ function publish(ly: Layout) {
                 :drag-handle="`.drag-handle`"
                 :max-width="bounding.w"
                 :max-height="bounding.h"
-                :min-width="ads?.timer ? 0 : (ads?.text ? 10 : 100)"
-                :min-height="ads?.timer ? 0 : (ads?.text ? 10 : 100)"
+                :min-width="ads?.timer ? 0 : ads?.text ? 10 : 100"
+                :min-height="ads?.timer ? 0 : ads?.text ? 10 : 100"
                 :w="activeCell.w"
                 :h="activeCell.h"
                 :x="activeCell.x"
@@ -883,7 +964,7 @@ function publish(ly: Layout) {
                   <normal-display
                     v-else-if="ads"
                     :no="activeCell.index"
-                    :bound="{w: ads.win.w * bounding.w, h:ads.win.h * bounding.h}"
+                    :bound="{ w: ads.win.w * bounding.w, h: ads.win.h * bounding.h }"
                     :data="ads"
                   >
                     <VIconButton
@@ -935,7 +1016,7 @@ function publish(ly: Layout) {
 <style lang="scss">
 @mixin shadow-border($border) {
   &:before {
-    content: "";
+    content: '';
     position: absolute;
     inset: 0;
     border: $border;
@@ -1047,7 +1128,7 @@ function publish(ly: Layout) {
       border: 0;
 
       &:before {
-        content: "";
+        content: '';
         position: absolute;
         top: 0;
         left: 0;

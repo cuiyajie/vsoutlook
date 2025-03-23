@@ -56,7 +56,7 @@ function edit(idx: number) {
             <th align="center">声道数量</th>
             <th align="center">量化 bit</th>
             <th align="center">采样率</th>
-            <th align="center">编码格式</th>
+            <th align="center">压缩格式</th>
             <th align="center">子类型</th>
             <th align="center">发包间隔</th>
             <th align="center">音频码率</th>
@@ -68,13 +68,13 @@ function edit(idx: number) {
               :key="adf.name"
             >
               <td>{{ adf.name }}</td>
-              <td>{{ adf.channels }}</td>
-              <td>{{ adf.quantBits }}</td>
-              <td>{{ adf.sampleRate }}</td>
-              <td>{{ adf.encodeFormat }}</td>
-              <td>{{ adf.childType }}</td>
-              <td>{{ adf.txInterval }}</td>
-              <td>{{ adf.bitRate }}</td>
+              <td>{{ adf.channels_number }}</td>
+              <td>{{ adf.bits }}</td>
+              <td>{{ adf.frequency }}</td>
+              <td>{{ adf.compression_format }}</td>
+              <td>{{ adf.compression_subtype || '-' }}</td>
+              <td>{{ adf.packet_time_us }}</td>
+              <td>{{ adf.bitrate_bps }}</td>
               <td>
                 <PresetListDropdown
                   @add="create"

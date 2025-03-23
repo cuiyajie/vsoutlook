@@ -50,6 +50,12 @@ export default defineConfig({
     host: '0.0.0.0',
     // Vite 4 defaults to 5173, but you can override it with the port option.
     port: 3000,
+    proxy: {
+      '/api': {
+        target: 'http://172.16.1.15:31260',
+        changeOrigin: true,
+      },
+    }
   },
   /**
    * Define allow to replace string in the code at build time.

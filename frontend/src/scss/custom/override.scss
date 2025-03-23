@@ -1,3 +1,9 @@
 a:focus-visible {
   outline: none;
 }
+
+.control.in-form {
+  .form-switch {
+    margin-top: 5px;
+  }
+}

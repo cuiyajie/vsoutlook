@@ -7,6 +7,7 @@ export enum Signal {
   OpenResourceConfig,
   OpenAlertDialog,
   OpenNewUser,
+  OpenNodeResourceList,
   OpenNodeEdit,
   OpenTmplMetaEdit,
   OpenDownloadConfig,

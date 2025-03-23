@@ -80,6 +80,30 @@ func (Layout) TableName() string {
 	return "layouts"
 }
 
+var GetNic = Get[Nic]
+var ActiveNic = Active[Nic]
+var NicBy = QueryOne[Nic]
+var NicsBy = QueryMulti[Nic]
+var NicsBy3 = QueryMulti3[Nic]
+var NicsBy4 = QueryMulti4[Nic]
+var NicsByIDs = ByIDs[Nic]
+
+func (Nic) TableName() string {
+	return "nics"
+}
+
+func (n NicConfig) Value() (driver.Value, error) {
+	return json.Marshal(n)
+}
+
+func (n *NicConfig) Scan(value interface{}) error {
+	b, ok := value.([]byte)
+	if !ok {
+		return errors.New("type assertion to []byte failed")
+	}
+	return json.Unmarshal(b, &n)
+}
+
 // for gorm
 func (d TmplRequirement) Value() (driver.Value, error) {
 	return json.Marshal(d)

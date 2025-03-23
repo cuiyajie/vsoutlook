@@ -15,6 +15,7 @@ import { useFetch } from "@src/composable/useFetch";
 const Timeout = 15 * 1000
 export const useClustNode = defineStore('clustNode', () => {
   const nodes = ref<ClustNode[]>([])
+  const nmosNodes = ref<NMosNode[]>([])
   const $fetch = useFetch()
   let timer: any = null
 
@@ -31,33 +32,72 @@ export const useClustNode = defineStore('clustNode', () => {
     }
   }
 
-  async function $update(id: string, core: string, dma: string, vf: number) {
-    const res = await $fetch('/api/cluster/node.update', {
-      body: { id, core, dma, vf }
+  async function $getNodeNics(id: string) {
+    const res = await $fetch('/api/cluster/nics', {
+      body: { id }
     })
     if (res?.code === 0) {
       const tnode = nodes.value.find(node => node.id === id)
       if (tnode) {
-        tnode.coreList = core
-        tnode.dmaList = dma
-        tnode.vfCount = vf
+        tnode.nics = (res.data || []) as NicInfo[]
+      }
+      return tnode
+    }
+    return null
+  }
+
+  async function $createNic(nic: Omit<NicInfo, 'id' | 'nodeId'>, nodeId: string) {
+    const res = await $fetch('/api/cluster/nic.create', {
+      body: { nodeId, ...nic }
+    })
+    if (res?.code === 0) {
+      const tnode = nodes.value.find(node => node.id === nodeId)
+      if (tnode) {
+        tnode.nics.push(res.data as NicInfo)
       }
     }
     return res
   }
 
-  async function $fetchById(id: string) {
+  async function $updateNic(nic: NicInfo) {
+    const res = await $fetch('/api/cluster/nic.update', {
+      body: { ...nic }
+    })
+    if (res?.code === 0) {
+      const tnode = nodes.value.find(node => node.id === nic.nodeId)
+      if (tnode) {
+        const tnic = tnode.nics.find(n => n.id === nic.id)
+        if (tnic) {
+          Object.assign(tnic, res.data as NicInfo)
+        }
+      }
+    }
+    return res
+  }
+
+  async function $deleteNic(id: string, nodeId: string) {
+    const res = await $fetch('/api/cluster/nic.delete', {
+      body: { id }
+    })
+    if (res?.code === 0) {
+      const tnode = nodes.value.find(node => node.id === nodeId)
+      if (tnode) {
+        tnode.nics = tnode.nics.filter(n => n.id !== id)
+      }
+    }
+    return res
+  }
+
+  async function $fetchById(id: string): Promise<ClustNode> {
     const res1 = await $fetch('/api/cluster/node.detail', {
       body: { id }
     })
     if (res1 && res1.code === 0) {
-      const { coreList, dmaList, node, vfCount, running, stopped } = res1.data
+      const { node, running, stopped } = res1.data
       return {
         id: node?.nodeName,
         ip: node?.nodeIP,
-        coreList,
-        dmaList,
-        vfCount,
+        nics: [],
         allocatable: node?.allocatable,
         allocated: node?.allocated,
         running,
@@ -67,19 +107,21 @@ export const useClustNode = defineStore('clustNode', () => {
     return {
       id: "",
       ip: "",
-      coreList: "",
-      dmaList: "",
+      nics: [],
+      allocatable: {} as any,
+      allocated: {} as any,
       running: [],
-      stopped: []
+      stopped: [],
     }
   }
 
-  async function $getById(id: string) {
+  async function $getById(id: string): Promise<ClustNode> {
     const node = await $fetchById(id)
     const tnode = nodes.value.find(n => n.id === id)
     if (tnode) {
       Object.assign(tnode, node)
     }
+    return tnode as ClustNode
   }
 
   async function $fetchList() {
@@ -96,13 +138,30 @@ export const useClustNode = defineStore('clustNode', () => {
     }
   }
 
+  async function $fetchNMos() {
+    const res = await $fetch('/api/cluster/nmos', {
+      body: {
+        'order': 'update',
+        'limit': 1000
+      }
+    })
+    if (res && res.code === 0) {
+      console.log(res.data)
+      nmosNodes.value = res.data
+    }
+  }
+
   return {
     nodes,
     $fetchList,
+    $fetchNMos,
     $startQuery,
     $stopQuery,
-    $update,
-    $getById
+    $getById,
+    $getNodeNics,
+    $createNic,
+    $updateNic,
+    $deleteNic,
   } as const
 })
 

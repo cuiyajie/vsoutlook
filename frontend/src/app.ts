@@ -6,12 +6,16 @@ import { createPinia } from 'pinia'
 import { createRouter } from './router'
 import VueroApp from './VueroApp.vue'
 import { ColorPicker } from "vue3-colorpicker";
+import VueTippy from 'vue-tippy'
 import './styles'
 /* import the required styles */
 import "@vue-flow/core/dist/style.css";
 /* import the default theme (optional) */
 import "@vue-flow/core/dist/theme-default.css";
 import "vue3-colorpicker/style.css";
+import 'tippy.js/dist/tippy.css'
+import "tippy.js/themes/light.css";
+import 'tippy.js/animations/scale.css'
 
 export type VueroAppContext = Awaited<ReturnType<typeof createApp>>
 export type VueroPlugin = (vuero: VueroAppContext) => void | Promise<void>
@@ -34,6 +38,10 @@ export async function createApp() {
 
   const pinia = createPinia()
   app.use(pinia)
+  app.use(VueTippy, {
+    directive: 'tippy', // => v-tippy
+    component: 'tippy', // => <tippy/>
+  })
 
   const vuero = {
     app,

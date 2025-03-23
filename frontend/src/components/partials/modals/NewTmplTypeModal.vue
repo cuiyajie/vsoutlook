@@ -1,22 +1,22 @@
 <script setup lang="ts">
-import genAvatar from "@src/utils/avatar-gen";
-import { useTemplateType } from "@src/stores/templateType";
+import genAvatar from '@src/utils/avatar-gen'
+import { useTemplateType } from '@src/stores/templateType'
 
-const tmplTypeUtils = useTemplateType();
+const tmplTypeUtils = useTemplateType()
 
-const opened = ref(false);
-const draftType = ref({} as TemplateType);
-const iconFile = ref<File>();
+const opened = ref(false)
+const draftType = ref({} as TemplateType)
+const iconFile = ref<File>()
 
 useListener(Signal.OpenNewTmplType, () => {
-  opened.value = true;
-});
+  opened.value = true
+})
 
 function onFileSelect(e: Event) {
-  const files = (e.target as HTMLInputElement).files;
+  const files = (e.target as HTMLInputElement).files
   if (files?.[0]) {
-    iconFile.value = files[0];
-    draftType.value.icon = genAvatar();
+    iconFile.value = files[0]
+    draftType.value.icon = genAvatar()
   }
 }
 </script>
@@ -37,11 +37,7 @@ function onFileSelect(e: Event) {
       <div class="modal-form">
         <VField label="类型名称 *">
           <VControl>
-            <VInput
-              v-model="draftType.name"
-              type="text"
-              placeholder="类型名称"
-            />
+            <VInput v-model="draftType.name" type="text" placeholder="类型名称" />
           </VControl>
         </VField>
         <VField label="类型图标 *">
@@ -53,7 +49,7 @@ function onFileSelect(e: Event) {
                   type="file"
                   name="resume"
                   @change="onFileSelect"
-                >
+                />
                 <span class="file-cta">
                   <span class="file-icon">
                     <i class="fas fa-cloud-upload-alt" />
@@ -68,12 +64,7 @@ function onFileSelect(e: Event) {
       </div>
     </template>
     <template #action>
-      <VButton
-        type="submit"
-        color="primary"
-        raised
-        @click="tmplTypeUtils.add(draftType)"
-      >
+      <VButton type="submit" color="primary" raised @click="tmplTypeUtils.add(draftType)">
         保存
       </VButton>
     </template>

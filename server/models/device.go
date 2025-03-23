@@ -47,12 +47,14 @@ func (device *Device) AsBasic() DeviceAsBasic {
 	tmpl := ActiveTmpl(device.Tmpl)
 	if tmpl != nil {
 		tmplType := ActiveTmplType(tmpl.Type)
-		result.TmplID = tmpl.ID
-		result.TmplName = tmpl.Name
-		result.TmplTypeID = tmplType.ID
-		result.TmplTypeName = tmplType.Name
-		result.TmplTypeCategory = tmplType.Category
-		result.TmplTypeIcon = tmplType.Icon
+		if tmplType != nil {
+			result.TmplID = tmpl.ID
+			result.TmplName = tmpl.Name
+			result.TmplTypeID = tmplType.ID
+			result.TmplTypeName = tmplType.Name
+			result.TmplTypeCategory = tmplType.Category
+			result.TmplTypeIcon = tmplType.Icon
+		}
 	}
 	result.CreatedAt = device.CreatedAt.Unix()
 	result.UpdatedAt = device.UpdatedAt.Unix()
@@ -72,9 +74,12 @@ func (device *Device) AsDetail() DeviceAsDetail {
 func DeviceList() []DeviceAsBasic {
 	var devices []Device
 	db.DB.Where("deleted=0").Find(&devices)
-	result := make([]DeviceAsBasic, 0, len(devices))
+	result := []DeviceAsBasic{}
 	for _, t := range devices {
-		result = append(result, t.AsBasic())
+		basic := t.AsBasic()
+		if basic.TmplID != "" {
+			result = append(result, basic)
+		}
 	}
 	return result
 }
@@ -84,7 +89,10 @@ func GetDevicesByNode(node string) []DeviceAsBasic {
 	db.DB.Where("deleted=0 AND node=?", node).Find(&devices)
 	result := make([]DeviceAsBasic, 0, len(devices))
 	for _, t := range devices {
-		result = append(result, t.AsBasic())
+		basic := t.AsBasic()
+		if basic.TmplID != "" {
+			result = append(result, basic)
+		}
 	}
 	return result
 }

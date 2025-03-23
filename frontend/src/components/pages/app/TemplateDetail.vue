@@ -5,6 +5,7 @@ import { useTemplateType } from "@src/stores/templateType";
 import { useNotyf } from "@src/composable/useNotyf";
 
 const route = useRoute();
+const params = route.params as { id: string }
 const tmplTypeStore = useTemplateType();
 const tmplStore = useTemplate();
 const { toObject } = useVueFlow();
@@ -44,13 +45,11 @@ function tabChange(tab: string) {
 const specsData = ref<TmplRequirement & { description: string }>({
   cpu: '',
   cpuNum: 0,
-  dpdkCpu: 0,
   cpuCore: '',
   hugePage: 0,
   memory: 0,
   disk: '',
   gpu: '',
-  dma: 0,
   inputBand: '',
   outputBand: '',
   network: '',
@@ -63,16 +62,18 @@ const specsData = ref<TmplRequirement & { description: string }>({
   utfOffset: 37,
   recvAVFrameNodeCount: 2,
   sendAVFrameNodeCount: 2,
-  recvframeCnt: 2,
+  recvFrameCount: 2,
   maxRateMbpsByCore: 9000,
   receiveSessions: 18,
-  shm: 0
+  shm: 0,
+  nicCount: 1,
+  nicConfig: [],
 })
 
 tmplTypeStore.$fetchList();
 tmplStore.$fetchList();
 
-watch(() => route.params?.id, async (nv, ov) => {
+watch(() => params?.id, async (nv, ov) => {
   if (nv && nv !== ov) {
     tmpl.value = await tmplStore.$getTmplById(nv)
     if (tmpl.value) {
@@ -89,12 +90,22 @@ async function save() {
     notyf.error('CPU 总核心数不能为 0')
     return
   }
-  if (specsData.value.dpdkCpu === 0) {
+  const { dpdkCpu, dma } = specsData.value.nicConfig.reduce((acc, cur) => {
+    return {
+      dpdkCpu: acc.dpdkCpu + cur.dpdkCpu,
+      dma: acc.dma + cur.dma
+    }
+  }, { dpdkCpu: 0, dma: 0 })
+  if (dpdkCpu === 0) {
     notyf.error('DPDK CPU 核心不能为 0')
     return
   }
-  if (specsData.value.cpuNum <= specsData.value.dpdkCpu) {
+  if (specsData.value.cpuNum <= dpdkCpu) {
     notyf.error('CPU 总核心数不能小于等于 DPDK CPU 核心')
+    return
+  }
+  if (dma === 0) {
+    notyf.error('DMA通道数量不能为 0')
     return
   }
   if (tmpl.value?.id) {
@@ -112,7 +123,7 @@ async function save() {
 }
 
 onMounted(() => {
-  if (!route.params?.id) {
+  if (!params?.id) {
     locked.value = false
     createNewTmpl()
   }
@@ -141,7 +152,7 @@ onMounted(() => {
             {{ tmpl?.name || "未命名应用" }}
             <span
               class="icon ml-2"
-              style="cursor: pointer;"
+              style="cursor: pointer"
               role="button"
               tabindex="-1"
               @keyup.space.prevent="updateTmplMeta"

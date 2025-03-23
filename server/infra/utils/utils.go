@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -133,7 +134,6 @@ func ParseCoreListString(input string) []int {
 			}
 		}
 	}
-	fmt.Printf("numberArray: %v\n", numberArray)
 	return numberArray
 }
 
@@ -173,9 +173,50 @@ func IsValidIPv4WithPort(input string) bool {
 	}
 
 	_, err = strconv.Atoi(port)
-	if err != nil {
-		return false
+
+	return err == nil
+}
+
+func MergeMapArrays[T any](m map[string][]T) []T {
+	var result []T
+	for _, v := range m {
+		result = append(result, v...)
+	}
+	return result
+}
+
+func FormatUint32Array(arr []uint32) string {
+	// 1. 排序数组
+	sort.Slice(arr, func(i, j int) bool {
+		return arr[i] < arr[j]
+	})
+
+	// 2. 遍历数组，生成 chunk
+	var chunks []string
+	start := arr[0]
+	prev := arr[0]
+
+	for i := 1; i < len(arr); i++ {
+		if arr[i] == prev+1 {
+			prev = arr[i]
+		} else {
+			if start == prev {
+				chunks = append(chunks, strconv.FormatUint(uint64(start), 10))
+			} else {
+				chunks = append(chunks, fmt.Sprintf("%d-%d", start, prev))
+			}
+			start = arr[i]
+			prev = arr[i]
+		}
 	}
 
-	return true
+	// 处理最后一个 chunk
+	if start == prev {
+		chunks = append(chunks, strconv.FormatUint(uint64(start), 10))
+	} else {
+		chunks = append(chunks, fmt.Sprintf("%d-%d", start, prev))
+	}
+
+	// 3. 用 "," 连接所有 chunk
+	return strings.Join(chunks, ",")
 }

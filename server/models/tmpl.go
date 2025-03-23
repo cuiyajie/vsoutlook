@@ -6,6 +6,11 @@ import (
 	"vsoutlook.com/vsoutlook/models/db"
 )
 
+type NicConfig struct {
+	DPDKCpu int `json:"dpdkCpu"`
+	DMA     int `json:"dma"`
+}
+
 type Tmpl struct {
 	ModelId
 	Name        string          `gorm:"type:varchar"`
@@ -19,30 +24,30 @@ type Tmpl struct {
 }
 
 type TmplRequirement struct {
-	Cpu                  string `json:"cpu,omitempty"`
-	CpuNum               int    `json:"cpuNum"`
-	DPDKCpu              int    `json:"dpdkCpu"`
-	CpuCore              string `json:"cpuCore,omitempty"`
-	HugePage             int    `json:"hugePage,omitempty"`
-	Memory               int    `json:"memory,omitempty"`
-	Disk                 string `json:"disk,omitempty"`
-	Gpu                  string `json:"gpu,omitempty"`
-	DMA                  int    `json:"dma"`
-	InputBand            string `json:"inputBand,omitempty"`
-	OutputBand           string `json:"outputBand,omitempty"`
-	Network              string `json:"network,omitempty"`
-	Chart                string `json:"chart,omitempty"`
-	LogLevel             uint8  `json:"logLevel"`
-	RepairRecvFrame      bool   `json:"repairRecvFrame"`
-	RepairSendFrame      bool   `json:"repairSendFrame"`
-	HostNetwork          bool   `json:"hostNetwork"`
-	UtfOffset            uint8  `json:"utfOffset"`
-	RecvAVFrameNodeCount int    `json:"recvAVFrameNodeCount"`
-	SendAVFrameNodeCount int    `json:"sendAVFrameNodeCount"`
-	RecvframeCnt         int    `json:"recvframeCnt"`
-	MaxRateMbpsByCore    int    `json:"maxRateMbpsByCore"`
-	ReceiveSessions      int    `json:"receiveSessions"`
-	Shm                  int    `json:"shm"`
+	Cpu                  string      `json:"cpu"`
+	CpuNum               int         `json:"cpuNum"`
+	CpuCore              string      `json:"cpuCore"`
+	HugePage             int         `json:"hugePage"`
+	Memory               int         `json:"memory"`
+	Disk                 string      `json:"disk"`
+	Gpu                  string      `json:"gpu"`
+	InputBand            string      `json:"inputBand"`
+	OutputBand           string      `json:"outputBand"`
+	Network              string      `json:"network"`
+	Chart                string      `json:"chart"`
+	LogLevel             uint8       `json:"logLevel"`
+	RepairRecvFrame      bool        `json:"repairRecvFrame"`
+	RepairSendFrame      bool        `json:"repairSendFrame"`
+	HostNetwork          bool        `json:"hostNetwork"`
+	UtfOffset            uint8       `json:"utfOffset"`
+	RecvAVFrameNodeCount int         `json:"recvAVFrameNodeCount"`
+	SendAVFrameNodeCount int         `json:"sendAVFrameNodeCount"`
+	RecvframeCount       int         `json:"recvFrameCount"`
+	MaxRateMbpsByCore    int         `json:"maxRateMbpsByCore"`
+	ReceiveSessions      int         `json:"receiveSessions"`
+	NicCount             int         `json:"nicCount"`
+	NicConfig            []NicConfig `json:"nicConfig"`
+	Shm                  int         `json:"shm"`
 }
 
 type TmplAsBasic struct {
@@ -61,8 +66,11 @@ func (tmpl Tmpl) IsDeleted() bool {
 
 func (tmpl *Tmpl) AsBasic() TmplAsBasic {
 	var result TmplAsBasic
-	copier.Copy(&result, &tmpl)
 	tmplType := ActiveTmplType(tmpl.Type)
+	if tmplType == nil {
+		return result
+	}
+	copier.Copy(&result, &tmpl)
 	result.TypeName = tmplType.Name
 	result.TypeCategory = tmplType.Category
 	return result
@@ -70,7 +78,11 @@ func (tmpl *Tmpl) AsBasic() TmplAsBasic {
 
 func (tmpl *Tmpl) AsDetail() any {
 	tmplType := ActiveTmplType(tmpl.Type)
-	result := utils.Map{
+	var result utils.Map
+	if tmplType == nil {
+		return result
+	}
+	result = utils.Map{
 		"id":           tmpl.ID,
 		"name":         tmpl.Name,
 		"type":         tmpl.Type,
@@ -78,6 +90,12 @@ func (tmpl *Tmpl) AsDetail() any {
 		"typeCategory": tmplType.Category,
 		"description":  tmpl.Description,
 		"listed":       tmpl.Listed,
+	}
+	if tmpl.Requirement.NicCount == 0 {
+		tmpl.Requirement.NicCount = 1
+	}
+	if tmpl.Requirement.NicConfig == nil {
+		tmpl.Requirement.NicConfig = []NicConfig{}
 	}
 	result["requirement"] = tmpl.Requirement
 	result["flow"] = tmpl.Flow
@@ -87,9 +105,12 @@ func (tmpl *Tmpl) AsDetail() any {
 func TmplList() []TmplAsBasic {
 	var tmpls []Tmpl
 	db.DB.Where("deleted=0").Find(&tmpls)
-	result := make([]TmplAsBasic, 0, len(tmpls))
+	result := []TmplAsBasic{}
 	for _, t := range tmpls {
-		result = append(result, t.AsBasic())
+		nicb := t.AsBasic()
+		if nicb.ID != "" {
+			result = append(result, nicb)
+		}
 	}
 	return result
 }

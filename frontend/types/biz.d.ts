@@ -6,11 +6,14 @@ interface TemplateType {
   category: string
 }
 
+interface TmplNicConfig {
+  dpdkCpu: number,
+  dma: number,
+}
+
 interface TmplRequirement {
   cpu: string,
   cpuNum: number,
-  dpdkCpu: number,
-  dma: number,
   cpuCore: string,
   hugePage: number,
   memory: number,
@@ -27,9 +30,11 @@ interface TmplRequirement {
   utfOffset: number,
 	recvAVFrameNodeCount: number,
 	sendAVFrameNodeCount: number,
-	recvframeCnt: number,
+	recvFrameCount: number,
   maxRateMbpsByCore: number,
   receiveSessions: number,
+  nicCount: number,
+  nicConfig: TmplNicConfig[],
   shm: number
 }
 
@@ -38,7 +43,7 @@ interface TemplateData {
   name: string,
   type: string,
   typeName: string,
-  typeCategory: 'codec' | 'udx' | 'multiv' | 'swt' | 'bcswt' | 'endswt',
+  typeCategory: 'codec' | 'udx' | 'multiv' | 'swt' | 'endswt' | 'recorder' | 'media_gateway' | 'mv' | 'makeswt' | 'nmswt' | 'bcswt',
   description: string,
   listed: boolean,
   requirement: TmplRequirement,
@@ -120,17 +125,26 @@ interface UserData {
   role: number
 }
 
-interface ClustNodeInfo {
+interface NicInfo {
+  id: string,
+  nodeId: string,
+  nicNameMain: string,
+  nicNameBackup: string,
+  receiveMain: boolean,
+  receiveBackup: boolean,
+  sendMain: boolean,
+  sendBackup: boolean,
   coreList: string,
   dmaList: string,
   vfCount: number,
 }
 
-interface ClustNode extends ClustNodeInfo {
+interface ClustNode {
   id: string,
   ip: string,
   running: string[],
   stopped: string[],
+  nics: NicInfo[],
   allocatable: {
     cpu: number,
     memory: number,
@@ -143,6 +157,35 @@ interface ClustNode extends ClustNodeInfo {
     networkReceiveRate: number,
     networkTransmitRate: number
   }
+}
+
+interface NMosNode {
+  id: string,
+  api: {
+    endpoints: {
+      host: string,
+      port: number,
+      protocol: string
+    }[],
+    versions: string[]
+  },
+  caps: any,
+  clocks: {
+    name: string,
+    ref_type: string
+  }[],
+  description: string,
+  hostname: string,
+  href: string,
+  interfaces: {
+    chassis_id: string,
+    name: string,
+    port_id: string
+  }[],
+  label: string,
+  services: any[],
+  tags: any,
+  version: string
 }
 
 interface ClustDevice {
@@ -333,54 +376,65 @@ interface LayoutDataItem {
 
 interface VideoFormat {
   name: string,
-  format: string,
-  resolution: string,
-  frameRate: string,
+  protocol: string,
+  width: number,
+  height: number,
+  interlaced: boolean,
+  fps: number,
   gamma: string,
-  colorSpace: string,
-  encodeFormat: string,
-  bitRate: string,
-  bframe: number,
-  gop: number,
+  gamut: string,
+  compression_format: string,
+  compression_subtype: string,
+  compression_ratio: string,
+  bitrate_bps: number,
+  gop_b_frames: number,
+  gop_length: number,
 }
 
 interface AudioFormat {
   name: string,
-  channels: number,
-  quantBits: number,
-  sampleRate: number,
-  encodeFormat: string,
-  txInterval: number,
-  bitRate: string,
-  childType: string,
+  channels_number: number,
+  bits: number,
+  frequency: number,
+  compression_format: string,
+  compression_subtype: string,
+  packet_time_us: number,
+  bitrate_bps: number,
 }
 
+interface AudioChannelMapping {
+  src_channel: number,
+  dst_channel: number,
+}
 interface AudioMapping {
   name: string,
-  mute: string,
-  copys: [number, number][],
+  mute_channels: string,
+  channels: {
+    src_channel: number,
+    dst_channel: number,
+  }[],
 }
 
 interface VideoReviewRule {
-  name: string,
-  threshold?: number,
-  duration?: number,
-  missingDuration?: number,
+  key: string,
+  threshold_percentage?: number,
+  duration_frames?: number,
+  duration_ms?: number,
 }
 
 interface AudioReviewRule {
-  name: string,
-  channels?: string,
-  duration?: number,
-  missingDuration?: number,
-  threshold?: number,
+  key: string,
+  detect_channels?: string,
+  duration_frames?: number,
+  duration_ms?: number,
+  threshold_dbfs?: number,
 }
 
 interface TechReview {
   name: string,
   videoRules: VideoReviewRule[],
   audioRules: AudioReviewRule[],
-  anyChannels: string,
-  allChannels: string,
+  condition_any: string,
+  condition_all: string,
 }
 

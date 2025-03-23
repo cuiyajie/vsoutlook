@@ -4,48 +4,67 @@ import { useForm } from "vee-validate";
 import { z } from "zod";
 import { useNotyf } from "@src/composable/useNotyf";
 import { useUserSession } from "@src/stores/userSession";
-import { isValidNumberRanges } from './Utils';
+import { isValidNumberRanges } from "./Utils";
 import Draggable from "vuedraggable";
-import { VideoReviewKeys, defVideoReviewRules, defAudioReviewRules, AudioReviewKeys } from './Consts';
+import {
+  VideoReviewKeys,
+  defVideoReviewRules,
+  defAudioReviewRules,
+  AudioReviewKeys,
+  VideoReviewKeyName,
+  AudioReviewKeyName,
+} from "./Consts";
 
-type TechReviewForm = Pick<TechReview, 'name' | 'anyChannels' | 'allChannels'>
+type TechReviewForm = Pick<TechReview, "name" | "condition_any" | "condition_all">;
 
 const usStore = useUserSession();
 const techReviews = computed(() => usStore.settings.tech_reviews || []);
 const notyf = useNotyf();
 const opened = ref(false);
 const indexRef = ref(-1);
-let callbacks: any = {}
+let callbacks: any = {};
 const form = ref<TechReviewForm>({
-  name: '',
-  anyChannels: '',
-  allChannels: '',
-})
-const videoReviewKeys = ref([])
-const videoReviewRules = ref(defVideoReviewRules())
-const audioReviewKeys = ref([])
-const audioReviewRules = ref(defAudioReviewRules())
+  name: "",
+  condition_any: "",
+  condition_all: "",
+});
+const videoReviewKeys = ref<string[]>([]);
+const videoReviewRules = ref(defVideoReviewRules());
+const audioReviewKeys = ref<string[]>([]);
+const audioReviewRules = ref(defAudioReviewRules());
 
 const zodSchema = z.object({
-  name: z.string({ required_error: "请输入模板名称" })
+  name: z
+    .string({ required_error: "请输入模板名称" })
     .nonempty("请输入模板名称")
     .trim()
-    .refine(value => {
-      if (indexRef.value >= 0) return true
-      return !techReviews.value.some((item) => item.name === value)
-    }, { message: "模板名称已存在" }),
-  anyChannels: z.string({ required_error: "请输入符合任意声道静音的声道范围" })
+    .refine(
+      (value) => {
+        if (indexRef.value >= 0) return true;
+        return !techReviews.value.some((item) => item.name === value);
+      },
+      { message: "模板名称已存在" }
+    ),
+  condition_any: z
+    .string({ required_error: "请输入符合任意声道静音的声道范围" })
     .nonempty("请输入符合任意声道静音的声道范围")
     .trim()
-    .refine(value => {
-      return isValidNumberRanges(value)
-    }, { message: "请输入例如 1-3,4,5 的范围" }),
-  allChannels: z.string({ required_error: "请输入符合所有声道静音的声道范围" })
+    .refine(
+      (value) => {
+        return isValidNumberRanges(value);
+      },
+      { message: "请输入例如 1-3,4,5 的范围" }
+    ),
+  condition_all: z
+    .string({ required_error: "请输入符合所有声道静音的声道范围" })
     .nonempty("请输入符合所有声道静音的声道范围")
     .trim()
-    .refine(value => {
-      return isValidNumberRanges(value)
-    }, { message: "请输入例如 1-3,4,5 的范围" }),
+    .refine(
+      (value) => {
+        return isValidNumberRanges(value);
+      },
+      { message: "请输入例如 1-3,4,5 的范围" }
+    ),
 });
 const validationSchema = toTypedSchema(zodSchema);
 const { handleSubmit, setFieldValue } = useForm({ validationSchema });
@@ -55,78 +74,72 @@ const handleCommit = handleSubmit(async () => {
   if (loading.value) return;
 
   loading.value = true;
-  let value: string
+  let value: string;
   const formValue = {
     ...form.value,
     videoRules: videoReviewKeys.value.map((key: string) => videoReviewRules.value[key]),
     audioRules: audioReviewKeys.value.map((key: string) => audioReviewRules.value[key]),
-  } as TechReview
+  } as TechReview;
   if (indexRef.value < 0) {
-    value = JSON.stringify([
-      formValue,
-      ...techReviews.value
-    ])
+    value = JSON.stringify([formValue, ...techReviews.value]);
   } else {
-    const formats = techReviews.value
-    formats[indexRef.value] = formValue
-    value = JSON.stringify(formats)
+    const formats = techReviews.value;
+    formats[indexRef.value] = formValue;
+    value = JSON.stringify(formats);
   }
-  const res = await usStore.$updateSettings({ key: 'tech_reviews', value });
+  const res = await usStore.$updateSettings({ key: "tech_reviews", value });
   loading.value = false;
   if (res) {
     opened.value = false;
-    notyf.success(`${indexRef.value < 0 ? '创建' : '保存'}视音频计审模板成功`);
+    notyf.success(`${indexRef.value < 0 ? "创建" : "保存"}视音频计审模板成功`);
     callbacks.success?.();
   } else {
-    notyf.error(`${indexRef.value < 0 ? '创建' : '保存'}视音频计审模板失败`);
+    notyf.error(`${indexRef.value < 0 ? "创建" : "保存"}视音频计审模板失败`);
   }
 });
 
 function syncForm() {
   for (let key of Object.keys(form.value) as (keyof TechReviewForm)[]) {
-    setFieldValue(key, form.value[key])
+    setFieldValue(key, form.value[key]);
   }
 }
 
-syncForm()
+syncForm();
 
-useListener(Signal.OpenNewTechReview, (payload: {
-  _callback?: any,
-  index?: number,
-}) => {
-  opened.value = true
-  indexRef.value = payload.index === undefined ? -1 : payload.index
-  const tr = techReviews.value[indexRef.value]
+useListener(Signal.OpenNewTechReview, (payload: { _callback?: any; index?: number }) => {
+  opened.value = true;
+  indexRef.value = payload.index === undefined ? -1 : payload.index;
+  const tr = techReviews.value[indexRef.value];
   if (tr) {
     form.value = {
       name: tr.name,
-      anyChannels: tr.anyChannels,
-      allChannels: tr.allChannels,
-    }
-    videoReviewKeys.value = tr.videoRules.map((rule) => rule.name)
+      condition_any: tr.condition_any,
+      condition_all: tr.condition_all,
+    };
+    videoReviewKeys.value = tr.videoRules.map((rule) => rule.key);
     videoReviewRules.value = tr.videoRules.reduce((acc, rule) => {
-      acc[rule.name] = rule
-      return acc
-    }, defVideoReviewRules())
-    audioReviewKeys.value = tr.audioRules.map((rule) => rule.name)
+      acc[rule.key] = rule;
+      return acc;
+    }, defVideoReviewRules());
+    audioReviewKeys.value = tr.audioRules.map((rule) => rule.key);
     audioReviewRules.value = tr.audioRules.reduce((acc, rule) => {
-      acc[rule.name] = rule
-      return acc
-    }, defAudioReviewRules())
+      acc[rule.key] = rule;
+      return acc;
+    }, defAudioReviewRules());
   } else {
     form.value = {
-      name: '',
-      anyChannels: '',
-      allChannels: '',
-    }
-    videoReviewKeys.value = []
-    videoReviewRules.value = defVideoReviewRules()
-    audioReviewKeys.value = []
-    audioReviewRules.value = defAudioReviewRules()
+      name: "",
+      condition_any: "",
+      condition_all: "",
+    };
+    videoReviewKeys.value = [];
+    videoReviewRules.value = defVideoReviewRules();
+    audioReviewKeys.value = [];
+    audioReviewRules.value = defAudioReviewRules();
   }
 
-  callbacks = payload._callback || {}
-  syncForm()
+  callbacks = payload._callback || {};
+  syncForm();
 });
 </script>
 <template>
@@ -150,15 +163,8 @@ useListener(Signal.OpenNewTechReview, (payload: {
             <VField id="name" v-slot="{ field }">
               <VLabel>模版名称</VLabel>
               <VControl>
-                <VInput
-                  v-model="form.name"
-                  type="text"
-                  placeholder="请输入模版名称"
-                />
-                <p
-                  v-if="field?.errorMessage"
-                  class="help is-danger"
-                >
+                <VInput v-model="form.name" type="text" placeholder="请输入模版名称" />
+                <p v-if="field?.errorMessage" class="help is-danger">
                   {{ field.errorMessage }}
                 </p>
               </VControl>
@@ -169,7 +175,12 @@ useListener(Signal.OpenNewTechReview, (payload: {
               <VLabel>视频技审及规则</VLabel>
               <VField class="is-flex">
                 <VControl v-for="rk in VideoReviewKeys" :key="rk" raw subcontrol>
-                  <VCheckbox v-model="videoReviewKeys" :value="rk" :label="rk" color="primary" />
+                  <VCheckbox
+                    v-model="videoReviewKeys"
+                    :value="rk"
+                    :label="VideoReviewKeyName[rk]"
+                    color="primary"
+                  />
                 </VControl>
               </VField>
             </VField>
@@ -191,32 +202,36 @@ useListener(Signal.OpenNewTechReview, (payload: {
                     :component-data="{
                       tag: 'div',
                       type: 'transition-group',
-                      name: 'list-complete'
+                      name: 'list-complete',
                     }"
                     handle=".drag-area"
                     item-key="value"
                   >
-                    <template #item="{element, index}">
+                    <template #item="{ element, index }">
                       <div class="list-view-item">
                         <div class="list-view-item-inner">
                           <div class="index-no">级别 {{ index + 1 }}</div>
-                          <div class="meta-name">{{ element }}</div>
-                          <VField v-if="videoReviewRules[element].threshold" horizontal>
+                          <div class="meta-name">{{ VideoReviewKeyName[element] }}</div>
+                          <VField v-if="videoReviewRules[element].threshold_percentage" horizontal>
                             <VLabel>阈值：</VLabel>
                             <VControl>
                               <VInputNumber
-                                v-model="videoReviewRules[element].threshold"
+                                v-model="videoReviewRules[element].threshold_percentage"
                                 :min="0"
                                 :step="0.001"
                                 placeholder="请输入阈值"
                               />
                             </VControl>
                           </VField>
-                          <VField v-if="videoReviewRules[element].duration" horizontal addons>
+                          <VField
+                            v-if="videoReviewRules[element].duration_frames"
+                            horizontal
+                            addons
+                          >
                             <VLabel>持续时长：</VLabel>
                             <VControl>
                               <VInputNumber
-                                v-model="videoReviewRules[element].duration"
+                                v-model="videoReviewRules[element].duration_frames"
                                 :min="0"
                                 :step="1"
                                 placeholder="请输入持续时长"
@@ -226,11 +241,15 @@ useListener(Signal.OpenNewTechReview, (payload: {
                               <VButton static>帧</VButton>
                             </VControl>
                           </VField>
-                          <VField v-if="videoReviewRules[element].missingDuration" horizontal addons>
+                          <VField
+                            v-if="videoReviewRules[element].duration_ms"
+                            horizontal
+                            addons
+                          >
                             <VLabel>时长：</VLabel>
                             <VControl>
                               <VInputNumber
-                                v-model="videoReviewRules[element].missingDuration"
+                                v-model="videoReviewRules[element].duration_ms"
                                 :min="0"
                                 :step="0.001"
                                 placeholder="请输入时长"
@@ -257,7 +276,12 @@ useListener(Signal.OpenNewTechReview, (payload: {
               <VLabel>音频技审及规则</VLabel>
               <VField class="is-flex">
                 <VControl v-for="ak in AudioReviewKeys" :key="ak" raw subcontrol>
-                  <VCheckbox v-model="audioReviewKeys" :value="ak" :label="ak" color="primary" />
+                  <VCheckbox
+                    v-model="audioReviewKeys"
+                    :value="ak"
+                    :label="AudioReviewKeyName[ak]"
+                    color="primary"
+                  />
                 </VControl>
               </VField>
             </VField>
@@ -279,42 +303,49 @@ useListener(Signal.OpenNewTechReview, (payload: {
                     :component-data="{
                       tag: 'div',
                       type: 'transition-group',
-                      name: 'list-complete'
+                      name: 'list-complete',
                     }"
                     handle=".drag-area"
                     item-key="value"
                   >
-                    <template #item="{element, index}">
-                      <div class="list-view-item" :class="element === '音频过低' && 'list-view-too-low'">
+                    <template #item="{ element, index }">
+                      <div
+                        class="list-view-item"
+                        :class="element === '音频过低' && 'list-view-too-low'"
+                      >
                         <div class="list-view-item-inner">
                           <div class="index-no">级别 {{ index + 1 }}</div>
-                          <div class="meta-name">{{ element }}</div>
-                          <VField v-if="audioReviewRules[element].channels" horizontal>
+                          <div class="meta-name">{{ AudioReviewKeyName[element] }}</div>
+                          <VField v-if="audioReviewRules[element].detect_channels" horizontal>
                             <VLabel>声道：</VLabel>
                             <VControl>
                               <VInput
-                                v-model="audioReviewRules[element].channels"
+                                v-model="audioReviewRules[element].detect_channels"
                                 type="text"
                                 placeholder="请输入声道范围"
                               />
                             </VControl>
                           </VField>
-                          <VField v-if="audioReviewRules[element].threshold" horizontal>
+                          <VField v-if="audioReviewRules[element].threshold_dbfs" horizontal>
                             <VLabel>阈值：</VLabel>
                             <VControl>
                               <VInputNumber
-                                v-model="audioReviewRules[element].threshold"
+                                v-model="audioReviewRules[element].threshold_dbfs"
                                 :min="0"
                                 :step="0.001"
                                 placeholder="请输入阈值"
                               />
                             </VControl>
                           </VField>
-                          <VField v-if="audioReviewRules[element].duration" horizontal addons>
+                          <VField
+                            v-if="audioReviewRules[element].duration_frames"
+                            horizontal
+                            addons
+                          >
                             <VLabel>持续时长：</VLabel>
                             <VControl>
                               <VInputNumber
-                                v-model="audioReviewRules[element].duration"
+                                v-model="audioReviewRules[element].duration_frames"
                                 :min="0"
                                 :step="1"
                                 placeholder="请输入持续时长"
@@ -324,11 +355,15 @@ useListener(Signal.OpenNewTechReview, (payload: {
                               <VButton static>帧</VButton>
                             </VControl>
                           </VField>
-                          <VField v-if="audioReviewRules[element].missingDuration" horizontal addons>
+                          <VField
+                            v-if="audioReviewRules[element].duration_ms"
+                            horizontal
+                            addons
+                          >
                             <VLabel>时长：</VLabel>
                             <VControl>
                               <VInputNumber
-                                v-model="audioReviewRules[element].missingDuration"
+                                v-model="audioReviewRules[element].duration_ms"
                                 :min="0"
                                 :step="0.001"
                                 placeholder="请输入时长"
@@ -351,36 +386,30 @@ useListener(Signal.OpenNewTechReview, (payload: {
             </div>
           </div>
           <div class="column is-6">
-            <VField id="anyChannels" v-slot="{ field }">
+            <VField id="condition_any" v-slot="{ field }">
               <VLabel>任意声道静音</VLabel>
               <VControl>
                 <VInput
-                  v-model="form.anyChannels"
+                  v-model="form.condition_any"
                   type="text"
                   placeholder="请输入形如 1-3,7 声道范围"
                 />
-                <p
-                  v-if="field?.errorMessage"
-                  class="help is-danger"
-                >
+                <p v-if="field?.errorMessage" class="help is-danger">
                   {{ field.errorMessage }}
                 </p>
               </VControl>
             </VField>
           </div>
           <div class="column is-6">
-            <VField id="allChannels" v-slot="{ field }">
+            <VField id="condition_all" v-slot="{ field }">
               <VLabel>所有声道静音</VLabel>
               <VControl>
                 <VInput
-                  v-model="form.allChannels"
+                  v-model="form.condition_all"
                   type="text"
                   placeholder="请输入形如 6,8-16 声道范围"
                 />
-                <p
-                  v-if="field?.errorMessage"
-                  class="help is-danger"
-                >
+                <p v-if="field?.errorMessage" class="help is-danger">
                   {{ field.errorMessage }}
                 </p>
               </VControl>
@@ -403,21 +432,23 @@ useListener(Signal.OpenNewTechReview, (payload: {
   </VModal>
 </template>
 <style lang="scss">
-@import '@src/scss/abstracts/all';
+@import "@src/scss/abstracts/all";
 
 .modal.preset-modal.tech-review-modal {
-
   .modal-content,
   .modal-card,
   .modal-card-body {
     overflow: auto;
+  }
+
+  &.modal.is-big .modal-content {
+    max-width: 960px;
   }
 }
 
 .modal-form.review-form {
   .field {
     &.is-horizontal {
-
       .label:not(:last-child) {
         margin-bottom: 0;
       }
@@ -432,7 +463,6 @@ useListener(Signal.OpenNewTechReview, (payload: {
 }
 
 .list-review {
-
   .page-placeholder {
     min-height: 120px;
 
@@ -457,7 +487,6 @@ useListener(Signal.OpenNewTechReview, (payload: {
 
         &.has-addons {
           .field-addon-body {
-
             .input {
               width: 100px;
             }
@@ -507,9 +536,7 @@ useListener(Signal.OpenNewTechReview, (payload: {
       }
 
       &.has-addons {
-
         .field-addon-body {
-
           .control:nth-child(2) .input {
             border-top-left-radius: var(--radius);
             border-bottom-left-radius: var(--radius);
@@ -522,7 +549,6 @@ useListener(Signal.OpenNewTechReview, (payload: {
       }
 
       .field-addon-body {
-
         > label {
           font-family: var(--font);
           font-size: 0.9rem;

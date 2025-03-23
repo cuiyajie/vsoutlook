@@ -57,20 +57,22 @@ function viewTmpl() {
       </div>
       <div class="info-block-line">
         <h4 class="dark-inverted">
-          DPDK CPU 核心
+          需要使用的网卡数量
         </h4>
         <span>
-          {{ tmpld.requirement.dpdkCpu || '无' }}
+          {{ tmpld.requirement.nicCount || '无' }}
         </span>
       </div>
-      <div class="info-block-line">
-        <h4 class="dark-inverted">
-          DMA通道数量
-        </h4>
-        <span>
-          {{ tmpld.requirement.dma || '无' }}
-        </span>
-      </div>
+      <template v-if="tmpld.requirement.nicConfig?.length">
+        <div v-for="(nic, nidx) in tmpld.requirement.nicConfig" :key="nidx" class="info-block-line">
+          <h4 class="dark-inverted">
+            第 {{ nidx + 1 }} 块网卡
+          </h4>
+          <span>
+            {{ `${nic.dpdkCpu} x Dpdk Cpu, ${nic.dma} x DMA` }}
+          </span>
+        </div>
+      </template>
       <div class="info-block-line">
         <h4 class="dark-inverted">
           内存 (GB)
@@ -79,14 +81,6 @@ function viewTmpl() {
           {{ tmpld.requirement.memory || '无' }}
         </span>
       </div>
-      <!-- <div class="info-block-line">
-        <h4 class="dark-inverted">
-          CPU核心
-        </h4>
-        <span>
-          {{ tmpld.requirement.cpuCore || '无' }}
-        </span>
-      </div> -->
       <div class="info-block-line">
         <h4 class="dark-inverted">
           大页内存 (GB)
@@ -125,6 +119,30 @@ function viewTmpl() {
         </h4>
         <span>
           {{ tmpld.requirement.receiveSessions || '无' }}
+        </span>
+      </div>
+      <div class="info-block-line">
+        <h4 class="dark-inverted">
+          收流会话数
+        </h4>
+        <span>
+          {{ tmpld.requirement.receiveSessions || '无' }}
+        </span>
+      </div>
+      <div class="info-block-line">
+        <h4 class="dark-inverted">
+          SendAVFrameNodeCount
+        </h4>
+        <span>
+          {{ tmpld.requirement.sendAVFrameNodeCount || '无' }}
+        </span>
+      </div>
+      <div class="info-block-line">
+        <h4 class="dark-inverted">
+          RecvFrameCount
+        </h4>
+        <span>
+          {{ tmpld.requirement.recvFrameCount || '无' }}
         </span>
       </div>
       <!-- <div class="info-block-line">

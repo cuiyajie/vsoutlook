@@ -1,84 +1,91 @@
 <script setup lang="ts">
 import { useUserSession } from "@src/stores/userSession";
 import { confirm } from "@src/utils/dialog";
+import { VideoFormatProtocolsMap } from "../modals/PresetConfig/Consts"
 
 const usStore = useUserSession();
 const videoFormats = computed(() => usStore.settings.video_formats || []);
-const page = ref(1)
+const page = ref(1);
 
 function create() {
-  bus.trigger(Signal.OpenNewVideoFormat, {})
+  bus.trigger(Signal.OpenNewVideoFormat, {});
 }
 
 function remove(idx: number) {
-  const vft = videoFormats.value[idx]
+  const vft = videoFormats.value[idx];
   confirm({
     title: "确认",
     content: `确定要删除视频格式 ${vft.name} 吗？`,
     onConfirm: async (hide) => {
-      videoFormats.value.splice(idx, 1)
+      videoFormats.value.splice(idx, 1);
       usStore.$updateSettings({
-        key: 'video_formats',
-        value: JSON.stringify(videoFormats.value)
-      })
-      hide()
+        key: "video_formats",
+        value: JSON.stringify(videoFormats.value),
+      });
+      hide();
     },
   });
 }
 
 function edit(idx: number) {
   bus.trigger(Signal.OpenNewVideoFormat, {
-    index: idx
-  })
+    index: idx,
+  });
 }
-
 </script>
 
 <template>
   <div>
     <div class="datatable-toolbar">
       <VButtons>
-        <VButton
-          color="primary"
-          icon="fas fa-plus"
-          elevated
-          @click="create"
-        >
+        <VButton color="primary" icon="fas fa-plus" elevated @click="create">
           新建
         </VButton>
       </VButtons>
     </div>
     <div class="datatable-wrapper">
       <div class="table-container">
-        <table class="table datatable-table is-fullwidth">
+        <table class="table datatable-table video-format-table is-fullwidth">
           <thead>
             <th align="center">模板名称</th>
             <th align="center">格式类型</th>
             <th align="center">分辨率</th>
+            <th align="center">是否隔行</th>
             <th align="center">帧率</th>
             <th align="center">伽马</th>
             <th align="center">色域</th>
-            <th align="center">编码格式</th>
-            <th align="center">视频码率</th>
-            <th align="center">B 帧数量</th>
-            <th align="center">GOP 长度</th>
+            <th align="center">压缩格式</th>
+            <th align="center">压缩子类型</th>
+            <th align="center">压缩比</th>
+            <th align="center">码率</th>
+            <th align="center">B帧数量</th>
+            <th align="center">GOP长度</th>
             <th>操作</th>
           </thead>
           <tbody>
-            <tr
-              v-for="(vft, vidx) in videoFormats"
-              :key="vft.name"
-            >
+            <tr v-for="(vft, vidx) in videoFormats" :key="vft.name">
               <td>{{ vft.name }}</td>
-              <td>{{ vft.format }}</td>
-              <td>{{ vft.resolution }}</td>
-              <td>{{ vft.frameRate }}</td>
+              <td>{{ VideoFormatProtocolsMap[vft.protocol] }}</td>
+              <td>{{ `${vft.width}x${vft.height}` }}</td>
+              <td>
+                <div class="is-list">
+                  <VControl>
+                    <VSwitchBlock
+                      :model-value="vft.interlaced"
+                      color="primary"
+                    />
+                  </VControl>
+                </div>
+              </td>
+              <td>{{ vft.fps }}</td>
               <td>{{ vft.gamma }}</td>
-              <td>{{ vft.colorSpace }}</td>
-              <td>{{ vft.encodeFormat }}</td>
-              <td>{{ vft.bitRate }}</td>
-              <td>{{ vft.bframe }}</td>
-              <td>{{ vft.gop }}</td>
+              <td>{{ vft.gamut }}</td>
+              <td>{{ vft.compression_format }}</td>
+              <td>{{ vft.compression_subtype || '-' }}</td>
+              <td>{{ vft.compression_ratio || '-' }}</td>
+              <td>{{ vft.bitrate_bps || '-' }}</td>
+              <td>{{ vft.gop_b_frames || '-' }}</td>
+              <td>{{ vft.gop_length || '-' }}</td>
               <td>
                 <PresetListDropdown
                   @add="create"
@@ -111,293 +118,15 @@ function edit(idx: number) {
   <NewVideoFormatModal />
 </template>
 <style lang="scss">
-.is-navbar {
-  .datatable-toolbar {
-    padding-top: 30px;
-  }
-}
-
-.datatable-toolbar {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-
-  &.is-reversed {
-    flex-direction: row-reverse;
-  }
-
-  .field {
-    margin-bottom: 0;
-
-    .control {
-      .button {
-        color: var(--light-text);
-
-        &:hover,
-        &:focus {
-          background: var(--primary);
-          border-color: var(--primary);
-          color: var(--primary--color-invert);
-        }
-      }
-    }
-  }
-
-  .buttons {
-    margin-left: auto;
-    margin-bottom: 0;
-
-    .v-button {
-      margin-bottom: 0;
-    }
-  }
-}
-
-.is-dark {
-  .datatable-toolbar {
-    .field {
-      .control {
-        .button {
-          background: var(--dark-sidebar) !important;
-          color: var(--light-text);
-
-          &:hover,
-          &:focus {
-            background: var(--primary) !important;
-            border-color: var(--primary) !important;
-            color: var(--smoke-white) !important;
-          }
-        }
-      }
-    }
-  }
-}
-
-.datatable-wrapper {
-  width: 100%;
-
-  .table-container {
-    overflow: visible;
-  }
-
-  .datatable-container {
-    background: var(--white);
-    border: none !important;
-    overflow-x: auto;
-
-    .table,
-    table {
-      width: 100%;
-    }
-
-    &::-webkit-scrollbar {
-      height: 8px !important;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      border-radius: 10px !important;
-      background: rgb(0 0 0 / 20%) !important;
-    }
-  }
-}
-
-.datatable-table {
-  border: 1px solid var(--fade-grey);
-  border-collapse: collapse;
-  border-radius: 0.75rem;
-  text-align: center;
-
-  thead th {
-    border-width: 1px;
-  }
+.datatable-table.video-format-table {
+  font-size: 0.875rem;
 
   th {
-    padding: 16px 20px;
-    font-family: var(--font-alt);
-    font-size: 0.8rem;
-    color: var(--dark-text);
-    text-transform: uppercase;
-    border: 1px solid var(--fade-grey);
-    font-weight: 600;
-
-    &:last-child {
-      text-align: right;
-    }
+    padding: 16px 8px;
   }
 
   td {
-    font-family: var(--font);
-    font-weight: 400;
-    vertical-align: middle;
-    padding: 12px 20px;
-    border-bottom: 1px solid var(--fade-grey);
-    text-align: center;
-
-    &:last-child {
-      text-align: right;
-    }
-
-    &.datatables-empty {
-      opacity: 0;
-    }
-  }
-
-  .light-text {
-    color: var(--light-text);
-  }
-
-  .flex-media {
-    display: flex;
-    align-items: center;
-
-    .meta {
-      margin-left: 10px;
-      line-height: 1.3;
-
-      span {
-        display: block;
-        font-size: 0.8rem;
-        color: var(--light-text);
-        font-family: var(--font);
-
-        &:first-child {
-          font-family: var(--font-alt);
-          color: var(--dark-text);
-        }
-      }
-    }
-  }
-
-  .row-action {
-    display: flex;
-    justify-content: flex-end;
-  }
-
-  .checkbox {
-    padding: 0;
-  }
-
-  .product-photo {
-    width: 80px;
-    height: 80px;
-    object-fit: contain;
-  }
-
-  .file-icon {
-    width: 46px;
-    height: 46px;
-    object-fit: contain;
-  }
-
-  .drinks-icon {
-    display: block;
-    max-width: 48px;
-    border-radius: var(--radius-rounded);
-    border: 1px solid var(--fade-grey);
-  }
-
-  .negative-icon,
-  .positive-icon {
-    svg {
-      height: 16px;
-      width: 16px;
-    }
-  }
-
-  .positive-icon {
-    .iconify {
-      color: var(--success);
-
-      * {
-        stroke-width: 4px;
-      }
-    }
-  }
-
-  .negative-icon {
-    &.is-danger {
-      .iconify {
-        color: var(--danger) !important;
-      }
-    }
-
-    .iconify {
-      color: var(--light-text);
-
-      * {
-        stroke-width: 4px;
-      }
-    }
-  }
-
-  .price {
-    color: var(--dark-text);
-    font-weight: 500;
-
-    &::before {
-      content: '$';
-    }
-
-    &.price-free {
-      color: var(--light-text);
-    }
-  }
-
-  .status {
-    display: flex;
-    align-items: center;
-
-    &.is-available {
-      i {
-        color: var(--success);
-      }
-    }
-
-    &.is-busy {
-      i {
-        color: var(--danger);
-      }
-    }
-
-    &.is-offline {
-      i {
-        color: var(--light-text);
-      }
-    }
-
-    i {
-      margin-right: 8px;
-      font-size: 8px;
-    }
-
-    span {
-      font-family: var(--font);
-      font-size: 0.9rem;
-      color: var(--light-text);
-    }
-  }
-}
-
-.is-dark {
-  .datatable-wrapper {
-    .datatable-container {
-      border-color: var(--dark-sidebar-light-12);
-      background: var(--dark-sidebar-light-6);
-    }
-  }
-
-  .datatable-table {
-    border-color: var(--dark-sidebar-light-12);
-
-    th,
-    td {
-      border-color: var(--dark-sidebar-light-12);
-      color: var(--dark-dark-text);
-    }
-
-    .drinks-icon {
-      border-color: var(--dark-sidebar-light-12);
-    }
+    padding: 12px 8px;
   }
 }
 </style>

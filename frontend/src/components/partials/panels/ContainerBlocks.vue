@@ -63,12 +63,19 @@ function onDrop(event: DragEvent) {
   });
 }
 
+// setTimeout(() => {
+//   bus.trigger(Signal.OpenResourceConfig, {
+//     tmpl: { typeCategory: 'mv' } as TemplateData,
+//     node: nodes.value[0]
+//   });
+// }, 1000)
+
 function parseChartData(info: ClustNode, key: keyof ClustNode['allocatable']) {
-  return info.allocated ? [Math.round((info.allocated[key] || 0) * 100 / (info.allocatable[key] || 1))] : [-1]
+  return info.allocated ? [Math.round((info.allocated[key] || 0) * 100 / (info.allocatable?.[key] || 1))] : [-1]
 }
 
 function edit(node: ClustNode) {
-  bus.trigger(Signal.OpenNodeEdit, node);
+  bus.trigger(Signal.OpenNodeResourceList, node);
 }
 
 (async () => {
@@ -190,6 +197,7 @@ onUnmounted(() => {
       </div>
     </VCard>
   </TransitionGroup>
+  <NodeResourceListModal />
   <NodeEditModal />
 </template>
 <style lang="scss">

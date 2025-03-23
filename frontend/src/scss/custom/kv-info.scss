@@ -78,6 +78,42 @@
         line-height: 2;
         height: 2em;
       }
+
+      .switch-tag {
+        position: relative;
+        display: inline-block;
+        height: 8px;
+        width: 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        background: var(--dark-sidebar-light-6);
+        transition: all 0.3s;
+
+        &.is-receive-open {
+          background: var(--info);
+        }
+
+        &.is-send-open {
+          background: var(--danger);
+        }
+      }
+    }
+  }
+
+  &.tippy-detail {
+    min-width: 240px;
+
+    .info-block-inner {
+      padding: 0;
+
+      .info-block-line {
+        h4 {
+          margin-right: 24px;
+          font-weight: 400;
+          font-size: 0.875rem;
+          line-height: 1.4;
+        }
+      }
     }
   }
 }

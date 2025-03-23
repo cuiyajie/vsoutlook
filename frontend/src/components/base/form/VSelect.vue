@@ -6,10 +6,15 @@ export interface VSelectProps {
   multiple?: boolean
 }
 
+export interface VSelectEmits {
+  (e: 'change', payload: Event): void
+}
+
 defineOptions({
   inheritAttrs: false,
 })
 
+const emit = defineEmits<VSelectEmits>()
 const modelValue = defineModel<any>({
   default: '',
   local: true,
@@ -43,6 +48,11 @@ const classes = computed(() => {
 
   return ['select', props.multiple && 'is-multiple']
 })
+
+function handleChange(payload: Event) {
+  emit('change', payload)
+  field.value?.handleChange(payload)
+}
 </script>
 
 <template>
@@ -53,7 +63,7 @@ const classes = computed(() => {
       v-model="internal"
       :name="id"
       :multiple="props.multiple"
-      @change="field?.handleChange"
+      @change="handleChange"
       @blur="field?.handleBlur"
     >
       <slot v-bind="{ selected: internal, id }" />

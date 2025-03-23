@@ -1,0 +1,72 @@
+{
+  "moudle": "recoder",
+  "av_log_level": 5,
+  "used_signal_type": 0,
+  "api_params": [
+    {
+      "api_name": "rec_control",
+      "service_port": 9021
+    },
+    {
+      "api_name": "play_control",
+      "service_port": 9022
+    }
+  ],
+  "nic_list": [],
+  "nmos": {
+    "nmos_enable": true,
+    "rds_server_url": "192.168.1.112:8010",
+    "name": "61stream1",
+    "host_addresses": "192.168.1.64",
+    "http_port": 9008,
+    "log_level": 0,
+    "log_path": "/opt/vsomediasoftware/logs/",
+    "domain": "local."
+  },
+  "ssm_address_range": [
+    {
+      "index": 0,
+      "from": "232.0.0.0",
+      "to": "232.255.255.255"
+    }
+  ],
+  "authorization_service": [
+    {
+      "index": 0,
+      "ip": "232.0.0.0",
+      "port": 6005
+    }
+  ],
+  "videoformat_enum": [],
+  "audioformat_enum": [],
+  "recoder_params": {
+    "in_nic_index": -1
+  },
+  "player_params": {
+    "videoformat_name": "4K50P-SRT-AVS+",
+    "audioformat_name": "ch8-24bit-aac",
+    "smpte_params": {
+      "nic_index": 1,
+      "ipstream_master": {
+        "out_v_src_address": "10.1.1.64:30000",
+        "out_v_dst_address": "232.0.64.1:30000",
+        "out_a_src_address": "10.1.1.64:30000",
+        "out_a_dst_address": "232.1.64.1:30000"
+      },
+      "ipstream_backup": {
+        "out_v_src_address": "10.1.101.64:30000",
+        "out_v_dst_address": "232.0.164.1:30000",
+        "out_a_src_address": "10.1.101.64:30000",
+        "out_a_dst_address": "232.1.164.1:30000"
+      }
+    },
+    "stream_params": {
+      "url": "SRT://192.168.1.64:1234",
+      "codec_dev": "gpu",
+      "codec_dev_index": 0,
+      "quality": 5,
+      "video_enc_driver": 0,
+      "audio_enc_driver": 0
+    }
+  }
+}

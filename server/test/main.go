@@ -10,7 +10,7 @@ import (
 
 func main() {
 	fmt.Println("starting...")
-	clustPath := "http://172.16.1.102:8080"
+	clustPath := "http://172.16.1.15:8080"
 	baseURL := clustPath + "/api/namespaces/default/releases"
 
 	// Create a new URL with the base URL

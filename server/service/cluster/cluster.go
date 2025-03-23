@@ -40,8 +40,12 @@ func BuildProxyReq[T any](
 	path string,
 	query *map[string]interface{},
 	params *map[string]interface{},
+	host string,
 ) (*T, error) {
 	clustPath := config.Get("CLUST_HOST")
+	if host != "" {
+		clustPath = host
+	}
 	baseURL := clustPath + path
 	apiURL, err := url.Parse(baseURL)
 	if err != nil {
@@ -111,7 +115,7 @@ func GetPodsPhase(c *svcinfra.Context) {
 	}
 	c.ShouldBindJSON(&req)
 	path := "/api/namespaces/default/releases/" + req.Device + "/podPhase"
-	resp, _ := BuildProxyReq[any](c, "GET", path, nil, nil)
+	resp, _ := BuildProxyReq[any](c, "GET", path, nil, nil, "")
 	if resp == nil {
 		c.GeneralError("获取pod状态失败")
 		return
@@ -125,7 +129,7 @@ func DeletePod(c *svcinfra.Context) {
 	}
 	c.ShouldBindJSON(&req)
 	path := "/api/namespaces/default/pods/" + req.Pod + "/delete"
-	resp, _ := BuildProxyReq[any](c, "GET", path, nil, nil)
+	resp, _ := BuildProxyReq[any](c, "GET", path, nil, nil, "")
 	if resp == nil {
 		c.GeneralError("删除pod失败")
 		return
@@ -135,9 +139,38 @@ func DeletePod(c *svcinfra.Context) {
 
 func GetNodes(c *svcinfra.Context) {
 	path := "/nodes"
-	resp, _ := BuildProxyReq[[]ClusterListNode](c, "GET", path, nil, nil)
+	resp, _ := BuildProxyReq[[]ClusterListNode](c, "GET", path, nil, nil, "")
 	if resp == nil {
 		c.GeneralError("获取节点列表失败")
+		return
+	}
+	// resp := make([]ClusterNodeInfo, 0)
+	// resp = append(resp, ClusterNodeInfo{
+	// 	NodeName: "controlplane",
+	// 	NodeIP:   "192.168.1.12",
+	// })
+	c.Bye(gin.H{"code": 0, "data": resp})
+}
+
+func GetNMosNodes(c *svcinfra.Context) {
+	var req struct {
+		Order string `json:"order"`
+		Limit int    `json:"limit"`
+	}
+	c.ShouldBindJSON(&req)
+	path := "/x-nmos/query/v1.3/nodes"
+	host := config.Get("NMOS_HOST")
+	if host == "" {
+		c.GeneralError("NMOS_HOST not set")
+		return
+	}
+	query := map[string]interface{}{
+		"paging.order": req.Order,
+		"paging.limit": req.Limit,
+	}
+	resp, _ := BuildProxyReq[[]any](c, "GET", path, &query, nil, host)
+	if resp == nil {
+		c.GeneralError("获取NMOS节点列表失败")
 		return
 	}
 	c.Bye(gin.H{"code": 0, "data": resp})
@@ -151,22 +184,21 @@ func GetNodeDetail(c *svcinfra.Context) {
 
 	data := make(map[string]interface{})
 
-	path := "/node"
-	query := map[string]interface{}{
-		"node_name": req.ID,
-	}
-	resp, _ := BuildProxyReq[ClusterNodeDetail](c, "GET", path, &query, nil)
-	var node *models.Node
-	if resp != nil {
-		data["node"] = resp
-	}
+	// path := "/node"
+	// query := map[string]interface{}{
+	// 	"node_name": req.ID,
+	// }
+	// resp, _ := BuildProxyReq[ClusterNodeDetail](c, "GET", path, &query, nil, "")
+	// if resp != nil {
+	// 	data["node"] = resp
+	// }
 	devices := models.GetDevicesByNode(req.ID)
 	running := make([]string, 0)
 	stopped := make([]string, 0)
 	appMaps := make(map[string]bool)
-	for _, app := range resp.Applications {
-		appMaps[app] = true
-	}
+	// for _, app := range resp.Applications {
+	// 	appMaps[app] = true
+	// }
 	for _, device := range devices {
 		if len(device.AppName) > 0 && appMaps[device.Name] {
 			running = append(running, device.Name)
@@ -176,56 +208,133 @@ func GetNodeDetail(c *svcinfra.Context) {
 	}
 	data["running"] = running
 	data["stopped"] = stopped
-	node = models.ActiveNode(req.ID)
-	if node == nil {
-		data["coreList"] = ""
-		data["dmaList"] = ""
-		data["vfCount"] = 0
-	} else {
-		data["coreList"] = node.CoreList
-		data["dmaList"] = node.DMAList
-		data["vfCount"] = node.VFCount
-	}
 	c.Bye(gin.H{"code": 0, "data": data})
 }
 
-func UpdateNode(c *svcinfra.Context) {
+func GetNodeNics(c *svcinfra.Context) {
 	var req struct {
-		ID       string `json:"id"`
-		CoreList string `json:"core"`
-		DMAList  string `json:"dma"`
-		VFCount  uint32 `json:"vf"`
+		ID string `json:"id"`
 	}
 	c.ShouldBindJSON(&req)
 	node := models.ActiveNode(req.ID)
 	if node == nil {
-		node = &models.Node{
-			ID:        req.ID,
-			CoreList:  req.CoreList,
-			Allocated: make(models.MapUint32Slice),
-			DMAList:   req.DMAList,
-			VFCount:   req.VFCount,
-		}
-	} else {
-		if len(node.Allocated) == 0 {
-			node.CoreList = req.CoreList
-		} else if node.CoreList != req.CoreList {
-			c.GeneralError("节点已分配，不可修改")
-			return
-		}
-		if len(node.AllocatedDMA) == 0 {
-			node.DMAList = req.DMAList
-		} else if node.DMAList != req.DMAList {
-			c.GeneralError("DMA通道已分配，不可修改")
-			return
-		}
-		if len(node.Allocated) > int(req.VFCount) {
-			c.GeneralError("VF数量不可小于已分配的数量")
-			return
-		}
-		node.DMAList = req.DMAList
-		node.VFCount = req.VFCount
+		c.GeneralError("节点不存在")
+		return
 	}
-	db.DB.Save(node)
+	nics := node.Nics()
+	result := make([]models.NicAsBasic, 0, len(nics))
+	for _, t := range nics {
+		result = append(result, t.AsBasic())
+	}
+	c.Bye(gin.H{"code": 0, "data": result})
+}
+
+func CreateNic(c *svcinfra.Context) {
+	var req struct {
+		NodeID string `json:"nodeId"`
+		models.NicInfo
+	}
+	c.ShouldBindJSON(&req)
+	node := models.ActiveNode(req.NodeID)
+	if node == nil {
+		c.GeneralError("节点不存在")
+		return
+	}
+	if len(req.CoreList) == 0 {
+		c.GeneralError("网卡未设置核心")
+		return
+	}
+	if len(req.DMAList) == 0 {
+		c.GeneralError("网卡未设置DMA通道")
+		return
+	}
+	nic := models.Nic{
+		NodeID:        node.ID,
+		NicNameMain:   req.NicNameMain,
+		NicNameBackup: req.NicNameBackup,
+		ReceiveMain:   req.ReceiveMain,
+		ReceiveBackup: req.ReceiveBackup,
+		SendMain:      req.SendMain,
+		SendBackup:    req.SendBackup,
+		CoreList:      req.CoreList,
+		DMAList:       req.DMAList,
+		VFCount:       req.VFCount,
+	}
+	db.DB.Create(&nic)
+	c.Bye(gin.H{"code": 0, "data": nic.AsBasic()})
+}
+
+func UpdateNic(c *svcinfra.Context) {
+	var req struct {
+		ID string `json:"id"`
+		models.NicInfo
+	}
+	c.ShouldBindJSON(&req)
+	nic := models.ActiveNic(req.ID)
+	if nic == nil {
+		c.GeneralError("不存在")
+		return
+	}
+	if len(req.CoreList) == 0 {
+		c.GeneralError("网卡未设置核心")
+		return
+	}
+	if len(req.DMAList) == 0 {
+		c.GeneralError("网卡未设置DMA通道")
+		return
+	}
+	if len(nic.AllocatedCore) == 0 {
+		nic.CoreList = req.CoreList
+	} else if nic.CoreList != req.CoreList {
+		c.GeneralError("核心已分配，不可修改")
+		return
+	}
+	if len(nic.AllocatedDMA) == 0 {
+		nic.DMAList = req.DMAList
+	} else if nic.DMAList != req.DMAList {
+		c.GeneralError("DMA通道已分配，不可修改")
+		return
+	}
+	if len(nic.AllocatedCore) > int(req.VFCount) {
+		c.GeneralError("VF数量不可小于已分配的数量")
+		return
+	}
+	nic.NicNameMain = req.NicNameMain
+	nic.NicNameBackup = req.NicNameBackup
+	nic.ReceiveMain = req.ReceiveMain
+	nic.ReceiveBackup = req.ReceiveBackup
+	nic.SendMain = req.SendMain
+	nic.SendBackup = req.SendBackup
+	nic.CoreList = req.CoreList
+	nic.DMAList = req.DMAList
+	nic.VFCount = req.VFCount
+	db.DB.Save(nic)
+	c.Bye(gin.H{"code": 0, "data": nic.AsBasic()})
+}
+
+func DeleteNic(c *svcinfra.Context) {
+	var req struct {
+		ID string `json:"id"`
+	}
+	c.ShouldBindJSON(&req)
+	nic := models.ActiveNic(req.ID)
+	if nic == nil {
+		c.GeneralError("网卡不存在")
+		return
+	}
+	if nic.IsDeleted() {
+		c.GeneralError("网卡已删除")
+		return
+	}
+	if len(nic.AllocatedCore) > 0 {
+		c.GeneralError("网卡核心已分配，不可删除")
+		return
+	}
+	if len(nic.AllocatedDMA) > 0 {
+		c.GeneralError("网卡DMA通道已分配，不可删除")
+		return
+	}
+	nic.Deleted = 1
+	db.DB.Save(nic)
 	c.Bye(gin.H{"code": 0})
 }

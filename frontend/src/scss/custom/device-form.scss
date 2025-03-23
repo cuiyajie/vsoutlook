@@ -3,6 +3,10 @@
 
   .form-fieldset {
     max-width: none;
+
+    &.is-tail {
+      padding-bottom: 0;
+    }
   }
 
   .fieldset-heading.flex {
@@ -28,14 +32,12 @@
   }
 
   .index-field {
-
     .control > label {
       margin-inline-start: 0.54rem;
       color: white;
       line-height: 38px;
     }
   }
-
 
   .form-outer {
     .form-body {
@@ -54,6 +56,14 @@
       h4 {
         font-weight: 600;
       }
+    }
+
+    &.has-mt-20 {
+      margin-top: 20px;
+    }
+
+    &.has-mb-20 {
+      margin-bottom: 20px;
     }
 
     & + .form-outer {
@@ -79,19 +89,24 @@
       margin-right: 10px;
       margin-top: 3px;
     }
+
+    &.is-auto-fill {
+      .label {
+        flex: 0 0 auto;
+        margin-top: 8px;
+      }
+      .control {
+        flex: 1;
+      }
+    }
   }
 
-  .form-fieldset-nested,
-  .form-fieldset-nested-3 {
+  .form-fieldset-nested {
     padding: 0 20px 20px;
+  }
 
-    &.is-tail {
-      padding-bottom: 0;
-    }
-
-    .form-fieldset {
-      padding-top: 0;
-    }
+  .form-fieldset-nested-1 {
+    padding: 20px 0;
   }
 
   .form-fieldset-nested-2 {
@@ -104,6 +119,18 @@
 
   .form-fieldset-nested-3 {
     padding: 0 0 20px;
+
+    &.is-tail {
+      padding-bottom: 0;
+    }
+
+    .form-fieldset {
+      padding-top: 0;
+    }
+  }
+
+  .form-fieldset-nested-4 {
+    padding: 0;
   }
 
   .collapse-header {
@@ -163,7 +190,7 @@
     }
   }
 
-  .field.has-addons {
+  .field.has-addons.ip-addr {
     .field-addon-body {
       .control:first-child {
         flex-grow: 1;
@@ -186,12 +213,19 @@
       }
     }
   }
+
+  .is-empty-list {
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.875rem;
+    font-style: italic;
+  }
 }
 
 .is-dark {
-
   .device-form.form-layout {
-
     .input[readonly],
     .textarea[readonly] {
       background-color: var(--dark-sidebar-light-10);

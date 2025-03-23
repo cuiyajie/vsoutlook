@@ -7,16 +7,19 @@ import (
 
 type TmplType struct {
 	ModelId
-	Name     string
-	Icon     string
-	Category string
+	Name        string `gorm:"type:varchar"`
+	Icon        string `gorm:"type:varchar"`
+	Category    string `gorm:"type:varchar"`
+	AppCategory string `gorm:"type:varchar"`
+	Deleted     uint8  `gorm:"default:0"`
 }
 
 type TmplTypeAsBasic struct {
-	ID       string `json:"id"`
-	Name     string `json:"name"`
-	Icon     string `json:"icon"`
-	Category string `json:"category"`
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Icon        string `json:"icon"`
+	Category    string `json:"category"`
+	AppCategory string `json:"appCategory"`
 }
 
 func (tmplType *TmplType) AsBasic() TmplTypeAsBasic {
@@ -26,12 +29,12 @@ func (tmplType *TmplType) AsBasic() TmplTypeAsBasic {
 }
 
 func (tmplType TmplType) IsDeleted() bool {
-	return false
+	return tmplType.Deleted > 0
 }
 
 func TmplTypeList() []TmplTypeAsBasic {
 	var tmplTypes []TmplType
-	db.DB.Find(&tmplTypes)
+	db.DB.Where("deleted=0").Find(&tmplTypes)
 	result := make([]TmplTypeAsBasic, 0, len(tmplTypes))
 	for _, tt := range tmplTypes {
 		result = append(result, tt.AsBasic())
