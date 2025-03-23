@@ -14,11 +14,19 @@ const mv = defineModel<NMosConfigType>({
     </div>
 
     <div class="columns is-multiline">
-      <div class="column is-6">
+      <div class="column is-3">
         <VField>
           <VLabel>是否启用nmos</VLabel>
           <VControl>
             <VSwitchBlock v-model="mv.nmos_enable" color="primary" />
+          </VControl>
+        </VField>
+      </div>
+      <div class="column is-9">
+        <VField>
+          <VLabel>RDS服务地址(含端口)</VLabel>
+          <VControl>
+            <NMosSelect v-model="mv.rds_server_url" />
           </VControl>
         </VField>
       </div>

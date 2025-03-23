@@ -138,17 +138,17 @@ func DeletePod(c *svcinfra.Context) {
 }
 
 func GetNodes(c *svcinfra.Context) {
-	path := "/nodes"
-	resp, _ := BuildProxyReq[[]ClusterListNode](c, "GET", path, nil, nil, "")
-	if resp == nil {
-		c.GeneralError("获取节点列表失败")
-		return
-	}
-	// resp := make([]ClusterNodeInfo, 0)
-	// resp = append(resp, ClusterNodeInfo{
-	// 	NodeName: "controlplane",
-	// 	NodeIP:   "192.168.1.12",
-	// })
+	// path := "/nodes"
+	// resp, _ := BuildProxyReq[[]ClusterListNode](c, "GET", path, nil, nil, "")
+	// if resp == nil {
+	// 	c.GeneralError("获取节点列表失败")
+	// 	return
+	// }
+	resp := make([]ClusterNodeInfo, 0)
+	resp = append(resp, ClusterNodeInfo{
+		NodeName: "controlplane",
+		NodeIP:   "192.168.1.12",
+	})
 	c.Bye(gin.H{"code": 0, "data": resp})
 }
 

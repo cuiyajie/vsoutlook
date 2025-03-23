@@ -100,6 +100,8 @@ declare module 'vue' {
     NicSelect: typeof import('./../src/components/partials/modals/ResourceConfig/Utilties/NicSelect.vue')['default']
     NicToolTip: typeof import('./../src/components/partials/modals/ResourceConfig/Utilties/NicToolTip.vue')['default']
     NMosConfig: typeof import('./../src/components/partials/modals/ResourceConfig/Utilties/NMosConfig.vue')['default']
+    NMosSelect: typeof import('./../src/components/partials/modals/ResourceConfig/Utilties/NMosSelect.vue')['default']
+    NMosTooltip: typeof import('./../src/components/partials/modals/ResourceConfig/Utilties/NMosTooltip.vue')['default']
     NodeEditModal: typeof import('./../src/components/partials/modals/NodeEditModal.vue')['default']
     NodeResourceListModal: typeof import('./../src/components/partials/modals/NodeResourceListModal.vue')['default']
     NormalDisplay: typeof import('./../src/components/pages/app/MtvLayouts/LayoutDisplay/NormalDisplay.vue')['default']

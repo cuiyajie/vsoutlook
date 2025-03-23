@@ -300,9 +300,6 @@ func preInstallation(c *svcinfra.Context, configStr string, tmpl *models.Tmpl, n
 			}
 		}
 		nmos["seed_id"] = device.SeedID
-		if rdsServerUrl, ok := settings["rds_server_url"]; ok {
-			nmos["rds_server_url"] = rdsServerUrl
-		}
 	}
 	if asJsonStr, ok := settings["authorization_services"]; ok {
 		var authServices []AuthService

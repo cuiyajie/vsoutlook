@@ -76,6 +76,7 @@ useListener(
     if (node.value) {
       nodeStore.$getNodeNics(node.value.id)
     }
+    nodeStore.$fetchNMos()
     nextTick(() => {
       setValues({
         deviceName: deviceName.value,

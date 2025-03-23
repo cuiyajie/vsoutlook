@@ -153,6 +153,7 @@ export const useClustNode = defineStore('clustNode', () => {
 
   return {
     nodes,
+    nmosNodes,
     $fetchList,
     $fetchNMos,
     $startQuery,
