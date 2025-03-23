@@ -3972,6 +3972,37 @@ code {
   color: rgb(42, 172, 142);
 }
 
+.kv-info .info-block-inner .info-block-line .switch-tag.is-receive-open {
+  background: rgb(3, 152, 226);
+}
+
+.kv-info .info-block-inner .info-block-line .switch-tag.is-send-open {
+  background: rgb(230, 41, 100);
+}
+
 .device-form.form-layout .collapse-header .collapse-icon {
   background: rgb(255, 255, 255);
+}
+
+.datatable-toolbar .field .control .button:hover,
+.datatable-toolbar .field .control .button:focus {
+  background: rgb(42, 172, 142);
+  border-color: rgb(42, 172, 142);
+  color: rgb(255, 255, 255);
+}
+
+.datatable-wrapper .datatable-container {
+  background: rgb(255, 255, 255);
+}
+
+.datatable-table .positive-icon .iconify {
+  color: rgb(6, 214, 158);
+}
+
+.datatable-table .status.is-available i {
+  color: rgb(6, 214, 158);
+}
+
+.datatable-table .status.is-busy i {
+  color: rgb(230, 41, 100);
 }
