@@ -28,7 +28,7 @@ watch(() => mv.value, (nv) => {
     ref="selectRef"
     class="nmos-select"
     placeholder="选择NMos节点"
-    no-options-text="未查询到NMos节点"
+    no-options-text="未查询到NMos节点，请检查RDS服务是否正常"
     value-prop="id"
     label="label"
     :searchable="false"

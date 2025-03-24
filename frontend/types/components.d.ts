@@ -103,6 +103,7 @@ declare module 'vue' {
     PlayerParamsForm: typeof import('./../src/components/partials/modals/ResourceConfig/Utilties/PlayerParamsForm.vue')['default']
     PresetConfig: typeof import('./../src/components/pages/app/PresetConfig.vue')['default']
     PresetListDropdown: typeof import('./../src/components/partials/dropdowns/PresetListDropdown.vue')['default']
+    RdsServerControl: typeof import('./../src/components/partials/forms/RdsServerControl.vue')['default']
     RecorderForm: typeof import('./../src/components/partials/modals/ResourceConfig/Recorder/RecorderForm.vue')['default']
     ResourceConfigModal: typeof import('./../src/components/partials/modals/ResourceConfig/ResourceConfigModal.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

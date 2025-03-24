@@ -9,7 +9,7 @@
 
 import { ref } from 'vue'
 import { acceptHMRUpdate, defineStore } from 'pinia'
-import { useFetch } from "@src/composable/useFetch";
+import { useFetch } from '@src/composable/useFetch'
 // import * as nodeMock from "@src/data/node-mock"
 
 const Timeout = 15 * 1000
@@ -34,10 +34,10 @@ export const useClustNode = defineStore('clustNode', () => {
 
   async function $getNodeNics(id: string) {
     const res = await $fetch('/api/cluster/nics', {
-      body: { id }
+      body: { id },
     })
     if (res?.code === 0) {
-      const tnode = nodes.value.find(node => node.id === id)
+      const tnode = nodes.value.find((node) => node.id === id)
       if (tnode) {
         tnode.nics = (res.data || []) as NicInfo[]
       }
@@ -48,10 +48,10 @@ export const useClustNode = defineStore('clustNode', () => {
 
   async function $createNic(nic: Omit<NicInfo, 'id' | 'nodeId'>, nodeId: string) {
     const res = await $fetch('/api/cluster/nic.create', {
-      body: { nodeId, ...nic }
+      body: { nodeId, ...nic },
     })
     if (res?.code === 0) {
-      const tnode = nodes.value.find(node => node.id === nodeId)
+      const tnode = nodes.value.find((node) => node.id === nodeId)
       if (tnode) {
         tnode.nics.push(res.data as NicInfo)
       }
@@ -61,12 +61,12 @@ export const useClustNode = defineStore('clustNode', () => {
 
   async function $updateNic(nic: NicInfo) {
     const res = await $fetch('/api/cluster/nic.update', {
-      body: { ...nic }
+      body: { ...nic },
     })
     if (res?.code === 0) {
-      const tnode = nodes.value.find(node => node.id === nic.nodeId)
+      const tnode = nodes.value.find((node) => node.id === nic.nodeId)
       if (tnode) {
-        const tnic = tnode.nics.find(n => n.id === nic.id)
+        const tnic = tnode.nics.find((n) => n.id === nic.id)
         if (tnic) {
           Object.assign(tnic, res.data as NicInfo)
         }
@@ -77,12 +77,12 @@ export const useClustNode = defineStore('clustNode', () => {
 
   async function $deleteNic(id: string, nodeId: string) {
     const res = await $fetch('/api/cluster/nic.delete', {
-      body: { id }
+      body: { id },
     })
     if (res?.code === 0) {
-      const tnode = nodes.value.find(node => node.id === nodeId)
+      const tnode = nodes.value.find((node) => node.id === nodeId)
       if (tnode) {
-        tnode.nics = tnode.nics.filter(n => n.id !== id)
+        tnode.nics = tnode.nics.filter((n) => n.id !== id)
       }
     }
     return res
@@ -90,7 +90,7 @@ export const useClustNode = defineStore('clustNode', () => {
 
   async function $fetchById(id: string): Promise<ClustNode> {
     const res1 = await $fetch('/api/cluster/node.detail', {
-      body: { id }
+      body: { id },
     })
     if (res1 && res1.code === 0) {
       const { node, running, stopped } = res1.data
@@ -101,12 +101,12 @@ export const useClustNode = defineStore('clustNode', () => {
         allocatable: node?.allocatable,
         allocated: node?.allocated,
         running,
-        stopped
+        stopped,
       }
     }
     return {
-      id: "",
-      ip: "",
+      id: '',
+      ip: '',
       nics: [],
       allocatable: {} as any,
       allocated: {} as any,
@@ -117,7 +117,7 @@ export const useClustNode = defineStore('clustNode', () => {
 
   async function $getById(id: string): Promise<ClustNode> {
     const node = await $fetchById(id)
-    const tnode = nodes.value.find(n => n.id === id)
+    const tnode = nodes.value.find((n) => n.id === id)
     if (tnode) {
       Object.assign(tnode, node)
     }
@@ -128,26 +128,31 @@ export const useClustNode = defineStore('clustNode', () => {
     // nodes.value =  nodeMock.nodes
     const res = await $fetch('/api/cluster/nodes')
     if (res && res.code === 0) {
-      nodes.value = await Promise.all(res.data.map(async (n: { nodeName: string, nodeIP: string }) => {
-        const node = await $fetchById(n.nodeName)
-        return Object.assign(node, {
-          id: n.nodeName,
-          ip: n.nodeIP
+      nodes.value = await Promise.all(
+        res.data.map(async (n: { nodeName: string; nodeIP: string }) => {
+          const node = await $fetchById(n.nodeName)
+          return Object.assign(node, {
+            id: n.nodeName,
+            ip: n.nodeIP,
+          })
         })
-      }))
+      )
     }
   }
 
   async function $fetchNMos() {
     const res = await $fetch('/api/cluster/nmos', {
       body: {
-        'order': 'update',
-        'limit': 1000
-      }
+        order: 'update',
+        limit: 1000,
+      },
     })
     if (res && res.code === 0) {
-      console.log(res.data)
       nmosNodes.value = res.data
+      return res.data
+    } else {
+      nmosNodes.value = []
+      return []
     }
   }
 

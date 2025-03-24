@@ -7,4 +7,3 @@ SESSION_SECRET: vcsuaswyoizzzltkbdwjpufuklubvuxg
 STATIC_PATH: /home/vsoutlook/vsoutlook-app/frontend
 CLUST_HOST: http://172.16.1.15:8080
 CHART_PKG: local/foo
-NMOS_HOST: http://172.16.1.102:8010

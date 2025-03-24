@@ -321,18 +321,18 @@ func preInstallation(c *svcinfra.Context, configStr string, tmpl *models.Tmpl, n
 	data["configFile"] = configJson
 	device.Config = configJson
 
-	// resp2, err := cluster.BuildProxyReq[struct {
-	// 	Name string `json:"name"`
-	// }](c, "POST", "/install", nil, &data, "")
-	// if resp2 == nil {
-	// 	fmt.Printf("failed to parse response: %v", err)
-	// 	if err != nil {
-	// 		return nil, nil, fmt.Errorf("部署设备失败: %s", err.Error())
-	// 	} else {
-	// 		return nil, nil, errors.New("部署节点返回数据格式错误")
-	// 	}
-	// }
-	// device.AppName = resp2.Name
+	resp2, err := cluster.BuildProxyReq[struct {
+		Name string `json:"name"`
+	}](c, "POST", "/install", nil, &data, "")
+	if resp2 == nil {
+		fmt.Printf("failed to parse response: %v", err)
+		if err != nil {
+			return nil, nil, fmt.Errorf("部署设备失败: %s", err.Error())
+		} else {
+			return nil, nil, errors.New("部署节点返回数据格式错误")
+		}
+	}
+	device.AppName = resp2.Name
 	return &coreMap, &dmaMap, nil
 }
 

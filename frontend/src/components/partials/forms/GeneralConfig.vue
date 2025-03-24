@@ -1,10 +1,14 @@
 <script setup lang="ts">
+import { useClustNode } from "@src/stores/node";
 import { useUserSession } from "@src/stores/userSession";
 import { confirm } from "@src/utils/dialog";
+import { useNotyf } from "@src/composable/useNotyf";
 
 const usStore = useUserSession();
+const nodeStore = useClustNode();
 const settings = computed(() => usStore.settings);
 const router = useRouter();
+const notyf = useNotyf();
 
 /* ------------------------ Auth Service -------------------------- */
 const def_auth_service = {
@@ -186,6 +190,25 @@ const vBlurOnEnter = {
   }
 };
 
+const testing = ref(false)
+function testRds() {
+  if (!settings.value.rds_server_url || !/^https?:\/\/(?:(?:([a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6})|(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))(?::(?:[0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]))?(?<!\/)$/.test(settings.value.rds_server_url)) {
+    notyf.error('RDS服务地址格式不正确')
+    return
+  }
+  testing.value = true
+  nodeStore.$fetchNMos().then((data) => {
+    testing.value = false
+    if (data.length > 0) {
+      notyf.success('RDS服务地址测试成功')
+    } else {
+      notyf.error('RDS服务地址测试失败')
+    }
+  }).catch(() => {
+    testing.value = false
+  })
+}
+
 </script>
 
 <template>
@@ -227,7 +250,7 @@ const vBlurOnEnter = {
             </div>
           </div>
 
-          <div class="form-section-inner is-horizontal flex-auto">
+          <div class="form-section-inner is-horizontal flex-auto is-rds-url">
             <VField
               horizontal
               label="RDS服务地址(含端口)"
@@ -240,11 +263,15 @@ const vBlurOnEnter = {
                   v-model="settings.rds_server_url"
                   v-blur-on-enter
                   type="url"
-                  placeholder="192.168.1.112:8010"
+                  placeholder="http://192.168.1.112:8010"
                   inputmode="url"
                   data-key="rds_server_url"
                 />
               </VControl>
+              <VButton color="primary" raised class="btn-test-rds" :loading="testing" @click="testRds">
+                <span>测试</span>
+              </VButton>
+              <VLabel class="font-test-label">示例: http://192.168.1.1</VLabel>
             </VField>
           </div>
         </div>
@@ -684,7 +711,15 @@ const vBlurOnEnter = {
 
           .form-section-inner {
             &.is-horizontal {
-              max-width: 540px;
+              max-width: 80%;
+            }
+
+            &.is-rds-url.is-horizontal {
+              max-width: 640px;
+
+              .font-test-label {
+                flex: 0 0 auto;
+              }
             }
 
             &.flex-auto {
@@ -702,6 +737,11 @@ const vBlurOnEnter = {
               font-weight: 400;
               padding-top: 10px;
               margin-left: 20px;
+            }
+
+            .btn-test-rds {
+              margin-left: 16px;
+              height: 36px;
             }
 
             &.row-with-button {
