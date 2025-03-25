@@ -8,30 +8,26 @@ export const VideoFormatProtocols = [
   { value: 'ts', label: 'ts信号（Over UDP）' },
   { value: 'rtmp', label: 'RTMP信号' },
 ]
-export const VideoFormatProtocolsMap = VideoFormatProtocols.reduce((acc, cur) => {
-  acc[cur.value] = cur.label
-  return acc
-}, {} as { [key: string]: string })
+export const VideoFormatProtocolsMap = VideoFormatProtocols.reduce(
+  (acc, cur) => {
+    acc[cur.value] = cur.label
+    return acc
+  },
+  {} as { [key: string]: string }
+)
 export const DefaultVideoFormatProtocol = 'file'
 export const VideoFormatPrefixMap: Record<string, string> = {
-  'ndi': 'ndi',
-  'nvi': 'nvi',
-  'srt': 'srt',
-  'ts': 'udp',
-  'rtmp': 'rtmp',
+  ndi: 'ndi',
+  nvi: 'nvi',
+  srt: 'srt',
+  ts: 'udp',
+  rtmp: 'rtmp',
 }
 
-export const VideoGammas = [
-  'sdr',
-  'hlg',
-  'pq',
-]
+export const VideoGammas = ['sdr', 'hlg', 'pq']
 export const DefaultVideoGamma = 'hlg'
 
-export const VideoGamuts = [
-  'bt709',
-  'bt2020',
-]
+export const VideoGamuts = ['bt709', 'bt2020']
 export const DefaultVideoGamut = 'bt2020'
 
 export const VideoCompressionFormats = [
@@ -46,7 +42,7 @@ export const VideoCompressionFormats = [
   'suvc',
   'avs',
   'avs2',
-  'avs3'
+  'avs3',
 ]
 export const DefaultVideoCompressionFormat = 'jpeg-xs'
 
@@ -64,13 +60,7 @@ export const VideoCompressionSubtypes = [
 ]
 export const DefaultVideoCompressionSubtype = 'base'
 
-export const VideoCompressionRatios = [
-  '5:1',
-  '8:1',
-  '10:1',
-  '12:1',
-  '16:1',
-]
+export const VideoCompressionRatios = ['5:1', '8:1', '10:1', '12:1', '16:1']
 export const DefaultVideoCompressionRatio = '8:1'
 
 export const defVideoFormat = () => ({
@@ -90,24 +80,15 @@ export const defVideoFormat = () => ({
   gop_length: 0,
 })
 
+export const defTechReview = () => ({})
 
-export const AudioBits = [
-  16,
-  24,
-  32,
-]
+export const AudioBits = [16, 24, 32]
 export const DefaultAudioBit = 24
 
-export const AudioCompressionFormats = [
-  'pcm',
-  'aac',
-]
+export const AudioCompressionFormats = ['pcm', 'aac']
 export const DefaultAudioCompressionFormat = 'pcm'
 
-export const AudioPacketTimeUs = [
-  125,
-  1000,
-]
+export const AudioPacketTimeUs = [125, 1000]
 export const DefaultAudioPacketTimeUs = 125
 
 export const defAudioFormat = () => ({
@@ -121,30 +102,64 @@ export const defAudioFormat = () => ({
   bitrate_bps: 128000,
 })
 
-export const VideoReviewKeys = ['video_black_frame', 'video_static_frame', 'video_yuv', 'video_lost']
+export const VideoReviewKeys = [
+  'video_black_frame',
+  'video_static_frame',
+  'video_yuv',
+  'video_lost',
+]
 export const VideoReviewKeyName: Record<string, string> = {
-  'video_black_frame': '黑场检测',
-  'video_static_frame': '静帧检测',
-  'video_yuv': 'YUV超标',
-  'video_lost': '视频丢失',
+  video_black_frame: '黑场检测',
+  video_static_frame: '静帧检测',
+  video_yuv: 'YUV超标',
+  video_lost: '视频丢失',
 }
-export const defVideoReviewRules: () => { [key in typeof VideoReviewKeys[number]]: VideoReviewRule } = () => ({
-  'video_black_frame': { key: 'video_black_frame', name: '黑场检测', threshold_percentage: 0.997, duration_frames: 1 },
-  'video_static_frame': { key: 'video_static_frame', name: '静帧检测', threshold_percentage: 0.996, duration_frames: 50 },
-  'video_yuv': { key: 'video_yuv', name: 'YUV超标', threshold_percentage: 0.01, duration_frames: 150 },
-  'video_lost': { key: 'video_lost', name: '视频丢失', duration_ms: 100 },
+export const defVideoReviewRules: () => {
+  [key in (typeof VideoReviewKeys)[number]]: VideoReviewRule
+} = () => ({
+  video_black_frame: {
+    key: 'video_black_frame',
+    threshold_percentage: 0.997,
+    duration_frames: 1,
+  },
+  video_static_frame: {
+    key: 'video_static_frame',
+    threshold_percentage: 0.996,
+    duration_frames: 50,
+  },
+  video_yuv: {
+    key: 'video_yuv',
+    threshold_percentage: 0.01,
+    duration_frames: 150,
+  },
+  video_lost: { key: 'video_lost', duration_ms: 100 },
 })
 
 export const AudioReviewKeys = ['audio_mute', 'audio_high', 'audio_low', 'audio_lost']
 export const AudioReviewKeyName: Record<string, string> = {
-  'audio_mute': '音频静音',
-  'audio_high': '音频过高',
-  'audio_low': '音频过低',
-  'audio_lost': '音频丢失',
+  audio_mute: '音频静音',
+  audio_high: '音频过高',
+  audio_low: '音频过低',
+  audio_lost: '音频丢失',
 }
-export const defAudioReviewRules: () => { [key in typeof AudioReviewKeys[number]]: AudioReviewRule } = () => ({
-  'audio_mute': { key: 'audio_mute', name: '音频静音', detect_channels: '1-5', duration_frames: 250 },
-  'audio_high': { key: 'audio_high', name: '音频过高', detect_channels: '1-5', duration_frames: 100 },
-  'audio_low': { key: 'audio_low', name: '音频过低', detect_channels: '1-5', duration_frames: 100, threshold_dbfs: -60 },
-  'audio_lost': { key: 'audio_lost', name: '音频丢失', duration_ms: 1000 },
+export const defAudioReviewRules: () => {
+  [key in (typeof AudioReviewKeys)[number]]: AudioReviewRule
+} = () => ({
+  audio_mute: {
+    key: 'audio_mute',
+    detect_channels: '1-5',
+    duration_frames: 250,
+  },
+  audio_high: {
+    key: 'audio_high',
+    detect_channels: '1-5',
+    duration_frames: 100,
+  },
+  audio_low: {
+    key: 'audio_low',
+    detect_channels: '1-5',
+    duration_frames: 100,
+    threshold_dbfs: -60,
+  },
+  audio_lost: { key: 'audio_lost', duration_ms: 1000 },
 })

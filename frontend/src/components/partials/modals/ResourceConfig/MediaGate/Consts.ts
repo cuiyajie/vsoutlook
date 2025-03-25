@@ -1,4 +1,4 @@
-import { def_player_params } from "../Utilties/Consts_V1"
+import { def_player_params } from '../Utilties/Consts_V1'
 
 export const convert_mode = [
   { value: 'lut', label: 'lut表' },
@@ -12,16 +12,16 @@ export const dynamic_mode = [
 
 export const def_mg_player_params = () => ({
   ...def_player_params(),
-  force_use_videoforma: false
+  force_use_videoformat: false,
 })
 
 export const def_mg_output_item_params = () => ({
   ...def_player_params(),
   hdr_convert_params: {
-    convert_mode: "lut",
-    lut_filename: "/home/lut/aaa.lut",
+    convert_mode: 'lut',
+    lut_filename: '/home/lut/aaa.lut',
     dynamic_mode: 1,
-    luma_gain: 1.0
+    luma_gain: 1.0,
   },
 })
 

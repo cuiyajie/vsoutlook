@@ -76,6 +76,31 @@
         }
       }
 
+      &.has-info {
+        align-items: flex-start;
+
+        .info-right {
+          text-align: right;
+          display: block;
+
+          > span {
+            display: block;
+          }
+
+          & + .info-right {
+            margin-top: 16px;
+          }
+        }
+
+        .is-title {
+          margin-bottom: 8px;
+        }
+
+        .is-sub {
+          font-size: 0.75rem;
+        }
+      }
+
       &.multi {
         display: block;
 

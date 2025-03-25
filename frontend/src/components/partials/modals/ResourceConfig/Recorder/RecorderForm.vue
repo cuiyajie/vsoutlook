@@ -17,7 +17,7 @@ import merge from 'lodash-es/merge'
 import rcData from '@src/data/vscomponent/recorder.json'
 import { useUsedFormat } from '../Utilties/Composables';
 import { useUserSession } from "@src/stores/userSession"
-import { handleVideoFormat, handleAudioFormat, handlePlayerParams, handleNicList, unwrap, wrap } from '../Utilties/Utils_V1';
+import { handleVideoFormat, handleAudioFormat, handlePlayerParams, handleNicList, unwrap, wrap, checkPlayerParams } from '../Utilties/Utils_V1';
 
 const props = defineProps<{
   name: string,
@@ -100,7 +100,7 @@ function setValue(data: typeof rcData) {
     'recoder_params'
   ])
   const _playerParams = unwrap(data.player_params, 'out_')
-  playerParams.value = merge(def_player_params(), _playerParams)
+  playerParams.value = checkPlayerParams(merge(def_player_params(), _playerParams), videoFormats.value, audioFormats.value)
   nicDetails.value = data.nic_list.map((nic: any) => {
     const nicIndex = props.nics.findIndex(n => n.nicNameMain === nic.nic_name_m && n.nicNameBackup === nic.nic_name_b)
     if (nicIndex !== -1) {

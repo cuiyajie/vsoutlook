@@ -37,7 +37,7 @@ watch(() => mv.value.videoformat_name, (nv) => {
     <div class="fieldset-heading">
       <h4>smpte发流参数</h4>
     </div>
-    <div class="form-fieldset-nested">
+    <div class="form-fieldset-nested-3" :class="{'is-tail': !showParams}">
       <div class="form-fieldset-nested-3" :class="showParams && 'seperator'">
         <div class="columns is-multiline">
           <div class="column is-6">
@@ -52,7 +52,7 @@ watch(() => mv.value.videoformat_name, (nv) => {
       </div>
     </div>
     <Transition name="fade-slow">
-      <div v-if="showParams" class="form-fieldset-nested">
+      <div v-if="showParams" class="form-fieldset-nested-3">
         <div class="form-fieldset seperator">
           <div class="fieldset-heading">
             <h5>主路参数</h5>
@@ -75,7 +75,7 @@ watch(() => mv.value.videoformat_name, (nv) => {
       </div>
     </Transition>
     <Transition name="fade-slow">
-      <div v-if="showParams" class="form-fieldset-nested is-tail">
+      <div v-if="showParams" class="form-fieldset-nested-3 is-tail">
         <div class="form-fieldset">
           <div class="fieldset-heading">
             <h5>备路参数</h5>

@@ -19,7 +19,7 @@ import merge from 'lodash-es/merge'
 import mgData from '@src/data/vscomponent/media_gateway.json'
 import { useUsedFormat } from '../Utilties/Composables';
 import { useUserSession } from "@src/stores/userSession"
-import { handleVideoFormat, handleAudioFormat, handleNicList, wrap, unwrap } from '../Utilties/Utils_V1';
+import { handleVideoFormat, handleAudioFormat, handleNicList, wrap, unwrap, checkPlayerParams } from '../Utilties/Utils_V1';
 import { handleInputParams, handleOutputParams } from "./Utils"
 
 const props = defineProps<{
@@ -102,11 +102,11 @@ function setValue(data: typeof mgData) {
     'authorization_service',
   ])
   const _input = unwrap(data.input, 'in_')
-  inputParams.value = merge(def_mg_player_params(), _input)
+  inputParams.value = checkPlayerParams(merge(def_mg_player_params(), _input), videoFormats.value, audioFormats.value)
   const _output = unwrap(data.output.out_params, 'out_')
   showSecondOutput.value = _output.length > 1
   outputParams.value = Array.from({ length: 2 }, (_, idx) => {
-    return merge(def_mg_output_item_params(), _output[idx])
+    return checkPlayerParams(merge(def_mg_output_item_params(), _output[idx]), videoFormats.value, audioFormats.value)
   })
   nicDetails.value = data.nic_list.map((nic: any) => {
     const nicIndex = props.nics.findIndex(n => n.nicNameMain === nic.nic_name_m && n.nicNameBackup === nic.nic_name_b)

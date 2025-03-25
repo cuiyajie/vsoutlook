@@ -34,7 +34,7 @@ const emit = defineEmits<{
         <div class="columns is-multiline">
           <div class="column is-4">
             <VField>
-              <VLabel>输出视频格式名称</VLabel>
+              <VLabel>视频格式名称</VLabel>
               <VControl>
                 <VideoFormatSelect v-model="mv.videoformat_name" :used-signal-type="usedSignalType" @video-selected="emit('video-selected', $event)" @video-unselected="emit('video-unselected', $event)" />
               </VControl>
@@ -45,7 +45,7 @@ const emit = defineEmits<{
               <VLabel>输入视频元数据是否强制使用指定的色域</VLabel>
               <VControl class="in-form">
                 <VSwitchBlock
-                  v-model="mv.force_use_videoforma"
+                  v-model="mv.force_use_videoformat"
                   color="primary"
                 />
               </VControl>
@@ -53,7 +53,7 @@ const emit = defineEmits<{
           </div>
           <div class="column is-4">
             <VField>
-              <VLabel>输出音频格式名称</VLabel>
+              <VLabel>音频格式名称</VLabel>
               <VControl>
                 <AudioFormatSelect v-model="mv.audioformat_name" @audio-selected="emit('audio-selected', $event)" @audio-unselected="emit('audio-selected', $event)" />
               </VControl>
