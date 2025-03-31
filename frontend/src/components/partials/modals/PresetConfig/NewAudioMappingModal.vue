@@ -66,7 +66,7 @@ const handleCommit = handleSubmit(async () => {
   let value: string
   const formValue = {
     ...form.value,
-    channels: audioCopys.value,
+    copy_channels: audioCopys.value,
   } as AudioMapping
   if (indexRef.value < 0) {
     value = JSON.stringify([formValue, ...audioMappings.value])
@@ -105,7 +105,7 @@ useListener(
         name: mapping.name,
         mute_channels: mapping.mute_channels,
       }
-      audioCopys.value = mapping.channels
+      audioCopys.value = mapping.copy_channels
     } else {
       form.value = {
         name: '',

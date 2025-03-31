@@ -19,7 +19,7 @@ import merge from 'lodash-es/merge'
 import mgData from '@src/data/vscomponent/media_gateway.json'
 import { useUsedFormat } from '../Utilties/Composables';
 import { useUserSession } from "@src/stores/userSession"
-import { handleVideoFormat, handleAudioFormat, handleNicList, wrap, unwrap, checkPlayerParams } from '../Utilties/Utils_V1';
+import { handleVideoFormat, handleAudioFormat, handleNicList, wrap, unwrap, checkPlayerParams, checkNicDetails } from '../Utilties/Utils_V1';
 import { handleInputParams, handleOutputParams } from "./Utils"
 
 const props = defineProps<{
@@ -108,13 +108,7 @@ function setValue(data: typeof mgData) {
   outputParams.value = Array.from({ length: 2 }, (_, idx) => {
     return checkPlayerParams(merge(def_mg_output_item_params(), _output[idx]), videoFormats.value, audioFormats.value)
   })
-  nicDetails.value = data.nic_list.map((nic: any) => {
-    const nicIndex = props.nics.findIndex(n => n.nicNameMain === nic.nic_name_m && n.nicNameBackup === nic.nic_name_b)
-    if (nicIndex !== -1) {
-      return { ...nic, nicIndex, id: props.nics[nicIndex].id }
-    }
-    return { ...nic, nicIndex: -1, id: '' }
-  })
+  nicDetails.value = checkNicDetails(data.nic_list, props.nics)
 }
 
 defineExpose({
@@ -175,16 +169,16 @@ defineExpose({
               <VIcon icon="feather:chevron-down" />
             </div>
           </div>
-          <Transition name="fade-slow">
+          <expand-transition>
             <div v-show="advanceOpened" class="form-body">
               <NMosConfig v-model="mv.nmos" class="seperator" />
               <SSMAddressRange v-model="mv.ssm_address_range" />
             </div>
-          </Transition>
+          </expand-transition>
         </div>
-        <Transition name="fade-slow">
+        <expand-transition>
           <NicSection v-if="mv.used_signal_type !== 1" v-model="nicDetails" :nics="nics" />
-        </Transition>
+        </expand-transition>
         <div class="form-outer">
           <div class="form-header">
             <div class="form-header-inner">

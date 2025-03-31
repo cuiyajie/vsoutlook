@@ -88,7 +88,7 @@ const selected = computed(() => mv.value.nicIndex !== -1)
       tabindex="0"
       role="button"
     >
-      <h4>第{{ index + 1 }}块网卡配置</h4>
+      <h4>第 {{ index + 1 }} 块网卡配置</h4>
       <div class="collapse-icon">
         <VIconButton
           color="warning"
@@ -151,7 +151,7 @@ const selected = computed(() => mv.value.nicIndex !== -1)
             </VControl>
           </VField>
         </div>
-        <Transition name="fade-slow">
+        <expand-transition>
           <div v-show="selected" class="column is-4">
             <VField>
               <VLabel>主路收发网口IP</VLabel>
@@ -160,8 +160,8 @@ const selected = computed(() => mv.value.nicIndex !== -1)
               </VControl>
             </VField>
           </div>
-        </Transition>
-        <Transition name="fade-slow">
+        </expand-transition>
+        <expand-transition>
           <div v-show="selected" class="column is-4">
             <VField>
               <VLabel>主路收发网卡名称</VLabel>
@@ -170,8 +170,8 @@ const selected = computed(() => mv.value.nicIndex !== -1)
               </VControl>
             </VField>
           </div>
-        </Transition>
-        <Transition name="fade-slow">
+        </expand-transition>
+        <expand-transition>
           <div v-show="selected" class="column is-4">
             <VField label="主路收发网卡开关" class="switch-2-group">
               <VControl subcontrol class="switch-2">
@@ -182,8 +182,8 @@ const selected = computed(() => mv.value.nicIndex !== -1)
               </VControl>
             </VField>
           </div>
-        </Transition>
-        <Transition name="fade-slow">
+        </expand-transition>
+        <expand-transition>
           <div v-show="selected" class="column is-4">
             <VField>
               <VLabel>备路收发网口IP</VLabel>
@@ -192,8 +192,8 @@ const selected = computed(() => mv.value.nicIndex !== -1)
               </VControl>
             </VField>
           </div>
-        </Transition>
-        <Transition name="fade-slow">
+        </expand-transition>
+        <expand-transition>
           <div v-show="selected" class="column is-4">
             <VField>
               <VLabel>备路收发网卡名称</VLabel>
@@ -202,8 +202,8 @@ const selected = computed(() => mv.value.nicIndex !== -1)
               </VControl>
             </VField>
           </div>
-        </Transition>
-        <Transition name="fade-slow">
+        </expand-transition>
+        <expand-transition>
           <div v-show="selected" class="column is-4">
             <VField label="备路收发网卡开关" class="switch-2-group">
               <VControl subcontrol class="switch-2">
@@ -214,7 +214,7 @@ const selected = computed(() => mv.value.nicIndex !== -1)
               </VControl>
             </VField>
           </div>
-        </Transition>
+        </expand-transition>
       </div>
     </div>
   </div>

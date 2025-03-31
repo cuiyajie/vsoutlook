@@ -69,14 +69,14 @@ defineExpose({
       @keydown.space.prevent="opened = !opened"
       @click.prevent="opened = !opened"
     >
-      <h4>第{{ index + 1 }}路输出参数&nbsp;&nbsp;（序号: {{ index }}）</h4>
+      <h4>第 {{ index + 1 }} 路输出参数&nbsp;&nbsp;（序号: {{ index }}）</h4>
       <div class="collapse-icon">
         <VIcon icon="feather:chevron-down" />
       </div>
     </div>
 
-    <Transition name="fade-slow">
-      <div v-if="opened" class="form-fieldset-nested-2">
+    <expand-transition>
+      <div v-show="opened" class="form-fieldset-nested-2">
         <div class="form-fieldset-nested-3 seperator">
           <div class="fieldset-heading">
             <h5>输出布局</h5>
@@ -214,7 +214,7 @@ defineExpose({
         </div>
         <PlayerParamsForm v-model="mv" :nics="nics" />
       </div>
-    </Transition>
+    </expand-transition>
   </div>
 </template>
 <style lang="scss">

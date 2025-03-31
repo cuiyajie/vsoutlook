@@ -17,8 +17,8 @@ import merge from 'lodash-es/merge'
 import mvData from '@src/data/vscomponent/mv.json'
 import { useUsedFormat } from '../Utilties/Composables';
 import { useUserSession } from "@src/stores/userSession"
-import { handleVideoFormat, handleAudioFormat, handlePlayerParams, handleNicList, unwrap, wrap, checkPlayerParams } from '../Utilties/Utils_V1';
-import { def_mv_input_param, def_mv_output_param, type AuditAlarmRule, type MVInputItemParam, type MVOutputItemParam } from './Consts';
+import { handleVideoFormat, handleAudioFormat, handleNicList, unwrap, wrap, handleApiParams, checkApiParams, checkPlayerParams, checkNicDetails } from '../Utilties/Utils_V1';
+import { def_mv_input_param, def_mv_output_param, type AuditAlarmRule, type MVInputItemParam, type MVOutputItemParam, def_api_params } from './Consts';
 import { checkInputParam, handleAuditAlarmRule, handleAuditAvTemplate, handleInputParams, handleOutputParams, techReview2AudioTmpl } from './Utils';
 
 const props = defineProps<{
@@ -34,7 +34,6 @@ const mv = defineModel<{
   used_signal_type: number
   nmos: NMosConfigType
   ssm_address_range: SSMAddressType[]
-  api_params: IApiParams[],
 }>({
   default: {
     moudle: 'mv',
@@ -44,7 +43,6 @@ const mv = defineModel<{
     used_signal_type: 0,
     nmos: { ...nmos_config },
     ssm_address_range: [{ ...ssm_address }],
-    api_params: [],
   },
   local: true,
 })
@@ -64,8 +62,9 @@ mv.value = pick(mvData, [
   'nmos',
   'ssm_address_range',
   'authorization_service',
-  'api_params',
 ])
+
+const apiParams = ref<IApiParams[]>(def_api_params())
 
 const nicDetails = ref<NicDetail[]>([])
 const indexedNicDetails = computed(() => {
@@ -146,6 +145,7 @@ watchNmosName(() => props.name, mv)
 function getValue() {
   const result = {
     ...handle(mv.value),
+    api_params: handleApiParams(apiParams.value),
     videoformat_enum: videoFormatEnum.value.map(vfn => handleVideoFormat(vfn, videoFormats.value)).filter(v => v),
     audioformat_enum: audioFormatEnum.value.map(afn => handleAudioFormat(afn, audioFormats.value)).filter(a => a),
     audit_av_template_enum: auditRuleEnum.value
@@ -182,17 +182,12 @@ function setValue(data: typeof mvData) {
     'nmos',
     'ssm_address_range',
     'authorization_service',
-    'api_params',
   ])
   mv.value.output_number = 1
 
-  nicDetails.value = data.nic_list.map((nic: any) => {
-    const nicIndex = props.nics.findIndex(n => n.nicNameMain === nic.nic_name_m && n.nicNameBackup === nic.nic_name_b)
-    if (nicIndex !== -1) {
-      return { ...nic, nicIndex, id: props.nics[nicIndex].id }
-    }
-    return { ...nic, nicIndex: -1, id: '' }
-  })
+  apiParams.value = checkApiParams(def_api_params(), data.api_params)
+
+  nicDetails.value = checkNicDetails(data.nic_list, props.nics)
 
   auditAlarmRules.value = data.audit_alarm_rule_enum.map((rule: any) => {
     const parma = audits.value.auditAlarmRuleMap[rule.av_alarm.audit_template_name]
@@ -284,14 +279,14 @@ defineExpose({
           </div>
           <div class="columns is-multiline">
             <div class="column is-6">
-              <AddrInputAddonSep
-                v-model:host="mv.api_params[0].api_name" v-model:port="mv.api_params[0].service_port"
+              <ApiParamsCheck
+                v-model="apiParams[0]"
                 label="tally通知接口"
               />
             </div>
             <div class="column is-6">
-              <AddrInputAddonSep
-                v-model:host="mv.api_params[1].api_name" v-model:port="mv.api_params[1].service_port"
+              <ApiParamsCheck
+                v-model="apiParams[1]"
                 label="动态控制接口"
               />
             </div>
@@ -307,16 +302,16 @@ defineExpose({
               <VIcon icon="feather:chevron-down" />
             </div>
           </div>
-          <Transition name="fade-slow">
+          <expand-transition>
             <div v-show="advanceOpened" class="form-body">
               <NMosConfig v-model="mv.nmos" class="seperator" />
               <SSMAddressRange v-model="mv.ssm_address_range" />
             </div>
-          </Transition>
+          </expand-transition>
         </div>
-        <Transition name="fade-slow">
+        <expand-transition>
           <NicSection v-if="mv.used_signal_type !== 1" v-model="nicDetails" :nics="nics" />
-        </Transition>
+        </expand-transition>
         <AuditAlarmRuleSection v-model="indexedAuditAlarmRules" />
         <div class="form-outer">
           <div class="form-header">

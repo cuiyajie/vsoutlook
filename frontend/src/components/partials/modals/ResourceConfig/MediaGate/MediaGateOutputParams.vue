@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { useUserSession } from "@src/stores/userSession";
-import { type IndexedNicDetail, luma_gain } from '../Utilties/Consts_V1';
-import { type MgOutputItemParams, convert_mode, dynamic_mode } from './Consts';
+import { type IndexedNicDetail } from '../Utilties/Consts_V1';
+import { type MgOutputItemParams, convert_mode, dynamic_mode, luma_gain } from './Consts';
 
 const mv = defineModel<MgOutputItemParams>({
   default: [],
@@ -76,7 +76,7 @@ watch(() => props.defaultOpen, () => {
       @keydown.space.prevent="opened = !opened"
       @click.prevent="opened = !opened"
     >
-      <h4>第{{ index + 1 }}路输出参数</h4>
+      <h4>第 {{ index + 1 }} 路输出参数</h4>
       <div class="header-button-list">
         <a
           v-if="deletable"
@@ -92,7 +92,7 @@ watch(() => props.defaultOpen, () => {
       </div>
     </div>
 
-    <Transition name="fade-slow">
+    <expand-transition>
       <div v-if="opened" class="form-fieldset-nested-2">
         <div class="form-fieldset-nested-3 seperator">
           <div class="columns is-multiline">
@@ -139,7 +139,7 @@ watch(() => props.defaultOpen, () => {
                 </VControl>
               </VField>
             </div>
-            <Transition name="fade-slow">
+            <expand-transition>
               <div v-if="mv.hdr_convert_params.convert_mode === 'dynamic'" class="column is-6">
                 <VField>
                   <VLabel>动态变换模式</VLabel>
@@ -152,8 +152,8 @@ watch(() => props.defaultOpen, () => {
                   </VControl>
                 </VField>
               </div>
-            </Transition>
-            <Transition name="fade-slow">
+            </expand-transition>
+            <expand-transition>
               <div v-if="mv.hdr_convert_params.convert_mode === 'dynamic'" class="column is-6">
                 <VField>
                   <VLabel>亮度增益</VLabel>
@@ -166,12 +166,12 @@ watch(() => props.defaultOpen, () => {
                   </VControl>
                 </VField>
               </div>
-            </Transition>
+            </expand-transition>
           </div>
         </div>
         <PlayerParamsForm v-model="mv" :nics="nics" />
       </div>
-    </Transition>
+    </expand-transition>
   </div>
 </template>
 <style lang="scss" scoped>

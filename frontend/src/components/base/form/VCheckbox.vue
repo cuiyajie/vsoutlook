@@ -17,6 +17,10 @@ export interface VCheckboxProps {
   wrapperClass?: string
 }
 
+export interface VCheckboxEmits {
+  (e: 'change', payload: Event): void
+}
+
 const modelValue = defineModel<any>({
   default: false,
   local: true,
@@ -33,6 +37,7 @@ const props = withDefaults(defineProps<VCheckboxProps>(), {
   paddingless: false,
   wrapperClass: undefined,
 })
+const emit = defineEmits<VCheckboxEmits>()
 
 const context = useVFieldContext()
 
@@ -80,6 +85,7 @@ const classes = computed(() => {
       :false-value="props.falseValue"
       :value="props.value"
       type="checkbox"
+      @change="emit('change', $event)"
     >
     <span />
     <slot v-bind="context">

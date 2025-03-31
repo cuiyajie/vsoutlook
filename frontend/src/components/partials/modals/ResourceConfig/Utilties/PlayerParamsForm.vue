@@ -9,9 +9,14 @@ const mv = defineModel<PlayerParams>({
   local: true,
 })
 
-defineProps<{
+withDefaults(defineProps<{
   nics: IndexedNicDetail[]
-}>()
+  showAudio?: boolean
+  showNic?: boolean
+}>(), {
+  showAudio: true,
+  showNic: true
+})
 
 const usStore = useUserSession()
 const videoFormats = computed(() => usStore.settings.video_formats || [])
@@ -37,7 +42,7 @@ watch(() => mv.value.videoformat_name, (nv) => {
     <div class="fieldset-heading">
       <h4>smpte发流参数</h4>
     </div>
-    <div class="form-fieldset-nested-3" :class="{'is-tail': !showParams}">
+    <div v-if="showNic" class="form-fieldset-nested-3" :class="{'is-tail': !showParams}">
       <div class="form-fieldset-nested-3" :class="showParams && 'seperator'">
         <div class="columns is-multiline">
           <div class="column is-6">
@@ -51,8 +56,8 @@ watch(() => mv.value.videoformat_name, (nv) => {
         </div>
       </div>
     </div>
-    <Transition name="fade-slow">
-      <div v-if="showParams" class="form-fieldset-nested-3">
+    <expand-transition>
+      <div v-if="showParams" class="form-fieldset-nested-6">
         <div class="form-fieldset seperator">
           <div class="fieldset-heading">
             <h5>主路参数</h5>
@@ -64,19 +69,19 @@ watch(() => mv.value.videoformat_name, (nv) => {
             <div class="column is-6">
               <AddrInputAddon v-model="mv.smpte_params.ipstream_master.v_dst_address" label="视频组播地址（含端口）" />
             </div>
-            <div class="column is-6">
+            <div v-if="showAudio" class="column is-6">
               <AddrInputAddon v-model="mv.smpte_params.ipstream_master.a_src_address" label="音频源地址（含端口）" />
             </div>
-            <div class="column is-6">
-              <AddrInputAddon v-model="mv.smpte_params.ipstream_master.a_src_address" label="音频组播地址（含端口）" />
+            <div v-if="showAudio" class="column is-6">
+              <AddrInputAddon v-model="mv.smpte_params.ipstream_master.a_dst_address" label="音频组播地址（含端口）" />
             </div>
           </div>
         </div>
       </div>
-    </Transition>
-    <Transition name="fade-slow">
-      <div v-if="showParams" class="form-fieldset-nested-3 is-tail">
-        <div class="form-fieldset">
+    </expand-transition>
+    <expand-transition>
+      <div v-if="showParams" class="form-fieldset-nested-6 is-tail">
+        <div class="form-fieldset-nested-4">
           <div class="fieldset-heading">
             <h5>备路参数</h5>
           </div>
@@ -87,18 +92,18 @@ watch(() => mv.value.videoformat_name, (nv) => {
             <div class="column is-6">
               <AddrInputAddon v-model="mv.smpte_params.ipstream_backup.v_dst_address" label="视频组播地址（含端口）" />
             </div>
-            <div class="column is-6">
+            <div v-if="showAudio" class="column is-6">
               <AddrInputAddon v-model="mv.smpte_params.ipstream_backup.a_src_address" label="音频源地址（含端口）" />
             </div>
-            <div class="column is-6">
-              <AddrInputAddon v-model="mv.smpte_params.ipstream_backup.a_src_address" label="音频组播地址（含端口）" />
+            <div v-if="showAudio" class="column is-6">
+              <AddrInputAddon v-model="mv.smpte_params.ipstream_backup.a_dst_address" label="音频组播地址（含端口）" />
             </div>
           </div>
         </div>
       </div>
-    </Transition>
+    </expand-transition>
   </div>
-  <Transition name="fade-slow">
+  <expand-transition>
     <div v-if="mv.videoformat_name && !showParams" class="form-fieldset">
       <div class="fieldset-heading">
         <h4>深压缩流发流参数</h4>
@@ -148,5 +153,5 @@ watch(() => mv.value.videoformat_name, (nv) => {
         </div>
       </div>
     </div>
-  </Transition>
+  </expand-transition>
 </template>

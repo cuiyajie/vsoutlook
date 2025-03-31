@@ -73,7 +73,7 @@ watch(() => mv.value.av_alarm.audit_template_name, (nv) => {
       tabindex="0"
       role="button"
     >
-      <h4>第{{ index + 1 }}个技审报警规则</h4>
+      <h4>第 {{ index + 1 }} 个技审报警规则</h4>
       <div class="collapse-icon">
         <VIconButton
           color="warning"

@@ -1,5 +1,20 @@
 import { def_player_params } from '../Utilties/Consts_V1'
 
+export const def_api_params = () => [
+  {
+    label: 'tally通知接口',
+    api_name: 'tally',
+    service_port: 6001,
+    checked: true,
+  },
+  {
+    label: '动态控制接口',
+    api_name: 'dynamic_config',
+    service_port: 9012,
+    checked: true,
+  },
+]
+
 export const def_mv_input_param = () => ({
   ...def_player_params(),
   force_use_videoformat: false,

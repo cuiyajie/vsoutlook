@@ -132,7 +132,8 @@ function onBlur(event: FocusEvent) {
       role="button"
       tabindex="-1"
       :disabled="readonly || !decreasable"
-      @click.prevent="decrease"
+      @click.prevent.stop="decrease"
+      @keyup.down.prevent.stop="decrease"
     >
       <i class="fas fa-minus" aria-hidden="true"></i>
     </label>
@@ -141,7 +142,8 @@ function onBlur(event: FocusEvent) {
       role="button"
       tabindex="-1"
       :disabled="readonly || !increasable"
-      @click.prevent="increase"
+      @click.prevent.stop="increase"
+      @keyup.up.prevent.stop="increase"
     >
       <i class="fas fa-plus" aria-hidden="true"></i>
     </label>

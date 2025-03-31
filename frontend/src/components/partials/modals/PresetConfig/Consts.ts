@@ -163,3 +163,18 @@ export const defAudioReviewRules: () => {
   },
   audio_lost: { key: 'audio_lost', duration_ms: 1000 },
 })
+
+export const defAudioMapping = () => ({
+  name: 'mapping-1',
+  mute_channels: '2,3-6',
+  copy_channels: [
+    {
+      src_channel: 0,
+      dst_channel: 7,
+    },
+    {
+      src_channel: 0,
+      dst_channel: 8,
+    },
+  ],
+})

@@ -7,11 +7,12 @@ import CodecForm from './Codec/CodecForm.vue'
 import UdxForm from './Udx/UdxForm.vue'
 import MVForm_V1 from './MVForm_V1/MVForm_V1.vue'
 import MVForm from './MVForm/MVForm.vue'
-import SwitchForm from './Switch/SwitchForm.vue'
-import BCSwitchForm from './BCSwitch/BCSwitchForm.vue'
 import EndSwitchForm from './EndSwitch/EndSwitchForm.vue'
 import RecorderForm from './Recorder/RecorderForm.vue'
 import MediaGateForm from "./MediaGate/MediaGateForm.vue"
+import SwitchBCForm from './SwitchBC/SwitchBCForm.vue'
+import SwitchProdForm from './SwitchProd/SwitchProdForm.vue'
+import SwitchMediaForm from './SwitchMedia/SwitchMediaForm.vue'
 import { confirm } from '@src/utils/dialog'
 import { useDevices } from '@src/stores/device'
 import { useTemplate } from '@src/stores/template'
@@ -19,6 +20,7 @@ import downloadJsonFile from '@src/utils/download-json'
 import { useClustNode } from '@src/stores/node'
 import { useUserSession } from '@src/stores/userSession'
 import dayjs from 'dayjs'
+import BCSwitchFormV1 from './BCSwitch_V1/BCSwitchForm_V1.vue'
 
 const tmplStore = useTemplate()
 const deviceStore = useDevices()
@@ -278,12 +280,7 @@ const tmplConfig = computed(() => {
     case 'swt':
       return {
         name: '切换台',
-        component: SwitchForm,
-      }
-    case 'bcswt':
-      return {
-        name: '播出切换台',
-        component: BCSwitchForm,
+        component: BCSwitchFormV1,
       }
     case 'endswt':
       return {
@@ -304,6 +301,21 @@ const tmplConfig = computed(() => {
       return {
         name: '多画面',
         component: MVForm
+      }
+    case 'bcswt':
+      return {
+        name: '播出切换台',
+        component: SwitchBCForm
+      }
+    case 'makeswt':
+      return {
+        name: '制作切换台',
+        component: SwitchProdForm
+      }
+    case 'nmswt':
+      return {
+        name: '新媒体切换台',
+        component: SwitchMediaForm
       }
     default:
       return {
@@ -339,11 +351,11 @@ const tmplConfig = computed(() => {
               placeholder="分段以字母数字开头，可包含连字符(-)，字母数字结尾，可由点分隔的多段组成，例如:my-example.name123"
               :readonly="dgi.created"
             />
-            <Transition name="fade-slow">
+            <expand-transition>
               <p v-if="field?.errorMessage" class="help is-danger mt-3">
                 {{ field.errorMessage }}
               </p>
-            </Transition>
+            </expand-transition>
           </VControl>
         </VField>
         <div v-if="inited" class="columns">

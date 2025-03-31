@@ -32,7 +32,7 @@ const opened = ref(false)
         <VIcon icon="feather:chevron-down" />
       </div>
     </div>
-    <Transition name="fade-show">
+    <expand-transition>
       <div v-show="opened" class="form-fieldset-nested">
         <div class="form-fieldset">
           <div class="fieldset-heading">
@@ -71,7 +71,7 @@ const opened = ref(false)
                 </VControl>
               </VField>
             </div>
-            <Transition name="fade-slow">
+            <expand-transition>
               <div v-if="useBackup" class="column is-6">
                 <VField>
                   <VLabel>备视频流组播源IP（含端口）</VLabel>
@@ -80,8 +80,8 @@ const opened = ref(false)
                   </VControl>
                 </VField>
               </div>
-            </Transition>
-            <Transition name="fade-slow">
+            </expand-transition>
+            <expand-transition>
               <div v-if="useBackup" class="column is-6">
                 <VField>
                   <VLabel>备视频流组播目标IP（含端口）</VLabel>
@@ -90,8 +90,8 @@ const opened = ref(false)
                   </VControl>
                 </VField>
               </div>
-            </Transition>
-            <Transition name="fade-slow">
+            </expand-transition>
+            <expand-transition>
               <div v-if="useBackup" class="column is-6">
                 <VField>
                   <VLabel>备音频流组播源IP（含端口）</VLabel>
@@ -100,8 +100,8 @@ const opened = ref(false)
                   </VControl>
                 </VField>
               </div>
-            </Transition>
-            <Transition name="fade-slow">
+            </expand-transition>
+            <expand-transition>
               <div v-if="useBackup" class="column is-6">
                 <VField>
                   <VLabel>备音频流组播目标IP（含端口）</VLabel>
@@ -110,7 +110,7 @@ const opened = ref(false)
                   </VControl>
                 </VField>
               </div>
-            </Transition>
+            </expand-transition>
             <div class="column is-6">
               <VField>
                 <VLabel>显示名称</VLabel>
@@ -122,7 +122,7 @@ const opened = ref(false)
           </div>
         </div>
       </div>
-    </Transition>
+    </expand-transition>
   </div>
 </template>
 <style lang="scss">

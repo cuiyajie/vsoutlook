@@ -48,7 +48,7 @@ const opened = ref(false)
         <VIcon icon="feather:chevron-down" />
       </div>
     </div>
-    <Transition name="fade-show">
+    <expand-transition>
       <div v-show="opened" class="form-fieldset-nested">
         <div class="form-fieldset">
           <div class="columns is-multiline">
@@ -139,7 +139,7 @@ const opened = ref(false)
           </div>
         </div>
       </div>
-    </Transition>
+    </expand-transition>
   </div>
 </template>
 <style lang="scss">

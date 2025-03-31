@@ -68,7 +68,7 @@ function edit(idx: number) {
                     <div>目标声道</div>
                   </div>
                   <div
-                    v-for="(channel, ci) in mapping.channels"
+                    v-for="(channel, ci) in mapping.copy_channels"
                     :key="ci"
                     class="mapping-col with-border"
                   >
@@ -133,55 +133,6 @@ function edit(idx: number) {
 
     th:last-child {
       width: 80px;
-    }
-  }
-
-  .mapping-cols {
-    display: flex;
-    align-items: center;
-    text-align: left;
-    font-size: 0.875rem;
-    width: 100%;
-    overflow-x: auto;
-    padding: 8px 0;
-
-    .mapping-col {
-      padding-left: 8px;
-      padding-right: 8px;
-
-      & + .mapping-col.with-border {
-        border-left: 1px solid var(--dark-sidebar-light-12);
-      }
-
-      .mapping-cell + .mapping-cell {
-        margin-top: 8px;
-      }
-    }
-
-    .mapping-col-heading {
-      margin-right: 12px;
-      line-height: 20px;
-      flex: 0 0 auto;
-
-      > div + div {
-        margin-top: 8px;
-      }
-    }
-
-    .mapping-cell {
-      width: 18px;
-      height: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-color: red;
-      border-radius: 4px;
-      box-shadow: 2px 2px 8px 0 rgba(0, 0, 0, 0.75);
-      color: #000;
-
-      &.is-source {
-        background-color: #66ff00;
-      }
     }
   }
 

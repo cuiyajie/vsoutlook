@@ -1,0 +1,1192 @@
+{
+  "moudle": "switch-v2",
+  "av_log_level": 5,
+  "in_copy_thr_count": 8,
+  "level": 1,
+  "used_signal_type": 0,
+  "audio_workmode": 0,
+  "tally_notify": false,
+  "tally_config": [
+    {
+      "level": 0,
+      "screens": [
+        {
+          "screen_id": 0,
+          "address": "192.168.1.116:6001",
+          "pgm_tally_index": 0,
+          "pvw_tally_index": 1,
+          "signal_number": 4,
+          "signal_config": [
+            {
+              "index": 0,
+              "level_input_index": 1,
+              "tally_index": 2
+            },
+            {
+              "index": 1,
+              "level_input_index": 2,
+              "tally_index": 3
+            },
+            {
+              "index": 2,
+              "level_input_index": 3,
+              "tally_index": 4
+            },
+            {
+              "index": 3,
+              "level_input_index": 4,
+              "tally_index": 5
+            }
+          ]
+        },
+        {
+          "screen_id": 1,
+          "address": "192.168.1.63:7101",
+          "signal_number": 4,
+          "signal_config": [
+            {
+              "index": 0,
+              "level_input_index": 5,
+              "tally_index": 0
+            },
+            {
+              "index": 1,
+              "level_input_index": 6,
+              "tally_index": 1
+            },
+            {
+              "index": 2,
+              "level_input_index": 7,
+              "tally_index": 2
+            },
+            {
+              "index": 3,
+              "level_input_index": 8,
+              "tally_index": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "api_params": [
+    {
+      "api_name": "dynamic_config",
+      "service_port": 9010
+    },
+    {
+      "api_name": "macro_config",
+      "service_port": 9011
+    },
+    {
+      "api_name": "bc_control",
+      "service_port": 9012
+    }
+  ],
+  "panel_params": [
+    {
+      "level_index": 0,
+      "panel_type": "panel_s1",
+      "panel_url": [
+        {
+          "subpanel_index": 0,
+          "url": "192.168.1.110:9923"
+        }
+      ]
+    },
+    {
+      "level_index": 1,
+      "panel_type": "panel_c1",
+      "panel_url": [
+        {
+          "subpanel_index": 0,
+          "url": "192.168.1.110:9924"
+        },
+        {
+          "subpanel_index": 1,
+          "url": "192.168.1.110:9924"
+        }
+      ]
+    }
+  ],
+  "nic_list": [
+    {
+      "index": 0,
+      "numa_id": -1,
+      "2110-7_m_local_ip": "10.1.1.63",
+      "nic_name_m": "ens01",
+      "2110-7_m_receive": true,
+      "2110-7_m_send": true,
+      "2110-7_b_local_ip": "10.1.101.63",
+      "nic_name_b": "ens02",
+      "2110-7_b_receive": true,
+      "2110-7_b_send": true
+    },
+    {
+      "index": 1,
+      "numa_id": -1,
+      "2110-7_m_local_ip": "10.1.2.63",
+      "nic_name_m": "ens01",
+      "2110-7_m_receive": true,
+      "2110-7_m_send": true,
+      "2110-7_b_local_ip": "10.1.102.63",
+      "nic_name_b": "ens02",
+      "2110-7_b_receive": true,
+      "2110-7_b_send": true
+    }
+  ],
+  "nmos": {
+    "nmos_enable": false,
+    "rds_server_url": "192.168.1.112:8010",
+    "name": "63swt",
+    "host_addresses": "192.168.1.63",
+    "http_port": 9008,
+    "log_level": 0,
+    "log_path": "/opt/vsomediasoftware/logs/",
+    "domain": "local.",
+    "seed_id": "0aadeed8-119f-5d33-b03b-e56ba242731d"
+  },
+  "ssm_address_range": [
+    {
+      "index": 0,
+      "from": "232.0.0.0",
+      "to": "232.255.255.255"
+    }
+  ],
+  "ipservice": {
+    "log_level": 2,
+    "dma_list": "",
+    "binding_core_list": "18,19,20,21,22,23,24,25,26,27,28,29,30,31",
+    "max_bandwidth_percore": 9000,
+    "receive_sessions": 18
+  },
+  "authorization_service": [
+    {
+      "index": 0,
+      "ip": "192.168.1.62",
+      "port": 6001
+    }
+  ],
+  "videoformat_enum": [
+    {
+      "name": "4K50P-20",
+      "protocol": "st2110-20",
+      "width": 3840,
+      "height": 2160,
+      "interlaced": false,
+      "fps": 50,
+      "gamma": "hlg",
+      "gamut": "bt2020",
+      "compression_format": null,
+      "compression_ratio": null
+    },
+    {
+      "name": "4K50P-22",
+      "protocol": "st2110-22",
+      "width": 3840,
+      "height": 2160,
+      "interlaced": false,
+      "fps": 50,
+      "gamma": "hlg",
+      "gamut": "bt2020",
+      "compression_format": "jpeg-xs",
+      "compression_ratio": "8:1"
+    },
+    {
+      "name": "4K50P-NDIFULL",
+      "protocol": "ndi",
+      "width": 3840,
+      "height": 2160,
+      "interlaced": false,
+      "fps": 50,
+      "gamma": "hlg",
+      "gamut": "bt2020",
+      "compression_format": "ndi-full",
+      "compression_subtype": "type1",
+      "bitrate_bps": 8000,
+      "gop_length": 10,
+      "gop_b_frames": 4
+    },
+    {
+      "name": "4K50P-NDIHX",
+      "protocol": "ndi",
+      "width": 3840,
+      "height": 2160,
+      "interlaced": false,
+      "fps": 50,
+      "gamma": "hlg",
+      "gamut": "bt2020",
+      "compression_format": "ndi-hx3",
+      "compression_subtype": "base",
+      "bitrate_bps": 8000,
+      "gop_length": 10,
+      "gop_b_frames": 4
+    },
+    {
+      "name": "4K50P-SRT-H265",
+      "protocol": "srt",
+      "width": 3840,
+      "height": 2160,
+      "interlaced": false,
+      "fps": 50,
+      "gamma": "hlg",
+      "gamut": "bt2020",
+      "compression_format": "h265",
+      "compression_subtype": "type1",
+      "bitrate_bps": 8000,
+      "gop_length": 10,
+      "gop_b_frames": 4
+    },
+    {
+      "name": "4K50P-TS-AVS+",
+      "protocol": "ts",
+      "width": 3840,
+      "height": 2160,
+      "interlaced": false,
+      "fps": 50,
+      "gamma": "hlg",
+      "gamut": "bt2020",
+      "compression_format": "avs+",
+      "compression_subtype": "type1",
+      "bitrate_bps": 8000,
+      "gop_length": 10,
+      "gop_b_frames": 4
+    }
+  ],
+  "audioformat_enum": [
+    {
+      "name": "ch8-24bit-pcm",
+      "channels_number": 8,
+      "bits": 24,
+      "frequency": 48000,
+      "packet_time_us": 1000,
+      "compression_format": "pcm",
+      "bitrate_bps": 80
+    },
+    {
+      "name": "ch16-24bit-pcm",
+      "channels_number": 16,
+      "bits": 24,
+      "frequency": 48000,
+      "packet_time_us": 125,
+      "compression_format": "pcm",
+      "bitrate_bps": 80
+    },
+    {
+      "name": "ch8-24bit-aac",
+      "channels_number": 8,
+      "bits": 24,
+      "frequency": 48000,
+      "packet_time_us": 125,
+      "compression_format": "aac",
+      "compression_subtype": "type1",
+      "bitrate_bps": 80
+    }
+  ],
+  "audio_mapping_enum": [
+    {
+      "name": "mapping-1",
+      "copy_channels": [
+        {
+          "src_channel": 0,
+          "dst_channel": 7
+        },
+        {
+          "src_channel": 0,
+          "dst_channel": 8
+        }
+      ],
+      "mute_channels": "2,3-6"
+    }
+  ],
+  "input": {
+    "key": [
+      {
+        "index": 0,
+        "key_type": "ext_key",
+        "videoformat_name": "4K50P-20",
+        "signal_id": "input-key0",
+        "signal_name": "k1",
+        "smpte-params": {
+          "key_params": {
+            "ipstream_master": {
+              "in_v_src_address": "10.1.1.64:30000",
+              "in_v_dst_address": "232.0.64.117:30000"
+            },
+            "ipstream_backup": {
+              "in_v_src_address": "10.1.101.64:30000",
+              "in_v_dst_address": "232.0.164.117:30000"
+            }
+          },
+          "fill_params": {
+            "ipstream_master": {
+              "in_v_src_address": "10.1.1.64:30000",
+              "in_v_dst_address": "232.0.64.118:30000"
+            },
+            "ipstream_backup": {
+              "in_v_src_address": "10.1.101.64:30000",
+              "in_v_dst_address": "232.0.164.118:30000"
+            }
+          }
+        }
+      },
+      {
+        "index": 1,
+        "key_type": "int_key",
+        "videoformat_name": "4K50P-20",
+        "signal_id": "input-internal-key1",
+        "signal_name": "k2",
+        "file_name": "/opt/vsomediasoftware/pic/intkey2.png"
+      },
+      {
+        "index": 2,
+        "key_type": "h5_key",
+        "videoformat_name": "4K50P-20",
+        "signal_id": "input-h5-key2",
+        "signal_name": "k3",
+        "url": "http://index.html"
+      }
+    ],
+    "video": [
+      {
+        "index": 0,
+        "videoformat_name": "4K50P-SRT-H265",
+        "force_use_videoformat": false,
+        "audioformat_name": "ch8-24bit-aac",
+        "signal_id": "input-video0",
+        "signal_name": "cam1",
+        "smpte-params": {
+          "ipstream_master": {
+            "in_v_src_address": "",
+            "in_v_dst_address": "238.0.62.111:30000",
+            "in_a_src_address": "",
+            "in_a_dst_address": "238.0.62.111:30001"
+          },
+          "ipstream_backup": {
+            "in_v_src_address": "10.1.101.62:30000",
+            "in_v_dst_address": "232.0.162.111:30000",
+            "in_a_src_address": "10.1.101.62:30000",
+            "in_a_dst_address": "232.0.162.111:30001"
+          }
+        },
+        "stream-params": {
+          "url": "SRT://192.168.1.64:1234",
+          "codec_dev": "cpu",
+          "codec_dev_index": 0
+        },
+        "rec_params": {
+          "is_rec": false,
+          "prefix_name": "aaa",
+          "duration_sec": 100
+        }
+      },
+      {
+        "index": 1,
+        "videoformat_name": "4K50P-22",
+        "force_use_videoformat": false,
+        "audioformat_name": "ch8-24bit-aac",
+        "signal_id": "input-video1",
+        "signal_name": "cam2",
+        "smpte-params": {
+          "ipstream_master": {
+            "in_v_src_address": "",
+            "in_v_dst_address": "238.0.62.111:30000",
+            "in_a_src_address": "",
+            "in_a_dst_address": "238.0.62.111:30001"
+          },
+          "ipstream_backup": {
+            "in_v_src_address": "10.1.101.62:30000",
+            "in_v_dst_address": "232.0.162.111:30000",
+            "in_a_src_address": "10.1.101.62:30000",
+            "in_a_dst_address": "232.0.162.111:30001"
+          }
+        },
+        "stream-params": {
+          "url": "SRT://192.168.1.64:1234",
+          "codec_dev": "cpu",
+          "codec_dev_index": 0
+        }
+      },
+      {
+        "index": 2,
+        "videoformat_name": "4K50P-22",
+        "force_use_videoformat": false,
+        "audioformat_name": "ch8-24bit-aac",
+        "signal_id": "input-video2",
+        "signal_name": "cam3",
+        "smpte-params": {
+          "ipstream_master": {
+            "in_v_src_address": "",
+            "in_v_dst_address": "238.0.62.111:30000",
+            "in_a_src_address": "",
+            "in_a_dst_address": "238.0.62.111:30001"
+          },
+          "ipstream_backup": {
+            "in_v_src_address": "10.1.101.62:30000",
+            "in_v_dst_address": "232.0.162.111:30000",
+            "in_a_src_address": "10.1.101.62:30000",
+            "in_a_dst_address": "232.0.162.111:30001"
+          }
+        },
+        "stream-params": {
+          "url": "SRT://192.168.1.64:1234",
+          "codec_dev": "cpu",
+          "codec_dev_index": 0
+        }
+      },
+      {
+        "index": 3,
+        "videoformat_name": "4K50P-22",
+        "force_use_videoformat": false,
+        "audioformat_name": "ch8-24bit-aac",
+        "signal_id": "input-video3",
+        "signal_name": "cam4",
+        "smpte-params": {
+          "ipstream_master": {
+            "in_v_src_address": "",
+            "in_v_dst_address": "238.0.62.111:30000",
+            "in_a_src_address": "",
+            "in_a_dst_address": "238.0.62.111:30001"
+          },
+          "ipstream_backup": {
+            "in_v_src_address": "10.1.101.62:30000",
+            "in_v_dst_address": "232.0.162.111:30000",
+            "in_a_src_address": "10.1.101.62:30000",
+            "in_a_dst_address": "232.0.162.111:30001"
+          }
+        },
+        "stream-params": {
+          "url": "SRT://192.168.1.64:1234",
+          "codec_dev": "cpu",
+          "codec_dev_index": 0
+        }
+      },
+      {
+        "index": 4,
+        "videoformat_name": "4K50P-22",
+        "force_use_videoformat": false,
+        "audioformat_name": "ch8-24bit-aac",
+        "signal_id": "input-video4",
+        "signal_name": "cam5",
+        "smpte-params": {
+          "ipstream_master": {
+            "in_v_src_address": "",
+            "in_v_dst_address": "238.0.62.111:30000",
+            "in_a_src_address": "",
+            "in_a_dst_address": "238.0.62.111:30001"
+          },
+          "ipstream_backup": {
+            "in_v_src_address": "10.1.101.62:30000",
+            "in_v_dst_address": "232.0.162.111:30000",
+            "in_a_src_address": "10.1.101.62:30000",
+            "in_a_dst_address": "232.0.162.111:30001"
+          }
+        },
+        "stream-params": {
+          "url": "SRT://192.168.1.64:1234",
+          "codec_dev": "cpu",
+          "codec_dev_index": 0
+        }
+      },
+      {
+        "index": 5,
+        "videoformat_name": "4K50P-22",
+        "force_use_videoformat": false,
+        "audioformat_name": "ch8-24bit-aac",
+        "signal_id": "input-video5",
+        "signal_name": "cam6",
+        "smpte-params": {
+          "ipstream_master": {
+            "in_v_src_address": "",
+            "in_v_dst_address": "238.0.62.111:30000",
+            "in_a_src_address": "",
+            "in_a_dst_address": "238.0.62.111:30001"
+          },
+          "ipstream_backup": {
+            "in_v_src_address": "10.1.101.62:30000",
+            "in_v_dst_address": "232.0.162.111:30000",
+            "in_a_src_address": "10.1.101.62:30000",
+            "in_a_dst_address": "232.0.162.111:30001"
+          }
+        },
+        "stream-params": {
+          "url": "SRT://192.168.1.64:1234",
+          "codec_dev": "cpu",
+          "codec_dev_index": 0
+        }
+      },
+      {
+        "index": 6,
+        "videoformat_name": "4K50P-22",
+        "force_use_videoformat": false,
+        "audioformat_name": "ch8-24bit-aac",
+        "signal_id": "input-video6",
+        "signal_name": "sk1",
+        "smpte-params": {
+          "ipstream_master": {
+            "in_v_src_address": "",
+            "in_v_dst_address": "238.0.62.111:30000",
+            "in_a_src_address": "",
+            "in_a_dst_address": "238.0.62.111:30001"
+          },
+          "ipstream_backup": {
+            "in_v_src_address": "10.1.101.62:30000",
+            "in_v_dst_address": "232.0.162.111:30000",
+            "in_a_src_address": "10.1.101.62:30000",
+            "in_a_dst_address": "232.0.162.111:30001"
+          }
+        },
+        "stream-params": {
+          "url": "SRT://192.168.1.64:1234",
+          "codec_dev": "cpu",
+          "codec_dev_index": 0
+        }
+      },
+      {
+        "index": 7,
+        "videoformat_name": "4K50P-22",
+        "force_use_videoformat": false,
+        "audioformat_name": "ch8-24bit-aac",
+        "signal_id": "input-video7",
+        "signal_name": "sk2",
+        "smpte-params": {
+          "ipstream_master": {
+            "in_v_src_address": "",
+            "in_v_dst_address": "238.0.62.111:30000",
+            "in_a_src_address": "",
+            "in_a_dst_address": "238.0.62.111:30001"
+          },
+          "ipstream_backup": {
+            "in_v_src_address": "10.1.101.62:30000",
+            "in_v_dst_address": "232.0.162.111:30000",
+            "in_a_src_address": "10.1.101.62:30000",
+            "in_a_dst_address": "232.0.162.111:30001"
+          }
+        },
+        "stream-params": {
+          "url": "SRT://192.168.1.64:1234",
+          "codec_dev": "cpu",
+          "codec_dev_index": 0
+        }
+      },
+      {
+        "index": 8,
+        "videoformat_name": "4K50P-22",
+        "force_use_videoformat": false,
+        "audioformat_name": "ch8-24bit-aac",
+        "signal_id": "input-video8",
+        "signal_name": "sk3",
+        "smpte-params": {
+          "ipstream_master": {
+            "in_v_src_address": "",
+            "in_v_dst_address": "238.0.62.111:30000",
+            "in_a_src_address": "",
+            "in_a_dst_address": "238.0.62.111:30001"
+          },
+          "ipstream_backup": {
+            "in_v_src_address": "10.1.101.62:30000",
+            "in_v_dst_address": "232.0.162.111:30000",
+            "in_a_src_address": "10.1.101.62:30000",
+            "in_a_dst_address": "232.0.162.111:30001"
+          }
+        },
+        "stream-params": {
+          "url": "SRT://192.168.1.64:1234",
+          "codec_dev": "cpu",
+          "codec_dev_index": 0
+        }
+      },
+      {
+        "index": 9,
+        "videoformat_name": "4K50P-22",
+        "force_use_videoformat": false,
+        "audioformat_name": "ch8-24bit-aac",
+        "signal_id": "input-video9",
+        "signal_name": "sk4",
+        "smpte-params": {
+          "ipstream_master": {
+            "in_v_src_address": "",
+            "in_v_dst_address": "238.0.62.111:30000",
+            "in_a_src_address": "",
+            "in_a_dst_address": "238.0.62.111:30001"
+          },
+          "ipstream_backup": {
+            "in_v_src_address": "10.1.101.62:30000",
+            "in_v_dst_address": "232.0.162.111:30000",
+            "in_a_src_address": "10.1.101.62:30000",
+            "in_a_dst_address": "232.0.162.111:30001"
+          }
+        },
+        "stream-params": {
+          "url": "SRT://192.168.1.64:1234",
+          "codec_dev": "cpu",
+          "codec_dev_index": 0
+        }
+      }
+    ]
+  },
+  "bus": {
+    "key_bus": [
+      {
+        "index": 0,
+        "bus_id": "keybus0",
+        "bus_name": "K1",
+        "bus_input": {
+          "nic_index": 0,
+          "signal_type": "video",
+          "signal_name": "sk1",
+          "signal_id": "input-video6"
+        },
+        "key_params": {
+          "keytype": "self_key",
+          "top_x": 100,
+          "top_y": 100,
+          "w": 960,
+          "h": 540
+        },
+        "out_signal": {
+          "signal_name": "k1-output",
+          "signal_id": "keybus0-output"
+        }
+      },
+      {
+        "index": 1,
+        "bus_id": "keybus1",
+        "bus_name": "K1",
+        "bus_input": {
+          "index": 0,
+          "nic_index": 0,
+          "signal_type": "key",
+          "signal_name": "intkey1",
+          "signal_id": "input-key1"
+        },
+        "key_params": {
+          "keytype": "self_key",
+          "top_x": 100,
+          "top_y": 110,
+          "w": 600,
+          "h": 200
+        },
+        "out_signal": {
+          "signal_name": "k1-output",
+          "signal_id": "keybus1-output"
+        }
+      },
+      {
+        "index": 2,
+        "bus_id": "keybus2",
+        "bus_name": "K2",
+        "bus_input": {
+          "index": 0,
+          "nic_index": 0,
+          "signal_type": "bus_output",
+          "signal_name": "level0-pgmfianl-output",
+          "signal_id": "level0-pgmbus-output1"
+        },
+        "key_params": {
+          "keytype": "self_key",
+          "top_x": 480,
+          "top_y": 1350,
+          "w": 960,
+          "h": 540
+        },
+        "out_signal": {
+          "signal_name": "key2-output",
+          "signal_id": "keybus2-output"
+        }
+      },
+      {
+        "index": 3,
+        "bus_id": "keybus3",
+        "bus_name": "K3",
+        "bus_input": {
+          "index": 0,
+          "nic_index": 0,
+          "signal_type": "key",
+          "signal_name": "key1",
+          "signal_id": "input-key1"
+        },
+        "key_params": {
+          "keytype": "luma_key"
+        },
+        "out_signal": {
+          "signal_name": "key3-output",
+          "signal_id": "keybus3-output"
+        }
+      }
+    ],
+    "me_bus": [
+      {
+        "index": 0,
+        "bus_id": "mebus0",
+        "bus_name": "mebus0",
+        "auto_duration": 100,
+        "out_signal": {
+          "signal_name": "mebus0-output",
+          "signal_id": "mebus0-ouput"
+        }
+      },
+      {
+        "index": 1,
+        "bus_id": "mebus1",
+        "bus_name": "mebus1",
+        "auto_duration": 100,
+        "out_signal": {
+          "signal_name": "mebus1-output",
+          "signal_id": "mebus1-output"
+        }
+      }
+    ],
+    "level_bus": [
+      {
+        "level": 0,
+        "bus_input": {
+          "bus_input_number": 3,
+          "nic_index": 0,
+          "input_list": [
+            {
+              "index": 0,
+              "input_index": 1,
+              "signal_type": "video",
+              "signal_name": "cam1",
+              "signal_id": "input-video0"
+            },
+            {
+              "index": 1,
+              "input_index": 2,
+              "signal_type": "video",
+              "signal_name": "cam2",
+              "signal_id": "input-video1"
+            },
+            {
+              "index": 2,
+              "input_index": 3,
+              "signal_type": "video",
+              "signal_name": "cam3",
+              "signal_id": "input-video2"
+            },
+            {
+              "index": 3,
+              "input_index": 4,
+              "signal_type": "video",
+              "signal_name": "cam4",
+              "signal_id": "input-video3"
+            },
+            {
+              "index": 4,
+              "input_index": 5,
+              "signal_type": "video",
+              "signal_name": "cam5",
+              "signal_id": "input-video4"
+            }
+          ]
+        },
+        "pgm_bus": {
+          "sub-bus": [
+            {
+              "index": 0,
+              "bus_type": "me_bus",
+              "bus_id": "mebus0"
+            },
+            {
+              "index": 1,
+              "bus_type": "key_bus",
+              "bus_id": "keybus2"
+            }
+          ],
+          "out_signal": [
+            {
+              "index": 0,
+              "signal_type": "clean",
+              "signal_name": "level0-pgmout-clean",
+              "signal_id": "level0-pgmbus-output0"
+            },
+            {
+              "index": 1,
+              "signal_type": "final",
+              "signal_name": "level0-pgmout-final",
+              "signal_id": "level0-pgmbus-output1"
+            }
+          ]
+        },
+        "pvw_bus": {
+          "sub-bus": [],
+          "out_signal": [
+            {
+              "index": 0,
+              "signal_type": "final",
+              "signal_name": "level0-pvwout-final",
+              "signal_id": "level0-pvwbus-output1"
+            }
+          ]
+        }
+      },
+      {
+        "level": 1,
+        "bus_input": {
+          "bus_input_number": 7,
+          "nic_index": 1,
+          "input_list": [
+            {
+              "index": 0,
+              "input_index": 1,
+              "signal_type": "video",
+              "signal_name": "cam1",
+              "signal_id": "input-video0"
+            },
+            {
+              "index": 1,
+              "input_index": 2,
+              "signal_type": "video",
+              "signal_name": "cam2",
+              "signal_id": "input-video1"
+            },
+            {
+              "index": 2,
+              "input_index": 3,
+              "signal_type": "video",
+              "signal_name": "cam3",
+              "signal_id": "input-video2"
+            },
+            {
+              "index": 3,
+              "input_index": 4,
+              "signal_type": "video",
+              "signal_name": "cam4",
+              "signal_id": "input-video3"
+            },
+            {
+              "index": 4,
+              "input_index": 5,
+              "signal_type": "video",
+              "signal_name": "cam5",
+              "signal_id": "input-video4"
+            },
+            {
+              "index": 5,
+              "input_index": 6,
+              "signal_type": "bus_output",
+              "signal_name": "L0",
+              "signal_id": "level0-pgmbus-output1"
+            }
+          ]
+        },
+        "pgm_bus": {
+          "sub-bus": [
+            {
+              "index": 1,
+              "bus_type": "key_bus",
+              "bus_id": "keybus1"
+            },
+            {
+              "index": 2,
+              "bus_type": "me_bus",
+              "bus_id": "mebus1"
+            }
+          ],
+          "out_signal": [
+            {
+              "index": 0,
+              "signal_type": "clean",
+              "signal_name": "level1-pgmout-clean",
+              "signal_id": "level1-pgmbus-output0"
+            },
+            {
+              "index": 1,
+              "signal_type": "final",
+              "signal_name": "level1-pgmout-final",
+              "signal_id": "level1-pgmbus-output1"
+            }
+          ]
+        },
+        "pvw_bus": {
+          "sub-bus": [],
+          "out_signal": [
+            {
+              "index": 0,
+              "signal_type": "final",
+              "signal_name": "level1-pvwout-final",
+              "signal_id": "level1-pvwbus-output1"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "output": {
+    "out_number": 6,
+    "out_params": [
+      {
+        "index": 0,
+        "out_type": "pgm",
+        "out_name": "level0-PGM",
+        "videoformat_name": "4K50P-20",
+        "audioformat_name": "ch8-24bit-aac",
+        "audio_mapping_name": "mapping1",
+        "source_signal": {
+          "signal_type": "bus_output",
+          "signal_name": "level0-pgmfinal-output",
+          "signal_id": "level0-pgmbus-output1"
+        },
+        "smpte-params": {
+          "nic_index": 0,
+          "ipstream_master": {
+            "out_v_src_address": "10.1.1.63:30000",
+            "out_v_dst_address": "232.0.63.1:30000",
+            "out_a_src_address": "10.1.1.63:30000",
+            "out_a_dst_address": "232.0.63.1:30001"
+          },
+          "ipstream_backup": {
+            "out_v_src_address": "10.1.101.63:30000",
+            "out_v_dst_address": "232.0.163.1:30000",
+            "out_a_src_address": "10.1.101.63:30000",
+            "out_a_dst_address": "232.0.163.1:30001"
+          }
+        },
+        "stream-params": {
+          "url": "SRT://192.168.1.64:1234",
+          "codec_dev": "gpu",
+          "codec_dev_index": 0,
+          "quality": 5,
+          "video_enc_driver": 0,
+          "audio_enc_driver": 0
+        }
+      },
+      {
+        "index": 1,
+        "out_type": "pvw",
+        "out_name": "level0-PVW",
+        "videoformat_name": "4K50P-20",
+        "audioformat_name": "ch8-24bit-aac",
+        "audio_mapping_name": "mapping1",
+        "source_signal": {
+          "signal_type": "bus_output",
+          "signal_name": "level0-pvwfinal-output",
+          "signal_id": "level0-pvwbus-output1"
+        },
+        "smpte-params": {
+          "nic_index": 0,
+          "ipstream_master": {
+            "out_v_src_address": "10.1.1.63:30000",
+            "out_v_dst_address": "232.0.63.2:30000",
+            "out_a_src_address": "10.1.1.63:30000",
+            "out_a_dst_address": "232.0.63.2:30001"
+          },
+          "ipstream_backup": {
+            "out_v_src_address": "10.1.101.63:30000",
+            "out_v_dst_address": "232.0.163.2:30000",
+            "out_a_src_address": "10.1.101.63:30000",
+            "out_a_dst_address": "232.0.163.2:30001"
+          }
+        },
+        "stream-params": {
+          "url": "SRT://192.168.1.64:1234",
+          "codec_dev": "gpu",
+          "codec_dev_index": 0,
+          "quality": 5,
+          "video_enc_driver": 0,
+          "audio_enc_driver": 0
+        }
+      },
+      {
+        "index": 2,
+        "out_type": "pgm",
+        "out_name": "level1-PGM",
+        "videoformat_name": "4K50P-20",
+        "audioformat_name": "ch8-24bit-aac",
+        "audio_mapping_name": "mapping1",
+        "source_signal": {
+          "signal_type": "bus_output",
+          "signal_name": "level1-pgmfinal-output",
+          "signal_id": "level1-pgmbus-output1"
+        },
+        "smpte-params": {
+          "nic_index": 1,
+          "ipstream_master": {
+            "out_v_src_address": "10.1.2.63:30000",
+            "out_v_dst_address": "232.0.63.4:30000",
+            "out_a_src_address": "10.1.2.63:30000",
+            "out_a_dst_address": "232.0.63.4:30001"
+          },
+          "ipstream_backup": {
+            "out_v_src_address": "10.1.102.63:30000",
+            "out_v_dst_address": "232.0.163.4:30000",
+            "out_a_src_address": "10.1.102.63:30000",
+            "out_a_dst_address": "232.0.163.4:30001"
+          }
+        },
+        "stream-params": {
+          "url": "SRT://192.168.1.64:1234",
+          "codec_dev": "gpu",
+          "codec_dev_index": 0,
+          "quality": 5,
+          "video_enc_driver": 0,
+          "audio_enc_driver": 0
+        }
+      },
+      {
+        "index": 3,
+        "out_type": "pvw",
+        "out_name": "level1-PVW",
+        "videoformat_name": "4K50P-20",
+        "audioformat_name": "ch8-24bit-aac",
+        "audio_mapping_name": "mapping1",
+        "source_signal": {
+          "signal_type": "bus_output",
+          "signal_name": "level1-pvwfinal-output",
+          "signal_id": "level1-pvwbus-output1"
+        },
+        "smpte-params": {
+          "nic_index": 1,
+          "ipstream_master": {
+            "out_v_src_address": "10.1.2.63:30000",
+            "out_v_dst_address": "232.0.63.5:30000",
+            "out_a_src_address": "10.1.2.63:30000",
+            "out_a_dst_address": "232.0.63.5:30001"
+          },
+          "ipstream_backup": {
+            "out_v_src_address": "10.1.102.63:30000",
+            "out_v_dst_address": "232.0.163.5:30000",
+            "out_a_src_address": "10.1.102.63:30000",
+            "out_a_dst_address": "232.0.163.5:30001"
+          }
+        },
+        "stream-params": {
+          "url": "SRT://192.168.1.64:1234",
+          "codec_dev": "gpu",
+          "codec_dev_index": 0,
+          "quality": 5,
+          "video_enc_driver": 0,
+          "audio_enc_driver": 0
+        }
+      },
+      {
+        "index": 4,
+        "out_type": "clean",
+        "out_name": "level0-CLEAN",
+        "videoformat_name": "4K50P-20",
+        "audioformat_name": "ch8-24bit-aac",
+        "audio_mapping_name": "mapping1",
+        "source_signal": {
+          "signal_type": "bus_output",
+          "signal_name": "level0-pgmclean-output",
+          "signal_id": "level0-pgmbus-output0"
+        },
+        "smpte-params": {
+          "nic_index": 0,
+          "ipstream_master": {
+            "out_v_src_address": "10.1.1.63:30000",
+            "out_v_dst_address": "232.0.63.3:30000",
+            "out_a_src_address": "10.1.1.63:30000",
+            "out_a_dst_address": "232.0.63.3:30001"
+          },
+          "ipstream_backup": {
+            "out_v_src_address": "10.1.101.63:30000",
+            "out_v_dst_address": "232.0.163.3:30000",
+            "out_a_src_address": "10.1.101.63:30000",
+            "out_a_dst_address": "232.0.163.3:30001"
+          }
+        },
+        "stream-params": {
+          "url": "SRT://192.168.1.64:1234",
+          "codec_dev": "gpu",
+          "codec_dev_index": 0,
+          "quality": 5,
+          "video_enc_driver": 0,
+          "audio_enc_driver": 0
+        }
+      },
+      {
+        "index": 5,
+        "out_type": "clean",
+        "out_name": "level1-CLEAN",
+        "videoformat_name": "4K50P-20",
+        "audioformat_name": "ch8-24bit-aac",
+        "audio_mapping_name": "mapping1",
+        "source_signal": {
+          "signal_type": "bus_output",
+          "signal_name": "level1-pgmclean-output",
+          "signal_id": "level1-pgmbus-output0"
+        },
+        "smpte-params": {
+          "nic_index": 1,
+          "ipstream_master": {
+            "out_v_src_address": "10.1.2.63:30000",
+            "out_v_dst_address": "232.0.63.6:30000",
+            "out_a_src_address": "10.1.2.63:30000",
+            "out_a_dst_address": "232.0.63.6:30001"
+          },
+          "ipstream_backup": {
+            "out_v_src_address": "10.1.102.63:30000",
+            "out_v_dst_address": "232.0.163.6:30000",
+            "out_a_src_address": "10.1.102.63:30000",
+            "out_a_dst_address": "232.0.163.6:30001"
+          }
+        },
+        "stream-params": {
+          "url": "SRT://192.168.1.64:1234",
+          "codec_dev": "gpu",
+          "codec_dev_index": 0,
+          "quality": 5,
+          "video_enc_driver": 0,
+          "audio_enc_driver": 0
+        }
+      }
+    ],
+    "audio_output_params": {
+      "src_signal_name": "cam6",
+      "pgm_src_signal_id": "input-video6",
+      "in_nic_index": 0,
+      "audioformat_name": "ch8-24bit-aac",
+      "smpte-params": {
+        "ipstream_master": {
+          "out_a_src_address": "10.1.1.64:30000",
+          "out_a_dst_address": "232.0.64.1:30001"
+        },
+        "ipstream_backup": {
+          "out_a_src_address": "10.1.101.64:30000",
+          "out_a_dst_address": "232.0.164.1:30001"
+        }
+      }
+    },
+    "mv_output_params": {
+      "mv_is_open": true,
+      "out_mv_template": "/opt/vsomediasoftware/config/viewlayout-8-4k-v2.json",
+      "videoformat_name": "4K50P-20",
+      "audioformat_name": "ch8-24bit-aac",
+      "smpte-params": {
+        "nic_index": 0,
+        "ipstream_master": {
+          "out_v_src_address": "10.1.1.64:30000",
+          "out_v_dst_address": "232.0.64.1:30000",
+          "out_a_src_address": "10.1.1.64:30000",
+          "out_a_dst_address": "232.0.64.1:30001"
+        },
+        "ipstream_backup": {
+          "out_v_src_address": "10.1.101.64:30000",
+          "out_v_dst_address": "232.0.164.1:30000",
+          "out_a_src_address": "10.1.101.64:30000",
+          "out_a_dst_address": "232.0.164.1:30001"
+        }
+      },
+      "stream-params": {
+        "url": "SRT://192.168.1.64:1234",
+        "codec_dev": "gpu",
+        "codec_dev_index": 0,
+        "quality": 5,
+        "video_enc_driver": 0,
+        "audio_enc_driver": 0
+      }
+    }
+  },
+  "attched_macro": [
+    {
+      "index": 0,
+      "audioformat_name": "ch8-24bit-aac",
+      "macro_name": "/opt/vsomediasoftware/macrodefin/macro1.json",
+      "level": 1,
+      "panel_type": "panel_c1",
+      "attched_button_id": "PGM-01"
+    }
+  ]
+}

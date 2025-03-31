@@ -57,7 +57,7 @@ const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value)
         </VField>
       </div>
     </div>
-    <Transition name="fade-slow">
+    <expand-transition>
       <div v-if="isOpen" class="form-fieldset-nested">
         <div class="form-fieldset seperator">
           <div class="fieldset-heading">
@@ -111,7 +111,7 @@ const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value)
                 </VControl>
               </VField>
             </div>
-            <Transition name="fade-slow">
+            <expand-transition>
               <div v-if="useBackup" class="column is-6">
                 <VField>
                   <VLabel>备视频流组播源IP（含端口）</VLabel>
@@ -121,8 +121,8 @@ const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value)
                   />
                 </VField>
               </div>
-            </Transition>
-            <Transition name="fade-slow">
+            </expand-transition>
+            <expand-transition>
               <div v-if="useBackup" class="column is-6">
                 <VField>
                   <VLabel>备视频流组播目标IP（含端口）</VLabel>
@@ -131,8 +131,8 @@ const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value)
                   </VControl>
                 </VField>
               </div>
-            </Transition>
-            <Transition name="fade-slow">
+            </expand-transition>
+            <expand-transition>
               <div v-if="useBackup" class="column is-6">
                 <VField>
                   <VLabel>备音频流组播源IP（含端口）</VLabel>
@@ -142,8 +142,8 @@ const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value)
                   />
                 </VField>
               </div>
-            </Transition>
-            <Transition name="fade-slow">
+            </expand-transition>
+            <expand-transition>
               <div v-if="useBackup" class="column is-6">
                 <VField>
                   <VLabel>备音频流组播目标IP（含端口）</VLabel>
@@ -152,12 +152,12 @@ const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value)
                   </VControl>
                 </VField>
               </div>
-            </Transition>
+            </expand-transition>
           </div>
         </div>
       </div>
-    </Transition>
-    <Transition name="fade-slow">
+    </expand-transition>
+    <expand-transition>
       <div v-if="isOpen" class="form-fieldset-nested">
         <div
           class="form-fieldset seperator"
@@ -185,8 +185,8 @@ const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value)
           </div>
         </div>
       </div>
-    </Transition>
-    <Transition name="fade-slow">
+    </expand-transition>
+    <expand-transition>
       <div
         v-if="
           isOpen &&
@@ -218,8 +218,8 @@ const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value)
           </div>
         </div>
       </div>
-    </Transition>
-    <Transition name="fade-slow">
+    </expand-transition>
+    <expand-transition>
       <div v-show="opened" class="form-fieldset-nested is-tail">
         <div class="form-fieldset">
           <div class="fieldset-heading">
@@ -263,6 +263,6 @@ const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value)
           </div>
         </div>
       </div>
-    </Transition>
+    </expand-transition>
   </div>
 </template>

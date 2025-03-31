@@ -9,6 +9,20 @@
     }
   }
 
+  .fieldset-heading {
+    h5 {
+      font-family: var(--font-alt);
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    &.flex-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+
   .fieldset-heading.flex {
     display: flex;
     align-items: center;
@@ -28,6 +42,13 @@
       height: 1.5rem;
       padding-left: 0.5rem;
       padding-right: 0.5rem;
+    }
+
+    label.is-static {
+      color: var(--dark-dark-text);
+      line-height: 38px;
+      font-weight: 500;
+      font-size: 0.875rem;
     }
   }
 
@@ -133,6 +154,22 @@
     padding: 0;
   }
 
+  .form-fieldset-nested-5 {
+    padding: 20px 0 0;
+  }
+
+  .form-fieldset-nested-6 {
+    padding: 0 0 20px 20px;
+
+    &.is-tail {
+      padding-bottom: 0;
+    }
+
+    .form-fieldset {
+      padding-top: 0;
+    }
+  }
+
   .collapse-header {
     display: flex;
     align-items: center;
@@ -161,6 +198,23 @@
         width: 16px;
         color: var(--light-text);
       }
+
+      &.is-close-hidden {
+        display: none;
+      }
+    }
+
+    .collapse-icons {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .collapse-icon {
+      .button {
+        width: 30px;
+        height: 30px;
+      }
     }
   }
 
@@ -174,11 +228,19 @@
       .collapse-header {
         .collapse-icon {
           transform: rotate(calc(var(--transform-direction) * 180deg));
+
+          &.is-close-hidden {
+            display: flex;
+          }
         }
       }
 
       .fieldset-heading {
-        margin-bottom: 20px !important;
+        margin-bottom: 30px !important;
+
+        &.is-nested {
+          margin-bottom: 20px !important;
+        }
       }
     }
 
@@ -221,6 +283,24 @@
     align-items: center;
     font-size: 0.875rem;
     font-style: italic;
+  }
+
+  .field-check {
+    position: relative;
+
+    .check-control {
+      position: absolute;
+      right: 0;
+      top: -2px;
+
+      .checkbox {
+        padding: 0;
+
+        :deep(input + span) {
+          margin-inline-end: 0;
+        }
+      }
+    }
   }
 }
 

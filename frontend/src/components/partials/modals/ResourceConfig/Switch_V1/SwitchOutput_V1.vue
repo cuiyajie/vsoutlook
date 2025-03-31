@@ -57,7 +57,7 @@ const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value)
         </VField>
       </div>
     </div>
-    <Transition name="fade-slow">
+    <expand-transition>
       <div v-if="isOpen" class="form-fieldset-nested">
         <div class="form-fieldset seperator">
           <div class="fieldset-heading">
@@ -120,7 +120,7 @@ const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value)
                 </VControl>
               </VField>
             </div>
-            <Transition name="fade-slow">
+            <expand-transition>
               <div v-if="useBackup" class="column is-6">
                 <VField>
                   <VLabel>备视频流组播源IP（含端口）</VLabel>
@@ -130,8 +130,8 @@ const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value)
                   />
                 </VField>
               </div>
-            </Transition>
-            <Transition name="fade-slow">
+            </expand-transition>
+            <expand-transition>
               <div v-if="useBackup" class="column is-6">
                 <VField>
                   <VLabel>备视频流组播目标IP（含端口）</VLabel>
@@ -140,8 +140,8 @@ const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value)
                   </VControl>
                 </VField>
               </div>
-            </Transition>
-            <Transition name="fade-slow">
+            </expand-transition>
+            <expand-transition>
               <div v-if="useBackup" class="column is-6">
                 <VField>
                   <VLabel>备视频流前置SDN输入端口</VLabel>
@@ -155,8 +155,8 @@ const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value)
                   </VControl>
                 </VField>
               </div>
-            </Transition>
-            <Transition name="fade-slow">
+            </expand-transition>
+            <expand-transition>
               <div v-if="useBackup" class="column is-6">
                 <VField>
                   <VLabel>备视频流前置SDN输出端口</VLabel>
@@ -170,72 +170,82 @@ const isOpen = computed(() => opened.value && (!props.toggleTitle || OPEN.value)
                   </VControl>
                 </VField>
               </div>
-            </Transition>
+            </expand-transition>
           </div>
         </div>
       </div>
-    </Transition>
-    <Transition name="fade-slow">
-      <div v-if="isOpen" class="form-fieldset-nested">
-        <div
-          class="form-fieldset"
-          :class="
-            (mv.videoformat.v_compression_format || mv.videoformat.v_compression_ratio) &&
-              'seperator'
-          "
-        >
-          <div class="fieldset-heading">
-            <h5>视频参数</h5>
-          </div>
-          <div class="columns is-multiline">
-            <div class="column is-6">
-              <VField>
-                <VLabel>视频格式</VLabel>
-                <VControl>
-                  <VSelect v-model="format" class="is-rounded">
-                    <VOption v-for="f in formats" :key="f.key" :value="f.key">
-                      {{ f.value }}
-                    </VOption>
-                  </VSelect>
-                </VControl>
-              </VField>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Transition>
-    <Transition name="fade-slow">
+    </expand-transition>
+    </expand-transition>
+    </expand-transition>
+    </expand-transition>
+  </div>
+  </div>
+  </div>
+  </expand-transition>
+  <expand-transition>
+    <div v-if="isOpen" class="form-fieldset-nested">
       <div
-        v-if="
-          isOpen &&
-            (mv.videoformat.v_compression_format || mv.videoformat.v_compression_ratio)
+        class="form-fieldset"
+        :class="
+          (mv.videoformat.v_compression_format || mv.videoformat.v_compression_ratio) &&
+            'seperator'
         "
-        class="form-fieldset-nested is-tail"
       >
-        <div class="form-fieldset">
-          <div class="fieldset-heading">
-            <h5>视频编码参数</h5>
-          </div>
-          <div class="columns is-multiline">
-            <div v-if="mv.videoformat.v_compression_format" class="column is-6">
-              <VField>
-                <VLabel>编码格式</VLabel>
-                <VControl>
-                  <VInput v-model="mv.videoformat.v_compression_format" readonly />
-                </VControl>
-              </VField>
-            </div>
-            <div v-if="mv.videoformat.v_compression_ratio" class="column is-6">
-              <VField>
-                <VLabel>压缩比</VLabel>
-                <VControl>
-                  <VInput v-model="mv.videoformat.v_compression_ratio" readonly />
-                </VControl>
-              </VField>
-            </div>
+        <div class="fieldset-heading">
+          <h5>视频参数</h5>
+        </div>
+        <div class="columns is-multiline">
+          <div class="column is-6">
+            <VField>
+              <VLabel>视频格式</VLabel>
+              <VControl>
+                <VSelect v-model="format" class="is-rounded">
+                  <VOption v-for="f in formats" :key="f.key" :value="f.key">
+                    {{ f.value }}
+                  </VOption>
+                </VSelect>
+              </VControl>
+            </VField>
           </div>
         </div>
       </div>
-    </Transition>
+    </div>
+  </expand-transition>
+  <expand-transition>
+    <div
+      v-if="
+        isOpen &&
+          (mv.videoformat.v_compression_format || mv.videoformat.v_compression_ratio)
+      "
+      class="form-fieldset-nested is-tail"
+    >
+      <div class="form-fieldset">
+        <div class="fieldset-heading">
+          <h5>视频编码参数</h5>
+        </div>
+        <div class="columns is-multiline">
+          <div v-if="mv.videoformat.v_compression_format" class="column is-6">
+            <VField>
+              <VLabel>编码格式</VLabel>
+              <VControl>
+                <VInput v-model="mv.videoformat.v_compression_format" readonly />
+              </VControl>
+            </VField>
+          </div>
+          <div v-if="mv.videoformat.v_compression_ratio" class="column is-6">
+            <VField>
+              <VLabel>压缩比</VLabel>
+              <VControl>
+                <VInput v-model="mv.videoformat.v_compression_ratio" readonly />
+              </VControl>
+            </VField>
+          </div>
+        </div>
+      </div>
+    </div>
+  </expand-transition>
+  </expand-transition>
+  </expand-transition>
+  </expand-transition>
   </div>
 </template>

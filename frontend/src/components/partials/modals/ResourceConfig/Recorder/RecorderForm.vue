@@ -17,7 +17,9 @@ import merge from 'lodash-es/merge'
 import rcData from '@src/data/vscomponent/recorder.json'
 import { useUsedFormat } from '../Utilties/Composables';
 import { useUserSession } from "@src/stores/userSession"
-import { handleVideoFormat, handleAudioFormat, handlePlayerParams, handleNicList, unwrap, wrap, checkPlayerParams } from '../Utilties/Utils_V1';
+import { handleVideoFormat, handleAudioFormat, handlePlayerParams, handleNicList, unwrap, wrap, checkPlayerParams, handleApiParams, checkApiParams, checkNicDetails } from '../Utilties/Utils_V1';
+import { def_api_params } from './Consts';
+
 
 const props = defineProps<{
   name: string,
@@ -30,7 +32,6 @@ const mv = defineModel<{
   used_signal_type: number
   nmos: NMosConfigType
   ssm_address_range: SSMAddressType[]
-  api_params: IApiParams[],
   recoder_params: { in_nic_index: number },
 }>({
   default: {
@@ -39,7 +40,6 @@ const mv = defineModel<{
     used_signal_type: 0,
     nmos: { ...nmos_config },
     ssm_address_range: [{ ...ssm_address }],
-    api_params: [],
     recoder_params: { in_nic_index: -1 },
   },
   local: true,
@@ -57,7 +57,6 @@ mv.value = pick(rcData, [
   'nmos',
   'ssm_address_range',
   'authorization_service',
-  'api_params',
   'recoder_params'
 ])
 
@@ -68,6 +67,7 @@ const indexedNicDetails = computed(() => {
     .map((nic, idx) => ({ ...nic, index: idx }))
 })
 
+const apiParams = ref<IApiParams[]>(def_api_params())
 const playerParams = ref(def_player_params())
 
 const [videoFormatEnum, videoSelected, videoUnSelected] = useUsedFormat()
@@ -78,6 +78,7 @@ watchNmosName(() => props.name, mv)
 function getValue() {
   const result = {
     ...handle(mv.value),
+    api_params: handleApiParams(apiParams.value),
     videoformat_enum: videoFormatEnum.value.map(vfn => handleVideoFormat(vfn, videoFormats.value)).filter(v => v),
     audioformat_enum: audioFormatEnum.value.map(afn => handleAudioFormat(afn, audioFormats.value)).filter(a => a),
     player_params: wrap(handlePlayerParams(playerParams.value, videoFormats.value), 'out_'),
@@ -96,18 +97,12 @@ function setValue(data: typeof rcData) {
     'nmos',
     'ssm_address_range',
     'authorization_service',
-    'api_params',
     'recoder_params'
   ])
+  apiParams.value = checkApiParams(def_api_params(), data.api_params)
   const _playerParams = unwrap(data.player_params, 'out_')
   playerParams.value = checkPlayerParams(merge(def_player_params(), _playerParams), videoFormats.value, audioFormats.value)
-  nicDetails.value = data.nic_list.map((nic: any) => {
-    const nicIndex = props.nics.findIndex(n => n.nicNameMain === nic.nic_name_m && n.nicNameBackup === nic.nic_name_b)
-    if (nicIndex !== -1) {
-      return { ...nic, nicIndex, id: props.nics[nicIndex].id }
-    }
-    return { ...nic, nicIndex: -1, id: '' }
-  })
+  nicDetails.value = checkNicDetails(data.nic_list, props.nics)
 }
 
 defineExpose({
@@ -157,19 +152,8 @@ defineExpose({
             <h4>接口设置</h4>
           </div>
           <div class="columns is-multiline">
-            <div class="column is-6">
-              <AddrInputAddonSep
-                v-model:host="mv.api_params[0].api_name"
-                v-model:port="mv.api_params[0].service_port"
-                label="录制控制接口"
-              />
-            </div>
-            <div class="column is-6">
-              <AddrInputAddonSep
-                v-model:host="mv.api_params[1].api_name"
-                v-model:port="mv.api_params[1].service_port"
-                label="播放控制接口"
-              />
+            <div v-for="(apiParam, apiIndex) in apiParams" :key="apiParam.api_name" class="column is-6">
+              <ApiParamsCheck v-model="apiParams[apiIndex]" :label="apiParam.label" />
             </div>
           </div>
         </div>
@@ -189,16 +173,16 @@ defineExpose({
               <VIcon icon="feather:chevron-down" />
             </div>
           </div>
-          <Transition name="fade-slow">
+          <expand-transition>
             <div v-show="advanceOpened" class="form-body">
               <NMosConfig v-model="mv.nmos" class="seperator" />
               <SSMAddressRange v-model="mv.ssm_address_range" />
             </div>
-          </Transition>
+          </expand-transition>
         </div>
-        <Transition name="fade-slow">
+        <expand-transition>
           <NicSection v-if="mv.used_signal_type !== 1" v-model="nicDetails" class="has-mb-20" :nics="nics" />
-        </Transition>
+        </expand-transition>
         <div class="form-fieldset">
           <div class="fieldset-heading">
             <h4>录制参数</h4>

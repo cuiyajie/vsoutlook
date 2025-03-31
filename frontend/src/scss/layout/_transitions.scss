@@ -58,7 +58,7 @@
 }
 
 .translate-page-y-leave-to {
-  transform: translateY(-300px);
+  transform: translateY(10px);
   opacity: 0;
 }
 
@@ -143,7 +143,7 @@
 6. list-complete
 ========================================================================== */
 
-.list-complete-item {
+.list-complete {
   transition: all 0.8s ease;
   display: inline-block;
   margin-inline-end: 10px;
@@ -225,5 +225,61 @@
   .from-bottom-enter-active,
   .from-bottom-leave-active {
     transition: none;
+  }
+}
+
+/* ==========================================================================
+8. expand-y
+========================================================================== */
+
+.expand-y-enter-active,
+.expand-y-leave-active {
+  transition: max-height 0.5s linear;
+  overflow: hidden;
+}
+
+.expand-y-enter-from,
+.expand-y-leave-to {
+  max-height: 0;
+}
+
+.expand-y-enter-to,
+.expand-y-leave-from {
+  max-height: var(--expand-y-max-height, 500px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .expand-y-enter-active,
+  .expand-y-leave-active {
+    transition: none;
+    overflow: hidden;
+  }
+}
+
+/* ==========================================================================
+8. expand-y-fast
+========================================================================== */
+
+.expand-y-fast-enter-active,
+.expand-y-fast-leave-active {
+  transition: max-height 0.2s linear;
+  overflow: hidden;
+}
+
+.expand-y-fast-enter-from,
+.expand-y-fast-leave-to {
+  max-height: 0;
+}
+
+.expand-y-fast-enter-to,
+.expand-y-fast-leave-from {
+  max-height: var(--expand-y-max-height, 80px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .expand-y-fast-enter-active,
+  .expand-y-fast-leave-active {
+    transition: none;
+    overflow: hidden;
   }
 }

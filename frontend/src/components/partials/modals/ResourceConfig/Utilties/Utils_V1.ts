@@ -1,4 +1,5 @@
-import { type PlayerParams, type IndexedNicDetail } from './Consts_V1'
+import { type PlayerParams, type IndexedNicDetail, type IApiParams } from './Consts_V1'
+import { omit } from 'lodash'
 
 export function changeProtocol(url: string, newProtocol: string): string {
   try {
@@ -10,6 +11,17 @@ export function changeProtocol(url: string, newProtocol: string): string {
     console.error('Invalid URL:', error)
     return url // 返回原始 URL 作为兜底
   }
+}
+
+export function handleApiParams(params: IApiParams[]) {
+  return params.filter((p) => p.checked).map((p) => omit(p, ['checked', 'label']))
+}
+
+export function checkApiParams(params: IApiParams[], apiParams: any[]) {
+  return params.map((p) => ({
+    ...p,
+    checked: apiParams.some((ap) => ap.api_name === p.api_name),
+  }))
 }
 
 export function handleVideoFormat(name: string, vfs: VideoFormat[]) {
@@ -65,6 +77,12 @@ export function handlePlayerParams<T extends PlayerParams>(
   return result
 }
 
+export function handleAudioMapping(name: string, afs: AudioMapping[]) {
+  const af = afs.find((a) => a.name === name)
+  if (!af) return null
+  return { ...af }
+}
+
 export function handleNicList(nics: IndexedNicDetail[]) {
   return nics.map((nic) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -83,6 +101,18 @@ export function checkPlayerParams(params: any, vfs: VideoFormat[], afs: AudioFor
     params.audioformat_name = ''
   }
   return params
+}
+
+export function checkNicDetails(nicDetails: any[], nics: NicInfo[]) {
+  return nicDetails.map((nic: any) => {
+    const nicIndex = nics.findIndex(
+      (n) => n.nicNameMain === nic.nic_name_m && n.nicNameBackup === nic.nic_name_b
+    )
+    if (nicIndex !== -1) {
+      return { ...nic, nicIndex, id: nics[nicIndex].id }
+    }
+    return { ...nic, nicIndex: -1, id: '' }
+  })
 }
 
 export function wrap(src: any, prefix: string) {
@@ -113,7 +143,10 @@ export function wrap(src: any, prefix: string) {
 export function unwrap(src: any, prefix: string) {
   const dst: any = {}
   for (const key in src) {
-    const unwrapKey = key.replace(prefix, '')
+    let unwrapKey = key
+    if (key.startsWith(prefix) && key.match(/(src|dst)_address$/)) {
+      unwrapKey = key.replace(prefix, '')
+    }
     if (src[key] instanceof Array) {
       dst[unwrapKey] = src[key].map((v: any, index: number) =>
         Object.assign(unwrap(v, prefix), { index })

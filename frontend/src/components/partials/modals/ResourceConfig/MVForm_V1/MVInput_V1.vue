@@ -34,7 +34,7 @@ useProtocolDC(mv)
         <VIcon icon="feather:chevron-down" />
       </div>
     </div>
-    <Transition name="fade-slow">
+    <expand-transition>
       <div v-show="opened" class="form-fieldset-nested">
         <div class="form-fieldset seperator">
           <div class="fieldset-heading">
@@ -86,7 +86,7 @@ useProtocolDC(mv)
                 </VControl>
               </VField>
             </div>
-            <Transition name="fade-slow">
+            <expand-transition>
               <div v-if="useBackup" class="column is-6">
                 <VField>
                   <VLabel>备视频流组播源IP（含端口）</VLabel>
@@ -95,8 +95,8 @@ useProtocolDC(mv)
                   </VControl>
                 </VField>
               </div>
-            </Transition>
-            <Transition name="fade-slow">
+            </expand-transition>
+            <expand-transition>
               <div v-if="useBackup" class="column is-6">
                 <VField>
                   <VLabel>备视频流组播目标IP（含端口）</VLabel>
@@ -105,8 +105,8 @@ useProtocolDC(mv)
                   </VControl>
                 </VField>
               </div>
-            </Transition>
-            <Transition name="fade-slow">
+            </expand-transition>
+            <expand-transition>
               <div v-if="useBackup" class="column is-6">
                 <VField>
                   <VLabel>备音频流组播源IP（含端口）</VLabel>
@@ -115,8 +115,8 @@ useProtocolDC(mv)
                   </VControl>
                 </VField>
               </div>
-            </Transition>
-            <Transition name="fade-slow">
+            </expand-transition>
+            <expand-transition>
               <div v-if="useBackup" class="column is-6">
                 <VField>
                   <VLabel>备音频流组播目标IP（含端口）</VLabel>
@@ -125,12 +125,12 @@ useProtocolDC(mv)
                   </VControl>
                 </VField>
               </div>
-            </Transition>
+            </expand-transition>
           </div>
         </div>
       </div>
-    </Transition>
-    <Transition name="fade-slow">
+    </expand-transition>
+    <expand-transition>
       <div v-show="opened" class="form-fieldset-nested is-tail">
         <div class="form-fieldset">
           <div class="fieldset-heading">
@@ -152,8 +152,8 @@ useProtocolDC(mv)
           </div>
         </div>
       </div>
-    </Transition>
-    <Transition name="fade-slow">
+    </expand-transition>
+    <expand-transition>
       <div
         v-show="
           opened &&
@@ -185,8 +185,8 @@ useProtocolDC(mv)
           </div>
         </div>
       </div>
-    </Transition>
-    <Transition name="fade-slow">
+    </expand-transition>
+    <expand-transition>
       <div v-show="opened" class="form-fieldset-nested is-tail">
         <div class="form-fieldset">
           <div class="fieldset-heading">
@@ -230,7 +230,7 @@ useProtocolDC(mv)
           </div>
         </div>
       </div>
-    </Transition>
+    </expand-transition>
   </div>
 </template>
 <style lang="scss">

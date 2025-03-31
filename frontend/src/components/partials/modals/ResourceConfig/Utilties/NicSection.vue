@@ -48,19 +48,21 @@ function isExist(nicId: string) {
         </button>
       </div>
     </div>
-    <div v-if="mv.length" class="form-body">
-      <!--Fieldset-->
-      <NicSelect
-        v-for="(nd, nidx) in mv"
-        :key="nidx"
-        v-model="mv[nidx]"
-        :index="nidx"
-        :is-last="nidx === mv.length - 1"
-        :nics="nics"
-        :is-exist="isExist"
-        @remove="remove(nidx)"
-      />
+    <div class="form-body">
+      <TransitionGroup name="list">
+        <!--Fieldset-->
+        <NicSelect
+          v-for="(nd, nidx) in mv"
+          :key="nidx"
+          v-model="mv[nidx]"
+          :index="nidx"
+          :is-last="nidx === mv.length - 1"
+          :nics="nics"
+          :is-exist="isExist"
+          @remove="remove(nidx)"
+        />
+      </TransitionGroup>
     </div>
-    <div v-else class="is-empty-list">暂无网卡设置</div>
+    <div v-if="mv.length === 0" class="is-empty-list">暂无网卡设置</div>
   </div>
-</template>
+</template>ss

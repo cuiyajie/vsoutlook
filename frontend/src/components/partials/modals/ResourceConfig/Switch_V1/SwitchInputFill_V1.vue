@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { type SwitchInputKeyParamsType } from '../Utilties/Consts'
+import { type SwitchInputFillParamsType } from '../Utilties/Consts'
 
-const mv = defineModel<SwitchInputKeyParamsType>({
-  default: {} as SwitchInputKeyParamsType,
+const mv = defineModel<SwitchInputFillParamsType>({
+  default: {} as SwitchInputFillParamsType,
   local: true,
 })
 
@@ -12,28 +12,28 @@ defineProps<{
   useBackup: boolean
 }>()
 
-const key_opened = ref(false)
+const fill_opened = ref(false)
 </script>
 <template>
   <div
     class="form-fieldset collapse-form"
     :class="!isLast && 'seperator'"
-    :open="key_opened || undefined"
+    :open="fill_opened || undefined"
   >
     <div
       class="fieldset-heading collapse-header"
       tabindex="0"
       role="button"
-      @keydown.space.prevent="key_opened = !key_opened"
-      @click.prevent="key_opened = !key_opened"
+      @keydown.space.prevent="fill_opened = !fill_opened"
+      @click.prevent="fill_opened = !fill_opened"
     >
-      <h4>第{{ index }}路key输入参数</h4>
+      <h4>第{{ index }}路fill输入参数</h4>
       <div class="collapse-icon">
         <VIcon icon="feather:chevron-down" />
       </div>
     </div>
-    <Transition name="fade-show">
-      <div v-show="key_opened" class="form-fieldset-nested">
+    <expand-transition>
+      <div v-show="fill_opened" class="form-fieldset-nested">
         <div class="form-fieldset">
           <div class="fieldset-heading">
             <h5>IP流参数</h5>
@@ -60,7 +60,7 @@ const key_opened = ref(false)
                 <VLabel>主视频流前置SDN输入端口</VLabel>
                 <VControl>
                   <VInputNumber
-                    v-model="mv.ipstream_master.key_p4_port"
+                    v-model="mv.ipstream_master.fill_p4_port"
                     centered
                     :min="0"
                     :step="1"
@@ -69,7 +69,7 @@ const key_opened = ref(false)
               </VField>
             </div>
             <div class="column is-6" />
-            <Transition name="fade-slow">
+            <expand-transition>
               <div v-if="useBackup" class="column is-6">
                 <VField>
                   <VLabel>备视频流组播源IP（含端口）</VLabel>
@@ -78,8 +78,8 @@ const key_opened = ref(false)
                   </VControl>
                 </VField>
               </div>
-            </Transition>
-            <Transition name="fade-slow">
+            </expand-transition>
+            <expand-transition>
               <div v-if="useBackup" class="column is-6">
                 <VField>
                   <VLabel>备视频流组播目标IP（含端口）</VLabel>
@@ -88,14 +88,14 @@ const key_opened = ref(false)
                   </VControl>
                 </VField>
               </div>
-            </Transition>
-            <Transition name="fade-slow">
+            </expand-transition>
+            <expand-transition>
               <div v-if="useBackup" class="column is-6">
                 <VField>
                   <VLabel>备视频流前置SDN输入端口</VLabel>
                   <VControl>
                     <VInputNumber
-                      v-model="mv.ipstream_backup.key_p4_port"
+                      v-model="mv.ipstream_backup.fill_p4_port"
                       centered
                       :min="0"
                       :step="1"
@@ -103,11 +103,11 @@ const key_opened = ref(false)
                   </VControl>
                 </VField>
               </div>
-            </Transition>
+            </expand-transition>
           </div>
         </div>
       </div>
-    </Transition>
+    </expand-transition>
   </div>
 </template>
 <style lang="scss">

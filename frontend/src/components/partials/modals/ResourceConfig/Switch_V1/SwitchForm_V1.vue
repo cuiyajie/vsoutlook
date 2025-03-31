@@ -1,25 +1,27 @@
 <script setup lang="ts">
 import {
-  def_bcswitch_input_params,
-  def_bcswitch_output_params,
-  def_bcswitch_input_video_params,
-  type BCSwitchInputParamsType,
+  def_switch_input_params,
+  def_switch_output_params,
+  def_switch_input_video_params,
+  type SwitchInputParamsType,
   global_config,
-  def_bcswitch_bus_params,
-  type BCSwitchBusParamsType,
+  def_switch_bus_params,
+  type SwitchBusParamsType,
   type NMosConfigType,
   type SSMAddressType,
   nmos_config,
   ssm_address,
   type SwitchKeyType,
-  def_bcswitch_bus_keyfill_params,
+  def_switch_input_key_params,
+  def_switch_input_fill_params,
+  def_switch_bus_keyfill_params,
   def_switch_key_params,
   def_switch_key,
 } from '../Utilties/Consts'
 import { handle, unwrap, watchNmosName, wrap } from '../Utilties/Utils'
 import pick from 'lodash-es/pick'
 import merge from 'lodash-es/merge'
-import bcSwitchData from '@src/data/vscomponent/bcswitch.json'
+import switchData from '@src/data/vscomponent/switch.json'
 
 const props = defineProps<{
   name: string
@@ -29,12 +31,12 @@ const mv = defineModel<{
   moudle: string
   input_number: number
   tallyserver_url: string
+  p4server_url: string
   hw_panel_url: string
   physic_nic_port0_ip: string
   physic_nic_port1_ip: string
   '2110-7_m_local_ip': string
   '2110-7_b_local_ip': string
-  api_server_port: number
   nmos: NMosConfigType
   ssm_address_range: SSMAddressType[]
 }>({
@@ -42,12 +44,12 @@ const mv = defineModel<{
     moudle: 'switch',
     input_number: 10,
     tallyserver_url: '',
+    p4server_url: '',
     hw_panel_url: '',
     physic_nic_port0_ip: '',
     physic_nic_port1_ip: '',
     '2110-7_m_local_ip': '',
     '2110-7_b_local_ip': '',
-    api_server_port: 7001,
     nmos: { ...nmos_config },
     ssm_address_range: [{ ...ssm_address }],
   },
@@ -55,10 +57,11 @@ const mv = defineModel<{
 })
 const advanceOpened = ref(false)
 
-mv.value = pick(bcSwitchData, [
+mv.value = pick(switchData, [
   'moudle',
   'input_number',
   'tallyserver_url',
+  'p4server_url',
   'hw_panel_url',
   'physic_nic_port0_ip',
   'physic_nic_port1_ip',
@@ -67,12 +70,11 @@ mv.value = pick(bcSwitchData, [
   'nmos',
   'ssm_address_range',
   'authorization_service',
-  'api_server_port',
 ])
 
 watchNmosName(() => props.name, mv)
 
-const keyData = bcSwitchData.key
+const keyData = switchData.key
 const key = ref<SwitchKeyType>({ ...keyData })
 const keyParams = ref<any[]>([])
 
@@ -100,10 +102,12 @@ watch(
   { immediate: true }
 )
 
-const ipData = unwrap(bcSwitchData.input, 'in_')
-const input = ref<BCSwitchInputParamsType>(def_bcswitch_input_params())
+const ipData = unwrap(switchData.input, 'in_')
+const input = ref<SwitchInputParamsType>(def_switch_input_params())
 input.value = ipData
 const inputs = ref<any[]>([])
+const inputKeys = ref<any[]>([])
+const inputFills = ref<any[]>([])
 
 watch(
   () => mv.value.input_number,
@@ -119,7 +123,7 @@ watch(
             index: len + i + 1,
             value: params[len + i]
               ? ref(params[len + i])
-              : ref(def_bcswitch_input_video_params(len + i)),
+              : ref(def_switch_input_video_params(len + i)),
           }
         })
       )
@@ -128,8 +132,8 @@ watch(
   { immediate: true }
 )
 
-const busData = unwrap(bcSwitchData.bus, 'bus_in_')
-const bus = ref<BCSwitchBusParamsType>(def_bcswitch_bus_params())
+const busData = unwrap(switchData.bus, 'bus_in_')
+const bus = ref<SwitchBusParamsType>(def_switch_bus_params())
 bus.value = busData
 const masterBusKeyFills = ref<any[]>([])
 const backupBusKeyFills = ref<any[]>([])
@@ -137,20 +141,44 @@ const backupBusKeyFills = ref<any[]>([])
 watch(
   () => key.value.ext_key_number,
   (nv) => {
-    const len = masterBusKeyFills.value.length
+    const len = inputKeys.value.length
+    const ikParams = ipData.input_key_params
+    const ifParams = ipData.input_fill_params
     const kbmParams = busData.keyfill_bus_master
     const kbbParams = busData.keyfill_bus_backup
     if (nv < len) {
+      inputKeys.value = inputKeys.value.slice(0, nv)
+      inputFills.value = inputFills.value.slice(0, nv)
       masterBusKeyFills.value = masterBusKeyFills.value.slice(0, nv)
       backupBusKeyFills.value = backupBusKeyFills.value.slice(0, nv)
     } else if (nv > len) {
+      inputKeys.value = inputKeys.value.concat(
+        Array.from({ length: nv - len }, (_, i) => {
+          return {
+            index: len + i + 1,
+            value: ikParams[len + i]
+              ? ref(ikParams[len + i])
+              : ref(def_switch_input_key_params()),
+          }
+        })
+      )
+      inputFills.value = inputFills.value.concat(
+        Array.from({ length: nv - len }, (_, i) => {
+          return {
+            index: len + i + 1,
+            value: ifParams[len + i]
+              ? ref(ifParams[len + i])
+              : ref(def_switch_input_fill_params()),
+          }
+        })
+      )
       masterBusKeyFills.value = masterBusKeyFills.value.concat(
         Array.from({ length: nv - len }, (_, i) => {
           return {
             index: len + i + 1,
             value: kbmParams[len + i]
               ? ref(kbmParams[len + i])
-              : ref(def_bcswitch_bus_keyfill_params()),
+              : ref(def_switch_bus_keyfill_params()),
           }
         })
       )
@@ -160,7 +188,7 @@ watch(
             index: len + i + 1,
             value: kbbParams[len + i]
               ? ref(kbbParams[len + i])
-              : ref(def_bcswitch_bus_keyfill_params()),
+              : ref(def_switch_bus_keyfill_params()),
           }
         })
       )
@@ -169,17 +197,23 @@ watch(
   { immediate: true }
 )
 
-const opData = unwrap(bcSwitchData.output, 'out_')
+const opData = unwrap(switchData.output, 'out_')
 const output = ref<any>({ ...global_config })
 output.value = pick(opData, Object.keys(global_config))
-const outputs = ref<any[]>([])
-outputs.value = Array.from({ length: 2 }, (_, i) => {
+const outputs = ref<any>([])
+outputs.value = Array.from({ length: 3 }, (_, i) => {
   if (i === 0) {
-    return opData.pgm_params ? ref(opData.pgm_params) : ref(def_bcswitch_output_params())
+    return opData.pgm_params ? ref(opData.pgm_params) : ref(def_switch_output_params())
   } else if (i === 1) {
-    return opData.pvw_params ? ref(opData.pvw_params) : ref(def_bcswitch_output_params())
+    return opData.pvw_params ? ref(opData.pvw_params) : ref(def_switch_output_params())
+  } else if (i === 2) {
+    return opData.clean_params
+      ? ref(opData.clean_params)
+      : ref(def_switch_output_params())
   }
 })
+const OUT_3_OPEN = ref(false)
+OUT_3_OPEN.value = opData.clean_params.clean_is_open
 
 function getValue() {
   const mip = mv.value['2110-7_m_local_ip']
@@ -190,6 +224,16 @@ function getValue() {
     input: {
       ...wrap(input.value, 'in_', input.value['g_2022-7']),
       input_video_params: inputs.value.map((ipt, idx) =>
+        Object.assign(wrap(ipt.value, 'in_', input.value['g_2022-7'], true, mip, bip), {
+          index: idx,
+        })
+      ),
+      input_key_params: inputKeys.value.map((ipt, idx) =>
+        Object.assign(wrap(ipt.value, 'in_', input.value['g_2022-7'], true, mip, bip), {
+          index: idx,
+        })
+      ),
+      input_fill_params: inputFills.value.map((ipt, idx) =>
         Object.assign(wrap(ipt.value, 'in_', input.value['g_2022-7'], true, mip, bip), {
           index: idx,
         })
@@ -214,48 +258,64 @@ function getValue() {
       ...wrap(output.value, 'out_'),
       out_pgm_params: wrap(unref(outputs.value[0]), 'out_', useb, false, mip, bip),
       out_pvw_params: wrap(unref(outputs.value[1]), 'out_', useb, false, mip, bip),
+      out_clean_params: {
+        out_clean_is_open: OUT_3_OPEN.value,
+        ...(OUT_3_OPEN.value
+          ? wrap(unref(outputs.value[2]), 'out_', useb, false, mip, bip)
+          : {}),
+      },
     },
   }
 }
 
-function setValue(data: typeof bcSwitchData) {
+function setValue(data: typeof switchData) {
   mv.value = pick(data, [
     'moudle',
     'input_number',
     'tallyserver_url',
+    'p4server_url',
     'hw_panel_url',
     'physic_nic_port0_ip',
     'physic_nic_port1_ip',
     '2110-7_m_local_ip',
     '2110-7_b_local_ip',
     'nmos',
-    'api_server_port',
     'ssm_address_range',
     'authorization_service',
   ])
   const _ipData = unwrap(data.input, 'in_')
   key.value = merge(def_switch_key(), data.key)
-  input.value = merge(def_bcswitch_input_params(), _ipData)
-  bus.value = merge(def_bcswitch_bus_params(), unwrap(data.bus, 'bus_in_'))
+  input.value = merge(def_switch_input_params(), _ipData)
+  bus.value = merge(def_switch_bus_params(), unwrap(data.bus, 'bus_in_'))
   nextTick(() => {
     const params = _ipData.input_video_params
     inputs.value.forEach((iptv, idx) => {
-      iptv.value = merge(def_bcswitch_input_video_params(0), params[idx])
+      iptv.value = merge(def_switch_input_video_params(0), params[idx])
+    })
+    const ikParams = _ipData.input_key_params
+    inputKeys.value.forEach((ipt, idx) => {
+      ipt.value = merge(def_switch_input_key_params(), ikParams[idx])
+    })
+    const ifParams = _ipData.input_fill_params
+    inputFills.value.forEach((ipt, idx) => {
+      ipt.value = merge(def_switch_input_fill_params(), ifParams[idx])
     })
     const kbmParams = bus.value.keyfill_bus_master
     masterBusKeyFills.value.forEach((ipt, idx) => {
-      ipt.value = merge(def_bcswitch_bus_keyfill_params(), kbmParams[idx])
+      ipt.value = merge(def_switch_bus_keyfill_params(), kbmParams[idx])
     })
     const kbbParams = bus.value.keyfill_bus_backup
     backupBusKeyFills.value.forEach((ipt, idx) => {
-      ipt.value = merge(def_bcswitch_bus_keyfill_params(), kbbParams[idx])
+      ipt.value = merge(def_switch_bus_keyfill_params(), kbbParams[idx])
     })
   })
 
   const _opData = unwrap(data.output, 'out_')
   output.value = pick(_opData, Object.keys(global_config))
-  outputs.value[0].value = merge(def_bcswitch_output_params(), _opData.pgm_params)
-  outputs.value[1].value = merge(def_bcswitch_output_params(), _opData.pvw_params)
+  outputs.value[0].value = merge(def_switch_output_params(), _opData.pgm_params)
+  outputs.value[1].value = merge(def_switch_output_params(), _opData.pvw_params)
+  OUT_3_OPEN.value = _opData.clean_params.clean_is_open
+  outputs.value[2].value = merge(def_switch_output_params(), _opData.clean_params)
 }
 
 defineExpose({
@@ -299,13 +359,22 @@ defineExpose({
                 </VControl>
               </VField>
             </div>
-            <div class="column is-6" />
             <div class="column is-6">
               <VField>
                 <VLabel>Tally服务地址（含端口）</VLabel>
                 <VControl>
                   <VInput
                     v-model="mv.tallyserver_url"
+                  />
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-6">
+              <VField>
+                <VLabel>前置SDN通讯地址（含端口）</VLabel>
+                <VControl>
+                  <VInput
+                    v-model="mv.p4server_url"
                   />
                 </VControl>
               </VField>
@@ -370,19 +439,6 @@ defineExpose({
                 </VControl>
               </VField>
             </div>
-            <div class="column is-6">
-              <VField>
-                <VLabel>对外端口</VLabel>
-                <VControl>
-                  <VInputNumber
-                    v-model="mv.api_server_port"
-                    centered
-                    :min="0"
-                    :step="1"
-                  />
-                </VControl>
-              </VField>
-            </div>
           </div>
         </div>
         <div
@@ -401,12 +457,12 @@ defineExpose({
               <VIcon icon="feather:chevron-down" />
             </div>
           </div>
-          <Transition name="fade-slow">
+          <expand-transition>
             <div v-show="advanceOpened" class="form-body">
               <NMosConfig v-model="mv.nmos" class="seperator" />
               <SSMAddressRange v-model="mv.ssm_address_range" />
             </div>
-          </Transition>
+          </expand-transition>
         </div>
         <div class="form-outer">
           <div class="form-header">
@@ -447,7 +503,7 @@ defineExpose({
                 </div>
               </div>
             </div>
-            <SwitchKeyParams
+            <SwitchKeyParam_V1
               v-for="(ipt, idx) in keyParams"
               :key="ipt.index"
               v-model="ipt.value"
@@ -467,8 +523,40 @@ defineExpose({
           </div>
           <div class="form-body">
             <!--Fieldset-->
-            <EndSwitchInputGlobal v-model="input" />
-            <BCSwitchInput
+            <SwitchInputGlobal_V1
+              v-model="input"
+            />
+            <div class="form-fieldset form-outer">
+              <div class="fieldset-heading">
+                <h4>输入key参数</h4>
+              </div>
+              <div class="form-fieldset-nested-2">
+                <SwitchInputKey_V1
+                  v-for="(ipt, idx) in inputKeys"
+                  :key="ipt.index"
+                  v-model="ipt.value"
+                  :index="ipt.index"
+                  :is-last="idx === inputKeys.length - 1"
+                  :use-backup="input['g_2022-7']"
+                />
+              </div>
+            </div>
+            <div class="form-fieldset form-outer">
+              <div class="fieldset-heading">
+                <h4>输入fill参数</h4>
+              </div>
+              <div class="form-fieldset-nested-2">
+                <SwitchInputFill_V1
+                  v-for="(ipt, idx) in inputFills"
+                  :key="ipt.index"
+                  v-model="ipt.value"
+                  :index="ipt.index"
+                  :is-last="idx === inputFills.length - 1"
+                  :use-backup="input['g_2022-7']"
+                />
+              </div>
+            </div>
+            <SwitchInput_V1
               v-for="(ipt, idx) in inputs"
               :key="ipt.index"
               v-model="ipt.value"
@@ -483,34 +571,52 @@ defineExpose({
           <div class="form-header">
             <div class="form-header-inner">
               <div class="left">
-                <h4>键输入</h4>
+                <h4>内部母线输入参数</h4>
               </div>
             </div>
           </div>
-          <div class="form-body">
-            <!--Fieldset-->
-            <div class="seperator">
-              <BCSwitchBusKeyFill
-                v-for="(ipt, idx) in masterBusKeyFills"
-                :key="`master_${ipt.index}`"
-                v-model="ipt.value"
-                name="主"
-                :index="ipt.index"
-                :is-last="idx === masterBusKeyFills.length - 1"
-              />
-            </div>
-            <Transition name="fade-slow">
-              <div v-if="input['g_2022-7']">
-                <BCSwitchBusKeyFill
-                  v-for="(ipt, idx) in backupBusKeyFills"
-                  :key="`backup_${ipt.index}`"
-                  v-model="ipt.value"
-                  name="备"
-                  :index="ipt.index"
-                  :is-last="idx === backupBusKeyFills.length - 1"
+          <div class="form-body is-nested-2">
+            <div class="form-fieldset form-outer">
+              <div class="fieldset-heading">
+                <h4>视频输入母线</h4>
+              </div>
+              <div class="form-fieldset-nested-2">
+                <!--Fieldset-->
+                <SwitchBus_V1
+                  v-model="bus"
+                  :use-backup="input['g_2022-7']"
                 />
               </div>
-            </Transition>
+            </div>
+            <div class="form-fieldset form-outer">
+              <div class="fieldset-heading">
+                <h4>键输入母线</h4>
+              </div>
+              <div class="form-fieldset-nested-2">
+                <div class="seperator">
+                  <SwitchBusKeyFill_V1
+                    v-for="(ipt, idx) in masterBusKeyFills"
+                    :key="`master_${ipt.index}`"
+                    v-model="ipt.value"
+                    name="主"
+                    :index="ipt.index"
+                    :is-last="idx === masterBusKeyFills.length - 1"
+                  />
+                </div>
+                <expand-transition>
+                  <div v-if="input['g_2022-7']">
+                    <SwitchBusKeyFill_V1
+                      v-for="(ipt, idx) in backupBusKeyFills"
+                      :key="`backup_${ipt.index}`"
+                      v-model="ipt.value"
+                      name="备"
+                      :index="ipt.index"
+                      :is-last="idx === backupBusKeyFills.length - 1"
+                    />
+                  </div>
+                </expand-transition>
+              </div>
+            </div>
           </div>
         </div>
         <!--Fieldset-->
@@ -542,16 +648,25 @@ defineExpose({
                 </div>
               </div>
             </div>
-            <BCSwitchOutput
+            <SwitchOutput_V1
               v-model="outputs[0]"
               title="PGM参数"
               :use-backup="output['g_2022-7']"
               :m_local_ip="mv['2110-7_m_local_ip']"
               :b_local_ip="mv['2110-7_b_local_ip']"
             />
-            <BCSwitchOutput
+            <SwitchOutput_V1
               v-model="outputs[1]"
               title="PVW参数"
+              :use-backup="output['g_2022-7']"
+              :m_local_ip="mv['2110-7_m_local_ip']"
+              :b_local_ip="mv['2110-7_b_local_ip']"
+            />
+            <SwitchOutput_V1
+              v-model="outputs[2]"
+              v-model:OPEN="OUT_3_OPEN"
+              title="Clean参数"
+              toggle-title="是否启用Clean输出"
               is-last
               :use-backup="output['g_2022-7']"
               :m_local_ip="mv['2110-7_m_local_ip']"

@@ -13,17 +13,6 @@ export const used_signal_types = [
   },
 ]
 
-export const def_api_params = () => [
-  {
-    api_name: 'rec_control',
-    service_port: 9021,
-  },
-  {
-    api_name: 'play_control',
-    service_port: 9022,
-  },
-]
-
 export const def_nic_detail = () => ({
   numa_id: -1,
   '2110-7_m_local_ip': '10.1.1.61',
@@ -76,13 +65,15 @@ export const quality_types = [
   { value: 4, label: '速度最慢，质量最好' },
 ]
 
-export const luma_gain = [1.0, 1.1, 1.2, 1.3]
-
-export type IApiParams = ReturnType<typeof def_api_params>[0]
-export type NicDetail = ReturnType<typeof def_nic_detail>
-export type IndexedNicDetail = NicDetail & { index: number }
-export type PlayerParams = ReturnType<typeof def_player_params>
-
+export type IndexedParmas<T extends object> = { index: number } & T
 export type IndexedType<T> = { index: number; value: T }
 
-export type IndexedParmas<T extends object> = { index: number } & T
+export interface IApiParams {
+  api_name: string
+  service_port: number
+  checked: boolean
+  label: string
+}
+export type NicDetail = ReturnType<typeof def_nic_detail>
+export type IndexedNicDetail = IndexedParmas<NicDetail>
+export type PlayerParams = ReturnType<typeof def_player_params>

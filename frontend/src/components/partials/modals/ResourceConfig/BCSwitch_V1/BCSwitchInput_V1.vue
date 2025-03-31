@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { type SwitchInputVideoParamsType } from '../Utilties/Consts'
+import { type BCSwitchInputParams } from '../Utilties/Consts'
 
-const mv = defineModel<SwitchInputVideoParamsType>({
-  default: {} as SwitchInputVideoParamsType,
+const mv = defineModel<BCSwitchInputParams>({
+  default: {} as BCSwitchInputVideoParamsType,
   local: true,
 })
 
@@ -32,7 +32,7 @@ const opened = ref(false)
         <VIcon icon="feather:chevron-down" />
       </div>
     </div>
-    <Transition name="fade-show">
+    <expand-transition>
       <div v-show="opened" class="form-fieldset-nested">
         <div class="form-fieldset seperator">
           <div class="fieldset-heading">
@@ -57,19 +57,21 @@ const opened = ref(false)
             </div>
             <div class="column is-6">
               <VField>
-                <VLabel>主视频流前置SDN输入端口</VLabel>
+                <VLabel>主音频流组播源IP（含端口）</VLabel>
                 <VControl>
-                  <VInputNumber
-                    v-model="mv.ipstream_master.v_p4_port"
-                    centered
-                    :min="0"
-                    :step="1"
-                  />
+                  <VInput v-model="mv.ipstream_master.a_src_address" />
                 </VControl>
               </VField>
             </div>
-            <div class="column is-6" />
-            <Transition name="fade-slow">
+            <div class="column is-6">
+              <VField>
+                <VLabel>主音频流组播目标IP(含端口)</VLabel>
+                <VControl>
+                  <VInput v-model="mv.ipstream_master.a_dst_address" />
+                </VControl>
+              </VField>
+            </div>
+            <expand-transition>
               <div v-if="useBackup" class="column is-6">
                 <VField>
                   <VLabel>备视频流组播源IP（含端口）</VLabel>
@@ -78,8 +80,8 @@ const opened = ref(false)
                   </VControl>
                 </VField>
               </div>
-            </Transition>
-            <Transition name="fade-slow">
+            </expand-transition>
+            <expand-transition>
               <div v-if="useBackup" class="column is-6">
                 <VField>
                   <VLabel>备视频流组播目标IP（含端口）</VLabel>
@@ -88,27 +90,32 @@ const opened = ref(false)
                   </VControl>
                 </VField>
               </div>
-            </Transition>
-            <Transition name="fade-slow">
+            </expand-transition>
+            <expand-transition>
               <div v-if="useBackup" class="column is-6">
                 <VField>
-                  <VLabel>备视频流前置SDN输入端口</VLabel>
+                  <VLabel>备音频流组播源IP（含端口）</VLabel>
                   <VControl>
-                    <VInputNumber
-                      v-model="mv.ipstream_backup.v_p4_port"
-                      centered
-                      :min="0"
-                      :step="1"
-                    />
+                    <VInput v-model="mv.ipstream_backup.a_src_address" />
                   </VControl>
                 </VField>
               </div>
-            </Transition>
+            </expand-transition>
+            <expand-transition>
+              <div v-if="useBackup" class="column is-6">
+                <VField>
+                  <VLabel>备音频流组播目标IP（含端口）</VLabel>
+                  <VControl>
+                    <VInput v-model="mv.ipstream_backup.a_dst_address" />
+                  </VControl>
+                </VField>
+              </div>
+            </expand-transition>
           </div>
         </div>
       </div>
-    </Transition>
-    <Transition name="fade-show">
+    </expand-transition>
+    <expand-transition>
       <div v-show="opened" class="form-fieldset-nested is-tail">
         <div class="form-fieldset">
           <div class="fieldset-heading">
@@ -134,7 +141,7 @@ const opened = ref(false)
           </div>
         </div>
       </div>
-    </Transition>
+    </expand-transition>
   </div>
 </template>
 <style lang="scss">

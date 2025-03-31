@@ -26,7 +26,7 @@ const video_opened = ref(false)
         <VIcon icon="feather:chevron-down" />
       </div>
     </div>
-    <Transition name="fade-show">
+    <expand-transition>
       <div v-show="video_opened" class="form-fieldset">
         <div class="columns is-multiline">
           <div class="column is-4">
@@ -87,7 +87,7 @@ const video_opened = ref(false)
               </VControl>
             </VField>
           </div>
-          <Transition name="fade-slow">
+          <expand-transition>
             <div v-if="useBackup" class="column is-4">
               <VField>
                 <VLabel>备视频母线a组播源IP（含端口）</VLabel>
@@ -96,8 +96,8 @@ const video_opened = ref(false)
                 </VControl>
               </VField>
             </div>
-          </Transition>
-          <Transition name="fade-slow">
+          </expand-transition>
+          <expand-transition>
             <div v-if="useBackup" class="column is-4">
               <VField>
                 <VLabel>备视频母线a组播目标IP（含端口）</VLabel>
@@ -106,8 +106,8 @@ const video_opened = ref(false)
                 </VControl>
               </VField>
             </div>
-          </Transition>
-          <Transition name="fade-slow">
+          </expand-transition>
+          <expand-transition>
             <div v-if="useBackup" class="column is-4">
               <VField>
                 <VLabel>备视频母线a使用的前置SDN输出端口</VLabel>
@@ -121,8 +121,8 @@ const video_opened = ref(false)
                 </VControl>
               </VField>
             </div>
-          </Transition>
-          <Transition name="fade-slow">
+          </expand-transition>
+          <expand-transition>
             <div v-if="useBackup" class="column is-4">
               <VField>
                 <VLabel>备视频母线b组播源IP（含端口）</VLabel>
@@ -131,8 +131,8 @@ const video_opened = ref(false)
                 </VControl>
               </VField>
             </div>
-          </Transition>
-          <Transition name="fade-slow">
+          </expand-transition>
+          <expand-transition>
             <div v-if="useBackup" class="column is-4">
               <VField>
                 <VLabel>备视频母线b组播目标IP（含端口）</VLabel>
@@ -141,8 +141,8 @@ const video_opened = ref(false)
                 </VControl>
               </VField>
             </div>
-          </Transition>
-          <Transition name="fade-slow">
+          </expand-transition>
+          <expand-transition>
             <div v-if="useBackup" class="column is-4">
               <VField>
                 <VLabel>备视频母线b使用的前置SDN输出端口</VLabel>
@@ -156,10 +156,10 @@ const video_opened = ref(false)
                 </VControl>
               </VField>
             </div>
-          </Transition>
+          </expand-transition>
         </div>
       </div>
-    </Transition>
+    </expand-transition>
   </div>
 </template>
 <style lang="scss">

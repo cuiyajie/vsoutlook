@@ -292,7 +292,7 @@ defineExpose({
               <VIcon icon="feather:chevron-down" />
             </div>
           </div>
-          <Transition name="fade-slow">
+          <expand-transition>
             <div v-show="advanceOpened" class="form-body">
               <div class="form-fieldset seperator">
                 <div class="columns is-multiline">
@@ -314,7 +314,7 @@ defineExpose({
               <NMosConfig v-model="mv.nmos" class="seperator" />
               <SSMAddressRange v-model="mv.ssm_address_range" class="seperator" />
             </div>
-          </Transition>
+          </expand-transition>
         </div>
         <!--Fieldset-->
         <div class="form-outer">

@@ -63,12 +63,14 @@ function onDrop(event: DragEvent) {
   });
 }
 
-// setTimeout(() => {
-//   bus.trigger(Signal.OpenResourceConfig, {
-//     tmpl: { typeCategory: 'mv' } as TemplateData,
-//     node: nodes.value[0]
-//   });
-// }, 1000)
+setTimeout(() => {
+  const type = new URLSearchParams(location.search).get('type')
+  if (!type) return
+  bus.trigger(Signal.OpenResourceConfig, {
+    tmpl: { typeCategory: type } as TemplateData,
+    node: nodes.value[0]
+  });
+}, 1000)
 
 function parseChartData(info: ClustNode, key: keyof ClustNode['allocatable']) {
   return info.allocated ? [Math.round((info.allocated[key] || 0) * 100 / (info.allocatable?.[key] || 1))] : [-1]

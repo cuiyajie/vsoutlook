@@ -25,5 +25,7 @@ export const def_mg_output_item_params = () => ({
   },
 })
 
+export const luma_gain = [1.0, 1.1, 1.2, 1.3]
+
 export type MgInputParams = ReturnType<typeof def_mg_player_params>
 export type MgOutputItemParams = ReturnType<typeof def_mg_output_item_params>

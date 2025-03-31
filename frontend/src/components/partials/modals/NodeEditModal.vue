@@ -29,10 +29,10 @@ let callbacks: any = {};
 
 const loading = ref(false);
 const zodSchema = z.object({
-  nicNameMain: z.string({ required_error: "请输入主路网口" }),
+  nicNameMain: z.string({ required_error: "请输入主路网口" }).trim().nonempty("请输入主路网口"),
   receiveMain: z.boolean().optional(),
   sendMain: z.boolean().optional(),
-  nicNameBackup: z.string({ required_error: "请输入备路网口" }),
+  nicNameBackup: z.string({ required_error: "请输入备路网口" }).trim().nonempty("请输入备路网口"),
   receiveBackup: z.boolean().optional(),
   sendBackup: z.boolean().optional(),
   coreList: z
@@ -147,11 +147,11 @@ useListener(
                   type="text"
                   placeholder="请输入网口名称"
                 />
-                <Transition name="fade-slow">
+                <expand-transition>
                   <p v-if="field?.errorMessage" class="help is-danger mt-3">
                     {{ field.errorMessage }}
                   </p>
-                </Transition>
+                </expand-transition>
               </VControl>
             </VField>
           </div>
@@ -173,11 +173,11 @@ useListener(
                   type="text"
                   placeholder="请输入网口名称"
                 />
-                <Transition name="fade-slow">
+                <expand-transition>
                   <p v-if="field?.errorMessage" class="help is-danger mt-3">
                     {{ field.errorMessage }}
                   </p>
-                </Transition>
+                </expand-transition>
               </VControl>
             </VField>
           </div>
@@ -195,11 +195,11 @@ useListener(
             <VField id="coreList" v-slot="{ field }" label="隔离核心数 *">
               <VControl>
                 <VInput v-model="form.coreList" type="text" placeholder="例如: 2-31,32" />
-                <Transition name="fade-slow">
+                <expand-transition>
                   <p v-if="field?.errorMessage" class="help is-danger mt-3">
                     {{ field.errorMessage }}
                   </p>
-                </Transition>
+                </expand-transition>
               </VControl>
             </VField>
           </div>
@@ -211,11 +211,11 @@ useListener(
                   type="text"
                   placeholder="例如: 0000:00:01.0,0000:00:01.1"
                 />
-                <Transition name="fade-slow">
+                <expand-transition>
                   <p v-if="field?.errorMessage" class="help is-danger mt-3">
                     {{ field.errorMessage }}
                   </p>
-                </Transition>
+                </expand-transition>
               </VControl>
             </VField>
           </div>
