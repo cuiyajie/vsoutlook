@@ -13,7 +13,7 @@ defineProps<{
 <template>
   <VField :label="label" class="field-check">
     <VControl raw subcontrol class="check-control">
-      <VCheckbox v-model="mv.checked" color="primary" />
+      <VCheckbox v-model="mv.checked" color="primary" circle />
     </VControl>
     <VControl>
       <VInputNumber

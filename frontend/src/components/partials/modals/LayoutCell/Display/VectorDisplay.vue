@@ -38,6 +38,6 @@ const ratioh = computed(() => props.bound.h / mv.value.win.h)
 </template>
 <style lang="scss">
 .layout-vector {
-  background: url('@src/assets/color-vector.svg') no-repeat center center/cover;
+  background: url('@src/assets/color-vector.png') no-repeat center center/cover;
 }
 </style>

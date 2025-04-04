@@ -27,7 +27,7 @@ const bx = computed({
 })
 
 const by = computed({
-  get: () => Math.round(props.modelValue.border.y * props.base.w),
+  get: () => Math.round(props.modelValue.border.y * props.base.h),
   set: (v: number) => {
     const ny = v / props.base.h
     emit('update:model-value', {
@@ -147,11 +147,11 @@ const pickerRef = useColorPickerRef()
         <div class="layout-row-inner">
           <div class="layout-cell half">
             <label for="bx">x</label>
-            <input id="bx" v-model="bx" type="number" min="0" :max="base.w">
+            <input id="bx" v-model="bx" type="number" min="0" :max="base.w" :step="1">
           </div>
           <div class="layout-cell half">
             <label for="by">y</label>
-            <input id="by" v-model="by" type="number" min="0" :max="base.h">
+            <input id="by" v-model="by" type="number" min="0" :max="base.h" :step="1">
           </div>
         </div>
       </section>
@@ -160,11 +160,11 @@ const pickerRef = useColorPickerRef()
         <div class="layout-row-inner">
           <div class="layout-cell half">
             <label for="bw">w</label>
-            <input id="bw" v-model="bw" type="number" min="0" :max="base.w">
+            <input id="bw" v-model="bw" type="number" min="0" :max="base.w" :step="1">
           </div>
           <div class="layout-cell half">
             <label for="bh">h</label>
-            <input id="bh" v-model="bh" type="number" min="0" :max="base.h">
+            <input id="bh" v-model="bh" type="number" min="0" :max="base.h" :step="1">
           </div>
         </div>
       </section>

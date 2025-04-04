@@ -38,6 +38,6 @@ const ratioh = computed(() => props.bound.h / mv.value.win.h)
 </template>
 <style lang="scss">
 .layout-oscillogram {
-  background: url('@src/assets/oscillogram.svg') no-repeat center center/cover;
+  background: url('@src/assets/oscillogram.png') no-repeat center center/cover;
 }
 </style>

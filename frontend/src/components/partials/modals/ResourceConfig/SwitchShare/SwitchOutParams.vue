@@ -94,7 +94,7 @@ const opened = ref(false)
             <div v-if="switchTypeCategory !== 'nmswt'" class="column is-6">
               <VField class="field-check" label="使用的音频映射模板">
                 <VControl raw subcontrol class="check-control">
-                  <VCheckbox v-model="mv.mapping_checked" color="primary" />
+                  <VCheckbox v-model="mv.mapping_checked" color="primary" circle />
                 </VControl>
                 <VControl>
                   <AudioMappingSelect v-model="mv.audio_mapping_name" @mapping-selected="audioMappingSelected" @mapping-unselected="audioMappingUnSelected" />

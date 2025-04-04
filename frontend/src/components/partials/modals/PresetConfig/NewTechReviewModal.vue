@@ -180,6 +180,7 @@ useListener(Signal.OpenNewTechReview, (payload: { _callback?: any; index?: numbe
                     :value="rk"
                     :label="VideoReviewKeyName[rk]"
                     color="primary"
+                    circle
                   />
                 </VControl>
               </VField>
@@ -281,6 +282,7 @@ useListener(Signal.OpenNewTechReview, (payload: { _callback?: any; index?: numbe
                     :value="ak"
                     :label="AudioReviewKeyName[ak]"
                     color="primary"
+                    circle
                   />
                 </VControl>
               </VField>

@@ -194,6 +194,7 @@ watch(activeComponent, (v) => {
 
 defineExpose({
   selectComponent,
+  syncComponentData: () => syncComponentData(activeComponent.value.type, activeComponent.value.index),
   clearComponent: () => selectComponent('win')
 })
 </script>

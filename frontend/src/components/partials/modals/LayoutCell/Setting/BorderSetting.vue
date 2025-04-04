@@ -19,8 +19,9 @@ const showBorder = computed({
   set: (v: boolean) => emit('update:model-value', { ...props.modelValue, showBorder: v })
 })
 
-const winx = computed(() => Math.round(props.modelValue.x * props.base.w))
-const winy = computed(() => Math.round(props.modelValue.y * props.base.h))
+// hide the coordinate of border
+// const winx = computed(() => Math.round(props.modelValue.x * props.base.w))
+// const winy = computed(() => Math.round(props.modelValue.y * props.base.h))
 
 const bl = computed({
   get: () => Math.round(props.modelValue.border.left * props.base.w),
@@ -69,11 +70,11 @@ const pickerRef = useColorPickerRef()
       <div class="layout-row-inner">
         <div class="layout-cell">
           <div>边框显示</div>
-          <VCheckbox v-model="showBorder" color="primary" />
+          <VCheckbox v-model="showBorder" color="primary" circle />
         </div>
       </div>
     </section>
-    <Transition name="fade-slow">
+    <!-- <Transition name="fade-slow">
       <section v-if="showBorder" class="layout-row">
         <div>位置</div>
         <div class="layout-row-inner">
@@ -87,7 +88,7 @@ const pickerRef = useColorPickerRef()
           </div>
         </div>
       </section>
-    </Transition>
+    </Transition> -->
     <Transition name="fade-slow">
       <section v-if="showBorder" class="layout-row">
         <div>边框宽度</div>

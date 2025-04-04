@@ -104,21 +104,40 @@ onClickOutside(dragHandle, (event) => {
       top: `${by}px`,
       width: `${bw}px`,
       height: `${bh}px`,
-      zIndex: 1,
       '--alarm-border-color': borderColor,
       '--alarm-border-width': `${borderw}px`,
       '--alarm-fade-duration': `${mv.alarm.border.interval}ms`,
     }"
-    role="button"
-    tabindex="0"
-    @click.prevent="onAlarmClick($event)"
-    @keyup.enter.prevent="onAlarmClick($event)"
   >
     <div class="layout-alarm-border">
-      <div class="a-border a-border-t" />
-      <div class="a-border a-border-r" />
-      <div class="a-border a-border-b" />
-      <div class="a-border a-border-l" />
+      <div
+        class="a-border a-border-t"
+        role="button"
+        tabindex="0"
+        @click.prevent="onAlarmClick($event)"
+        @keyup.enter.prevent="onAlarmClick($event)"
+      />
+      <div
+        class="a-border a-border-r"
+        role="button"
+        tabindex="0"
+        @click.prevent="onAlarmClick($event)"
+        @keyup.enter.prevent="onAlarmClick($event)"
+      />
+      <div
+        class="a-border a-border-b"
+        role="button"
+        tabindex="0"
+        @click.prevent="onAlarmClick($event)"
+        @keyup.enter.prevent="onAlarmClick($event)"
+      />
+      <div
+        class="a-border a-border-l"
+        role="button"
+        tabindex="0"
+        @click.prevent="onAlarmClick($event)"
+        @keyup.enter.prevent="onAlarmClick($event)"
+      />
     </div>
     <div
       data-role="alarm"
@@ -196,6 +215,7 @@ onClickOutside(dragHandle, (event) => {
   .a-border {
     position: absolute;
     background-color: var(--alarm-border-color);
+    pointer-events: auto;
 
     &.a-border-t {
       top: 0;

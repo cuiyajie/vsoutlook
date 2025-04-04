@@ -5,6 +5,7 @@ import { TallyType } from "@src/utils/enums";
 const props = defineProps<{
   modelValue: LayoutDataItem,
   bound: LayoutDimension
+  className?: any
 }>()
 
 const emit = defineEmits<{
@@ -35,7 +36,7 @@ const bb = computed(() => mv.value.win.border.bottom * ratiow.value)
   <div
     v-if="mv.title"
     data-role="title"
-    class="layout-title"
+    :class="['layout-title', className]"
     :style="{
       left: `${mv.title.x * ratiow}px`,
       top: `${mv.title.y * ratioh}px`,
@@ -60,7 +61,7 @@ const bb = computed(() => mv.value.win.border.bottom * ratiow.value)
   </div>
   <div
     v-if="mv.title?.tallyType === TallyType.Border"
-    class="layout-tally-border"
+    :class="['layout-tally-border', className]"
     :style="{
       '--tally-border-color': tallyBorderColor,
       '--tally-border': `${tb}px`,

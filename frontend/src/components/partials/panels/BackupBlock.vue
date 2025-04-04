@@ -51,7 +51,7 @@ function onFileImported(e: Event) {
           数据备份
         </h3>
         <VControl raw subcontrol class="check-all">
-          <VCheckbox :model-value="tables.every(table => table.checked)" label="全选" color="primary" @update:model-value="selectAll" />
+          <VCheckbox circle :model-value="tables.every(table => table.checked)" label="全选" color="primary" @update:model-value="selectAll" />
         </VControl>
         <div class="meta-right">
           <div class="buttons">
@@ -68,7 +68,7 @@ function onFileImported(e: Event) {
       </div>
       <VField class="is-flex check-list">
         <VControl v-for="table in tables" :key="table.table" raw subcontrol>
-          <VCheckbox v-model="table.checked" :label="table.name" color="primary" />
+          <VCheckbox v-model="table.checked" circle :label="table.name" color="primary" />
         </VControl>
       </VField>
     </VCard>

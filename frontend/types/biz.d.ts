@@ -383,6 +383,7 @@ interface TypedLayoutRect extends LayoutRect, TypedLayoutInfo {
 }
 
 interface LayoutDataItem {
+  id: string
   win: LayoutWin
   timer: LayoutTimer | null
   text: LayoutText | null

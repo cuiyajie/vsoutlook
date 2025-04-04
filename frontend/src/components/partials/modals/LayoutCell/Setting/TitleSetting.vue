@@ -174,6 +174,12 @@ const pickerRef = useColorPickerRef()
           <color-picker v-model:pureColor="tallyBgColor" format="rgb" shape="square" theme="black" picker-type="chrome" :picker-container="pickerRef" />
         </div>
       </div>
+      <div class="layout-row-inner">
+        <div class="layout-cell fullwidth">
+          <div>tally灯宽度</div>
+          <input id="tallyw" v-model="th" type="number" min="0" :max="base.h">
+        </div>
+      </div>
     </section>
   </div>
 </template>

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { useNotyf } from '@src/composable/useNotyf'
 import { confirm } from '@src/utils/dialog'
-import { useElementBounding, useElementSize } from '@vueuse/core'
+import { useElementBounding, useElementSize, onKeyStroke } from '@vueuse/core'
 import {
   DefaultLayouts,
   draftTitle,
@@ -12,14 +12,20 @@ import {
   resizeTitle,
   resizeVol,
   draftText,
-  defLayoutItem,
   draftWin,
   resizeWinBorder,
+  type CellComponentProp,
+  draftLayoutItem,
+  resizeArea,
+  resizeAlarm,
+  resizeMeta,
+  resizeVector,
 } from './utils'
 import { useLayout } from '@src/stores/layout'
 import { LayoutSize } from '@src/utils/enums'
 import IsEqual from 'lodash-es/isEqual'
 import { type WatchStopHandle } from 'vue'
+import { nanoid } from 'nanoid'
 
 const notyf = useNotyf()
 const layoutSamples = ref<[number, number][][]>(DefaultLayouts)
@@ -83,6 +89,8 @@ const bounding = computed(() => {
 })
 const changed = ref(false)
 const dataset = ref<LayoutDataItem[]>([])
+const componentCheckStore = ref<Record<string, Record<CellComponentProp | 'border', boolean>>>({})
+provide('componentCheckStore', componentCheckStore)
 
 let unwatch: WatchStopHandle | null = null
 
@@ -150,9 +158,10 @@ function initLayout() {
     { length: cellCount.value },
     () =>
       ({
-        win: draftWin(0, 0, 0, 0),
+        id: nanoid(6),
+        win: draftWin(0, 0, 0, 0, bounding.value),
         title: draftTitle(base.value.w, base.value.h, bounding.value),
-        vol: draftVol(base.value.h, bounding.value),
+        vol: draftVol(base.value.w, base.value.h, bounding.value),
         timer: null,
         text: null,
         vector: null,
@@ -178,10 +187,11 @@ function redrawLayout() {
         (x - origin.x) / w,
         (y - origin.y) / h,
         width / w,
-        height / h
+        height / h,
+        bounding.value
       )
       dataset.value[index].title = draftTitle(width, height, bounding.value)
-      dataset.value[index].vol = draftVol(height, bounding.value)
+      dataset.value[index].vol = draftVol(width, height, bounding.value)
     })
     originDataset.value = JSON.parse(JSON.stringify(dataset.value))
   })
@@ -256,6 +266,10 @@ function resizeComponents(nv: LayoutDimension, ov: LayoutDimension) {
         win: resizeWinBorder(_ads.win, rw),
         title: _ads.title ? resizeTitle(_ads.title, rw, rh) : null,
         vol: _ads.vol ? resizeVol(_ads.vol, rw, rh) : null,
+        vector: _ads.vector ? resizeVector(_ads.vector, rw, rh, bounding.value) : null,
+        oscillogram: _ads.oscillogram ? resizeArea(_ads.oscillogram, rw, rh) : null,
+        alarm: _ads.alarm ? resizeAlarm(_ads.alarm, rw, rh) : null,
+        meta: _ads.meta ? resizeMeta(_ads.meta, rw, rh) : null,
       })
     }
   }
@@ -271,7 +285,18 @@ function onShowDateToggle(v: boolean) {
 function resetActiveCell() {
   if (!activeCell.value) return
   const aidx = activeCell.value.index
-  dataset.value[aidx] = JSON.parse(JSON.stringify(originDataset.value[aidx]))
+  const win = dataset.value[aidx].win
+  const winW = win.w * bounding.value.w
+  const winH = win.h * bounding.value.h
+  dataset.value[aidx] = {
+    ...dataset.value[aidx],
+    title: draftTitle(winW, winH, bounding.value),
+    vol: draftVol(winW, winH, bounding.value),
+    vector: null,
+    oscillogram: null,
+    alarm: null,
+    meta: null,
+  }
   const _ads = dataset.value[aidx]
   selectCell(_ads, aidx, !!_ads.timer)
   resizeTimerComponent(_ads)
@@ -314,6 +339,7 @@ function handleActiveCell(x: number, y: number, pw: number, ph: number) {
     Object.assign(_ads.text, nv)
   } else {
     resizeComponents(nv, _ads.win)
+    Object.assign(_ads.win, nv)
   }
 }
 
@@ -436,14 +462,14 @@ function editCell(didx: number) {
 
 function createWinCell(options: { timer?: boolean; text?: boolean } = {}) {
   const { w, h } = bounding.value
-  const cell = defLayoutItem(0.25, 0.25, 0.5, 0.5)
+  const cell = draftLayoutItem(0.25, 0.25, 0.5, 0.5, bounding.value)
   if (options.timer) {
     cell.timer = draftTimer()
   } else if (options.text) {
     cell.text = draftText()
   } else {
     cell.title = draftTitle(w * 0.5, h * 0.5, bounding.value)
-    cell.vol = draftVol(h * 0.5, bounding.value)
+    cell.vol = draftVol(w * 0.5, h * 0.5, bounding.value)
   }
   return cell
 }
@@ -555,10 +581,33 @@ function deleteLayout(ly: Layout) {
 
 async function saveLayoutData() {
   if (!currLayout.value) return
-  const res = await layoutStore.$updateContent(
-    currLayout.value.id,
-    ds2db(dataset.value, base.value)
-  )
+  const { contentData, labelIndexing } = ds2db(dataset.value, base.value, componentCheckStore.value)
+  const labels: Record<number, string> = {}
+  let idx = 0
+  const rects = contentData.map((d: any) => {
+    if (d.windows_type === 0) {
+      const rect = d.rects.find((r: any) => r.type === 0)
+      if (rect) {
+        labels[idx++] = labelIndexing[d.index]
+        return rect
+      }
+      return null
+    }
+    return null
+  }).filter(v => v) as { x: number, y: number, w: number, h: number }[]
+  // check rect if overlap
+  for (let i = 0; i < rects.length; i++) {
+    for (let j = i + 1; j < rects.length; j++) {
+      if (rects[i].x < rects[j].x + rects[j].w &&
+        rects[i].x + rects[i].w > rects[j].x &&
+        rects[i].y < rects[j].y + rects[j].h &&
+        rects[i].y + rects[i].h > rects[j].y) {
+        notyf.error(`${labels[i]}和${labels[j]}重叠`)
+        return
+      }
+    }
+  }
+  const res = await layoutStore.$updateContent(currLayout.value.id, contentData)
   if (res) {
     notyf.success('保存布局成功')
     currLayout.value = res
@@ -584,6 +633,14 @@ function publish(ly: Layout) {
     },
   })
 }
+
+onKeyStroke('Escape', (e) => {
+  if (!e.target) return
+  const targetEl = e.target as HTMLElement
+  if (targetEl.tagName === 'INPUT' || targetEl.tagName === 'TEXTAREA') return
+  activeCell.value = null
+})
+
 </script>
 <template>
   <div>
@@ -684,10 +741,9 @@ function publish(ly: Layout) {
                 v-if="currLayout"
                 class="ml-2"
                 style="font-size: 1rem; font-weight: 500"
-                >{{ currLayout.size === LayoutSize.HD ? 'HD' : '4K' }}_{{
-                  currLayout.id
-                }}</span
-              >
+              >{{ currLayout.size === LayoutSize.HD ? 'HD' : '4K' }}_{{
+                currLayout.id
+              }}</span>
             </span>
             <div class="buttons">
               <VButtons>
@@ -767,7 +823,7 @@ function publish(ly: Layout) {
                   />
                 </div>
               </div>
-              <template v-for="(ds, cidx) in dataset" :key="cidx">
+              <template v-for="(ds, cidx) in dataset" :key="ds.id">
                 <template v-if="ds.timer">
                   <div
                     role="button"
@@ -962,7 +1018,7 @@ function publish(ly: Layout) {
                     />
                   </text-display>
                   <normal-display
-                    v-else-if="ads"
+                    v-else-if="ads && !ads.timer"
                     :no="activeCell.index"
                     :bound="{ w: ads.win.w * bounding.w, h: ads.win.h * bounding.h }"
                     :data="ads"
@@ -1303,6 +1359,7 @@ function publish(ly: Layout) {
     position: absolute;
     top: 4px;
     right: 4px;
+    z-index: 10;
   }
 
   .timer-cell-x {
@@ -1315,6 +1372,7 @@ function publish(ly: Layout) {
     position: absolute;
     bottom: 4px;
     right: 4px;
+    z-index: 10;
   }
 }
 
@@ -1396,6 +1454,15 @@ function publish(ly: Layout) {
     position: absolute;
   }
 
+  .layout-title,
+  .layout-vol,
+  .layout-vector,
+  .layout-oscillogram,
+  .layout-meta,
+  .layout-alarm {
+    z-index: 3;
+  }
+
   &.draggable {
     width: 100%;
     height: 100%;
@@ -1421,6 +1488,7 @@ function publish(ly: Layout) {
   @include shadow-border(1px dashed var(--primary));
   --vdr-rotate: 0deg;
   transform-origin: top left;
+  z-index: 20 !important;
 
   &.in-modal {
     background-color: transparent;

@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { draftVol, draftTitle } from '../utils';
+import { type Ref } from 'vue';
+import { type CellComponentProp, CellComponents, getDefaultCheckStore } from '../utils';
 
 const props = defineProps<{
   modelValue: LayoutDataItem
@@ -10,6 +11,39 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'update:model-value', value: LayoutDataItem): void
 }>()
+
+const addedComponents = computed(() => CellComponents.filter(v => Boolean(props.modelValue[v.key])))
+const componentCheckStore = inject<Ref<Record<string, Record<CellComponentProp | 'border', boolean>>>>('componentCheckStore', ref({}))
+const componentChecked = computed({
+  get: () => componentCheckStore.value[props.modelValue.id] || getDefaultCheckStore(),
+  set: (v: Record<CellComponentProp | 'border', boolean>) => {
+    componentCheckStore.value[props.modelValue.id] = v
+  }
+})
+
+const allChecked = computed({
+  get: () => {
+    const result = addedComponents.value.every(v => componentChecked.value[v.key])
+    if (props.modelValue.win.showBorder) {
+      return result && componentChecked.value.border
+    }
+    return result
+  },
+  set: (v: boolean) => {
+    for (const comp of addedComponents.value) {
+      componentChecked.value = {
+        ...componentChecked.value,
+        [comp.key]: v
+      }
+    }
+    if (props.modelValue.win.showBorder) {
+      componentChecked.value = {
+        ...componentChecked.value,
+        border: v
+      }
+    }
+  }
+})
 
 const winw = computed({
   get: () => Math.round(props.modelValue.win.w * props.base.w),
@@ -47,41 +81,6 @@ const winy = computed({
     }),
 })
 
-const reservedTitle = ref<LayoutDataItem['title']>(null)
-const title = computed({
-  get: () => Boolean(props.modelValue.title),
-  set: (v: boolean) => {
-    if (v) {
-      reservedTitle.value =
-        reservedTitle.value ||
-        draftTitle(
-          props.modelValue.win.w * props.bound.w,
-          props.modelValue.win.h * props.bound.h,
-          props.bound
-        )
-    } else {
-      reservedTitle.value = props.modelValue.title
-    }
-    emit('update:model-value', {
-      ...props.modelValue,
-      title: v ? reservedTitle.value : null,
-    })
-  },
-})
-
-const reservedVol = ref<LayoutDataItem['vol']>(null)
-const vol = computed({
-  get: () => Boolean(props.modelValue.vol),
-  set: (v: boolean) => {
-    if (v) {
-      reservedVol.value =
-        reservedVol.value || draftVol(props.modelValue.win.h * props.bound.h, props.bound)
-    } else {
-      reservedVol.value = props.modelValue.vol
-    }
-    emit('update:model-value', { ...props.modelValue, vol: v ? reservedVol.value : null })
-  },
-})
 </script>
 <template>
   <section class="layout-row">
@@ -110,21 +109,52 @@ const vol = computed({
       </div>
     </div>
   </section>
-  <section class="layout-row">
-    <div class="layout-row-inner">
+  <section class="layout-row is-row-check">
+    <div class="layout-row-inner is-head">
       <div class="layout-cell">
-        <div>显示名称</div>
-        <VCheckbox v-model="title" color="primary" />
+        <div>显示全部组件</div>
+        <VCheckbox v-model="allChecked" color="primary" circle />
       </div>
     </div>
-  </section>
-  <section class="layout-row">
-    <div class="layout-row-inner">
+    <div v-if="props.modelValue.win.showBorder" class="layout-row-inner">
       <div class="layout-cell">
-        <div>显示音柱</div>
-        <VCheckbox v-model="vol" color="primary" />
+        <div>边框</div>
+        <VCheckbox
+          :model-value="componentChecked.border"
+          color="primary"
+          circle
+          @update:model-value="v => componentChecked = { ...componentChecked, border: v }"
+        />
+      </div>
+    </div>
+    <div v-for="comp in addedComponents" :key="comp.key" class="layout-row-inner">
+      <div class="layout-cell">
+        <div>{{ comp.name }}</div>
+        <VCheckbox
+          :model-value="componentChecked[comp.key]"
+          color="primary"
+          circle
+          @update:model-value="v => componentChecked = { ...componentChecked, [comp.key]: v }"
+        />
       </div>
     </div>
   </section>
 </template>
-<style lang="scss"></style>
+<style lang="scss">
+.layout-row.is-row-check {
+  padding-top: 12px;
+
+  .layout-row-inner {
+
+    &.is-head {
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    & > .layout-cell {
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
+}
+</style>

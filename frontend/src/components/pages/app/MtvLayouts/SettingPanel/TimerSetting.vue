@@ -318,7 +318,7 @@ const tcolor = computed({
       <div class="layout-row-inner">
         <div class="layout-cell">
           <div>是否显示日期</div>
-          <VCheckbox v-model="showdate" color="primary" />
+          <VCheckbox v-model="showdate" color="primary" circle />
         </div>
       </div>
     </section>
@@ -358,7 +358,7 @@ const tcolor = computed({
       <div class="layout-row-inner">
         <div class="layout-cell">
           <div>是否显示日期</div>
-          <VCheckbox v-model="showdate" color="primary" />
+          <VCheckbox v-model="showdate" color="primary" circle />
         </div>
       </div>
     </section>

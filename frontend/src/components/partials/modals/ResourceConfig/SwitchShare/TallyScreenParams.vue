@@ -66,6 +66,7 @@ watch(() => mv.value.signal_number, (nv) => {
               <VCheckbox
                 v-model="mv.pgm_checked"
                 color="primary"
+                circle
                 @change="event => mv.pvw_checked = !Boolean((event.target as HTMLInputElement).value)"
               />
             </VControl>
@@ -80,6 +81,7 @@ watch(() => mv.value.signal_number, (nv) => {
               <VCheckbox
                 v-model="mv.pvw_checked"
                 color="primary"
+                circle
                 @change="event => mv.pgm_checked = !Boolean((event.target as HTMLInputElement).value)"
               />
             </VControl>

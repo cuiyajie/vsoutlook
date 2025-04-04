@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useNotyf } from "@src/composable/useNotyf";
-import { draftVol, draftTitle, draftVector, draftOscillogram, draftMeta, draftAlarm } from '@src/components/pages/app/MtvLayouts/utils';
+import { draftVol, draftTitle, draftVector, draftOscillogram, draftMeta, draftAlarm, CellComponents as lcControls, draftWinBorder, draftWin } from '@src/components/pages/app/MtvLayouts/utils';
 import type { GlobalComponents } from "vue";
+import { confirm } from "@src/utils/dialog";
 
 const props = defineProps<{
   index: number,
@@ -13,7 +13,6 @@ const opened = ref(false);
 const PADDING = 16
 let callbacks: any = null
 
-const notyf = useNotyf();
 const data = ref<LayoutDataItem | null>(null)
 const layoutContainer = ref<HTMLElement | null>(null)
 const { width: containerW } = useElementSize(layoutContainer)
@@ -56,7 +55,43 @@ function activeComponent(type: LayoutProps | null) {
 const displayRef = ref<InstanceType<GlobalComponents['LayoutCellDisplay']> | null>(null)
 function resetCell() {
   if (!originData.value) return
-  data.value = JSON.parse(JSON.stringify(originData.value))
+  let updates: Partial<LayoutDataItem> = {}
+  const win = data.value?.win || draftWin(0, 0, 0, 0, bounding.value)
+  const winW = win.w * bounding.value.w
+  const winH = win.h * bounding.value.h
+  switch(activeType.value) {
+    case 'win':
+      updates = {
+        win: {
+          ...(data.value?.win || {}),
+          showBorder: false,
+          border: draftWinBorder(winW, bounding.value)
+        } as LayoutDataItem['win']
+      }
+      break
+    case 'title':
+      updates = { title: draftTitle(winW, winH, bounding.value) }
+      break
+    case 'vol':
+      updates = { vol: draftVol(winW, winH, bounding.value) }
+      break
+    case 'vector':
+      updates = { vector: draftVector(winW, winH, bounding.value) }
+      break
+    case 'oscillogram':
+      updates = { oscillogram: draftOscillogram(winW, winH, bounding.value) }
+      break
+    case 'alarm':
+      updates = { alarm: draftAlarm(winW, winH, bounding.value) }
+      break
+    case 'meta':
+      updates = { meta: draftMeta(winW, winH, bounding.value) }
+      break
+  }
+  data.value = { ...data.value, ...updates } as LayoutDataItem
+  setTimeout(() => {
+    displayRef.value?.syncComponentData()
+  }, 200)
 }
 
 function deleteCell() {
@@ -66,28 +101,49 @@ function deleteCell() {
   displayRef.value?.clearComponent()
 }
 
-function addComponent(type: LayoutProps) {
+function toggleComponent(type: Exclude<LayoutProps, 'win' | 'text' | 'timer'>) {
+  const lcControl = lcControls.find(lc => lc.key === type)
+  if (!lcControl) return
   if (data.value?.[type]) {
-    notyf.error('已存在该类型组件')
-    return
+    confirm({
+      title: "删除组件",
+      content: `确定要删除 ${lcControl.name} 组件吗？`,
+      onConfirm: (hide) => {
+        if (!data.value) return
+        data.value[type] = null
+        if (activeType.value === type) {
+          activeComponent(null)
+          displayRef.value?.clearComponent()
+        }
+        hide()
+      },
+    });
+  } else {
+    confirm({
+      title: "添加组件",
+      content: `确定要添加 ${lcControl.name} 组件吗？`,
+      onConfirm: (hide) => {
+        if (!data.value) return
+        const w = data.value.win.w * props.parent.w
+        const h = data.value.win.h * props.parent.h
+        if (type === 'vol') {
+          data.value[type] = draftVol(w, h, props.parent)
+        } else if (type === 'title') {
+          data.value[type] = draftTitle(w, h, props.parent)
+        } else if (type === 'vector') {
+          data.value[type] = draftVector(w, h, props.parent)
+        } else if (type === 'oscillogram') {
+          data.value[type] = draftOscillogram(w, h, props.parent)
+        } else if (type === 'meta') {
+          data.value[type] = draftMeta(w, h, props.parent)
+        } else if (type === 'alarm') {
+          data.value[type] = draftAlarm(w, h, props.parent)
+        }
+        displayRef.value?.selectComponent(type, 0)
+        hide()
+      },
+    });
   }
-  if (!data.value) return
-  const w = data.value.win.w * props.parent.w
-  const h = data.value.win.h * props.parent.h
-  if (type === 'vol') {
-    data.value[type] = draftVol(h, props.parent)
-  } else if (type === 'title') {
-    data.value[type] = draftTitle(w, h, props.parent)
-  } else if (type === 'vector') {
-    data.value[type] = draftVector(w, h, props.parent)
-  } else if (type === 'oscillogram') {
-    data.value[type] = draftOscillogram(w, h, props.parent)
-  } else if (type === 'meta') {
-    data.value[type] = draftMeta(w, h, props.parent)
-  } else if (type === 'alarm') {
-    data.value[type] = draftAlarm(w, h, props.parent)
-  }
-  displayRef.value?.selectComponent(type, 0)
 }
 
 function onClose() {
@@ -111,35 +167,21 @@ function onClose() {
       <div class="lc-body">
         <div ref="layoutContainer" class="lc-display" :style="{'--padding': `${PADDING}px`}">
           <div v-if="!data?.timer" class="lc-controls">
-            <div class="lc-control" role="button" tabindex="-1" @click.prevent="addComponent('vol')" @keyup.enter.prevent="addComponent('vol')">
-              <i class="iconify" data-icon="feather:columns" aria-hidden="true" />
-              UV表
-              <div class="add-mask"><i aria-hidden="true" class="fas fa-plus" /></div>
-            </div>
-            <div class="lc-control" role="button" tabindex="-1" @click.prevent="addComponent('title')" @keyup.enter.prevent="addComponent('title')">
-              <i class="iconify" data-icon="feather:airplay" aria-hidden="true" />
-              窗口名称及Tally
-              <div class="add-mask"><i aria-hidden="true" class="fas fa-plus" /></div>
-            </div>
-            <div class="lc-control" role="button" tabindex="-1" @click.prevent="addComponent('vector')" @keyup.enter.prevent="addComponent('title')">
-              <i class="fas fa-chart-pie" aria-hidden="true" />
-              色度矢量图
-              <div class="add-mask"><i aria-hidden="true" class="fas fa-plus" /></div>
-            </div>
-            <div class="lc-control" role="button" tabindex="-1" @click.prevent="addComponent('oscillogram')" @keyup.enter.prevent="addComponent('title')">
-              <i class="fas fa-sun" aria-hidden="true" />
-              亮度波形图
-              <div class="add-mask"><i aria-hidden="true" class="fas fa-plus" /></div>
-            </div>
-            <div class="lc-control" role="button" tabindex="-1" @click.prevent="addComponent('alarm')" @keyup.enter.prevent="addComponent('title')">
-              <i class="fas fa-bell" aria-hidden="true" />
-              报警
-              <div class="add-mask"><i aria-hidden="true" class="fas fa-plus" /></div>
-            </div>
-            <div class="lc-control" role="button" tabindex="-1" @click.prevent="addComponent('meta')" @keyup.enter.prevent="addComponent('title')">
-              <i class="fas fa-file-video" aria-hidden="true" />
-              视频信息
-              <div class="add-mask"><i aria-hidden="true" class="fas fa-plus" /></div>
+            <div
+              v-for="lc in lcControls"
+              :key="lc.key"
+              class="lc-control"
+              :class="data?.[lc.key] && 'selected'"
+              role="button"
+              tabindex="-1"
+              @click.prevent="toggleComponent(lc.key)"
+              @keyup.enter.prevent="toggleComponent(lc.key)"
+            >
+              <i v-if="lc.iconType === 'feather'" class="iconify" :data-icon="`feather:${lc.icon}`" aria-hidden="true" />
+              <i v-else :class="`fas fa-${lc.icon}`" aria-hidden="true" />
+              {{ lc.name }}
+              <div v-if="!data?.[lc.key]" class="add-mask"><i aria-hidden="true" class="fas fa-plus" /></div>
+              <div v-else class="add-mask"><i aria-hidden="true" class="fas fa-times" /></div>
             </div>
           </div>
           <div v-else :style="{ height: `${PADDING}px` }" />
@@ -202,6 +244,7 @@ function onClose() {
           align-items: center;
           position: relative;
           overflow: hidden;
+          transition: all 0.3s;
 
           &:hover {
             cursor: pointer;
@@ -228,6 +271,11 @@ function onClose() {
               font-size: 1.5rem;
               color: #fff;
             }
+          }
+
+          &.selected {
+            background-color: var(--primary);
+            color: var(--primary--light-color);
           }
         }
       }
