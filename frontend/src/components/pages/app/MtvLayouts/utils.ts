@@ -5,6 +5,7 @@ import stringRGB from '@src/utils/string-rgb'
 import measureTextWidth from '@src/utils/measure-text-width'
 import roundToNearestEven from '@src/utils/round-to-nearest-even'
 import { nanoid } from 'nanoid'
+import { defaultMvFont } from '@src/utils/constants/config'
 
 export type CellComponentProp = Exclude<LayoutProps, 'win' | 'text' | 'timer'>
 
@@ -66,7 +67,7 @@ export const draftVol = (w: number, h: number, bound: LayoutDimension): LayoutVo
   const { w: bw, h: bh } = bound
   const rw = w / bw
   const rh = h / bh
-  const sh = rh / 2
+  const sh = rh
   const onew = (20 * rw) / 1920
   const g = (5 * rw) / 1920
   return {
@@ -231,11 +232,11 @@ export const defaultTextColor = 'rgba(255, 255, 255, 1.0)'
 export const defaultTextBgColor = 'rgba(255, 0, 0, 1.0)'
 export const draftText: () => LayoutText = () => {
   const fontFamily = getFontFamily()
-  const fontSize = 60 / 1920
+  const fontSize = 100 / 1920
   return {
-    x: 640 / 1920,
+    x: 420 / 1920,
     y: 120 / 1080,
-    w: 640 / 1920,
+    w: 1080 / 1920,
     h: 120 / 1080,
     gap: 20 / 1920,
     rect1: {
@@ -358,7 +359,7 @@ export const DefaultLayouts: [number, number][][] = [
     [2, 1],
     [4, 2],
   ],
-  [[3, 4]],
+  [[4, 3]],
   [[4, 4]],
   [[5, 5]],
 ]
@@ -384,10 +385,10 @@ export const draftLayoutItem = (
   }) as LayoutDataItem
 
 export const defaultFontSize = 24 / 1920
-export const defaultFontFamily = 'Noto Serif CJK'
+export const defaultFontFamily = defaultMvFont
 
 export function getFontFamily() {
-  return useUserSession().settings.mv_template_font || defaultFontFamily
+  return defaultFontFamily
 }
 
 const round = Math.round
@@ -396,7 +397,6 @@ export function ds2db(
   base: LayoutDimension,
   checkStore: Record<string, Record<CellComponentProp | 'border', boolean>>
 ) {
-  const fontFamily = getFontFamily()
   let delta = 0
   const labelIndexing: Record<number, string> = {}
   const contentData = ds
@@ -426,7 +426,7 @@ export function ds2db(
                   : d.timer.dateDisplayType,
               '24/12': d.timer.time24,
               style_01_params: {
-                fontname: fontFamily,
+                fontname: d.timer.fontFamily,
                 fontsize: round(d.timer.fontSize * base.w),
                 fontcolour: parseRGB(d.timer.color),
                 ...sharedProperties,
@@ -636,7 +636,7 @@ export function ds2db(
           rects,
           fontsize: fontSize,
           language_ch: lang,
-          fontname: fontFamily,
+          fontname: d.title?.fontFamily || '',
           font_is_vertical: fontIsVertial,
           display_oscilloscope: displayOscilloscope,
           scale_ratio: scaleRatio,

@@ -257,113 +257,6 @@ const tcolor = computed({
     </div>
   </section>
   <section class="layout-row">
-    <div>时钟位置</div>
-    <div class="layout-row-inner">
-      <div class="layout-cell half">
-        <label for="tx">x</label>
-        <input
-          id="timeWinx"
-          v-model="timeX"
-          type="number"
-          min="0"
-          :max="base.w"
-          step="2"
-        />
-      </div>
-      <div class="layout-cell half">
-        <label for="ty">y</label>
-        <input
-          id="timeWiny"
-          v-model="timeY"
-          type="number"
-          min="0"
-          :max="base.h"
-          step="2"
-        />
-      </div>
-    </div>
-  </section>
-  <template v-if="clockDisplayType === CLockDisplayType.Digital">
-    <section class="layout-row">
-      <div class="layout-row-inner">
-        <div class="layout-cell">
-          <div>字体大小</div>
-          <input v-model="fz" type="number" min="0" :max="Math.floor(props.base.w / 5)" />
-        </div>
-      </div>
-    </section>
-    <section class="layout-row">
-      <div class="layout-row-inner">
-        <div class="layout-cell fullwidth">
-          <div>字体</div>
-          <input v-model="fa" type="text" />
-        </div>
-      </div>
-    </section>
-    <section class="layout-row">
-      <div class="layout-row-inner">
-        <div class="layout-cell">
-          <div>颜色</div>
-          <color-picker
-            v-model:pureColor="color"
-            format="rgb"
-            shape="square"
-            theme="black"
-            picker-type="chrome"
-          />
-        </div>
-      </div>
-    </section>
-    <section class="layout-row">
-      <div class="layout-row-inner">
-        <div class="layout-cell">
-          <div>是否显示日期</div>
-          <VCheckbox v-model="showdate" color="primary" circle />
-        </div>
-      </div>
-    </section>
-  </template>
-  <template v-else>
-    <section class="layout-row">
-      <div class="layout-row-inner">
-        <div class="layout-cell">
-          <div>字体高度</div>
-          <input v-model="fh" type="number" min="0" :max="Math.floor(props.base.w / 5)" />
-        </div>
-      </div>
-    </section>
-    <section class="layout-row">
-      <div class="layout-row-inner">
-        <div class="layout-cell">
-          <div>数字间距</div>
-          <input v-model="fg" type="number" min="0" :max="Math.floor(props.base.w / 5)" />
-        </div>
-      </div>
-    </section>
-    <section class="layout-row">
-      <div class="layout-row-inner">
-        <div class="layout-cell">
-          <div>颜色</div>
-          <color-picker
-            v-model:pureColor="tcolor"
-            format="rgb"
-            shape="square"
-            theme="black"
-            picker-type="chrome"
-          />
-        </div>
-      </div>
-    </section>
-    <section class="layout-row">
-      <div class="layout-row-inner">
-        <div class="layout-cell">
-          <div>是否显示日期</div>
-          <VCheckbox v-model="showdate" color="primary" circle />
-        </div>
-      </div>
-    </section>
-  </template>
-  <section class="layout-row">
     <div>制式</div>
     <div class="layout-row-inner">
       <div class="layout-cell">
@@ -409,6 +302,140 @@ const tcolor = computed({
       </div>
     </div>
   </section>
+  <template v-if="clockDisplayType === CLockDisplayType.Digital">
+    <section class="layout-row">
+      <div class="layout-row-inner">
+        <div class="layout-cell">
+          <div>字体大小</div>
+          <input v-model="fz" type="number" min="0" :max="Math.floor(props.base.w / 5)" />
+        </div>
+      </div>
+    </section>
+    <section class="layout-row">
+      <div class="layout-row-inner">
+        <div class="layout-cell fullwidth is-select">
+          <div class="select-label">字体</div>
+          <font-select v-model="fa" />
+        </div>
+      </div>
+    </section>
+    <section class="layout-row">
+      <div class="layout-row-inner">
+        <div class="layout-cell">
+          <div>颜色</div>
+          <color-picker
+            v-model:pureColor="color"
+            format="rgb"
+            shape="square"
+            theme="black"
+            picker-type="chrome"
+          />
+        </div>
+      </div>
+    </section>
+    <section class="layout-row">
+      <div>时钟位置</div>
+      <div class="layout-row-inner">
+        <div class="layout-cell half">
+          <label for="tx">x</label>
+          <input
+            id="timeWinx"
+            v-model="timeX"
+            type="number"
+            min="0"
+            :max="base.w"
+            step="2"
+          />
+        </div>
+        <div class="layout-cell half">
+          <label for="ty">y</label>
+          <input
+            id="timeWiny"
+            v-model="timeY"
+            type="number"
+            min="0"
+            :max="base.h"
+            step="2"
+          />
+        </div>
+      </div>
+    </section>
+    <section class="layout-row">
+      <div class="layout-row-inner">
+        <div class="layout-cell">
+          <div>是否显示日期</div>
+          <VCheckbox v-model="showdate" color="primary" circle />
+        </div>
+      </div>
+    </section>
+  </template>
+  <template v-else>
+    <section class="layout-row">
+      <div class="layout-row-inner">
+        <div class="layout-cell">
+          <div>字体高度</div>
+          <input v-model="fh" type="number" min="0" :max="Math.floor(props.base.w / 5)" />
+        </div>
+      </div>
+    </section>
+    <section class="layout-row">
+      <div class="layout-row-inner">
+        <div class="layout-cell">
+          <div>数字间距</div>
+          <input v-model="fg" type="number" min="0" :max="Math.floor(props.base.w / 5)" />
+        </div>
+      </div>
+    </section>
+    <section class="layout-row">
+      <div class="layout-row-inner">
+        <div class="layout-cell">
+          <div>颜色</div>
+          <color-picker
+            v-model:pureColor="tcolor"
+            format="rgb"
+            shape="square"
+            theme="black"
+            picker-type="chrome"
+          />
+        </div>
+      </div>
+    </section>
+    <section class="layout-row">
+      <div>时钟位置</div>
+      <div class="layout-row-inner">
+        <div class="layout-cell half">
+          <label for="tx">x</label>
+          <input
+            id="timeWinx"
+            v-model="timeX"
+            type="number"
+            min="0"
+            :max="base.w"
+            step="2"
+          />
+        </div>
+        <div class="layout-cell half">
+          <label for="ty">y</label>
+          <input
+            id="timeWiny"
+            v-model="timeY"
+            type="number"
+            min="0"
+            :max="base.h"
+            step="2"
+          />
+        </div>
+      </div>
+    </section>
+    <section class="layout-row">
+      <div class="layout-row-inner">
+        <div class="layout-cell">
+          <div>是否显示日期</div>
+          <VCheckbox v-model="showdate" color="primary" circle />
+        </div>
+      </div>
+    </section>
+  </template>
   <section class="layout-row">
     <div>日期位置</div>
     <div class="layout-row-inner">

@@ -213,6 +213,7 @@ type Settings = {
   auto_save_container_config: boolean
   mv_template_list: SettingMvTemplate[]
   mv_template_font: string
+  mv_template_fonts: string[]
   endswt_api: string
   endswt_titles: string[]
   endswt_panel_types: SettingEndSwtPanelType[]

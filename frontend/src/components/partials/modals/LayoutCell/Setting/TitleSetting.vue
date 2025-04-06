@@ -86,9 +86,9 @@ const pickerRef = useColorPickerRef()
     </section>
     <section class="layout-row">
       <div class="layout-row-inner">
-        <div class="layout-cell fullwidth">
-          <div>字体</div>
-          <input v-model="fa" type="text">
+        <div class="layout-cell fullwidth is-select">
+          <div class="select-label">字体</div>
+          <font-select v-model="fa" />
         </div>
       </div>
     </section>

@@ -61,6 +61,7 @@ declare module 'vue' {
     EndSwitchTitleModal: typeof import('./../src/components/partials/modals/EndSwitchTitleModal.vue')['default']
     EndSwitchTmpl: typeof import('./../src/components/pages/app/EndSwitchTmpl.vue')['default']
     ExpandTransiton: typeof import('./../src/components/partials/widgets/expand-transition/ExpandTransiton.vue')['default']
+    FontSelect: typeof import('./../src/components/pages/app/MtvLayouts/FontSelect.vue')['default']
     GeneralConfig: typeof import('./../src/components/partials/forms/GeneralConfig.vue')['default']
     HubCard: typeof import('./../src/components/partials/panels/HubCard.vue')['default']
     LandingLayout: typeof import('./../src/layouts/LandingLayout.vue')['default']

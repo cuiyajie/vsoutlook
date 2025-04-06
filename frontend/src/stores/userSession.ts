@@ -1,16 +1,17 @@
 import { acceptHMRUpdate, defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { useFetch } from "@src/composable/useFetch"
+import { useFetch } from '@src/composable/useFetch'
+import { defaultMvFont } from '@src/utils/constants/config'
 
 export type UserData = {
-  id: string,
+  id: string
   name: string
 }
 
 function parseJsonString<T>(json: string, def: T) {
   let result: T = def
   try {
-    result = JSON.parse(json || "")
+    result = JSON.parse(json || '')
   } catch (error) {
     result = def
   }
@@ -21,7 +22,7 @@ export const useUserSession = defineStore('userSession', () => {
   const user = ref<Partial<UserData>>()
   const settings = ref<Partial<Settings>>({})
   const loading = ref(true)
-  const $fetch  = useFetch()
+  const $fetch = useFetch()
 
   const isLoggedIn = computed(() => !!user.value?.id)
 
@@ -31,10 +32,27 @@ export const useUserSession = defineStore('userSession', () => {
 
   function setSettings(newSettings: Partial<Record<keyof Settings, string>>) {
     if (newSettings['auto_save_container_config']) {
-      settings.value.auto_save_container_config = String(newSettings.auto_save_container_config) === 'true'
+      settings.value.auto_save_container_config =
+        String(newSettings.auto_save_container_config) === 'true'
       delete newSettings.auto_save_container_config
-    };
-    (
+    }
+    if (newSettings['mv_template_fonts']) {
+      settings.value.mv_template_fonts = parseJsonString<any>(
+        newSettings.mv_template_fonts,
+        []
+      )
+      if (settings.value.mv_template_fonts) {
+        const idx = settings.value.mv_template_fonts.findIndex(
+          (font) => font === defaultMvFont
+        )
+        if (idx !== -1) {
+          settings.value.mv_template_fonts.splice(idx, 1)
+        }
+        settings.value.mv_template_fonts.unshift(defaultMvFont)
+      }
+      delete newSettings.mv_template_fonts
+    }
+    ;(
       [
         'authorization_services',
         'mv_template_list',
@@ -45,7 +63,7 @@ export const useUserSession = defineStore('userSession', () => {
         'video_formats',
         'audio_formats',
         'audio_mappings',
-        'tech_reviews'
+        'tech_reviews',
       ] as Array<keyof Settings>
     ).forEach((key) => {
       if (newSettings[key]) {
@@ -59,7 +77,7 @@ export const useUserSession = defineStore('userSession', () => {
   function updateMtvSettings(mtvList: string) {
     settings.value = {
       ...settings.value,
-      'mv_template_list' : parseJsonString(mtvList, settings.value.mv_template_list || [])
+      mv_template_list: parseJsonString(mtvList, settings.value.mv_template_list || []),
     }
   }
 
@@ -69,7 +87,7 @@ export const useUserSession = defineStore('userSession', () => {
 
   async function $updateSettings(newSettings: any) {
     const res = await $fetch('/api/settings/update', {
-      body: newSettings
+      body: newSettings,
     })
     if (res?.settings) {
       const s = res.settings
@@ -82,7 +100,11 @@ export const useUserSession = defineStore('userSession', () => {
     user.value = undefined
   }
 
-const endSwitchTitles = computed(() => settings.value.endswt_titles?.length === 5 ? settings.value.endswt_titles : Array.from({ length: 5 }).map(() => ""));
+  const endSwitchTitles = computed(() =>
+    settings.value.endswt_titles?.length === 5
+      ? settings.value.endswt_titles
+      : Array.from({ length: 5 }).map(() => '')
+  )
 
   return {
     user,
@@ -95,7 +117,7 @@ const endSwitchTitles = computed(() => settings.value.endswt_titles?.length === 
     setSettings,
     $updateSettings,
     endSwitchTitles,
-    updateMtvSettings
+    updateMtvSettings,
   } as const
 })
 

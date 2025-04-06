@@ -89,6 +89,7 @@ const bounding = computed(() => {
 })
 const changed = ref(false)
 const dataset = ref<LayoutDataItem[]>([])
+const indexDelta = computed(() => dataset.value.some(d => d.text) ? 1 : 0)
 const componentCheckStore = ref<Record<string, Record<CellComponentProp | 'border', boolean>>>({})
 provide('componentCheckStore', componentCheckStore)
 
@@ -511,7 +512,9 @@ function createTextWin() {
     return
   }
   const cell = createWinCell({ text: true })
-  postCreateWin(cell)
+  dataset.value.unshift(cell)
+  originDataset.value.unshift(cell)
+  selectCell(cell, 0)
 }
 
 function selectLayoutSample(ly: [number, number][]) {
@@ -843,7 +846,7 @@ onKeyStroke('Escape', (e) => {
                     @keyup.enter.prevent="selectCell(ds, cidx)"
                   >
                     <timer-display
-                      :no="cidx"
+                      :no="cidx + indexDelta"
                       :bound="bounding"
                       :data="ds"
                       :max-width="activeCell?.w"
@@ -869,7 +872,7 @@ onKeyStroke('Escape', (e) => {
                     @keyup.enter.prevent="selectCell(ds, cidx, true)"
                   >
                     <timer-display
-                      :no="cidx"
+                      :no="cidx + indexDelta"
                       :bound="bounding"
                       :data="ds"
                       :max-width="activeCell?.w"
@@ -932,7 +935,7 @@ onKeyStroke('Escape', (e) => {
                   @keyup.enter.prevent="selectCell(ds, cidx)"
                 >
                   <normal-display
-                    :no="cidx"
+                    :no="cidx + indexDelta"
                     :bound="{ w: ds.win.w * bounding.w, h: ds.win.h * bounding.h }"
                     :data="ds"
                   >
@@ -981,7 +984,7 @@ onKeyStroke('Escape', (e) => {
                 <div ref="dragHandle" class="drag-handle fixed-width">
                   <timer-display
                     v-if="ads?.timer && activeCell.isSecondary"
-                    :no="activeCell.index"
+                    :no="activeCell.index + indexDelta"
                     :bound="bounding"
                     :data="ads"
                     type="time"
@@ -997,7 +1000,7 @@ onKeyStroke('Escape', (e) => {
                   </timer-display>
                   <timer-display
                     v-else-if="ads?.timer && !activeCell.isSecondary"
-                    :no="activeCell.index"
+                    :no="activeCell.index + indexDelta"
                     :bound="bounding"
                     :data="ads"
                     type="date"
@@ -1019,7 +1022,7 @@ onKeyStroke('Escape', (e) => {
                   </text-display>
                   <normal-display
                     v-else-if="ads && !ads.timer"
-                    :no="activeCell.index"
+                    :no="activeCell.index + indexDelta"
                     :bound="{ w: ads.win.w * bounding.w, h: ads.win.h * bounding.h }"
                     :data="ads"
                   >

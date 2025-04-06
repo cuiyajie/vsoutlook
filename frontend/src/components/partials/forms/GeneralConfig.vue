@@ -3,6 +3,7 @@ import { useClustNode } from "@src/stores/node";
 import { useUserSession } from "@src/stores/userSession";
 import { confirm } from "@src/utils/dialog";
 import { useNotyf } from "@src/composable/useNotyf";
+import { defaultMvFont } from "@src/utils/constants/config";
 
 const usStore = useUserSession();
 const nodeStore = useClustNode();
@@ -66,6 +67,32 @@ function removeMvTemplate(idx: number) {
     onConfirm: async (hide) => {
       mvTemplates.value.splice(idx, 1)
       updateProp('mv_template_list')
+      hide()
+    },
+  });
+}
+
+/* ----------------------------------------------------------------- */
+
+/* ------------------------ Template Font -------------------------- */
+const templateFonts = ref<Array<string>>([]);
+
+watch(() => settings.value.mv_template_fonts, () => {
+  templateFonts.value = settings.value.mv_template_fonts || []
+}, { immediate: true })
+
+function addTemplateFont() {
+  templateFonts.value.push('')
+  updateProp('mv_template_fonts')
+}
+
+function removeTemplateFont(idx: number) {
+  confirm({
+    title: "确认",
+    content: `确定要删除模板字体 ${templateFonts.value[idx]} 吗？`,
+    onConfirm: async (hide) => {
+      templateFonts.value.splice(idx, 1)
+      updateProp('mv_template_fonts')
       hide()
     },
   });
@@ -146,6 +173,8 @@ function updateProp(key: string, value?: string) {
     usStore.$updateSettings({ key, value: JSON.stringify(authServices.value) })
   } else if (key === 'mv_template_list') {
     usStore.$updateSettings({ key, value: JSON.stringify(mvTemplates.value) })
+  } else if (key === 'mv_template_fonts') {
+    usStore.$updateSettings({ key, value: JSON.stringify(templateFonts.value) })
   } else if (key === 'endswt_panel_types') {
     usStore.$updateSettings({ key, value: JSON.stringify(endSwtPanelTypes.value) })
   } else if (key === 'lut_upscale_names') {
@@ -347,7 +376,7 @@ function testRds() {
         </div>
 
         <div class="form-section is-grey">
-          <div class="form-section-header">
+          <div class="form-section-header" style="margin-bottom: 0;">
             <div class="left">
               <h3>多画面布局</h3>
             </div>
@@ -362,27 +391,40 @@ function testRds() {
               </span>
             </button>
           </div>
-          <div class="form-section-inner flex-auto">
-            <VField
-              horizontal
-              label="多画面模板字体"
+          <div class="form-section-inner row-with-button">
+            <div class="left">多画面模板字体</div>
+            <button
+              type="button"
+              class="button is-circle is-dark-outlined"
+              @keydown.space.prevent="addTemplateFont"
+              @click.prevent="addTemplateFont"
             >
-              <VControl
-                icon="lnir lnir-text"
-              >
-                <VInput
-                  v-model="settings.mv_template_font"
-                  v-blur-on-enter
-                  type="url"
-                  placeholder="Noto Serif CJK"
-                  inputmode="url"
-                  data-key="mv_template_font"
-                  style="width: 300px;"
-                />
-              </VControl>
-              <VLabel class="font-test-label" :style="{fontFamily: `'${settings.mv_template_font}'`}">字体示例，Font Sample.</VLabel>
-            </VField>
+              <span class="icon is-large">
+                <i aria-hidden="true" class="iconify" data-icon="feather:plus" />
+              </span>
+            </button>
           </div>
+          <div class="form-grid-container">
+            <div v-for="(font, idx) in templateFonts" :key="idx" class="field-removable">
+              <VField>
+                <VLabel :style="{fontFamily: font}">
+                  字体示例，Font Sample.
+                  <VIconButton v-if="font !== defaultMvFont" color="warning" light raised circle icon="feather:x" @click="removeTemplateFont(idx)" />
+                </VLabel>
+                <VControl icon="lnir lnir-text">
+                  <VInput
+                    v-model="templateFonts[idx]"
+                    v-blur-on-enter
+                    type="url"
+                    placeholder="Noto Serif CJK"
+                    inputmode="url"
+                    data-key="mv_template_fonts"
+                  />
+                </VControl>
+              </VField>
+            </div>
+          </div>
+          <div v-if="templateFonts.length === 0" class="form-empty is-sm">暂时没有设置多画面布局字体</div>
           <div class="form-section-inner row-with-button">
             <div class="left">多画面布局模板</div>
             <button
@@ -444,7 +486,7 @@ function testRds() {
               </VField>
             </div>
           </div>
-          <div v-if="mvTemplates.length === 0" class="form-empty">暂时没有添加多画面布局模板</div>
+          <div v-if="mvTemplates.length === 0" class="form-empty is-sm">暂时没有添加多画面布局模板</div>
         </div>
 
         <div class="form-section is-grey">
@@ -659,6 +701,12 @@ function testRds() {
       font-style: italic;
       font-weight: 500;
       color: var(--light-text);
+
+      &.is-sm {
+        padding: 0px;
+        font-weight: 400;
+        font-size: 0.875rem;
+      }
     }
 
     .index-field {
@@ -748,7 +796,7 @@ function testRds() {
               display: flex;
               align-items: center;
               justify-content: space-between;
-              padding: 30px 12px 30px 0;
+              padding: 30px 12px 20px 0;
 
               .left {
                 font-family: var(--font);
@@ -764,6 +812,26 @@ function testRds() {
                   padding-top: 0.75em;
                 }
               }
+            }
+          }
+
+          .form-grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            padding-right: 12px;
+          }
+
+          .field-removable .field > label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1em;
+            height: 32px;
+
+            > button {
+              width: 32px;
+              height: 32px;
             }
           }
 

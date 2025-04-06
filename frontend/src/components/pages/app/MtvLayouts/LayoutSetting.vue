@@ -132,6 +132,18 @@ const isText = computed(() => Boolean(props.modelValue.text))
         }
       }
 
+      &.is-select {
+
+        .select-label {
+          flex: 0 0 auto;
+        }
+
+        .multiselect {
+          min-height: auto;
+          height: 32px;
+        }
+      }
+
       .checkbox {
         padding: 0;
         margin-inline-start: 16px;

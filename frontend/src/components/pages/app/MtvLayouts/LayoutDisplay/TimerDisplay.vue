@@ -35,6 +35,12 @@ const color = computed(() => {
   return t.clockDisplayType === CLockDisplayType.Digital ? t.color : t.timeColor
 })
 
+const letterSpacing = computed(() => {
+  const t = props.data?.timer
+  if (!t) return 0
+  return t.clockDisplayType === CLockDisplayType.Digital ? 'normal' : `${t.fontGap * props.bound.w}px`
+})
+
 const dateText = computed(() => {
   const t = props.data?.timer
   if (!t) return ''
@@ -53,7 +59,7 @@ const dateText = computed(() => {
     v-if="data?.timer && dateText"
     data-role="timer"
     class="layout-timer"
-    :style="{ fontSize: `${data.timer.fontSize * bound.w}px`, color, fontFamily }"
+    :style="{ fontSize: `${data.timer.fontSize * bound.w}px`, color, fontFamily, letterSpacing }"
     style="max-width: 100%"
   >
     <slot />
