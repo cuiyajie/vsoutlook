@@ -168,52 +168,6 @@ defineExpose({
         <!--Fieldset-->
         <div class="form-fieldset">
           <div class="fieldset-heading">
-            <h4>通用参数</h4>
-          </div>
-          <div class="columns is-multiline">
-            <div class="column is-6">
-              <VField>
-                <VLabel>需要使用的信号类型</VLabel>
-                <VControl>
-                  <VSelect
-                    v-model="mv.used_signal_type"
-                    class="is-rounded"
-                  >
-                    <VOption v-for="ust in bcswt_used_signal_types" :key="ust.key" :value="ust.key">{{ ust.label }}</VOption>
-                  </VSelect>
-                </VControl>
-              </VField>
-            </div>
-            <div class="column is-2">
-              <VField>
-                <VLabel>切换台级数</VLabel>
-                <VControl>
-                  <VSelect
-                    v-model="mv.level"
-                    class="is-rounded"
-                  >
-                    <VOption v-for="level in levels" :key="level" :value="level">{{ level }}</VOption>
-                  </VSelect>
-                </VControl>
-              </VField>
-            </div>
-            <div class="column is-4">
-              <VField>
-                <VLabel>音频处理模式</VLabel>
-                <VControl>
-                  <VSelect
-                    v-model="mv.audio_workmode"
-                    class="is-rounded"
-                  >
-                    <VOption v-for="workmode in bcswt_audio_workmodes" :key="workmode.key" :value="workmode.key">{{ workmode.label }}</VOption>
-                  </VSelect>
-                </VControl>
-              </VField>
-            </div>
-          </div>
-        </div>
-        <div class="form-fieldset">
-          <div class="fieldset-heading">
             <h4>接口设置</h4>
           </div>
           <div class="columns is-multiline">

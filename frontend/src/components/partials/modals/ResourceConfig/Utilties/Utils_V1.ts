@@ -163,3 +163,14 @@ export function unwrap(src: any, prefix: string) {
   }
   return dst
 }
+
+export function handleJsonData(data: any) {
+  if (data.nic_list && Array.isArray(data.nic_list)) {
+    data.nic_list = data.nic_list.map((d: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { nicIndex, id, ...rest } = d
+      return rest
+    })
+  }
+  return data
+}

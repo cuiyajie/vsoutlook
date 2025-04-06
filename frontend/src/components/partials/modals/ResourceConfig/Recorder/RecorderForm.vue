@@ -256,7 +256,7 @@ defineExpose({
                   <VField>
                     <VLabel>输出音频格式名称</VLabel>
                     <VControl>
-                      <AudioFormatSelect v-model="playerParams.audioformat_name" @audio-selected="audioSelected" @audio-unselected="audioUnSelected" />
+                      <AudioFormatSelect v-model="playerParams.audioformat_name" :videoformat="playerParams.videoformat_name" @audio-selected="audioSelected" @audio-unselected="audioUnSelected" />
                     </VControl>
                   </VField>
                 </div>

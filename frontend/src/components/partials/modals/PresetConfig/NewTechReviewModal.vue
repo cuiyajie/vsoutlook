@@ -91,10 +91,10 @@ const handleCommit = handleSubmit(async () => {
   loading.value = false;
   if (res) {
     opened.value = false;
-    notyf.success(`${indexRef.value < 0 ? "创建" : "保存"}视音频计审模板成功`);
+    notyf.success(`${indexRef.value < 0 ? "创建" : "保存"}视音频技审模板成功`);
     callbacks.success?.();
   } else {
-    notyf.error(`${indexRef.value < 0 ? "创建" : "保存"}视音频计审模板失败`);
+    notyf.error(`${indexRef.value < 0 ? "创建" : "保存"}视音频技审模板失败`);
   }
 });
 
@@ -213,7 +213,7 @@ useListener(Signal.OpenNewTechReview, (payload: { _callback?: any; index?: numbe
                         <div class="list-view-item-inner">
                           <div class="index-no">级别 {{ index + 1 }}</div>
                           <div class="meta-name">{{ VideoReviewKeyName[element] }}</div>
-                          <VField v-if="videoReviewRules[element].threshold_percentage" horizontal>
+                          <VField v-if="videoReviewRules[element].threshold_percentage !== undefined" horizontal>
                             <VLabel>阈值：</VLabel>
                             <VControl>
                               <VInputNumber
@@ -225,7 +225,7 @@ useListener(Signal.OpenNewTechReview, (payload: { _callback?: any; index?: numbe
                             </VControl>
                           </VField>
                           <VField
-                            v-if="videoReviewRules[element].duration_frames"
+                            v-if="videoReviewRules[element].duration_frames !== undefined"
                             horizontal
                             addons
                           >
@@ -243,7 +243,7 @@ useListener(Signal.OpenNewTechReview, (payload: { _callback?: any; index?: numbe
                             </VControl>
                           </VField>
                           <VField
-                            v-if="videoReviewRules[element].duration_ms"
+                            v-if="videoReviewRules[element].duration_ms !== undefined"
                             horizontal
                             addons
                           >
@@ -252,7 +252,7 @@ useListener(Signal.OpenNewTechReview, (payload: { _callback?: any; index?: numbe
                               <VInputNumber
                                 v-model="videoReviewRules[element].duration_ms"
                                 :min="0"
-                                :step="0.001"
+                                :step="1"
                                 placeholder="请输入时长"
                               />
                             </VControl>
@@ -318,7 +318,7 @@ useListener(Signal.OpenNewTechReview, (payload: { _callback?: any; index?: numbe
                         <div class="list-view-item-inner">
                           <div class="index-no">级别 {{ index + 1 }}</div>
                           <div class="meta-name">{{ AudioReviewKeyName[element] }}</div>
-                          <VField v-if="audioReviewRules[element].detect_channels" horizontal>
+                          <VField v-if="audioReviewRules[element].detect_channels !== undefined" horizontal>
                             <VLabel>声道：</VLabel>
                             <VControl>
                               <VInput
@@ -328,7 +328,7 @@ useListener(Signal.OpenNewTechReview, (payload: { _callback?: any; index?: numbe
                               />
                             </VControl>
                           </VField>
-                          <VField v-if="audioReviewRules[element].threshold_dbfs" horizontal>
+                          <VField v-if="audioReviewRules[element].threshold_dbfs !== undefined" horizontal>
                             <VLabel>阈值：</VLabel>
                             <VControl>
                               <VInputNumber
@@ -340,7 +340,7 @@ useListener(Signal.OpenNewTechReview, (payload: { _callback?: any; index?: numbe
                             </VControl>
                           </VField>
                           <VField
-                            v-if="audioReviewRules[element].duration_frames"
+                            v-if="audioReviewRules[element].duration_frames !== undefined"
                             horizontal
                             addons
                           >
@@ -358,7 +358,7 @@ useListener(Signal.OpenNewTechReview, (payload: { _callback?: any; index?: numbe
                             </VControl>
                           </VField>
                           <VField
-                            v-if="audioReviewRules[element].duration_ms"
+                            v-if="audioReviewRules[element].duration_ms !== undefined"
                             horizontal
                             addons
                           >
@@ -367,7 +367,7 @@ useListener(Signal.OpenNewTechReview, (payload: { _callback?: any; index?: numbe
                               <VInputNumber
                                 v-model="audioReviewRules[element].duration_ms"
                                 :min="0"
-                                :step="0.001"
+                                :step="1"
                                 placeholder="请输入时长"
                               />
                             </VControl>

@@ -85,7 +85,7 @@ const audioMode = inject<Ref<number>>('switch_audio_mode')
           <VField>
             <VLabel>音频格式名称</VLabel>
             <VControl>
-              <AudioFormatSelect v-model="mv.audioformat_name" @audio-selected="audioSelected" @audio-unselected="audioUnSelected" />
+              <AudioFormatSelect v-model="mv.audioformat_name" :videoformat="mv.videoformat_name" @audio-selected="audioSelected" @audio-unselected="audioUnSelected" />
             </VControl>
           </VField>
         </div>

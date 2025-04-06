@@ -30,7 +30,7 @@ const emit = defineEmits<{
     </div>
     <div class="form-body">
       <!--Fieldset-->
-      <div class="form-fieldset seperator">
+      <div class="form-fieldset" :class="mv.videoformat_name && 'seperator'">
         <div class="columns is-multiline">
           <div class="column is-4">
             <VField>
@@ -55,13 +55,13 @@ const emit = defineEmits<{
             <VField>
               <VLabel>音频格式名称</VLabel>
               <VControl>
-                <AudioFormatSelect v-model="mv.audioformat_name" @audio-selected="emit('audio-selected', $event)" @audio-unselected="emit('audio-selected', $event)" />
+                <AudioFormatSelect v-model="mv.audioformat_name" :videoformat="mv.videoformat_name" @audio-selected="emit('audio-selected', $event)" @audio-unselected="emit('audio-selected', $event)" />
               </VControl>
             </VField>
           </div>
         </div>
       </div>
-      <PlayerParamsForm v-model="mv" :nics="nics" />
+      <PlayerParamsForm v-model="mv" :nics="nics" smpte="receive" />
     </div>
   </div>
 </template>

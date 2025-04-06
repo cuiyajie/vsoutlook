@@ -95,9 +95,9 @@ const opened = ref(false)
           <div class="columns is-multiline">
             <div class="column is-6">
               <VField>
-                <VLabel>输入信源数量（最大为 {{ level }}）</VLabel>
+                <VLabel>输入信源数量</VLabel>
                 <VControl>
-                  <VInputNumber v-model="mv.bus_input_number" centered :min="0" :max="level" :step="1" />
+                  <VInputNumber v-model="mv.bus_input_number" centered :min="0" :step="1" />
                 </VControl>
               </VField>
             </div>
@@ -217,7 +217,7 @@ const opened = ref(false)
                 <VField>
                   <VLabel>输出信号类型</VLabel>
                   <VControl>
-                    <VLabel class="is-static">{{ mv.pvw_bus.out_signal[0].signal_type }}</VLabel>
+                    <VLabel class="is-static">{{ mv.pgm_bus.out_signal[0].signal_type }}</VLabel>
                   </VControl>
                 </VField>
               </div>
@@ -225,7 +225,7 @@ const opened = ref(false)
                 <VField>
                   <VLabel>输出信号名称</VLabel>
                   <VControl>
-                    <VLabel class="is-static">{{ mv.pvw_bus.out_signal[0].signal_name }}</VLabel>
+                    <VLabel class="is-static">{{ mv.pgm_bus.out_signal[0].signal_name }}</VLabel>
                   </VControl>
                 </VField>
               </div>
@@ -233,7 +233,7 @@ const opened = ref(false)
                 <VField>
                   <VLabel>输出信号ID</VLabel>
                   <VControl>
-                    <VLabel class="is-static">{{ mv.pvw_bus.out_signal[0].signal_id }}</VLabel>
+                    <VLabel class="is-static">{{ mv.pgm_bus.out_signal[0].signal_id }}</VLabel>
                   </VControl>
                 </VField>
               </div>

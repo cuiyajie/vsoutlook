@@ -21,6 +21,7 @@ import { useClustNode } from '@src/stores/node'
 import { useUserSession } from '@src/stores/userSession'
 import dayjs from 'dayjs'
 import BCSwitchFormV1 from './BCSwitch_V1/BCSwitchForm_V1.vue'
+import { handleJsonData } from './Utilties/Utils_V1'
 
 const tmplStore = useTemplate()
 const deviceStore = useDevices()
@@ -247,7 +248,7 @@ function exportSetting() {
 }
 
 function saveSetting(config?: string, name?: string) {
-  const val = config || compRef.value?.getValue()
+  const val = handleJsonData(config || compRef.value?.getValue())
   const fileName =
     name ||
     `${tmpl.value?.name}_${deviceName.value || '未命名'}_${dayjs().format(
@@ -425,7 +426,7 @@ const tmplConfig = computed(() => {
           ref="compRef"
           :name="deviceName"
           :requiredment="tmpl?.requirement"
-          :nics="node?.nics"
+          :nics="node?.nics || []"
         />
         <input
           ref="fileInput"

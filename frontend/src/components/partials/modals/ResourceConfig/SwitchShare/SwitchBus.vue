@@ -63,10 +63,10 @@ function removeLevelParam(idx: number) {
 </script>
 <template>
   <div class="form-outer has-mt-20">
-    <div class="form-header">
+    <div class="form-header is-sticky">
       <div class="form-header-inner">
         <div class="left">
-          <h4>键总线设置</h4>
+          <h4>键总线设置 {{ keyParams.length > 0 ? `- ${keyParams.length} 级` : '' }}</h4>
         </div>
         <button
           class="button is-circle is-dark-outlined"
@@ -131,7 +131,7 @@ function removeLevelParam(idx: number) {
     <div class="form-header">
       <div class="form-header-inner">
         <div class="left">
-          <h4>切换台级输出总线设置</h4>
+          <h4>切换台级输出总线设置 {{ levelParams.length > 0 ? `- ${levelParams.length} 级` : '' }}</h4>
         </div>
         <button
           class="button is-circle is-dark-outlined"

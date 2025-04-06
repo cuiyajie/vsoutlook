@@ -13,7 +13,7 @@ defineProps<{
 }>()
 
 const usedSignalType = inject<Ref<number>>('switch_used_signal_type', ref(0))
-const { videoSelected, videoUnSelected } = inject<InjectSwitchTemplateToggle>('switch_template_toggle', def_switch_template_toggle())
+const { videoSelected, videoUnSelected, audioSelected, audioUnSelected } = inject<InjectSwitchTemplateToggle>('switch_template_toggle', def_switch_template_toggle())
 const nics = inject<IndexedNicDetail[]>('switch_nics', [])
 
 const emit = defineEmits<{
@@ -55,7 +55,7 @@ const opened = ref(false)
       <div v-if="opened">
         <div class="form-fieldset-nested-3 seperator">
           <div class="columns is-multiline">
-            <div class="column is-6">
+            <div class="column is-4">
               <VField>
                 <VLabel>视频格式名称</VLabel>
                 <VControl>
@@ -71,6 +71,14 @@ const opened = ref(false)
                     v-model="mv.force_use_videoformat"
                     color="primary"
                   />
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-4">
+              <VField>
+                <VLabel>音频格式名称</VLabel>
+                <VControl>
+                  <AudioFormatSelect v-model="mv.audioformat_name" :videoformat="mv.videoformat_name" @audio-selected="audioSelected($event)" @audio-unselected="audioUnSelected($event)" />
                 </VControl>
               </VField>
             </div>
@@ -92,7 +100,7 @@ const opened = ref(false)
             </div>
           </div>
         </div>
-        <PlayerParamsForm v-model="mv" :nics="nics" :show-nic="false" />
+        <PlayerParamsForm v-model="mv" :nics="nics" :show-nic="false" smpte="receive" />
       </div>
     </expand-transition>
   </div>

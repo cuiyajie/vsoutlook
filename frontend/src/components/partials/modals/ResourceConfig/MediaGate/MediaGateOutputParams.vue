@@ -108,7 +108,7 @@ watch(() => props.defaultOpen, () => {
               <VField>
                 <VLabel>输出音频格式名称</VLabel>
                 <VControl>
-                  <AudioFormatSelect v-model="mv.audioformat_name" @audio-selected="emit('audio-selected', $event)" @audio-unselected="emit('audio-unselected', $event)" />
+                  <AudioFormatSelect v-model="mv.audioformat_name" :videoformat="mv.videoformat_name" @audio-selected="emit('audio-selected', $event)" @audio-unselected="emit('audio-unselected', $event)" />
                 </VControl>
               </VField>
             </div>

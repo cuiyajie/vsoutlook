@@ -13,9 +13,11 @@ withDefaults(defineProps<{
   nics: IndexedNicDetail[]
   showAudio?: boolean
   showNic?: boolean
+  smpte?: 'receive' | 'send'
 }>(), {
   showAudio: true,
-  showNic: true
+  showNic: true,
+  smpte: 'send'
 })
 
 const usStore = useUserSession()
@@ -38,26 +40,26 @@ watch(() => mv.value.videoformat_name, (nv) => {
 </script>
 <template>
   <!--Fieldset-->
-  <div class="form-fieldset" :class="{'seperator': mv.videoformat_name && !showParams, 'is-tail': !showParams}">
-    <div class="fieldset-heading">
-      <h4>smpte发流参数</h4>
-    </div>
-    <div v-if="showNic" class="form-fieldset-nested-3" :class="{'is-tail': !showParams}">
-      <div class="form-fieldset-nested-3" :class="showParams && 'seperator'">
-        <div class="columns is-multiline">
-          <div class="column is-6">
-            <VField>
-              <VLabel>发流网卡序号</VLabel>
-              <VControl>
-                <NicDetailSelect v-model="mv.smpte_params.nic_index" :nics="nics" />
-              </VControl>
-            </VField>
+  <expand-transition>
+    <div v-if="mv.videoformat_name && showParams" class="form-fieldset">
+      <div class="fieldset-heading">
+        <h4>smpte{{ smpte === 'send' ? '发流' : '收流' }}参数</h4>
+      </div>
+      <div v-if="showNic" class="form-fieldset-nested-3">
+        <div class="form-fieldset-nested-3 seperator">
+          <div class="columns is-multiline">
+            <div class="column is-6">
+              <VField>
+                <VLabel>{{ smpte === 'send' ? '发流' : '收流' }}网卡序号</VLabel>
+                <VControl>
+                  <NicDetailSelect v-model="mv.smpte_params.nic_index" :nics="nics" />
+                </VControl>
+              </VField>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <expand-transition>
-      <div v-if="showParams" class="form-fieldset-nested-6">
+      <div class="form-fieldset-nested-6">
         <div class="form-fieldset seperator">
           <div class="fieldset-heading">
             <h5>主路参数</h5>
@@ -78,9 +80,7 @@ watch(() => mv.value.videoformat_name, (nv) => {
           </div>
         </div>
       </div>
-    </expand-transition>
-    <expand-transition>
-      <div v-if="showParams" class="form-fieldset-nested-6 is-tail">
+      <div class="form-fieldset-nested-6 is-tail">
         <div class="form-fieldset-nested-4">
           <div class="fieldset-heading">
             <h5>备路参数</h5>
@@ -101,8 +101,8 @@ watch(() => mv.value.videoformat_name, (nv) => {
           </div>
         </div>
       </div>
-    </expand-transition>
-  </div>
+    </div>
+  </expand-transition>
   <expand-transition>
     <div v-if="mv.videoformat_name && !showParams" class="form-fieldset">
       <div class="fieldset-heading">

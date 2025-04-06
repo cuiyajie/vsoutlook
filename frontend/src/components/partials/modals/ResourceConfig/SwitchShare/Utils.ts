@@ -76,6 +76,8 @@ export function handleSwitchInputKey(params: SwitchInputKeyParams[], vfs: VideoF
     }
     if (p.key_type !== 'int_key') {
       delete result.file_name
+    }
+    if (p.key_type !== 'h5_key') {
       delete result.url
     }
     return {

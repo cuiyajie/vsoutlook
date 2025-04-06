@@ -2,6 +2,7 @@
 import { useUserSession } from "@src/stores/userSession";
 import { confirm } from "@src/utils/dialog";
 import { VideoFormatProtocolsMap } from "../modals/PresetConfig/Consts"
+import { stringifyFps } from "../modals/PresetConfig/Utils"
 
 const usStore = useUserSession();
 const videoFormats = computed(() => usStore.settings.video_formats || []);
@@ -50,7 +51,6 @@ function edit(idx: number) {
             <th align="center">模板名称</th>
             <th align="center">格式类型</th>
             <th align="center">分辨率</th>
-            <th align="center">是否隔行</th>
             <th align="center">帧率</th>
             <th align="center">伽马</th>
             <th align="center">色域</th>
@@ -67,17 +67,7 @@ function edit(idx: number) {
               <td>{{ vft.name }}</td>
               <td>{{ VideoFormatProtocolsMap[vft.protocol] }}</td>
               <td>{{ `${vft.width}x${vft.height}` }}</td>
-              <td>
-                <div class="is-list">
-                  <VControl>
-                    <VSwitchBlock
-                      :model-value="vft.interlaced"
-                      color="primary"
-                    />
-                  </VControl>
-                </div>
-              </td>
-              <td>{{ vft.fps }}</td>
+              <td>{{ stringifyFps(vft.fps, vft.interlaced) }}</td>
               <td>{{ vft.gamma }}</td>
               <td>{{ vft.gamut }}</td>
               <td>{{ vft.compression_format }}</td>

@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { useUserSession } from "@src/stores/userSession";
 import { defVideoFormat, VideoFormatProtocolsMap } from '../../PresetConfig/Consts';
+import { stringifyFps } from '../../PresetConfig/Utils';
 
 const props = defineProps<{
   value?: VideoFormat,
@@ -62,7 +63,7 @@ const tippyAppendTo = () => document.body
               帧率
             </h4>
             <span>
-              {{ format.fps }}
+              {{ stringifyFps(format.fps, format.interlaced) }}
             </span>
           </div>
           <div class="info-block-line">

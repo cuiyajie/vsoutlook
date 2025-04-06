@@ -10,9 +10,14 @@ import {
   VideoCompressionFormats,
   VideoCompressionSubtypes,
   VideoCompressionRatios,
+  VideoFormatFpsList,
   defVideoFormat,
+  defaultFpsStr,
 } from './Consts'
 import { useUserSession } from '@src/stores/userSession'
+import { parseFps, stringifyFps } from './Utils'
+
+type VideoFormatForm = VideoFormat & { fpsStr: string };
 
 const usStore = useUserSession()
 const videoFormats = computed(() => usStore.settings.video_formats || [])
@@ -20,7 +25,7 @@ const notyf = useNotyf()
 const opened = ref(false)
 const indexRef = ref(-1)
 let callbacks: any = {}
-const form = ref<VideoFormat>(defVideoFormat())
+const form = ref<VideoFormatForm>(Object.assign(defVideoFormat(), { fpsStr: defaultFpsStr }))
 
 const zodSchema = z.object({
   name: z
@@ -39,7 +44,8 @@ const zodSchema = z.object({
   width: z.number({ required_error: '请输入视频宽度', invalid_type_error: '请输入视频宽度' }).int(),
   height: z.number({ required_error: '请输入视频高度', invalid_type_error: '请输入视频高度' }).int(),
   interlaced: z.boolean(),
-  fps: z.number({ required_error: '请输入视频帧率', invalid_type_error: '请输入视频帧率' }),
+  fps: z.number(),
+  fpsStr: z.string().refine((value) => VideoFormatFpsList.includes(value), { message: '请选择视频帧率' }),
   gamma: z.string({ required_error: '请选择视频伽马' }),
   gamut: z.string({ required_error: '请选择视频色域' }),
   compression_format: z.string({ required_error: '请选择压缩格式' }),
@@ -67,8 +73,10 @@ const handleCommit = handleSubmit(async () => {
   if (indexRef.value < 0) {
     value = JSON.stringify([form.value, ...videoFormats.value])
   } else {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { fpsStr, ...rest } = form.value
     const formats = videoFormats.value
-    formats[indexRef.value] = form.value
+    formats[indexRef.value] = rest
     value = JSON.stringify(formats)
   }
   const res = await usStore.$updateSettings({ key: 'video_formats', value })
@@ -88,16 +96,27 @@ function syncForm() {
   }
 }
 
+function onFpsStrChange(val: string) {
+  const { fps, interlaced } = parseFps(val)
+  setFieldValue('fpsStr', val)
+  setFieldValue('fps', fps)
+  setFieldValue('interlaced', interlaced)
+  form.value.fps = fps
+  form.value.interlaced = interlaced
+}
+
 syncForm()
 
 useListener(Signal.OpenNewVideoFormat, (payload: { _callback?: any; index?: number }) => {
   opened.value = true
   indexRef.value = payload.index === undefined ? -1 : payload.index
   if (indexRef.value < 0) {
-    form.value = defVideoFormat()
+    form.value = Object.assign(defVideoFormat(), { fpsStr: defaultFpsStr })
   } else {
+    const v = videoFormats.value[indexRef.value]
     form.value = {
-      ...videoFormats.value[indexRef.value],
+      ...v,
+      fpsStr: stringifyFps(v.fps, v.interlaced),
     }
   }
 
@@ -181,24 +200,16 @@ useListener(Signal.OpenNewVideoFormat, (payload: { _callback?: any; index?: numb
             </VField>
           </div>
           <div class="column is-4">
-            <VField id="interlaced" v-slot="{ field }">
-              <VLabel>是否隔行</VLabel>
-              <VControl class="in-form">
-                <VSwitchBlock
-                  v-model="form.interlaced"
-                  color="primary"
-                />
-                <p v-if="field?.errorMessage" class="help is-danger">
-                  {{ field.errorMessage }}
-                </p>
-              </VControl>
-            </VField>
-          </div>
-          <div class="column is-4">
-            <VField id="fps" v-slot="{ field }">
+            <VField id="fpsStr" v-slot="{ field }">
               <VLabel>视频帧率</VLabel>
               <VControl>
-                <VInputNumber v-model="form.fps" centered :min="0" :step="1" />
+                <Multiselect
+                  v-model="form.fpsStr"
+                  :options="VideoFormatFpsList"
+                  placeholder="选择视频帧率"
+                  :style="{'--ms-max-height': '180px'}"
+                  @change="onFpsStrChange"
+                />
                 <p v-if="field?.errorMessage" class="help is-danger">
                   {{ field.errorMessage }}
                 </p>

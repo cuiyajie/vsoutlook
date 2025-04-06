@@ -69,7 +69,7 @@ const opened = ref(false)
               <VField>
                 <VLabel>音频格式名称</VLabel>
                 <VControl>
-                  <AudioFormatSelect v-model="mv.audioformat_name" @audio-selected="emit('audio-selected', $event)" @audio-unselected="emit('audio-unselected', $event)" />
+                  <AudioFormatSelect v-model="mv.audioformat_name" :videoformat="mv.videoformat_name" @audio-selected="emit('audio-selected', $event)" @audio-unselected="emit('audio-unselected', $event)" />
                 </VControl>
               </VField>
             </div>
@@ -88,7 +88,7 @@ const opened = ref(false)
             </div>
           </div>
         </div>
-        <PlayerParamsForm v-model="mv" :nics="nics" />
+        <PlayerParamsForm v-model="mv" :nics="nics" smpte="receive" />
       </div>
     </expand-transition>
   </div>

@@ -204,6 +204,7 @@ func preInstallation(c *svcinfra.Context, configStr string, tmpl *models.Tmpl, n
 				return nil, nil, errors.New("设备网卡配置错误")
 			}
 		}
+
 		if len(nicList) != 0 {
 			// 循环网卡，有 error 就返回错误
 			for nidx, nicItem := range nicList {
@@ -231,6 +232,9 @@ func preInstallation(c *svcinfra.Context, configStr string, tmpl *models.Tmpl, n
 					MainIP:   nicItem["2110-7_m_local_ip"].(string),
 					BackupIP: nicItem["2110-7_b_local_ip"].(string),
 				})
+
+				delete(nicItem, "id")
+				delete(nicItem, "nicIndex")
 			}
 			coreListStr = utils.FormatUint32Array(utils.MergeMapArrays(coreMap))
 			dmaListStr = strings.Join(utils.MergeMapArrays(dmaMap), ",")

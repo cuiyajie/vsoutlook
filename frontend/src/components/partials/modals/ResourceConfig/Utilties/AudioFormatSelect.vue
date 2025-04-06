@@ -12,7 +12,21 @@ const emit = defineEmits<{
 }>()
 
 const usStore = useUserSession()
+const videoFormats = computed(() => usStore.settings.video_formats || [])
 const audioFormats = computed(() => usStore.settings.audio_formats || [])
+const props = defineProps<{
+  videoformat: string,
+}>()
+
+const filterAudioFormats = computed(() => {
+  const vf = videoFormats.value.find(vf => vf.name === props.videoformat)
+  const isSt = ['st2110-20', 'st2110-22'].includes(vf?.protocol || '')
+  if (isSt) {
+    return audioFormats.value.filter(af => af.compression_format === 'pcm')
+  } else {
+    return audioFormats.value
+  }
+})
 
 watch<string>(() => mv.value, (nv, ov) => {
   if (nv === ov) return
@@ -32,8 +46,8 @@ watch<string>(() => mv.value, (nv, ov) => {
     label="name"
     :can-deselect="false"
     :max-height="145"
-    no-options-text="暂时没有配置音频格式名称"
-    :options="audioFormats"
+    no-options-text="没有可选择的音频格式"
+    :options="filterAudioFormats"
   >
     <template #option="{ option }">
       <span class="select-option-text">

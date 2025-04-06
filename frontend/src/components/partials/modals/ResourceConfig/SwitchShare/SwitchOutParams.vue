@@ -87,7 +87,7 @@ const opened = ref(false)
               <VField>
                 <VLabel>输出音频格式名称</VLabel>
                 <VControl>
-                  <AudioFormatSelect v-model="mv.audioformat_name" @audio-selected="audioSelected" @audio-unselected="audioUnSelected" />
+                  <AudioFormatSelect v-model="mv.audioformat_name" :videoformat="mv.videoformat_name" @audio-selected="audioSelected" @audio-unselected="audioUnSelected" />
                 </VControl>
               </VField>
             </div>

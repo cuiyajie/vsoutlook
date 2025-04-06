@@ -24,6 +24,18 @@ export const VideoFormatPrefixMap: Record<string, string> = {
   rtmp: 'rtmp',
 }
 
+export const VideoFormatFpsList = [
+  '25P',
+  '29.97P',
+  '30P',
+  '50I',
+  '50P',
+  '59.94I',
+  '59.94P',
+  '60I',
+  '60P',
+]
+
 export const VideoGammas = ['sdr', 'hlg', 'pq']
 export const DefaultVideoGamma = 'hlg'
 
@@ -63,6 +75,7 @@ export const DefaultVideoCompressionSubtype = 'base'
 export const VideoCompressionRatios = ['5:1', '8:1', '10:1', '12:1', '16:1']
 export const DefaultVideoCompressionRatio = '8:1'
 
+export const defaultFpsStr = '50P'
 export const defVideoFormat = () => ({
   name: '',
   protocol: DefaultVideoFormatProtocol,

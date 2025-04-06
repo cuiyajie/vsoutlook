@@ -35,91 +35,96 @@ watch(() => mv.value.out_number, (nv) => {
   }
 }, { immediate: true })
 
+const usedSignalType = inject<Ref<number>>('switch_used_signal_type', ref(0))
+
 const audioOpen = ref(false)
 const mvOpen = ref(false)
 
 </script>
 <template>
-  <div class="form-outer has-mt-20">
-    <div class="form-body">
-      <div class="form-fieldset-nested-1" :class="outParms.length > 0 && 'seperator'">
-        <div class="columns is-multiline">
-          <div class="column is-6">
-            <VField>
-              <VLabel>输出信号数量（最多 {{ level * 3 }} 路）</VLabel>
-              <VControl>
-                <VInputNumber v-model="mv.out_number" centered :min="0" :step="1" :max="level * 3" />
-              </VControl>
-            </VField>
+  <div style="padding: 20px 0;">
+    <div class="form-outer">
+      <div class="form-body">
+        <div class="form-fieldset-nested-1" :class="outParms.length > 0 && 'seperator'">
+          <div class="columns is-multiline">
+            <div class="column is-6">
+              <VField>
+                <VLabel>输出信号数量（最多 {{ level * 3 }} 路）</VLabel>
+                <VControl>
+                  <VInputNumber v-model="mv.out_number" centered :min="0" :step="1" :max="level * 3" />
+                </VControl>
+              </VField>
+            </div>
           </div>
         </div>
+        <TransitionGroup name="list">
+          <SwitchOutParams
+            v-for="(outParam, oidx) in outParms"
+            :key="`out-${outParam.index}`"
+            v-model="outParms[oidx]"
+            :index="oidx"
+            :is-last="oidx === outParms.length - 1"
+            :input-videos="inputVideos"
+            :bus-levels="busLevels"
+          />
+        </TransitionGroup>
       </div>
-      <TransitionGroup name="list">
-        <SwitchOutParams
-          v-for="(outParam, oidx) in outParms"
-          :key="`out-${outParam.index}`"
-          v-model="outParms[oidx]"
-          :index="oidx"
-          :is-last="oidx === outParms.length - 1"
-          :input-videos="inputVideos"
-          :bus-levels="busLevels"
-        />
-      </TransitionGroup>
     </div>
-  </div>
-  <div
-    v-if="audioMode === 2"
-    class="form-outer collapse-form"
-    :open="audioOpen || undefined"
-  >
     <div
-      class="form-header collapse-header"
-      :style="{'border-bottom-width': audioOpen ? '1px' : '0'}"
-      tabindex="0"
-      role="button"
-      @keydown.space.prevent="audioOpen = !audioOpen"
-      @click.prevent="audioOpen = !audioOpen"
+      v-if="audioMode === 2"
+      class="form-outer collapse-form"
+      :open="audioOpen || undefined"
     >
-      <div class="form-header-inner">
-        <div class="left">
-          <h4>音频输出设置</h4>
+      <div
+        class="form-header collapse-header"
+        :style="{'border-bottom-width': audioOpen ? '1px' : '0'}"
+        tabindex="0"
+        role="button"
+        @keydown.space.prevent="audioOpen = !audioOpen"
+        @click.prevent="audioOpen = !audioOpen"
+      >
+        <div class="form-header-inner">
+          <div class="left">
+            <h4>音频输出设置</h4>
+          </div>
+        </div>
+        <div class="collapse-icon">
+          <VIcon icon="feather:chevron-down" />
         </div>
       </div>
-      <div class="collapse-icon">
-        <VIcon icon="feather:chevron-down" />
-      </div>
+      <expand-transition>
+        <div v-if="audioOpen" class="form-body">
+          <SwitchOutAudioParams v-model="mv.audio_output_params" :input-videos="inputVideos" :out-params="outParms" />
+        </div>
+      </expand-transition>
     </div>
-    <expand-transition>
-      <div v-if="audioOpen" class="form-body">
-        <SwitchOutAudioParams v-model="mv.audio_output_params" :input-videos="inputVideos" :out-params="outParms" />
-      </div>
-    </expand-transition>
-  </div>
-  <div
-    class="form-outer has-mb-20 collapse-form"
-    :open="mvOpen || undefined"
-  >
     <div
-      class="form-header collapse-header"
-      :style="{'border-bottom-width': mvOpen ? '1px' : '0'}"
-      tabindex="0"
-      role="button"
-      @keydown.space.prevent="mvOpen = !mvOpen"
-      @click.prevent="mvOpen = !mvOpen"
+      v-if="usedSignalType === 1"
+      class="form-outer collapse-form"
+      :open="mvOpen || undefined"
     >
-      <div class="form-header-inner">
-        <div class="left">
-          <h4>多画分输出设置</h4>
+      <div
+        class="form-header collapse-header"
+        :style="{'border-bottom-width': mvOpen ? '1px' : '0'}"
+        tabindex="0"
+        role="button"
+        @keydown.space.prevent="mvOpen = !mvOpen"
+        @click.prevent="mvOpen = !mvOpen"
+      >
+        <div class="form-header-inner">
+          <div class="left">
+            <h4>多画分输出设置</h4>
+          </div>
+        </div>
+        <div class="collapse-icon">
+          <VIcon icon="feather:chevron-down" />
         </div>
       </div>
-      <div class="collapse-icon">
-        <VIcon icon="feather:chevron-down" />
-      </div>
+      <expand-transition>
+        <div v-if="mvOpen" class="form-body">
+          <SwitchOutMvParams v-model="mv.mv_output_params" />
+        </div>
+      </expand-transition>
     </div>
-    <expand-transition>
-      <div v-if="mvOpen" class="form-body">
-        <SwitchOutMvParams v-model="mv.mv_output_params" />
-      </div>
-    </expand-transition>
   </div>
 </template>

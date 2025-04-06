@@ -32,13 +32,21 @@ const mv = defineModel<NMosConfigType>({
       </div>
       <div class="column is-6">
         <VField>
+          <VLabel>对外IP</VLabel>
+          <VControl>
+            <VInput v-model="mv.host_addresses" />
+          </VControl>
+        </VField>
+      </div>
+      <div class="column is-3">
+        <VField>
           <VLabel>对外端口</VLabel>
           <VControl>
             <VInputNumber v-model="mv.http_port" centered :min="0" :step="1" />
           </VControl>
         </VField>
       </div>
-      <div class="column is-6">
+      <div class="column is-3">
         <VField>
           <VLabel>日志级别</VLabel>
           <VControl>

@@ -7,7 +7,7 @@
     :tabs="[
       { label: '视频格式模板', value: 'videoFormat' },
       { label: '音频格式模板', value: 'audioFormat' },
-      { label: '计审模板', value: 'techPreview' },
+      { label: '技审模板', value: 'techPreview' },
       { label: '音频映射模板', value: 'audioMapping' },
     ]"
   >

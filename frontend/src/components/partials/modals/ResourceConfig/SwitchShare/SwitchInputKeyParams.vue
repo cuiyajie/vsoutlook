@@ -101,7 +101,7 @@ const opened = ref(false)
               </div>
             </expand-transition>
             <expand-transition>
-              <div v-if="mv.key_type === 'int_key'" class="column is-6">
+              <div v-if="mv.key_type === 'h5_key'" class="column is-6">
                 <VField>
                   <VLabel>H5地址</VLabel>
                   <VControl>
@@ -114,7 +114,7 @@ const opened = ref(false)
         </div>
         <expand-transition>
           <div v-if="mv.key_type === 'ext_key'">
-            <PlayerParamsForm v-model="mv" :nics="nics" />
+            <PlayerParamsForm v-model="mv" :nics="nics" :smpte="mv.key_type === 'ext_key' ? 'receive' : 'send'" />
           </div>
         </expand-transition>
       </div>

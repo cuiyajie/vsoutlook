@@ -77,6 +77,15 @@
       h4 {
         font-weight: 600;
       }
+
+      &.is-sticky {
+        position: sticky;
+        top: -20px;
+        z-index: 1;
+        background: var(--dark-sidebar-light-6);
+        border-top-left-radius: var(--radius-large);
+        border-top-right-radius: var(--radius-large);
+      }
     }
 
     &.has-mt-20 {

@@ -47,3 +47,17 @@ export function numberRangeToArray(input: string = ''): number[] {
   // 排序（Set 不保证顺序，需显式排序）
   return uniqueResult.sort((a, b) => a - b)
 }
+
+export function stringifyFps(fps: number, interlaced: boolean): string {
+  return interlaced ? `${fps}I` : `${fps}P`
+}
+
+export function parseFps(fpsStr: string): { fps: number; interlaced: boolean } {
+  const match = fpsStr.match(/^(\d+\.?\d*)([IP])$/)
+  if (!match) {
+    throw new Error('Invalid FPS format')
+  }
+  const fps = parseFloat(match[1])
+  const interlaced = match[2] === 'I'
+  return { fps, interlaced }
+}
