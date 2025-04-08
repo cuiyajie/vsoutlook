@@ -367,7 +367,7 @@ const tmplConfig = computed(() => {
                   placeholder="选择应用"
                   value-prop="id"
                   label="name"
-                  :max-height="145"
+                  :style="{'--ms-max-height': '245px'}"
                   :options="tmpls"
                   @change="(val: any) => onTmplSelect(field, val)"
                 >
@@ -397,7 +397,7 @@ const tmplConfig = computed(() => {
                   placeholder="选择节点"
                   value-prop="id"
                   label="name"
-                  :max-height="145"
+                  :style="{'--ms-max-height': '245px'}"
                   :options="nodes"
                   @change="(val: any) => onNodeSelect(field, val)"
                 >

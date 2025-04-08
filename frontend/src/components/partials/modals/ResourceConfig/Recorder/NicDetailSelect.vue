@@ -20,7 +20,7 @@ defineProps<{
     :searchable="false"
     :can-deselect="false"
     :can-clear="false"
-    :max-height="145"
+    :style="{'--ms-max-height': '245px'}"
     no-options-text="暂时没有配置收发流网卡"
     :options="nics"
   >

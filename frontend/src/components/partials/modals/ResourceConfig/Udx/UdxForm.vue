@@ -252,7 +252,7 @@ defineExpose({
                   placeholder="选择LUT表名称"
                   value-prop="name"
                   label="name"
-                  :max-height="145"
+                  :style="{'--ms-max-height': '245px'}"
                   :options="scaleNames"
                   @change="(val: any) => field?.setValue(val)"
                 >

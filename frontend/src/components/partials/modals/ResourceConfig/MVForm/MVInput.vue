@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { type IndexedNicDetail } from '../Utilties/Consts_V1';
 import { type MVInputItemParam, def_mv_input_param } from './Consts';
-import { type AuditAlarmRule } from './Consts';
 
 const mv = defineModel<MVInputItemParam>({
   default: def_mv_input_param(),
@@ -11,7 +10,6 @@ const mv = defineModel<MVInputItemParam>({
 defineProps<{
   usedSignalType: number,
   nics: IndexedNicDetail[],
-  rules: AuditAlarmRule[],
   index: number
   isLast: boolean
 }>()
@@ -21,8 +19,10 @@ const emit = defineEmits<{
   (e: 'video-unselected', name: string): void,
   (e: 'audio-selected', name: string): void,
   (e: 'audio-unselected', name: string): void,
+  (e: 'av-tmpl-selected', name: string): void,
+  (e: 'av-tmpl-unselected', name: string): void,
   (e: 'audit-rule-selected', name: string): void,
-  (e: 'audit-rule-unselected', name: string): void
+  (e: 'audit-rule-unselected', name: string): void,
 }>()
 
 const opened = ref(false)
@@ -75,13 +75,14 @@ const opened = ref(false)
             </div>
             <div class="column is-6">
               <VField>
-                <VLabel>使用的技审报警规则模板</VLabel>
+                <VLabel>使用的报警规则模板</VLabel>
                 <VControl>
                   <AuditAlarmRuleSelect
                     v-model="mv.audit_alarm_rule_name"
-                    :rules="rules"
                     @audit-rule-selected="emit('audit-rule-selected', $event)"
                     @audit-rule-unselected="emit('audit-rule-unselected', $event)"
+                    @av-tmpl-selected="emit('av-tmpl-selected', $event)"
+                    @av-tmpl-unselected="emit('av-tmpl-unselected', $event)"
                   />
                 </VControl>
               </VField>

@@ -64,6 +64,7 @@ export const useUserSession = defineStore('userSession', () => {
         'audio_formats',
         'audio_mappings',
         'tech_reviews',
+        'audit_alarm_rules',
       ] as Array<keyof Settings>
     ).forEach((key) => {
       if (newSettings[key]) {

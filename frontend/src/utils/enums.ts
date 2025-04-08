@@ -19,52 +19,53 @@ export enum Signal {
   OpenNewVideoFormat,
   OpenNewAudioFormat,
   OpenNewTechReview,
+  OpenNewAuditAlarm,
   OpenNewAudioMapping,
 }
 
 export enum DeviceStatus {
   Normal = 1,
-  Shutdown
+  Shutdown,
 }
 
 export enum InputSignal {
   Normal = 1,
-  None
+  None,
 }
 
 export enum OutputSignal {
   Normal = 1,
-  None
+  None,
 }
 
 export enum PtpStatus {
   Locked = 1,
-  Unlocked
+  Unlocked,
 }
 
 export enum MirrorType {
   Container = 1,
-  Virtual
+  Virtual,
 }
 
 export enum UserRole {
   Admin = 1,
-  Normal = 2
+  Normal = 2,
 }
 
 export enum LayoutSize {
   FK = 1,
-  HD = 2
+  HD = 2,
 }
 
 export enum CLockDisplayType {
   Digital = 0,
-  LED = 1
+  LED = 1,
 }
 
 export enum DateDisplayType {
   Chinese = 0,
-  Hyphen = 1
+  Hyphen = 1,
 }
 
 export enum TallyType {

@@ -157,7 +157,7 @@ defineExpose({
     class="form-layout device-form"
   >
     <div class="form-outer">
-      <div class="form-header">
+      <div class="form-header is-h1">
         <div class="form-header-inner">
           <div class="left">
             <h3>设备参数</h3>

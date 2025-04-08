@@ -26,31 +26,10 @@
     }
   }
 
-  .tippy-select.multiselect {
-    .iconify {
-      font-size: 1rem;
-      margin-left: 24px;
-    }
-    .multiselect-options {
-      .multiselect-option {
-        & + .multiselect-option {
-          margin-top: 6px;
-        }
-
-        span[data-v-tippy] {
-          display: flex;
-          align-items: center;
-        }
-      }
-    }
-  }
-
-  .multiselect {
-    .multiselect-no-options {
-      padding-bottom: 28px;
-      text-align: center;
-      font-size: 0.875rem;
-    }
+  .multiselect-no-options {
+    padding-bottom: 28px;
+    text-align: center;
+    font-size: 0.875rem;
   }
 }
 
@@ -61,5 +40,29 @@
     [data-v-tippy]:not(:last-child) {
       margin-inline-end: 0.5rem;
     }
+  }
+}
+
+.tippy-select.multiselect {
+  .iconify {
+    font-size: 1rem;
+    margin-left: 24px;
+  }
+  .multiselect-options {
+    .multiselect-option {
+      & + .multiselect-option {
+        margin-top: 6px;
+      }
+
+      span[data-v-tippy] {
+        display: flex;
+        align-items: center;
+      }
+    }
+  }
+  .multiselect-no-options {
+    padding-bottom: 28px;
+    text-align: center;
+    font-size: 0.875rem;
   }
 }

@@ -110,7 +110,7 @@ defineExpose({
                   placeholder="选择应用类型"
                   value-prop="path"
                   label="name"
-                  :max-height="145"
+                  :style="{'--ms-max-height': '245px'}"
                   :options="templates"
                   @change="(val: any) => field?.setValue(val)"
                 >

@@ -25,7 +25,7 @@ defineProps<{
     :open-direction="openDirection"
     :can-deselect="false"
     :can-clear="false"
-    :max-height="90"
+    :style="{'--ms-max-height': '90px'}"
     :options="settings.mv_template_fonts"
   >
     <template #singlelabel="{ value }">

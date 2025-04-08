@@ -45,7 +45,7 @@ const audioMode = inject<Ref<number>>('switch_audio_mode')
                 placeholder="多画分布局模板"
                 value-prop="path"
                 label="name"
-                :max-height="145"
+                :style="{'--ms-max-height': '245px'}"
                 :options="templates"
               >
                 <template #singlelabel="{ value }">

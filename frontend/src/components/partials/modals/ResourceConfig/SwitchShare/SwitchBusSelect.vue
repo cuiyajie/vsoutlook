@@ -40,7 +40,7 @@ watch(() => props.type, () => {
     value-prop="bus_id"
     label="bus_name"
     :can-deselect="false"
-    :max-height="145"
+    :style="{'--ms-max-height': '245px'}"
     :no-options-text="`暂时没有配置${title}`"
     :options="options"
   >

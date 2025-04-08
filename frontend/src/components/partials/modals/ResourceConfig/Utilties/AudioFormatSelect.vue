@@ -45,7 +45,7 @@ watch<string>(() => mv.value, (nv, ov) => {
     value-prop="name"
     label="name"
     :can-deselect="false"
-    :max-height="145"
+    :style="{'--ms-max-height': '245px'}"
     no-options-text="没有可选择的音频格式"
     :options="filterAudioFormats"
   >

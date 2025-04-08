@@ -1,63 +1,19 @@
-import { type IndexedParmas } from '../Utilties/Consts_V1'
 import { checkPlayerParams, handlePlayerParams } from '../Utilties/Utils_V1'
-import {
-  type AuditAvTemplate,
-  type AuditAlarmRule,
-  type MVInputItemParam,
-  type MVOutputItemParam,
-} from './Consts'
+import { type MVInputItemParam, type MVOutputItemParam } from './Consts'
 
-export function techReview2AudioTmpl(techReviews: TechReview[]) {
-  const auditAvTemplates: AuditAvTemplate[] = []
-  const auditAlarmRuleMap: Record<string, AuditAlarmRule['av_alarm']> = {}
-  techReviews.forEach((techReview) => {
-    const tmpl = { name: techReview.name } as AuditAvTemplate
-    const alarm = {
-      audit_template_name: techReview.name,
-      video_alarm_priority: [],
-      audio_alarm_priority: [],
-      audio_mute_rule: {
-        condition_any: '',
-        condition_all: '',
-      },
-    } as AuditAlarmRule['av_alarm']
-    techReview.videoRules.forEach((rule, i) => {
-      const { key, ...rest } = rule
-      tmpl[key] = rest
-      alarm.video_alarm_priority.push({ priority: i + 1, itemname: rule.key })
-    })
-    techReview.audioRules.forEach((rule, i) => {
-      const { key, ...rest } = rule
-      tmpl[key] = rest
-      alarm.audio_alarm_priority.push({ priority: i + 1, itemname: rule.key })
-    })
-    alarm.audio_mute_rule.condition_any = techReview.condition_any
-    alarm.audio_mute_rule.condition_all = techReview.condition_all
-    auditAvTemplates.push(tmpl)
-    auditAlarmRuleMap[techReview.name] = alarm
-  })
-  return {
-    auditAvTemplates,
-    auditAlarmRuleMap,
-  }
+export function handleAuditAvTemplate(name: string, avTemplates: TechReview[]) {
+  const tmpl = avTemplates.find((tmpl) => tmpl.name === name)
+  if (!tmpl) return null
+  return tmpl
 }
 
-export function handleAuditAvTemplate(
+export function handleAuditAlarmRule(
   ruleName: string,
-  indexedRules: IndexedParmas<AuditAlarmRule>[],
-  avTemplates: ReturnType<typeof techReview2AudioTmpl>['auditAvTemplates']
+  auditAlarmRules: AuditAlarmRule[]
 ) {
-  const rule = indexedRules.find((rule) => rule.rule_name === ruleName)
+  const rule = auditAlarmRules.find((r) => r.rule_name === ruleName)
   if (!rule) return null
-  return (
-    avTemplates.find((tmpl) => tmpl.name === rule.av_alarm.audit_template_name) || null
-  )
-}
-
-export function handleAuditAlarmRule(rule: IndexedParmas<AuditAlarmRule>) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { index, ...rest } = rule
-  return rest
+  return rule
 }
 
 export function checkInputParam(

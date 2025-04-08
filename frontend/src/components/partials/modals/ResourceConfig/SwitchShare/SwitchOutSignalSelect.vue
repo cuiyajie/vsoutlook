@@ -73,7 +73,7 @@ function onSignalSelect(value: string) {
     value-prop="signal_id"
     label="signal_name"
     :can-deselect="false"
-    :max-height="145"
+    :style="{'--ms-max-height': '245px'}"
     :no-options-text="`暂时没有配置${title}`"
     :options="options"
     @select="onSignalSelect"

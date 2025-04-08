@@ -116,7 +116,7 @@ const selected = computed(() => mv.value.nicIndex !== -1)
                 :searchable="false"
                 :can-deselect="false"
                 :can-clear="false"
-                :max-height="145"
+                :style="{'--ms-max-height': '245px'}"
                 :options="nicDisplays"
                 @select="onNicSelect"
               >

@@ -8,6 +8,7 @@
       { label: '视频格式模板', value: 'videoFormat' },
       { label: '音频格式模板', value: 'audioFormat' },
       { label: '技审模板', value: 'techPreview' },
+      { label: '报警规则模板', value: 'auditAlarm' },
       { label: '音频映射模板', value: 'audioMapping' },
     ]"
   >
@@ -20,6 +21,9 @@
       </p>
       <p v-else-if="activeValue === 'techPreview'">
         <TechReviewList />
+      </p>
+      <p v-else-if="activeValue === 'auditAlarm'">
+        <AuditAlarmList />
       </p>
       <p v-else-if="activeValue === 'audioMapping'">
         <AudioMappingList />

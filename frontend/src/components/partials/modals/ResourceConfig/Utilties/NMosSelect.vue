@@ -34,7 +34,7 @@ watch(() => mv.value, (nv) => {
     :searchable="false"
     :can-deselect="false"
     :can-clear="false"
-    :max-height="145"
+    :style="{'--ms-max-height': '245px'}"
     :options="nmosNodes"
     @select="onNMosNodeSelect"
   >

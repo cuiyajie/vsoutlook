@@ -1,11 +1,17 @@
 <!-- eslint-disable vue/prop-name-casing -->
 <script setup lang="ts">
+import { useUserSession } from '@src/stores/userSession';
 import { type NMosConfigType } from './Consts'
 
 const mv = defineModel<NMosConfigType>({
   default: {} as NMosConfigType,
   local: true,
 })
+
+const usStore = useUserSession()
+watch(() => usStore.settings.rds_server_url, (nv) => {
+  mv.value.rds_server_url = nv || '未设置 RDS 服务地址'
+}, { immediate: true })
 </script>
 <template>
   <div class="form-fieldset">
@@ -14,7 +20,7 @@ const mv = defineModel<NMosConfigType>({
     </div>
 
     <div class="columns is-multiline">
-      <div class="column is-3">
+      <div class="column is-6">
         <VField>
           <VLabel>是否启用nmos</VLabel>
           <VControl>
@@ -22,11 +28,11 @@ const mv = defineModel<NMosConfigType>({
           </VControl>
         </VField>
       </div>
-      <div class="column is-9">
+      <div class="column is-6">
         <VField>
           <VLabel>RDS服务地址(含端口)</VLabel>
           <VControl>
-            <NMosSelect v-model="mv.rds_server_url" />
+            <VInput v-model="mv.rds_server_url" readonly />
           </VControl>
         </VField>
       </div>

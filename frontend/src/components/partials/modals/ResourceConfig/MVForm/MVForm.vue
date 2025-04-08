@@ -18,8 +18,8 @@ import mvData from '@src/data/vscomponent/mv.json'
 import { useUsedFormat } from '../Utilties/Composables';
 import { useUserSession } from "@src/stores/userSession"
 import { handleVideoFormat, handleAudioFormat, handleNicList, unwrap, wrap, handleApiParams, checkApiParams, checkPlayerParams, checkNicDetails } from '../Utilties/Utils_V1';
-import { def_mv_input_param, def_mv_output_param, type AuditAlarmRule, type MVInputItemParam, type MVOutputItemParam, def_api_params } from './Consts';
-import { checkInputParam, handleAuditAlarmRule, handleAuditAvTemplate, handleInputParams, handleOutputParams, techReview2AudioTmpl } from './Utils';
+import { def_mv_input_param, def_mv_output_param, type MVInputItemParam, type MVOutputItemParam, def_api_params } from './Consts';
+import { checkInputParam, handleAuditAlarmRule, handleAuditAvTemplate, handleInputParams, handleOutputParams } from './Utils';
 
 const props = defineProps<{
   name: string,
@@ -51,7 +51,8 @@ const advanceOpened = ref(false)
 const usStore = useUserSession()
 const videoFormats = computed(() => usStore.settings.video_formats || [])
 const audioFormats = computed(() => usStore.settings.audio_formats || [])
-const audits = computed(() => techReview2AudioTmpl(usStore.settings.tech_reviews || []));
+const avTemplates = computed(() => usStore.settings.tech_reviews || [])
+const auditAlarmRules = computed(() => usStore.settings.audit_alarm_rules || [])
 
 mv.value = pick(mvData, [
   'moudle',
@@ -126,18 +127,9 @@ watch(
   { immediate: true }
 )
 
-const auditAlarmRules = ref<AuditAlarmRule[]>([])
-const indexedAuditAlarmRules = computed(() => {
-  return auditAlarmRules.value
-    .filter(rule => rule.rule_name && rule.av_alarm.audit_template_name)
-    .map((rule, idx) => ({ ...rule, index: idx }))
-})
-function getAudioAlarmRule(ruleName: string) {
-  return indexedAuditAlarmRules.value.find(rule => rule.rule_name === ruleName)
-}
-
 const [videoFormatEnum, videoSelected, videoUnSelected] = useUsedFormat()
 const [audioFormatEnum, audioSelected, audioUnSelected] = useUsedFormat()
+const [avTmplEnum, avTmplSelected, avTmplUnSelected] = useUsedFormat()
 const [auditRuleEnum, auditRuleSelected, auditRuleUnSelected] = useUsedFormat()
 
 watchNmosName(() => props.name, mv)
@@ -148,10 +140,10 @@ function getValue() {
     api_params: handleApiParams(apiParams.value),
     videoformat_enum: videoFormatEnum.value.map(vfn => handleVideoFormat(vfn, videoFormats.value)).filter(v => v),
     audioformat_enum: audioFormatEnum.value.map(afn => handleAudioFormat(afn, audioFormats.value)).filter(a => a),
-    audit_av_template_enum: auditRuleEnum.value
-      .map(atn => handleAuditAvTemplate(atn, indexedAuditAlarmRules.value, audits.value.auditAvTemplates))
+    audit_av_template_enum: avTmplEnum.value
+      .map(tmpl => handleAuditAvTemplate(tmpl, avTemplates.value))
       .filter(a => a),
-    audit_alarm_rule_enum: indexedAuditAlarmRules.value.map(rule => handleAuditAlarmRule(rule)),
+    audit_alarm_rule_enum: auditRuleEnum.value.map(rule => handleAuditAlarmRule(rule, auditAlarmRules.value)),
     input: wrap({
       input_params: inputs.value.map((input, i) => handleInputParams(input.value, videoFormats.value, i))
     }, 'in_'),
@@ -188,11 +180,6 @@ function setValue(data: typeof mvData) {
   apiParams.value = checkApiParams(def_api_params(), data.api_params)
 
   nicDetails.value = checkNicDetails(data.nic_list, props.nics)
-
-  auditAlarmRules.value = data.audit_alarm_rule_enum.map((rule: any) => {
-    const parma = audits.value.auditAlarmRuleMap[rule.av_alarm.audit_template_name]
-    return parma ? rule : null
-  }).filter(a => a)
 
   const _ipData = unwrap(data.input, 'in_')
   nextTick(() => {
@@ -312,7 +299,6 @@ defineExpose({
         <expand-transition>
           <NicSection v-if="mv.used_signal_type !== 1" v-model="nicDetails" :nics="nics" />
         </expand-transition>
-        <AuditAlarmRuleSection v-model="indexedAuditAlarmRules" />
         <div class="form-outer">
           <div class="form-header">
             <div class="form-header-inner">
@@ -351,17 +337,34 @@ defineExpose({
           <div class="form-header">
             <div class="form-header-inner">
               <div class="left">
-                <h4>使用的技审报警规则列表</h4>
+                <h4>使用的技审模板列表</h4>
+              </div>
+            </div>
+          </div>
+          <div class="form-body">
+            <VTags v-if="avTmplEnum.length > 0" class="format-item-container">
+              <TechReviewTooltip v-for="tmpl in avTmplEnum" :key="tmpl" :name="tmpl">
+                <VTag color="orange" :label="tmpl" curved outlined />
+              </TechReviewTooltip>
+            </VTags>
+            <div v-else class="is-empty-list">暂时还没有选择技审模板</div>
+          </div>
+        </div>
+        <div class="form-outer">
+          <div class="form-header">
+            <div class="form-header-inner">
+              <div class="left">
+                <h4>使用的报警规则列表</h4>
               </div>
             </div>
           </div>
           <div class="form-body">
             <VTags v-if="auditRuleEnum.length > 0" class="format-item-container">
-              <AuditAvTemplateTooltip v-for="rule in auditRuleEnum" :key="rule" :name="getAudioAlarmRule(rule)?.av_alarm.audit_template_name || ''">
+              <AuditAlarmRuleTooltip v-for="rule in auditRuleEnum" :key="rule" :name="rule">
                 <VTag color="danger" :label="rule" curved outlined />
-              </AuditAvTemplateTooltip>
+              </AuditAlarmRuleTooltip>
             </VTags>
-            <div v-else class="is-empty-list">暂时还没有选择技审报警规则</div>
+            <div v-else class="is-empty-list">暂时还没有选择报警规则</div>
           </div>
         </div>
         <div class="form-outer">
@@ -380,7 +383,6 @@ defineExpose({
               :index="ipt.index"
               :is-last="idx === inputs.length - 1"
               :nics="indexedNicDetails"
-              :rules="indexedAuditAlarmRules"
               :used-signal-type="mv.used_signal_type"
               @video-selected="videoSelected"
               @video-unselected="videoUnSelected"
@@ -388,6 +390,8 @@ defineExpose({
               @audio-unselected="audioUnSelected"
               @audit-rule-selected="auditRuleSelected"
               @audit-rule-unselected="auditRuleUnSelected"
+              @av-tmpl-selected="avTmplSelected"
+              @av-tmpl-unselected="avTmplUnSelected"
             />
           </div>
         </div>
@@ -408,7 +412,6 @@ defineExpose({
               :index="otp.index"
               :is-last="idx === outputs.length - 1"
               :nics="indexedNicDetails"
-              :rules="indexedAuditAlarmRules"
               :used-signal-type="mv.used_signal_type"
               :pips-number="mv.input_number"
               @video-selected="videoSelected"

@@ -223,6 +223,7 @@ type Settings = {
   audio_formats: AudioFormat[]
   audio_mappings: AudioMapping[]
   tech_reviews: TechReview[]
+  audit_alarm_rules: AuditAlarmRule[]
 }
 
 type SettingAuthService = {
@@ -438,24 +439,48 @@ interface AudioMapping {
 }
 
 interface VideoReviewRule {
-  key: string
   threshold_percentage?: number
   duration_frames?: number
   duration_ms?: number
 }
 
 interface AudioReviewRule {
-  key: string
   detect_channels?: string
   duration_frames?: number
   duration_ms?: number
   threshold_dbfs?: number
 }
 
-interface TechReview {
+type TVideoRuleKey =
+  | 'video_black_frame'
+  | 'video_static_frame'
+  | 'video_yuv'
+  | 'video_lost'
+
+type TAudioRuleKey = 'audio_mute' | 'audio_high' | 'audio_low' | 'audio_lost'
+
+type TechReview = {
   name: string
-  videoRules: VideoReviewRule[]
-  audioRules: AudioReviewRule[]
-  condition_any: string
-  condition_all: string
+} & {
+  [key in TVideoRuleKey]: VideoReviewRule
+} & {
+  [key in TAudioRuleKey]: AudioReviewRule
+}
+
+interface AlarmPriority {
+  priority: number
+  itemname: string
+}
+
+interface AuditAlarmRule {
+  rule_name: string
+  av_alarm: {
+    audit_template_name: string
+    video_alarm_priority: AlarmPriority[]
+    audio_alarm_priority: AlarmPriority[]
+    audio_mute_rule: {
+      condition_any: string
+      condition_all: string
+    }
+  }
 }

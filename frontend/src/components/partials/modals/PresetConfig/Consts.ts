@@ -93,8 +93,6 @@ export const defVideoFormat = () => ({
   gop_length: 0,
 })
 
-export const defTechReview = () => ({})
-
 export const AudioBits = [16, 24, 32]
 export const DefaultAudioBit = 24
 
@@ -115,66 +113,87 @@ export const defAudioFormat = () => ({
   bitrate_bps: 128000,
 })
 
-export const VideoReviewKeys = [
+export const VideoReviewKeys: TVideoRuleKey[] = [
   'video_black_frame',
   'video_static_frame',
   'video_yuv',
   'video_lost',
 ]
-export const VideoReviewKeyName: Record<string, string> = {
+export const defVideoReviewKeys = () =>
+  VideoReviewKeys.reduce(
+    (acc, cur) => {
+      acc[cur] = false
+      return acc
+    },
+    {} as Record<TVideoRuleKey, boolean>
+  )
+export const VideoReviewKeyName: Record<TVideoRuleKey, string> = {
   video_black_frame: '黑场检测',
   video_static_frame: '静帧检测',
   video_yuv: 'YUV超标',
   video_lost: '视频丢失',
 }
 export const defVideoReviewRules: () => {
-  [key in (typeof VideoReviewKeys)[number]]: VideoReviewRule
+  [key in TVideoRuleKey]: VideoReviewRule
 } = () => ({
   video_black_frame: {
-    key: 'video_black_frame',
     threshold_percentage: 0.997,
     duration_frames: 1,
   },
   video_static_frame: {
-    key: 'video_static_frame',
     threshold_percentage: 0.996,
     duration_frames: 50,
   },
   video_yuv: {
-    key: 'video_yuv',
     threshold_percentage: 0.01,
     duration_frames: 150,
   },
-  video_lost: { key: 'video_lost', duration_ms: 100 },
+  video_lost: { duration_ms: 100 },
 })
 
-export const AudioReviewKeys = ['audio_mute', 'audio_high', 'audio_low', 'audio_lost']
-export const AudioReviewKeyName: Record<string, string> = {
+export const AudioReviewKeys: TAudioRuleKey[] = [
+  'audio_mute',
+  'audio_high',
+  'audio_low',
+  'audio_lost',
+]
+export const defAudioReviewKeys = () =>
+  AudioReviewKeys.reduce(
+    (acc, cur) => {
+      acc[cur] = false
+      return acc
+    },
+    {} as Record<TAudioRuleKey, boolean>
+  )
+export const AudioReviewKeyName: Record<TAudioRuleKey, string> = {
   audio_mute: '音频静音',
   audio_high: '音频过高',
   audio_low: '音频过低',
   audio_lost: '音频丢失',
 }
 export const defAudioReviewRules: () => {
-  [key in (typeof AudioReviewKeys)[number]]: AudioReviewRule
+  [key in TAudioRuleKey]: AudioReviewRule
 } = () => ({
   audio_mute: {
-    key: 'audio_mute',
     detect_channels: '1-5',
     duration_frames: 250,
   },
   audio_high: {
-    key: 'audio_high',
     detect_channels: '1-5',
     duration_frames: 100,
   },
   audio_low: {
-    key: 'audio_low',
     detect_channels: '1-5',
     duration_frames: 100,
     threshold_dbfs: -60,
   },
-  audio_lost: { key: 'audio_lost', duration_ms: 1000 },
+  audio_lost: { duration_ms: 1000 },
+})
+
+export const defTechReview = () => ({
+  name: '',
+  ...defVideoReviewRules(),
+  ...defAudioReviewRules(),
 })
 
 export const defAudioMapping = () => ({

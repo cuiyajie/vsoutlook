@@ -216,7 +216,7 @@ userStore.$fetchList();
           display: flex;
           justify-content: flex-end;
           align-items: center;
-          min-width: 145px;
+          min-width: 245px;
 
           > span {
             font-family: var(--font);
