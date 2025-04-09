@@ -85,6 +85,30 @@ export const draftVol = (w: number, h: number, bound: LayoutDimension): LayoutVo
   }
 }
 
+export const reDraftVol = (
+  vol: LayoutVol,
+  len: number,
+  w: number,
+  h: number,
+  bound: LayoutDimension
+): LayoutVol => {
+  const { h: bh } = bound
+  const rh = h / bh
+  const sh = rh / (len > 2 ? 2 : 1)
+  const draft = draftVol(w, h, bound)
+  return {
+    ...draft,
+    ...vol,
+    len,
+    vols: draft.vols.map((d, i) => ({
+      ...d,
+      ...(vol.vols[i] || {}),
+      y: i < 2 ? 0 : rh - sh,
+      h: sh,
+    })),
+  }
+}
+
 export const defaultTitleColor = {
   Text: 'rgba(200, 200, 200, 1.0)',
   Bg: 'rgba(100, 100, 100, 0.5)',

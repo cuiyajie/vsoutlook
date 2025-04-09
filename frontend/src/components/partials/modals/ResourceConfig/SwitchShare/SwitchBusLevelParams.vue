@@ -20,10 +20,6 @@ const props = defineProps<{
 
 const nics = inject<IndexedNicDetail[]>('switch_nics', [])
 
-const emit = defineEmits<{
-  (e: 'remove'): void
-}>()
-
 const busSignalTypes = computed(() => {
   return bus_signal_types.filter(bst => bst.value === 'video' || (bst.value === 'bus_output' && props.level === 2))
 })
@@ -34,7 +30,7 @@ watch(() => mv.value.bus_input_number, (nv) => {
     mv.value.bus_input = mv.value.bus_input.slice(0, nv)
   } else if (nv > len) {
     mv.value.bus_input = mv.value.bus_input.concat(
-      Array.from({ length: nv - len }, (_, i) => def_switch_bus_level_input_params(i))
+      Array.from({ length: nv - len }, (_, i) => def_switch_bus_level_input_params(i + len))
     )
   }
 }, { immediate: true })
@@ -71,19 +67,8 @@ const opened = ref(false)
       @click.prevent="opened = !opened"
     >
       <h4>第 {{ index + 1 }} 级输出总线&nbsp;&nbsp;索引: {{ index }}</h4>
-      <div class="collapse-icons">
-        <div
-          class="collapse-icon is-close-hidden"
-          role="button"
-          tabindex="0"
-          @click.prevent.stop="emit('remove')"
-          @keydown.space.prevent.stop="emit('remove')"
-        >
-          <VIcon icon="feather:x" />
-        </div>
-        <div class="collapse-icon">
-          <VIcon icon="feather:chevron-down" />
-        </div>
+      <div class="collapse-icon">
+        <VIcon icon="feather:chevron-down" />
       </div>
     </div>
     <expand-transition>
@@ -110,68 +95,70 @@ const opened = ref(false)
               </VField>
             </div>
           </div>
-          <div
-            v-for="(bipt, bidx) in mv.bus_input"
-            :key="bidx"
-            :class="{
-              'form-fieldset-nested-4': bidx === 0,
-              'form-fieldset-nested-5': bidx !== 0
-            }"
-          >
-            <div class="fieldset-heading is-nested">
-              <h5>第{{ bidx + 1 }}路输入信号&nbsp;&nbsp;索引: {{ bidx }}</h5>
+          <transition-group name="list">
+            <div
+              v-for="(bipt, bidx) in mv.bus_input"
+              :key="bidx"
+              :class="{
+                'form-fieldset-nested-4': bidx === 0,
+                'form-fieldset-nested-5': bidx !== 0
+              }"
+            >
+              <div class="fieldset-heading is-nested">
+                <h5>第{{ bidx + 1 }}路输入信号&nbsp;&nbsp;索引: {{ bidx }}</h5>
+              </div>
+              <div class="columns is-multiline" style="padding-left: 16px;">
+                <div class="column is-6">
+                  <VField>
+                    <VLabel>切换台输入序号</VLabel>
+                    <VControl>
+                      <VInput v-model="bipt.input_index" readonly centered />
+                    </VControl>
+                  </VField>
+                </div>
+                <div class="column is-6">
+                  <VField>
+                    <VLabel>信号类型</VLabel>
+                    <VControl>
+                      <VSelect v-model="bipt.signal_type" class="is-rounded">
+                        <VOption
+                          v-for="bst in busSignalTypes"
+                          :key="bst.value"
+                          :value="bst.value"
+                        >
+                          {{ bst.label }}
+                        </VOption>
+                      </VSelect>
+                    </VControl>
+                  </VField>
+                </div>
+                <div class="column is-6">
+                  <VField>
+                    <VLabel>输入信号源名称</VLabel>
+                    <VControl>
+                      <SwitchInputSignalSelect
+                        v-model:id="bipt.signal_id"
+                        v-model:name="bipt.signal_name"
+                        :title="bus_signal_types_map.get(bipt.signal_type)?.label || '输入信号源名称'"
+                        :type="bipt.signal_type"
+                        :input-keys="inputKeys"
+                        :input-videos="inputVideos"
+                        :bus-levels="busLevels"
+                      />
+                    </VControl>
+                  </VField>
+                </div>
+                <div class="column is-6">
+                  <VField>
+                    <VLabel>输入信号源ID</VLabel>
+                    <VControl>
+                      <VLabel class="is-static">{{ bipt.signal_id || '未配置' }}</VLabel>
+                    </VControl>
+                  </VField>
+                </div>
+              </div>
             </div>
-            <div class="columns is-multiline" style="padding-left: 16px;">
-              <div class="column is-6">
-                <VField>
-                  <VLabel>切换台输入序号</VLabel>
-                  <VControl>
-                    <VInput v-model="bipt.input_index" readonly centered />
-                  </VControl>
-                </VField>
-              </div>
-              <div class="column is-6">
-                <VField>
-                  <VLabel>信号类型</VLabel>
-                  <VControl>
-                    <VSelect v-model="bipt.signal_type" class="is-rounded">
-                      <VOption
-                        v-for="bst in busSignalTypes"
-                        :key="bst.value"
-                        :value="bst.value"
-                      >
-                        {{ bst.label }}
-                      </VOption>
-                    </VSelect>
-                  </VControl>
-                </VField>
-              </div>
-              <div class="column is-6">
-                <VField>
-                  <VLabel>输入信号源名称</VLabel>
-                  <VControl>
-                    <SwitchInputSignalSelect
-                      v-model:id="bipt.signal_id"
-                      v-model:name="bipt.signal_name"
-                      :title="bus_signal_types_map.get(bipt.signal_type)?.label || '输入信号源名称'"
-                      :type="bipt.signal_type"
-                      :input-keys="inputKeys"
-                      :input-videos="inputVideos"
-                      :bus-levels="busLevels"
-                    />
-                  </VControl>
-                </VField>
-              </div>
-              <div class="column is-6">
-                <VField>
-                  <VLabel>输入信号源ID</VLabel>
-                  <VControl>
-                    <VLabel class="is-static">{{ bipt.signal_id || '未配置' }}</VLabel>
-                  </VControl>
-                </VField>
-              </div>
-            </div>
-          </div>
+          </transition-group>
         </div>
         <div class="form-fieldset-nested-3 seperator" style="margin-bottom: 30px;">
           <div class="fieldset-heading flex-between">

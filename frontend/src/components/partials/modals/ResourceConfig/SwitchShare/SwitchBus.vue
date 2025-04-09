@@ -7,6 +7,7 @@ import {
   type SwitchInputKeyParams,
   type SwitchInputVideoParams
 } from './Consts'
+import { merge } from 'lodash-es'
 
 const mv = defineModel<SwitchBus>({
   default: {} as SwitchBus,
@@ -36,6 +37,13 @@ const levelParams = computed({
   set: (value) => mv.value.level_bus = value
 })
 
+watch(() => props.level, () => {
+  levelParams.value = Array.from({ length: props.level }, (_, i) => merge(
+    def_switch_bus_level_params(i, i),
+    (levelParams.value[i] || {}),
+  ))
+}, { immediate: true })
+
 function addKeyParam() {
   keyParams.value.push(def_switch_bus_key_params(keyParams.value.length))
 }
@@ -50,14 +58,6 @@ function addMeParam() {
 
 function removeMeParam(idx: number) {
   meParams.value.splice(idx, 1)
-}
-
-function addLevelParam() {
-  levelParams.value.push(def_switch_bus_level_params(levelParams.value.length, props.level))
-}
-
-function removeLevelParam(idx: number) {
-  levelParams.value.splice(idx, 1)
 }
 
 </script>
@@ -133,15 +133,6 @@ function removeLevelParam(idx: number) {
         <div class="left">
           <h4>切换台级输出总线设置 {{ levelParams.length > 0 ? `- ${levelParams.length} 级` : '' }}</h4>
         </div>
-        <button
-          class="button is-circle is-dark-outlined"
-          @keydown.space.prevent="addLevelParam"
-          @click.prevent="addLevelParam"
-        >
-          <span class="icon is-small">
-            <i aria-hidden="true" class="iconify" data-icon="feather:plus" />
-          </span>
-        </button>
       </div>
     </div>
     <div class="form-body">
@@ -158,7 +149,6 @@ function removeLevelParam(idx: number) {
           :bus-keys="keyParams"
           :bus-mes="meParams"
           :bus-levels="levelParams"
-          @remove="removeLevelParam(levelidx)"
         />
       </TransitionGroup>
       <div v-if="levelParams.length === 0" class="is-empty-list">暂时还没有配置切换台级输出总线</div>

@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 
+
 const props = defineProps<{
   modelValue: LayoutVol,
   base: LayoutDimension
@@ -7,6 +8,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'update:model-value', value: LayoutVol): void,
+  (e: 'relayout', value: number): void,
 }>()
 
 const vols = computed<LayoutSingleVol[]>({
@@ -28,6 +30,13 @@ const updateVol = (idx: number, vol: LayoutSingleVol) => {
   vols.value = vols.value.map((v, i) => i === idx ? vol : v)
 }
 
+const onRadioChange = (e: Event, value: number) => {
+  const target = e.target as HTMLInputElement
+  if (target.checked) {
+    emit('relayout', value)
+  }
+}
+
 </script>
 <template>
   <div class="layout-form">
@@ -35,7 +44,7 @@ const updateVol = (idx: number, vol: LayoutSingleVol) => {
       <div>音柱显示区域</div>
       <div class="layout-row-inner">
         <div v-for="(_, idx) in new Array(4).fill(0)" :key="idx" class="layout-cell">
-          <VRadio v-model="len" :value="idx + 1" :label="String(idx + 1)" name="len" color="primary" />
+          <VRadio v-model="len" :value="idx + 1" :label="String(idx + 1)" name="len" color="primary" @change="onRadioChange($event, idx + 1)" />
         </div>
       </div>
     </section>

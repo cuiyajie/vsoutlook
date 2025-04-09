@@ -1,9 +1,12 @@
 <script lang="ts" setup>
+import { reDraftVol } from '@src/components/pages/app/MtvLayouts/utils';
+
 
 const props = defineProps<{
   modelValue: LayoutDataItem,
   type: LayoutProps | null,
   base: LayoutDimension
+  bound: LayoutDimension
 }>()
 
 const emit = defineEmits<{
@@ -16,6 +19,15 @@ const ac = computed({
   get: () => props.type ? props.modelValue[props.type] : null,
   set: (v: LayoutDataItem[LayoutProps]) => props.type && emit('update:model-value', { ...props.modelValue, [props.type]: v })
 })
+
+const relayoutVol = (len: number) => {
+  const { vol, win } = props.modelValue
+  if (!vol || !win) return
+  emit('update:model-value', {
+    ...props.modelValue,
+    vol: reDraftVol(vol, len, win.w * props.bound.w, win.h * props.bound.h, props.bound)
+  })
+}
 
 </script>
 <template>
@@ -43,7 +55,7 @@ const ac = computed({
     <template v-if="ac">
       <border-setting v-if="type === 'win'" v-model="ac" :base="base" />
       <title-setting v-if="type === 'title'" v-model="ac" :base="base" />
-      <vol-setting v-if="type === 'vol'" v-model="ac" :base="base" />
+      <vol-setting v-if="type === 'vol'" v-model="ac" :base="base" :bound="bound" @relayout="relayoutVol($event)" />
       <vector-setting v-if="type === 'vector'" v-model="ac" :base="base" />
       <oscillogram-setting v-if="type === 'oscillogram'" v-model="ac" :base="base" />
       <meta-setting v-if="type === 'meta'" v-model="ac" :base="base" />

@@ -191,7 +191,7 @@ function onClose() {
         </div>
         <div class="lc-divider" />
         <div class="lc-setting is-scrollable" data-role="LayoutSetting">
-          <layout-cell-setting v-if="data" v-model="data" :type="activeType" :base="base" @reset="resetCell" @delete="deleteCell" />
+          <layout-cell-setting v-if="data" v-model="data" :type="activeType" :base="base" :bound="bounding" @reset="resetCell" @delete="deleteCell" />
         </div>
       </div>
     </template>

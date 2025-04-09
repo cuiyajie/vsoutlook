@@ -14,6 +14,10 @@ export interface VRadioProps {
   paddingless?: boolean
 }
 
+export interface VRadioEmits {
+  (e: 'change', payload: Event): void
+}
+
 const modelValue = defineModel<any>({
   default: undefined,
   local: true,
@@ -26,6 +30,7 @@ const props = withDefaults(defineProps<VRadioProps>(), {
   name: undefined,
   paddingless: false,
 })
+const emit = defineEmits<VRadioEmits>()
 
 const { field, id } = useVFieldContext({
   id: props.id,
@@ -67,6 +72,7 @@ const internal = computed({
       :value="props.value"
       :name="props.name"
       v-bind="$attrs"
+      @change="emit('change', $event)"
     >
     <span />
     <slot v-bind="{ field, id }">
