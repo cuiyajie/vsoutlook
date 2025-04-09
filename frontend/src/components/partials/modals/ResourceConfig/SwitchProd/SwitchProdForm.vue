@@ -139,7 +139,7 @@ function setValue(data: typeof makeswtData) {
   ])
   apiParams.value = checkApiParams(def_api_params(), data.api_params)
   nicDetails.value = checkNicDetails(data.nic_list, props.nics)
-  const _data = checkSwitchData(data, videoFormats.value, audioFormats.value)
+  const _data = checkSwitchData(data, videoFormats.value, audioFormats.value, audioMappings.value)
   tally.value = _data.tally
   panel.value = _data.panel
   input.value = _data.input

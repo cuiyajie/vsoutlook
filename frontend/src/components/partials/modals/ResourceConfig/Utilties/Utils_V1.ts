@@ -1,3 +1,4 @@
+import isInteger from '@src/utils/is-integer'
 import { type PlayerParams, type IndexedNicDetail, type IApiParams } from './Consts_V1'
 import { omit } from 'lodash'
 
@@ -28,6 +29,11 @@ export function handleVideoFormat(name: string, vfs: VideoFormat[]) {
   const vf = vfs.find((v) => v.name === name)
   if (!vf) return null
   const cloned = { ...vf } as Partial<VideoFormat>
+  if (cloned.fps) {
+    if (cloned.interlaced) {
+      cloned.fps = cloned.fps / 2
+    }
+  }
   if (!cloned.compression_subtype) {
     delete cloned.compression_subtype
   }
@@ -84,11 +90,7 @@ export function handleAudioMapping(name: string, afs: AudioMapping[]) {
 }
 
 export function handleNicList(nics: IndexedNicDetail[]) {
-  return nics.map((nic) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { index, ...rest } = nic
-    return rest
-  })
+  return nics
 }
 
 export function checkPlayerParams(params: any, vfs: VideoFormat[], afs: AudioFormat[]) {

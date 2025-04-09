@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math"
 	"sort"
 	"strings"
 	"time"
@@ -238,6 +239,23 @@ func preInstallation(c *svcinfra.Context, configStr string, tmpl *models.Tmpl, n
 			}
 			coreListStr = utils.FormatUint32Array(utils.MergeMapArrays(coreMap))
 			dmaListStr = strings.Join(utils.MergeMapArrays(dmaMap), ",")
+		}
+	}
+
+	if _, ok := configFile["videoformat_enum"]; ok {
+		vfs, ok := configFile["videoformat_enum"].([]interface{})
+		if ok {
+			for _, vf := range vfs {
+				if vfm, ok := vf.(map[string]interface{}); ok {
+					if _, ok := vfm["fps"]; ok {
+						if fps, ok := vfm["fps"].(float64); ok {
+							if math.Trunc(fps) == fps {
+								vfm["fps"] = fmt.Sprintf("%.1f", fps)
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 

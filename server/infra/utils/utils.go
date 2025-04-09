@@ -220,3 +220,20 @@ func FormatUint32Array(arr []uint32) string {
 	// 3. 用 "," 连接所有 chunk
 	return strings.Join(chunks, ",")
 }
+
+func ConvertToIntToFloat64(value interface{}) (float64, bool) {
+	switch v := value.(type) {
+	case int:
+		return float64(v), true
+	case int8:
+		return float64(v), true
+	case int16:
+		return float64(v), true
+	case int32:
+		return float64(v), true
+	case int64:
+		return float64(v), true
+	default:
+		return 0.0, false
+	}
+}
