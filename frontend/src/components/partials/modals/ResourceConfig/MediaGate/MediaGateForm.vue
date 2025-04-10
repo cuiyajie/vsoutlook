@@ -7,7 +7,6 @@ import {
 } from '../Utilties/Consts'
 import {
   used_signal_types,
-  type NicDetail,
 } from '../Utilties/Consts_V1'
 import {
   def_mg_player_params,
@@ -21,10 +20,12 @@ import { useUsedFormat } from '../Utilties/Composables';
 import { useUserSession } from "@src/stores/userSession"
 import { handleVideoFormat, handleAudioFormat, handleNicList, wrap, unwrap, checkPlayerParams, checkNicDetails } from '../Utilties/Utils_V1';
 import { handleInputParams, handleOutputParams } from "./Utils"
+import { useNicList } from '../Utilties/Composable'
 
 const props = defineProps<{
   name: string,
-  nics: NicInfo[]
+  nics: NicInfo[],
+  requiredment?: TmplRequirement
 }>()
 
 const mv = defineModel<{
@@ -58,12 +59,7 @@ mv.value = pick(mgData, [
   'authorization_service',
 ])
 
-const nicDetails = ref<NicDetail[]>([])
-const indexedNicDetails = computed(() => {
-  return nicDetails.value
-    .filter(nic => nic.nicIndex >= 0)
-    .map((nic, idx) => ({ ...nic, index: idx }))
-})
+const { nicDetails, indexedNicDetails } = useNicList(props)
 
 const inputParams = ref(def_mg_player_params())
 const outputParams = ref(Array.from({ length: 2 }, () => {

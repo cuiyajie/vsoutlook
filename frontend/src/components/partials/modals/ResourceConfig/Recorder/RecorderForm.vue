@@ -19,11 +19,13 @@ import { useUsedFormat } from '../Utilties/Composables';
 import { useUserSession } from "@src/stores/userSession"
 import { handleVideoFormat, handleAudioFormat, handlePlayerParams, handleNicList, unwrap, wrap, checkPlayerParams, handleApiParams, checkApiParams, checkNicDetails } from '../Utilties/Utils_V1';
 import { def_api_params } from './Consts';
+import { useNicList } from '../Utilties/Composable';
 
 
 const props = defineProps<{
   name: string,
   nics: NicInfo[]
+  requiredment?: TmplRequirement
 }>()
 
 const mv = defineModel<{
@@ -60,12 +62,7 @@ mv.value = pick(rcData, [
   'recoder_params'
 ])
 
-const nicDetails = ref<NicDetail[]>([])
-const indexedNicDetails = computed(() => {
-  return nicDetails.value
-    .filter(nic => nic.nicIndex >= 0)
-    .map((nic, idx) => ({ ...nic, index: idx }))
-})
+const { nicDetails, indexedNicDetails } = useNicList(props)
 
 const apiParams = ref<IApiParams[]>(def_api_params())
 const playerParams = ref(def_player_params())

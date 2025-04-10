@@ -30,16 +30,15 @@ const modelValue = defineModel<TmplRequirement & { description: string }>({
   local: true,
 });
 
-const fullNicConfig = ref<TmplNicConfig[]>(Array(4).fill(1).map(() => ({ dpdkCpu: 1, dma: 1 })));
-
-watch(() => modelValue.value.nicConfig, (nv) => {
-  nv.forEach((v, i) => {
-    Object.assign(fullNicConfig.value[i], v);
-  });
-}, { immediate: true });
-
 const onNicCountChange = (e: Event) => {
-  modelValue.value.nicConfig = fullNicConfig.value.slice(0, +(e.target as HTMLSelectElement).value);
+  const len = +(e.target as HTMLSelectElement).value;
+  if (len > modelValue.value.nicConfig.length) {
+    modelValue.value.nicConfig = modelValue.value.nicConfig.concat(
+      Array.from({ length: len - modelValue.value.nicConfig.length }, () => ({ dpdkCpu: 1, dma: 1 }))
+    );
+  } else {
+    modelValue.value.nicConfig = modelValue.value.nicConfig.slice(0, len);
+  }
 };
 
 const opened = ref(false);
@@ -168,7 +167,7 @@ const opened = ref(false);
               </VField>
             </div>
             <div class="column is-8" />
-            <template v-for="(config, cidx) in fullNicConfig.slice(0, modelValue.nicCount)" :key="cidx">
+            <template v-for="(config, cidx) in modelValue.nicConfig" :key="cidx">
               <div class="column is-2">
                 <VField>
                   <VLabel>序号</VLabel>

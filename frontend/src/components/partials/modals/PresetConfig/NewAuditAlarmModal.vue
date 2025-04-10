@@ -161,7 +161,7 @@ useListener(Signal.OpenNewAuditAlarm, (payload: { _callback?: any; index?: numbe
     title="报警规则模版"
     actions="right"
     cancel-label="取消"
-    dialog-class="preset-modal audit-alarm-modal"
+    dialog-class="preset-modal audit-alarm-modal is-overflow-visible"
     @submit.prevent="handleCommit"
     @close="opened = false"
   >
@@ -387,11 +387,6 @@ useListener(Signal.OpenNewAuditAlarm, (payload: { _callback?: any; index?: numbe
 @import "@src/scss/abstracts/all";
 
 .modal.preset-modal.audit-alarm-modal {
-  .modal-content,
-  .modal-card,
-  .modal-card-body {
-    overflow: auto;
-  }
 }
 
 .modal-form.review-form {

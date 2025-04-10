@@ -108,6 +108,7 @@ const selected = computed(() => mv.value.nicIndex !== -1)
             <VControl>
               <Multiselect
                 ref="selectRef"
+                v-model="mv.id"
                 class="tippy-select"
                 placeholder="选择网卡"
                 no-options-text="该节点没有配置网卡"

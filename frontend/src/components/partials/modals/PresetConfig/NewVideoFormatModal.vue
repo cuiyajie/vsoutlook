@@ -15,7 +15,7 @@ import {
   defaultFpsStr,
 } from './Consts'
 import { useUserSession } from '@src/stores/userSession'
-import { parseFps, stringifyFps } from './Utils'
+import { handleVideoForm, parseFps, stringifyFps } from './Utils'
 
 type VideoFormatForm = VideoFormat & { fpsStr: string };
 
@@ -48,18 +48,21 @@ const zodSchema = z.object({
   fpsStr: z.string().refine((value) => VideoFormatFpsList.includes(value), { message: '请选择视频帧率' }),
   gamma: z.string({ required_error: '请选择视频伽马' }),
   gamut: z.string({ required_error: '请选择视频色域' }),
-  compression_format: z.string({ required_error: '请选择压缩格式' }),
-  compression_subtype: z.string(),
-  compression_ratio: z.string(),
+  compression_format: z.string().optional(),
+  compression_subtype: z.string().optional(),
+  compression_ratio: z.string().optional(),
   bitrate_bps: z
     .number({ required_error: '请输入视频码率' })
-    .int(),
+    .int()
+    .optional(),
   gop_b_frames: z
-    .number({ required_error: '请输入B帧数量', invalid_type_error: '请输入B帧数量' })
-    .int(),
+    .number({ invalid_type_error: '请输入B帧数量' })
+    .int()
+    .optional(),
   gop_length: z
-    .number({ required_error: '请输入GOP长度', invalid_type_error: '请输入GOP长度' })
-    .int(),
+    .number({ invalid_type_error: '请输入GOP长度' })
+    .int()
+    .optional(),
 })
 const validationSchema = toTypedSchema(zodSchema)
 const { handleSubmit, setFieldValue } = useForm({ validationSchema })
@@ -70,13 +73,12 @@ const handleCommit = handleSubmit(async () => {
 
   loading.value = true
   let value: string
+  const formValue = handleVideoForm(form.value) as VideoFormat
   if (indexRef.value < 0) {
-    value = JSON.stringify([form.value, ...videoFormats.value])
+    value = JSON.stringify([formValue, ...videoFormats.value])
   } else {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { fpsStr, ...rest } = form.value
     const formats = videoFormats.value
-    formats[indexRef.value] = rest
+    formats[indexRef.value] = formValue
     value = JSON.stringify(formats)
   }
   const res = await usStore.$updateSettings({ key: 'video_formats', value })
@@ -115,8 +117,10 @@ useListener(Signal.OpenNewVideoFormat, (payload: { _callback?: any; index?: numb
   } else {
     const v = videoFormats.value[indexRef.value]
     form.value = {
+      ...defVideoFormat(),
       ...v,
       fpsStr: stringifyFps(v.fps, v.interlaced),
+      compression_subtype: v.compression_subtype === '' ? '无' : v.compression_subtype,
     }
   }
 
@@ -248,89 +252,101 @@ useListener(Signal.OpenNewVideoFormat, (payload: { _callback?: any; index?: numb
               </VControl>
             </VField>
           </div>
-          <div class="column is-4">
-            <VField id="compression_format" v-slot="{ field }">
-              <VLabel>压缩格式</VLabel>
-              <VControl>
-                <Multiselect
-                  v-model="form.compression_format"
-                  :options="VideoCompressionFormats"
-                  placeholder="选择压缩格式"
-                  @change="(val: any) => field?.setValue(val)"
-                />
-                <p v-if="field?.errorMessage" class="help is-danger">
-                  {{ field.errorMessage }}
-                </p>
-              </VControl>
-            </VField>
-          </div>
-          <div class="column is-4">
-            <VField id="compression_format" v-slot="{ field }">
-              <VLabel>压缩子类型</VLabel>
-              <VControl>
-                <Multiselect
-                  v-model="form.compression_subtype"
-                  :options="VideoCompressionSubtypes"
-                  placeholder="选择压缩子类型"
-                  @change="(val: any) => field?.setValue(val)"
-                />
-                <p v-if="field?.errorMessage" class="help is-danger">
-                  {{ field.errorMessage }}
-                </p>
-              </VControl>
-            </VField>
-          </div>
-          <div class="column is-4">
-            <VField id="compression_format" v-slot="{ field }">
-              <VLabel>压缩比</VLabel>
-              <VControl>
-                <Multiselect
-                  v-model="form.compression_ratio"
-                  :options="VideoCompressionRatios"
-                  placeholder="选择压缩比"
-                  @change="(val: any) => field?.setValue(val)"
-                />
-                <p v-if="field?.errorMessage" class="help is-danger">
-                  {{ field.errorMessage }}
-                </p>
-              </VControl>
-            </VField>
-          </div>
-          <div class="column is-4">
-            <VField id="bitrate_bps" v-slot="{ field }" label="视频码率" addons class="is-input-number">
-              <VControl expanded>
-                <VInputNumber v-model="form.bitrate_bps" centered :min="0" :step="1" />
-                <p v-if="field?.errorMessage" class="help is-danger">
-                  {{ field.errorMessage }}
-                </p>
-              </VControl>
-              <VControl>
-                <VButton static>bps</VButton>
-              </VControl>
-            </VField>
-          </div>
-          <div class="column is-4">
-            <VField id="gop_b_frames" v-slot="{ field }">
-              <VLabel>B帧数量</VLabel>
-              <VControl>
-                <VInputNumber v-model="form.gop_b_frames" centered :min="0" :step="1" />
-                <p v-if="field?.errorMessage" class="help is-danger">
-                  {{ field.errorMessage }}
-                </p>
-              </VControl>
-            </VField>
-          </div>
-          <div class="column is-4">
-            <VField id="gop_length" v-slot="{ field }">
-              <VLabel>GOP长度</VLabel>
-              <VControl>
-                <VInputNumber v-model="form.gop_length" centered :min="0" :step="1" />
-                <p v-if="field?.errorMessage" class="help is-danger">
-                  {{ field.errorMessage }}
-                </p>
-              </VControl>
-            </VField>
-          </div>
+          <expand-transition>
+            <div v-if="form.protocol !== 'st2110-20'" class="column is-4">
+              <VField id="compression_format" v-slot="{ field }">
+                <VLabel>压缩格式</VLabel>
+                <VControl>
+                  <Multiselect
+                    v-model="form.compression_format"
+                    :options="VideoCompressionFormats"
+                    placeholder="选择压缩格式"
+                    @change="(val: any) => field?.setValue(val)"
+                  />
+                  <p v-if="field?.errorMessage" class="help is-danger">
+                    {{ field.errorMessage }}
+                  </p>
+                </VControl>
+              </VField>
+            </div>
+          </expand-transition>
+          <expand-transition>
+            <div v-if="!['st2110-20','st2110-22'].includes(form.protocol)" class="column is-4">
+              <VField id="compression_format" v-slot="{ field }">
+                <VLabel>压缩子类型</VLabel>
+                <VControl>
+                  <Multiselect
+                    v-model="form.compression_subtype"
+                    :options="VideoCompressionSubtypes"
+                    placeholder="选择压缩子类型"
+                    @change="(val: any) => field?.setValue(val)"
+                  />
+                  <p v-if="field?.errorMessage" class="help is-danger">
+                    {{ field.errorMessage }}
+                  </p>
+                </VControl>
+              </VField>
+            </div>
+          </expand-transition>
+          <expand-transition>
+            <div v-if="form.protocol === 'st2110-22'" class="column is-4">
+              <VField id="compression_format" v-slot="{ field }">
+                <VLabel>压缩比</VLabel>
+                <VControl>
+                  <Multiselect
+                    v-model="form.compression_ratio"
+                    :options="VideoCompressionRatios"
+                    placeholder="选择压缩比"
+                    @change="(val: any) => field?.setValue(val)"
+                  />
+                  <p v-if="field?.errorMessage" class="help is-danger">
+                    {{ field.errorMessage }}
+                  </p>
+                </VControl>
+              </VField>
+            </div>
+          </expand-transition>
+          <expand-transition>
+            <div v-if="!['st2110-20','st2110-22'].includes(form.protocol)" class="column is-4">
+              <VField id="bitrate_bps" v-slot="{ field }" label="视频码率" addons class="is-input-number">
+                <VControl expanded>
+                  <VInputNumber v-model="form.bitrate_bps" centered :min="0" :step="1" />
+                  <p v-if="field?.errorMessage" class="help is-danger">
+                    {{ field.errorMessage }}
+                  </p>
+                </VControl>
+                <VControl>
+                  <VButton static>bps</VButton>
+                </VControl>
+              </VField>
+            </div>
+          </expand-transition>
+          <expand-transition>
+            <div v-if="!['st2110-20','st2110-22'].includes(form.protocol)" class="column is-4">
+              <VField id="gop_b_frames" v-slot="{ field }">
+                <VLabel>B帧数量</VLabel>
+                <VControl>
+                  <VInputNumber v-model="form.gop_b_frames" centered :min="0" :step="1" />
+                  <p v-if="field?.errorMessage" class="help is-danger">
+                    {{ field.errorMessage }}
+                  </p>
+                </VControl>
+              </VField>
+            </div>
+          </expand-transition>
+          <expand-transition>
+            <div v-if="!['st2110-20','st2110-22'].includes(form.protocol)" class="column is-4">
+              <VField id="gop_length" v-slot="{ field }">
+                <VLabel>GOP长度</VLabel>
+                <VControl>
+                  <VInputNumber v-model="form.gop_length" centered :min="0" :step="1" />
+                  <p v-if="field?.errorMessage" class="help is-danger">
+                    {{ field.errorMessage }}
+                  </p>
+                </VControl>
+              </VField>
+            </div>
+          </expand-transition>
         </div>
       </div>
     </template>

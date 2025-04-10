@@ -59,6 +59,7 @@ export const VideoCompressionFormats = [
 export const DefaultVideoCompressionFormat = 'jpeg-xs'
 
 export const VideoCompressionSubtypes = [
+  '无',
   'high',
   'base',
   'main',
@@ -102,11 +103,14 @@ export const DefaultAudioCompressionFormat = 'pcm'
 export const AudioPacketTimeUs = [125, 1000]
 export const DefaultAudioPacketTimeUs = 125
 
+export const AudioFrequencies = [48000]
+export const DefaultAudioFrequency = 48000
+
 export const defAudioFormat = () => ({
   name: '',
   channels_number: 8,
   bits: DefaultAudioBit,
-  frequency: 48000,
+  frequency: DefaultAudioFrequency,
   compression_format: DefaultAudioCompressionFormat,
   compression_subtype: '',
   packet_time_us: DefaultAudioPacketTimeUs,

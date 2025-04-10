@@ -36,11 +36,11 @@ const zodSchema = z.object({
   receiveBackup: z.boolean().optional(),
   sendBackup: z.boolean().optional(),
   coreList: z
-    .string({ required_error: "请输入隔离核心数" })
-    .nonempty("请输入隔离核心数")
+    .string({ required_error: "请输入隔离核心列表" })
+    .nonempty("请输入隔离核心列表")
     .refine(
       (val) => /^(\d+|(\d+-\d+))(,(\d+|(\d+-\d+)))*$/.test(val),
-      "请输入合法的隔离核心数"
+      "请输入合法的隔离核心列表"
     ),
   dmaList: z
     .string({ required_error: "请输入DMA通道列表" })
@@ -192,7 +192,7 @@ useListener(
             </VField>
           </div>
           <div class="column is-6">
-            <VField id="coreList" v-slot="{ field }" label="隔离核心数 *">
+            <VField id="coreList" v-slot="{ field }" label="”隔离核心列表 *">
               <VControl>
                 <VInput v-model="form.coreList" type="text" placeholder="例如: 2-31,32" />
                 <expand-transition>

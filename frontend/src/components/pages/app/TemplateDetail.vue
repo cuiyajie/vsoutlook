@@ -90,22 +90,13 @@ async function save() {
     notyf.error('CPU 总核心数不能为 0')
     return
   }
-  const { dpdkCpu, dma } = specsData.value.nicConfig.reduce((acc, cur) => {
-    return {
-      dpdkCpu: acc.dpdkCpu + cur.dpdkCpu,
-      dma: acc.dma + cur.dma
-    }
-  }, { dpdkCpu: 0, dma: 0 })
+  const dpdkCpu = specsData.value.nicConfig.reduce((acc, cur) => acc + cur.dpdkCpu, 0)
   if (dpdkCpu === 0) {
     notyf.error('DPDK CPU 核心不能为 0')
     return
   }
   if (specsData.value.cpuNum <= dpdkCpu) {
     notyf.error('CPU 总核心数不能小于等于 DPDK CPU 核心')
-    return
-  }
-  if (dma === 0) {
-    notyf.error('DMA通道数量不能为 0')
     return
   }
   if (tmpl.value?.id) {

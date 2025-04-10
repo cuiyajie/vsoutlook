@@ -129,7 +129,7 @@ useListener(
     title="音频映射模版"
     actions="right"
     cancel-label="取消"
-    dialog-class="preset-modal audio-mapping-modal"
+    dialog-class="preset-modal audio-mapping-modal is-overflow-visible"
     @submit.prevent="handleCommit"
     @close="opened = false"
   >
@@ -226,12 +226,6 @@ useListener(
 </template>
 <style lang="scss">
 .modal.preset-modal.audio-mapping-modal {
-
-  .modal-content,
-  .modal-card,
-  .modal-card-body {
-    overflow: auto;
-  }
 
   .copy-header {
     display: flex;

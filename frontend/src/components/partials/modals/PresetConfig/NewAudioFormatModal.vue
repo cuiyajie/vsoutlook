@@ -7,6 +7,7 @@ import {
   AudioBits,
   AudioCompressionFormats,
   AudioPacketTimeUs,
+  AudioFrequencies,
   defAudioFormat,
 } from './Consts'
 import { useUserSession } from '@src/stores/userSession'
@@ -78,6 +79,17 @@ function syncForm() {
   }
 }
 
+function onCompressionFormatChange(value: string) {
+  setFieldValue('compression_format', value)
+  if (value === 'pcm') {
+    form.value.compression_subtype = ''
+    setFieldValue('compression_subtype', '')
+  } else {
+    form.value.compression_subtype = 'lc'
+    setFieldValue('compression_subtype', 'lc')
+  }
+}
+
 syncForm()
 
 useListener(Signal.OpenNewAudioFormat, (payload: { _callback?: any; index?: number }) => {
@@ -105,7 +117,7 @@ useListener(Signal.OpenNewAudioFormat, (payload: { _callback?: any; index?: numb
     title="音频格式模板"
     actions="right"
     cancel-label="取消"
-    dialog-class="preset-modal"
+    dialog-class="preset-modal is-overflow-visible"
     @submit.prevent="handleCommit"
     @close="opened = false"
   >
@@ -154,7 +166,13 @@ useListener(Signal.OpenNewAudioFormat, (payload: { _callback?: any; index?: numb
             <VField id="frequency" v-slot="{ field }">
               <VLabel>采样率</VLabel>
               <VControl>
-                <VInputNumber v-model="form.frequency" centered :min="0" :step="1" />
+                <Multiselect
+                  v-model="form.frequency"
+                  :options="AudioFrequencies"
+                  :can-deselect="false"
+                  placeholder="选择采样率"
+                  @change="(val: any) => field?.setValue(val)"
+                />
                 <p v-if="field?.errorMessage" class="help is-danger">
                   {{ field.errorMessage }}
                 </p>
@@ -169,7 +187,7 @@ useListener(Signal.OpenNewAudioFormat, (payload: { _callback?: any; index?: numb
                   v-model="form.compression_format"
                   :options="AudioCompressionFormats"
                   placeholder="选择压缩格式"
-                  @change="(val: any) => field?.setValue(val)"
+                  @change="onCompressionFormatChange"
                 />
                 <p v-if="field?.errorMessage" class="help is-danger">
                   {{ field.errorMessage }}
@@ -181,7 +199,7 @@ useListener(Signal.OpenNewAudioFormat, (payload: { _callback?: any; index?: numb
             <VField id="compression_subtype" v-slot="{ field }">
               <VLabel>子类型</VLabel>
               <VControl>
-                <VInput v-model="form.compression_subtype" type="text" placeholder="压缩子类型" />
+                <VInput v-model="form.compression_subtype" type="text" />
                 <p v-if="field?.errorMessage" class="help is-danger">
                   {{ field.errorMessage }}
                 </p>
@@ -195,6 +213,7 @@ useListener(Signal.OpenNewAudioFormat, (payload: { _callback?: any; index?: numb
                 <Multiselect
                   v-model="form.packet_time_us"
                   :options="AudioPacketTimeUs"
+                  :can-deselect="false"
                   placeholder="选择发包间隔"
                   @change="(val: any) => field?.setValue(val)"
                 />

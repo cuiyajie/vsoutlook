@@ -61,3 +61,23 @@ export function parseFps(fpsStr: string): { fps: number; interlaced: boolean } {
   const interlaced = match[2] === 'I'
   return { fps, interlaced }
 }
+
+export function handleVideoForm(form: VideoFormat): Partial<VideoFormat> {
+  const result: Partial<VideoFormat> = { ...form }
+  if (form.protocol === 'st2110-20' || form.protocol === 'st2110-22') {
+    if (form.protocol === 'st2110-20') {
+      delete result.compression_format
+    }
+    delete result.compression_subtype
+    delete result.bitrate_bps
+    delete result.gop_b_frames
+    delete result.gop_length
+  }
+  if (form.protocol !== 'st2110-22') {
+    delete result.compression_ratio
+  }
+  if (form.compression_subtype === '无') {
+    result.compression_subtype = ''
+  }
+  return result
+}

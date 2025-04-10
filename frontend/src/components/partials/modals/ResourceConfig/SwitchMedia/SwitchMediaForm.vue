@@ -7,7 +7,6 @@ import {
 } from '../Utilties/Consts'
 import {
   type IApiParams,
-  type NicDetail,
 } from '../Utilties/Consts_V1'
 import { handle, watchNmosName } from '../Utilties/Utils';
 import { nmswt_used_signal_types, nmswt_audio_workmodes, def_api_params } from './Consts';
@@ -19,10 +18,12 @@ import { useUsedFormat } from '../Utilties/Composables';
 import { def_switch_bus, def_switch_input, def_switch_out, def_switch_panel, def_tally } from '../SwitchShare/Consts';
 import { checkSwitchData, handleSwitchBus, handleSwitchInput, handleSwitchOut, handleSwitchPanel, handleTally } from '../SwitchShare/Utils';
 import { checkApiParams, checkNicDetails, handleApiParams, handleAudioFormat, handleAudioMapping, handleNicList, handleVideoFormat, wrap } from '../Utilties/Utils_V1';
+import { useNicList } from '../Utilties/Composable';
 
 const props = defineProps<{
   name: string,
-  nics: NicInfo[]
+  nics: NicInfo[],
+  requiredment?: TmplRequirement
 }>()
 
 const mv = defineModel<{
@@ -71,12 +72,7 @@ mv.value = pick(nmswtData, [
 
 const apiParams = ref<IApiParams[]>(def_api_params())
 
-const nicDetails = ref<NicDetail[]>([])
-const indexedNicDetails = computed(() => {
-  return nicDetails.value
-    .filter(nic => nic.nicIndex >= 0)
-    .map((nic, idx) => ({ ...nic, index: idx }))
-})
+const { nicDetails, indexedNicDetails } = useNicList(props)
 
 const [videoFormatEnum, videoSelected, videoUnSelected] = useUsedFormat()
 const [audioFormatEnum, audioSelected, audioUnSelected] = useUsedFormat()

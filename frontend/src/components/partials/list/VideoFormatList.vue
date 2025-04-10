@@ -70,7 +70,7 @@ function edit(idx: number) {
               <td>{{ stringifyFps(vft.fps, vft.interlaced) }}</td>
               <td>{{ vft.gamma }}</td>
               <td>{{ vft.gamut }}</td>
-              <td>{{ vft.compression_format }}</td>
+              <td>{{ vft.compression_format || '-' }}</td>
               <td>{{ vft.compression_subtype || '-' }}</td>
               <td>{{ vft.compression_ratio || '-' }}</td>
               <td>{{ vft.bitrate_bps || '-' }}</td>

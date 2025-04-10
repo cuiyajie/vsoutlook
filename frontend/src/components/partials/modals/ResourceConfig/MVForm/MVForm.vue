@@ -8,7 +8,6 @@ import {
 import {
   type IApiParams,
   used_signal_types,
-  type NicDetail,
   type IndexedType,
 } from '../Utilties/Consts_V1'
 import { handle, watchNmosName } from '../Utilties/Utils';
@@ -20,10 +19,12 @@ import { useUserSession } from "@src/stores/userSession"
 import { handleVideoFormat, handleAudioFormat, handleNicList, unwrap, wrap, handleApiParams, checkApiParams, checkPlayerParams, checkNicDetails } from '../Utilties/Utils_V1';
 import { def_mv_input_param, def_mv_output_param, type MVInputItemParam, type MVOutputItemParam, def_api_params } from './Consts';
 import { checkInputParam, handleAuditAlarmRule, handleAuditAvTemplate, handleInputParams, handleOutputParams } from './Utils';
+import { useNicList } from '../Utilties/Composable';
 
 const props = defineProps<{
   name: string,
-  nics: NicInfo[]
+  nics: NicInfo[],
+  requiredment?: TmplRequirement
 }>()
 
 const mv = defineModel<{
@@ -67,12 +68,7 @@ mv.value = pick(mvData, [
 
 const apiParams = ref<IApiParams[]>(def_api_params())
 
-const nicDetails = ref<NicDetail[]>([])
-const indexedNicDetails = computed(() => {
-  return nicDetails.value
-    .filter(nic => nic.nicIndex >= 0)
-    .map((nic, idx) => ({ ...nic, index: idx }))
-})
+const { nicDetails, indexedNicDetails } = useNicList(props)
 
 const templates = computed(() => usStore.settings.mv_template_list || [])
 function mvTemplateIsValid(tmpl: string) {
