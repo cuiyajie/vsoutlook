@@ -28,14 +28,15 @@ const filterAudioFormats = computed(() => {
   }
 })
 
-watch<string>(() => mv.value, (nv, ov) => {
+watch(() => mv.value, (nv, ov) => {
   if (nv === ov) return
   if (nv) {
     emit('audio-selected', nv)
-  } else {
+  }
+  if (ov) {
     emit('audio-unselected', ov)
   }
-})
+}, { immediate: true })
 </script>
 <template>
   <Multiselect

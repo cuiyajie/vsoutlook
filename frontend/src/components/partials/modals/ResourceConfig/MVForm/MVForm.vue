@@ -14,12 +14,11 @@ import { handle, watchNmosName } from '../Utilties/Utils';
 import pick from 'lodash-es/pick'
 import merge from 'lodash-es/merge'
 import mvData from '@src/data/vscomponent/mv.json'
-import { useUsedFormat } from '../Utilties/Composables';
+import { useUsedFormat, useNicList } from '../Utilties/Composables';
 import { useUserSession } from "@src/stores/userSession"
 import { handleVideoFormat, handleAudioFormat, handleNicList, unwrap, wrap, handleApiParams, checkApiParams, checkPlayerParams, checkNicDetails } from '../Utilties/Utils_V1';
 import { def_mv_input_param, def_mv_output_param, type MVInputItemParam, type MVOutputItemParam, def_api_params } from './Consts';
 import { checkInputParam, handleAuditAlarmRule, handleAuditAvTemplate, handleInputParams, handleOutputParams } from './Utils';
-import { useNicList } from '../Utilties/Composable';
 
 const props = defineProps<{
   name: string,

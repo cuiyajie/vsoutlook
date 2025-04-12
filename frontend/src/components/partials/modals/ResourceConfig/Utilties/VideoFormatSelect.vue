@@ -40,7 +40,7 @@ const filterVideoFormats = computed(() => {
   return videoFormats.value.filter(vf => filteredProtocols.value.includes(vf.protocol))
 })
 
-watch<string>(() => mv.value, (nv, ov) => {
+watch(() => mv.value, (nv, ov) => {
   if (nv === ov) return
   if (nv) {
     emit('video-selected', nv)
@@ -48,7 +48,7 @@ watch<string>(() => mv.value, (nv, ov) => {
   if (ov) {
     emit('video-unselected', ov)
   }
-})
+}, { immediate: true })
 </script>
 <template>
   <Multiselect

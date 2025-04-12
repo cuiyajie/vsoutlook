@@ -14,11 +14,10 @@ import pick from 'lodash-es/pick'
 import nmswtData from '@src/data/vscomponent/nmswitch.json'
 import { useUserSession } from "@src/stores/userSession"
 import { levels } from './Consts';
-import { useUsedFormat } from '../Utilties/Composables';
+import { useUsedFormat, useNicList } from '../Utilties/Composables';
 import { def_switch_bus, def_switch_input, def_switch_out, def_switch_panel, def_tally } from '../SwitchShare/Consts';
 import { checkSwitchData, handleSwitchBus, handleSwitchInput, handleSwitchOut, handleSwitchPanel, handleTally } from '../SwitchShare/Utils';
 import { checkApiParams, checkNicDetails, handleApiParams, handleAudioFormat, handleAudioMapping, handleNicList, handleVideoFormat, wrap } from '../Utilties/Utils_V1';
-import { useNicList } from '../Utilties/Composable';
 
 const props = defineProps<{
   name: string,

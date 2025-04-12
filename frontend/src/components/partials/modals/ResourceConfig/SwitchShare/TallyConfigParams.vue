@@ -34,7 +34,7 @@ const showSecondScreen = ref(false)
         <VIcon icon="feather:chevron-down" />
       </div>
     </div>
-    <div v-if="opened" class="form-fieldset-nested-4">
+    <div v-show="opened" class="form-fieldset-nested-4">
       <TallyScreenParams
         v-for="(screenParam, screenidx) in mv.screens.slice(0, showSecondScreen ? 2 : 1)"
         :key="`input-screen-${screenidx}`"

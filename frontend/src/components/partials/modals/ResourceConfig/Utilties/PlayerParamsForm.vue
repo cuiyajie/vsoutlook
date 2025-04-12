@@ -3,13 +3,14 @@ import { useUserSession } from "@src/stores/userSession";
 import { type PlayerParams, def_player_params, type IndexedNicDetail, codec_dev_types, quality_types } from './Consts_V1';
 import { VideoFormatPrefixMap } from '@src/components/partials/modals/PresetConfig/Consts';
 import { changeProtocol } from './Utils_V1';
+import { useSmpteParams } from "./Composables";
 
 const mv = defineModel<PlayerParams>({
   default: def_player_params(),
   local: true,
 })
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   nics: IndexedNicDetail[]
   showAudio?: boolean
   showNic?: boolean
@@ -19,6 +20,10 @@ withDefaults(defineProps<{
   showNic: true,
   smpte: 'send'
 })
+
+const nicsRef = computed(() => props.nics)
+
+useSmpteParams(mv, nicsRef)
 
 const usStore = useUserSession()
 const videoFormats = computed(() => usStore.settings.video_formats || [])
@@ -37,6 +42,7 @@ watch(() => mv.value.videoformat_name, (nv) => {
     mv.value.stream_params.url = changeProtocol(mv.value.stream_params.url, prefix)
   }
 }, { immediate: true })
+
 </script>
 <template>
   <!--Fieldset-->

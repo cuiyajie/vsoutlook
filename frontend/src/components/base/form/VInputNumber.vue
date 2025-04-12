@@ -17,6 +17,7 @@ export interface VInputNumberProps {
   min?: number;
   step?: number;
   centered?: boolean;
+  showControl?: boolean;
 }
 
 const modelValue = defineModel<any>({
@@ -30,6 +31,7 @@ const props = withDefaults(defineProps<VInputNumberProps>(), {
   max: Infinity,
   min: -Infinity,
   step: 1,
+  showControl: true,
 });
 
 const { field, id } = useVFieldContext({
@@ -128,6 +130,7 @@ function onBlur(event: FocusEvent) {
       @paste="paste"
     />
     <label
+      v-if="showControl"
       class="v-input-number__button v-input-number__button--minus"
       role="button"
       tabindex="-1"
@@ -138,6 +141,7 @@ function onBlur(event: FocusEvent) {
       <i class="fas fa-minus" aria-hidden="true"></i>
     </label>
     <label
+      v-if="showControl"
       class="v-input-number__button v-input-number__button--plus"
       role="button"
       tabindex="-1"

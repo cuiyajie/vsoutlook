@@ -54,7 +54,7 @@ const opened = ref(false)
       </div>
     </div>
     <expand-transition>
-      <div v-if="opened">
+      <div v-show="opened">
         <div class="form-fieldset-nested-3 seperator">
           <div class="columns is-multiline">
             <div class="column is-6">

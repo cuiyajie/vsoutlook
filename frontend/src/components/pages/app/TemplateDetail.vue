@@ -77,7 +77,15 @@ watch(() => params?.id, async (nv, ov) => {
   if (nv && nv !== ov) {
     tmpl.value = await tmplStore.$getTmplById(nv)
     if (tmpl.value) {
-      specsData.value = Object.assign({}, tmpl.value.requirement, { description: tmpl.value.description })
+      const requirement = tmpl.value.requirement as TmplRequirement
+      if (requirement.nicCount && requirement.nicConfig) {
+        if (requirement.nicConfig.length < requirement.nicCount) {
+          requirement.nicConfig = Array.from({ length: requirement.nicCount }, () => ({ dpdkCpu: 1, dma: 1 }))
+        } else {
+          requirement.nicCount = requirement.nicConfig.length
+        }
+      }
+      specsData.value = Object.assign({}, requirement, { description: tmpl.value.description })
       if (tmpl.value.flow) {
         flowObject.value = JSON.parse(tmpl.value.flow)
       }

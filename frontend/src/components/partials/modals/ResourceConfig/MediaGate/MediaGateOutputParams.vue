@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import { useUserSession } from "@src/stores/userSession";
 import { type IndexedNicDetail } from '../Utilties/Consts_V1';
-import { type MgOutputItemParams, convert_mode, dynamic_mode, luma_gain } from './Consts';
+import { type MgOutputItemParams, convert_mode, dynamic_mode, luma_gain, def_mg_output_item_params } from './Consts';
 
 const mv = defineModel<MgOutputItemParams>({
-  default: [],
+  default: def_mg_output_item_params(),
   local: true,
 });
 
@@ -93,7 +93,7 @@ watch(() => props.defaultOpen, () => {
     </div>
 
     <expand-transition>
-      <div v-if="opened" class="form-fieldset-nested-2">
+      <div v-show="opened" class="form-fieldset-nested-2">
         <div class="form-fieldset-nested-3 seperator">
           <div class="columns is-multiline">
             <div class="column is-6">
@@ -169,7 +169,7 @@ watch(() => props.defaultOpen, () => {
             </expand-transition>
           </div>
         </div>
-        <PlayerParamsForm v-model="mv" :nics="nics" />
+        <PlayerParamsForm :key="`output-${index}`" v-model="mv" :nics="nics" />
       </div>
     </expand-transition>
   </div>

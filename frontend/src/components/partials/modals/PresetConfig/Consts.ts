@@ -49,7 +49,7 @@ export const VideoCompressionFormats = [
   'h264',
   'h265',
   'mpeg2',
-  'full ndi',
+  'speedhq',
   'nvi-hf',
   'suvc',
   'avs',
@@ -70,6 +70,8 @@ export const VideoCompressionSubtypes = [
   'cbg_c480',
   'vt_prores422',
   'vt_prores422_hq',
+  '8bit',
+  'hbit',
 ]
 export const DefaultVideoCompressionSubtype = 'base'
 
@@ -115,6 +117,8 @@ export const defAudioFormat = () => ({
   compression_subtype: '',
   packet_time_us: DefaultAudioPacketTimeUs,
   bitrate_bps: 128000,
+  gop_b_frames: 2,
+  gop_length: 50,
 })
 
 export const VideoReviewKeys: TVideoRuleKey[] = [

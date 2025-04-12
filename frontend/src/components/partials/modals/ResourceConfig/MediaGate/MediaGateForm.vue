@@ -16,11 +16,10 @@ import { handle, watchNmosName } from '../Utilties/Utils'
 import pick from 'lodash-es/pick'
 import merge from 'lodash-es/merge'
 import mgData from '@src/data/vscomponent/media_gateway.json'
-import { useUsedFormat } from '../Utilties/Composables';
+import { useUsedFormat, useNicList } from '../Utilties/Composables';
 import { useUserSession } from "@src/stores/userSession"
 import { handleVideoFormat, handleAudioFormat, handleNicList, wrap, unwrap, checkPlayerParams, checkNicDetails } from '../Utilties/Utils_V1';
 import { handleInputParams, handleOutputParams } from "./Utils"
-import { useNicList } from '../Utilties/Composable'
 
 const props = defineProps<{
   name: string,
@@ -63,7 +62,7 @@ const { nicDetails, indexedNicDetails } = useNicList(props)
 
 const inputParams = ref(def_mg_player_params())
 const outputParams = ref(Array.from({ length: 2 }, () => {
-  return ref(def_mg_output_item_params())
+  return reactive(def_mg_output_item_params())
 }))
 const showSecondOutput = ref(false)
 
@@ -79,7 +78,7 @@ function getValue() {
     audioformat_enum: audioFormatEnum.value.map(afn => handleAudioFormat(afn, audioFormats.value)).filter(a => a),
     input: wrap(handleInputParams(inputParams.value, videoFormats.value), 'in_'),
     output: wrap({
-      out_params: outputParams.value.slice(0, showSecondOutput.value ? 2 : 1).map(o => handleOutputParams(o.value, videoFormats.value))
+      out_params: outputParams.value.slice(0, showSecondOutput.value ? 2 : 1).map(o => handleOutputParams(o, videoFormats.value))
     }, 'out_')
   }
   if (mv.value.used_signal_type !== 1) {
@@ -99,10 +98,10 @@ function setValue(data: typeof mgData) {
   ])
   const _input = unwrap(data.input, 'in_')
   inputParams.value = checkPlayerParams(merge(def_mg_player_params(), _input), videoFormats.value, audioFormats.value)
-  const _output = unwrap(data.output.out_params, 'out_')
-  showSecondOutput.value = _output.length > 1
+  const _output = unwrap(data.output, 'out_')
+  showSecondOutput.value = _output.out_params.length > 1
   outputParams.value = Array.from({ length: 2 }, (_, idx) => {
-    return checkPlayerParams(merge(def_mg_output_item_params(), _output[idx]), videoFormats.value, audioFormats.value)
+    return reactive(checkPlayerParams(merge(def_mg_output_item_params(), _output.out_params[idx]), videoFormats.value, audioFormats.value))
   })
   nicDetails.value = checkNicDetails(data.nic_list, props.nics)
 }

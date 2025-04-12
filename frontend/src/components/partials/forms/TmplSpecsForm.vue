@@ -25,7 +25,7 @@ const modelValue = defineModel<TmplRequirement & { description: string }>({
     receiveSessions: 18,
     shm: 0,
     nicCount: 1,
-    nicConfig: []
+    nicConfig: [{ dpdkCpu: 1, dma: 1 }]
   },
   local: true,
 });

@@ -46,7 +46,7 @@ function removePanelUrl(pidx: number) {
         <VIcon icon="feather:chevron-down" />
       </div>
     </div>
-    <div v-if="opened" class="form-fieldset-nested-4">
+    <div v-show="opened" class="form-fieldset-nested-4">
       <div class="columns is-multiline" style="margin-bottom: 0;">
         <div class="column is-6">
           <VField>

@@ -62,8 +62,12 @@ export function parseFps(fpsStr: string): { fps: number; interlaced: boolean } {
   return { fps, interlaced }
 }
 
-export function handleVideoForm(form: VideoFormat): Partial<VideoFormat> {
-  const result: Partial<VideoFormat> = { ...form }
+export function handleVideoForm(
+  form: VideoFormat & { fpsStr: string }
+): Partial<VideoFormat> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { fpsStr, ...rest } = form
+  const result: Partial<VideoFormat> = rest
   if (form.protocol === 'st2110-20' || form.protocol === 'st2110-22') {
     if (form.protocol === 'st2110-20') {
       delete result.compression_format
@@ -76,8 +80,24 @@ export function handleVideoForm(form: VideoFormat): Partial<VideoFormat> {
   if (form.protocol !== 'st2110-22') {
     delete result.compression_ratio
   }
+  if (form.compression_format === 'speedhq') {
+    delete result.bitrate_bps
+    delete result.gop_b_frames
+    delete result.gop_length
+  }
   if (form.compression_subtype === '无') {
     result.compression_subtype = ''
+  }
+  return result
+}
+
+export function handleAudioForm(form: AudioFormat): Partial<AudioFormat> {
+  const result: Partial<AudioFormat> = { ...form }
+  if (form.compression_format === 'pcm') {
+    delete result.bitrate_bps
+  }
+  if (form.compression_format === 'aac') {
+    delete result.packet_time_us
   }
   return result
 }

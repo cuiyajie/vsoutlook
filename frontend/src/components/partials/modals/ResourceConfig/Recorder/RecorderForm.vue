@@ -8,18 +8,16 @@ import {
 import {
   type IApiParams,
   used_signal_types,
-  type NicDetail,
   def_player_params,
 } from '../Utilties/Consts_V1'
 import { handle, watchNmosName } from '../Utilties/Utils';
 import pick from 'lodash-es/pick'
 import merge from 'lodash-es/merge'
 import rcData from '@src/data/vscomponent/recorder.json'
-import { useUsedFormat } from '../Utilties/Composables';
+import { useUsedFormat, useNicList, useSmpteParams } from '../Utilties/Composables';
 import { useUserSession } from "@src/stores/userSession"
 import { handleVideoFormat, handleAudioFormat, handlePlayerParams, handleNicList, unwrap, wrap, checkPlayerParams, handleApiParams, checkApiParams, checkNicDetails } from '../Utilties/Utils_V1';
 import { def_api_params } from './Consts';
-import { useNicList } from '../Utilties/Composable';
 
 
 const props = defineProps<{
@@ -66,6 +64,7 @@ const { nicDetails, indexedNicDetails } = useNicList(props)
 
 const apiParams = ref<IApiParams[]>(def_api_params())
 const playerParams = ref(def_player_params())
+useSmpteParams(playerParams, indexedNicDetails)
 
 const [videoFormatEnum, videoSelected, videoUnSelected] = useUsedFormat()
 const [audioFormatEnum, audioSelected, audioUnSelected] = useUsedFormat()

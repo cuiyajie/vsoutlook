@@ -11,6 +11,7 @@ import {
   defAudioFormat,
 } from './Consts'
 import { useUserSession } from '@src/stores/userSession'
+import { handleAudioForm } from './Utils'
 
 const usStore = useUserSession()
 const audioFormats = computed(() => usStore.settings.audio_formats || [])
@@ -55,11 +56,12 @@ const handleCommit = handleSubmit(async () => {
 
   loading.value = true
   let value: string
+  const formValue = handleAudioForm(form.value)
   if (indexRef.value < 0) {
-    value = JSON.stringify([form.value, ...audioFormats.value])
+    value = JSON.stringify([formValue, ...audioFormats.value])
   } else {
     const formats = audioFormats.value
-    formats[indexRef.value] = form.value
+    formats[indexRef.value] = formValue as AudioFormat
     value = JSON.stringify(formats)
   }
   const res = await usStore.$updateSettings({ key: 'audio_formats', value })
@@ -206,36 +208,40 @@ useListener(Signal.OpenNewAudioFormat, (payload: { _callback?: any; index?: numb
               </VControl>
             </VField>
           </div>
-          <div class="column is-6">
-            <VField id="packet_time_us" v-slot="{ field }">
-              <VLabel>发包间隔</VLabel>
-              <VControl>
-                <Multiselect
-                  v-model="form.packet_time_us"
-                  :options="AudioPacketTimeUs"
-                  :can-deselect="false"
-                  placeholder="选择发包间隔"
-                  @change="(val: any) => field?.setValue(val)"
-                />
-                <p v-if="field?.errorMessage" class="help is-danger">
-                  {{ field.errorMessage }}
-                </p>
-              </VControl>
-            </VField>
-          </div>
-          <div class="column is-6">
-            <VField id="bitrate_bps" v-slot="{ field }" label="音频码率" addons class="is-input-number">
-              <VControl expanded>
-                <VInputNumber v-model="form.bitrate_bps" centered :min="0" :step="1" />
-                <p v-if="field?.errorMessage" class="help is-danger">
-                  {{ field.errorMessage }}
-                </p>
-              </VControl>
-              <VControl>
-                <VButton static>bps</VButton>
-              </VControl>
-            </VField>
-          </div>
+          <transition name="fade">
+            <div v-if="form.compression_format !== 'aac'" class="column is-6">
+              <VField id="packet_time_us" v-slot="{ field }">
+                <VLabel>发包间隔</VLabel>
+                <VControl>
+                  <Multiselect
+                    v-model="form.packet_time_us"
+                    :options="AudioPacketTimeUs"
+                    :can-deselect="false"
+                    placeholder="选择发包间隔"
+                    @change="(val: any) => field?.setValue(val)"
+                  />
+                  <p v-if="field?.errorMessage" class="help is-danger">
+                    {{ field.errorMessage }}
+                  </p>
+                </VControl>
+              </VField>
+            </div>
+          </transition>
+          <transition name="fade">
+            <div v-if="form.compression_format !== 'pcm'" class="column is-6">
+              <VField id="bitrate_bps" v-slot="{ field }" label="音频码率" addons class="is-input-number">
+                <VControl expanded>
+                  <VInputNumber v-model="form.bitrate_bps" centered :min="0" :step="1" />
+                  <p v-if="field?.errorMessage" class="help is-danger">
+                    {{ field.errorMessage }}
+                  </p>
+                </VControl>
+                <VControl>
+                  <VButton static>bps</VButton>
+                </VControl>
+              </VField>
+            </div>
+          </transition>
         </div>
       </div>
     </template>

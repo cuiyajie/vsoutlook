@@ -72,7 +72,7 @@ const opened = ref(false)
       </div>
     </div>
     <expand-transition>
-      <div v-if="opened">
+      <div v-show="opened">
         <div class="form-fieldset-nested-3 seperator" style="margin-bottom: 30px;">
           <div class="fieldset-heading">
             <h4>输入信源</h4>

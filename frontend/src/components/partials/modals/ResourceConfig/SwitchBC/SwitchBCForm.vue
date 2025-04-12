@@ -13,11 +13,10 @@ import { def_api_params } from './Consts';
 import pick from 'lodash-es/pick'
 import bcswtData from '@src/data/vscomponent/bcswitch.json'
 import { useUserSession } from "@src/stores/userSession"
-import { useUsedFormat } from '../Utilties/Composables';
+import { useUsedFormat, useNicList } from '../Utilties/Composables';
 import { def_switch_bus, def_switch_input, def_switch_out, def_switch_panel } from '../SwitchShare/Consts';
 import { checkApiParams, checkNicDetails, handleApiParams, handleAudioFormat, handleAudioMapping, handleNicList, handleVideoFormat, wrap } from '../Utilties/Utils_V1';
 import { checkSwitchData, handleSwitchBus, handleSwitchInput, handleSwitchOut, handleSwitchPanel } from '../SwitchShare/Utils';
-import { useNicList } from '../Utilties/Composable';
 
 const props = defineProps<{
   name: string,

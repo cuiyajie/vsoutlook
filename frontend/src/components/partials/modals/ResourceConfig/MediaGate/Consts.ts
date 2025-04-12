@@ -19,7 +19,7 @@ export const def_mg_output_item_params = () => ({
   ...def_player_params(),
   hdr_convert_params: {
     convert_mode: 'lut',
-    lut_filename: '/home/lut/aaa.lut',
+    lut_filename: '',
     dynamic_mode: 1,
     luma_gain: 1.0,
   },

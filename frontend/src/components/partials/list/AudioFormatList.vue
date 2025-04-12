@@ -73,8 +73,8 @@ function edit(idx: number) {
               <td>{{ adf.frequency }}</td>
               <td>{{ adf.compression_format }}</td>
               <td>{{ adf.compression_subtype || '-' }}</td>
-              <td>{{ adf.packet_time_us }}</td>
-              <td>{{ adf.bitrate_bps }}</td>
+              <td>{{ adf.packet_time_us || '-' }}</td>
+              <td>{{ adf.bitrate_bps || '-' }}</td>
               <td>
                 <PresetListDropdown
                   @add="create"

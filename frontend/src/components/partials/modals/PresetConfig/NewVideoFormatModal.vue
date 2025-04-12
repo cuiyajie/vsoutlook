@@ -109,6 +109,29 @@ function onFpsStrChange(val: string) {
 
 syncForm()
 
+const subTypes = computed(() => {
+  if (form.value.compression_format === 'speedhq') {
+    return VideoCompressionSubtypes.slice(-2)
+  } else {
+    return VideoCompressionSubtypes.slice(0, -2)
+  }
+})
+
+watch(() => form.value.compression_format, () => {
+  const isSpeedHqSubTypes = VideoCompressionSubtypes.slice(-2).includes(form.value.compression_subtype)
+  if (form.value.compression_format === 'speedhq' && !isSpeedHqSubTypes) {
+    setFieldValue('compression_subtype', '')
+    form.value.compression_subtype = ''
+  } else if (form.value.compression_format !== 'speedhq' && isSpeedHqSubTypes) {
+    setFieldValue('compression_subtype', '')
+    form.value.compression_subtype = ''
+  }
+})
+
+const showAdditionalOptions = computed(() => {
+  return !['st2110-20','st2110-22'].includes(form.value.protocol) && form.value.compression_format !== 'speedhq'
+})
+
 useListener(Signal.OpenNewVideoFormat, (payload: { _callback?: any; index?: number }) => {
   opened.value = true
   indexRef.value = payload.index === undefined ? -1 : payload.index
@@ -182,6 +205,7 @@ useListener(Signal.OpenNewVideoFormat, (payload: { _callback?: any; index?: numb
                   centered
                   :min="0"
                   :step="1"
+                  :show-control="false"
                 />
                 <p v-if="field?.errorMessage" class="help is-danger">
                   {{ field.errorMessage }}
@@ -196,6 +220,7 @@ useListener(Signal.OpenNewVideoFormat, (payload: { _callback?: any; index?: numb
                   centered
                   :min="0"
                   :step="1"
+                  :show-control="false"
                 />
                 <p v-if="field?.errorMessage" class="help is-danger">
                   {{ field.errorMessage }}
@@ -277,7 +302,7 @@ useListener(Signal.OpenNewVideoFormat, (payload: { _callback?: any; index?: numb
                 <VControl>
                   <Multiselect
                     v-model="form.compression_subtype"
-                    :options="VideoCompressionSubtypes"
+                    :options="subTypes"
                     placeholder="选择压缩子类型"
                     @change="(val: any) => field?.setValue(val)"
                   />
@@ -307,7 +332,7 @@ useListener(Signal.OpenNewVideoFormat, (payload: { _callback?: any; index?: numb
             </div>
           </expand-transition>
           <expand-transition>
-            <div v-if="!['st2110-20','st2110-22'].includes(form.protocol)" class="column is-4">
+            <div v-if="showAdditionalOptions" class="column is-4">
               <VField id="bitrate_bps" v-slot="{ field }" label="视频码率" addons class="is-input-number">
                 <VControl expanded>
                   <VInputNumber v-model="form.bitrate_bps" centered :min="0" :step="1" />
@@ -322,7 +347,7 @@ useListener(Signal.OpenNewVideoFormat, (payload: { _callback?: any; index?: numb
             </div>
           </expand-transition>
           <expand-transition>
-            <div v-if="!['st2110-20','st2110-22'].includes(form.protocol)" class="column is-4">
+            <div v-if="showAdditionalOptions" class="column is-4">
               <VField id="gop_b_frames" v-slot="{ field }">
                 <VLabel>B帧数量</VLabel>
                 <VControl>
@@ -335,7 +360,7 @@ useListener(Signal.OpenNewVideoFormat, (payload: { _callback?: any; index?: numb
             </div>
           </expand-transition>
           <expand-transition>
-            <div v-if="!['st2110-20','st2110-22'].includes(form.protocol)" class="column is-4">
+            <div v-if="showAdditionalOptions" class="column is-4">
               <VField id="gop_length" v-slot="{ field }">
                 <VLabel>GOP长度</VLabel>
                 <VControl>

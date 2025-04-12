@@ -61,7 +61,7 @@ const emit = defineEmits<{
           </div>
         </div>
       </div>
-      <PlayerParamsForm v-model="mv" :nics="nics" smpte="receive" />
+      <PlayerParamsForm key="input" v-model="mv" :nics="nics" smpte="receive" />
     </div>
   </div>
 </template>
