@@ -238,11 +238,15 @@ function filterAudioParams<
   }
 }
 
-export function handleAudioOutputParams(params: SwitchOutAudioParams, showSmpte = false) {
+export function handleAudioOutputParams(
+  params: SwitchOutAudioParams,
+  usedSignalType: number,
+  showSmpte = false
+) {
   return {
     src_signal_name: params.src_signal_name,
     pgm_src_signal_id: params.pgm_src_signal_id,
-    in_nic_index: params.in_nic_index,
+    ...(usedSignalType !== 1 ? { in_nic_index: params.in_nic_index } : {}),
     audioformat_name: params.audioformat_name,
     ...(showSmpte
       ? {
@@ -273,6 +277,7 @@ export function handleSwitchOut(
   params: SwitchOut,
   vfs: VideoFormat[],
   audioMode: number,
+  usedSignalType: number,
   category: string
 ) {
   let showSmpte = false
@@ -288,6 +293,7 @@ export function handleSwitchOut(
       ? {
           audio_output_params: handleAudioOutputParams(
             params.audio_output_params,
+            usedSignalType,
             showSmpte
           ),
         }

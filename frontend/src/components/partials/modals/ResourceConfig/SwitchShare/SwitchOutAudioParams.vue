@@ -14,6 +14,7 @@ const props = defineProps<{
 
 const { audioSelected, audioUnSelected } = inject<InjectSwitchTemplateToggle>('switch_template_toggle', def_switch_template_toggle())
 const nics = inject<IndexedNicDetail[]>('switch_nics', [])
+const usedSignalType = inject<Ref<number>>('switch_used_signal_type', ref(0))
 
 const showSmpte = computed(() => {
   let show = false
@@ -54,7 +55,7 @@ const showSmpte = computed(() => {
           </VControl>
         </VField>
       </div>
-      <div class="column is-6">
+      <div v-if="usedSignalType !== 1" class="column is-6">
         <VField>
           <VLabel>音频输入使用的网卡序号</VLabel>
           <VControl>

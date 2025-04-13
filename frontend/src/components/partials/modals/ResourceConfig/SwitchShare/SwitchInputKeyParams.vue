@@ -17,6 +17,11 @@ const usedSignalType = inject<Ref<number>>('switch_used_signal_type', ref(0))
 const { videoSelected, videoUnSelected } = inject<InjectSwitchTemplateToggle>('switch_template_toggle', def_switch_template_toggle())
 const nics = inject<IndexedNicDetail[]>('switch_nics', [])
 
+const category = inject('switch_type_category')
+const keyTypes = computed(() => {
+  return key_types.filter(t => t.value !== 'ext_key' || category !== 'nmswt')
+})
+
 const emit = defineEmits<{
   (e: 'remove'): void
 }>()
@@ -61,7 +66,7 @@ const opened = ref(false)
                 <VLabel>键类型</VLabel>
                 <VControl>
                   <VSelect v-model="mv.key_type" class="is-rounded">
-                    <VOption v-for="kt in key_types" :key="kt.value" :value="kt.value">{{ kt.label }}</VOption>
+                    <VOption v-for="kt in keyTypes" :key="kt.value" :value="kt.value">{{ kt.label }}</VOption>
                   </VSelect>
                 </VControl>
               </VField>

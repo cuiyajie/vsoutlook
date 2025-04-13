@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { type CellComponentProp } from './utils';
+
 
 const props = defineProps<{
   modelValue: LayoutDataItem,
@@ -10,6 +12,7 @@ const emit = defineEmits<{
   (e: 'reset'): void,
   (e: 'update:model-value', value: LayoutDataItem): void
   (e: 'toggle-show-date', value: boolean): void
+  (e: 'swap', key?: CellComponentProp | 'border'): void
 }>()
 
 const data = computed({
@@ -37,7 +40,7 @@ const isText = computed(() => Boolean(props.modelValue.text))
     <div class="layout-form">
       <timer-setting v-if="isTimer" v-model="data" :bound="props.bound" :base="props.base" @toggle-show-date="emit('toggle-show-date', $event)" />
       <text-setting v-else-if="isText" v-model="data" :bound="props.bound" :base="props.base" />
-      <win-setting v-else v-model="data" :bound="props.bound" :base="props.base" />
+      <win-setting v-else v-model="data" :bound="props.bound" :base="props.base" @swap="emit('swap', $event)" />
     </div>
   </div>
 </template>

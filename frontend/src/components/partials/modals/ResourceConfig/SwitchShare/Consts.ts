@@ -107,7 +107,7 @@ export const def_switch_input = () => ({
 
 export const def_switch_input_key_params = (index: number) => ({
   index,
-  key_type: 'ext_key',
+  key_type: 'int_key',
   signal_id: `key-${idGen(8)}`,
   signal_name: `input-key-${index}`,
   ...def_player_params(),

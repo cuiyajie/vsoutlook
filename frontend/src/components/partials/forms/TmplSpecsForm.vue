@@ -24,8 +24,8 @@ const modelValue = defineModel<TmplRequirement & { description: string }>({
     maxRateMbpsByCore: 9000,
     receiveSessions: 18,
     shm: 0,
-    nicCount: 1,
-    nicConfig: [{ dpdkCpu: 1, dma: 1 }]
+    nicCount: 0,
+    nicConfig: []
   },
   local: true,
 });
@@ -40,8 +40,6 @@ const onNicCountChange = (e: Event) => {
     modelValue.value.nicConfig = modelValue.value.nicConfig.slice(0, len);
   }
 };
-
-const opened = ref(false);
 </script>
 
 <template>
@@ -156,10 +154,10 @@ const opened = ref(false);
             </div>
             <div class="column is-4">
               <VField>
-                <VLabel>需要使用的网卡数量</VLabel>
+                <VLabel>需要使用DPDK的网卡数量</VLabel>
                 <VControl>
                   <VSelect v-model="modelValue.nicCount" class="is-rounded" @change="onNicCountChange">
-                    <VOption v-for="count in Array(4).fill(1).map((v, i) => v + i)" :key="count" :value="count">
+                    <VOption v-for="count in Array(5).fill(0).map((v, i) => v + i)" :key="count" :value="count">
                       {{ count }}
                     </VOption>
                   </VSelect>

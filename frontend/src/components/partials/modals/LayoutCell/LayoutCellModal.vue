@@ -151,6 +151,15 @@ function onClose() {
   callbacks?.update?.(data.value)
   pause()
 }
+
+onKeyStroke('Escape', (e) => {
+  if (!e.target) return
+  const targetEl = e.target as HTMLElement
+  if (targetEl.tagName === 'INPUT' || targetEl.tagName === 'TEXTAREA') return
+  activeComponent(null)
+  displayRef.value?.clearComponent()
+  e.stopPropagation()
+})
 </script>
 <template>
   <VModal

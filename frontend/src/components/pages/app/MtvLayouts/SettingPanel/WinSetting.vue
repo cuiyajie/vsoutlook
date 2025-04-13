@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-import { type Ref } from 'vue';
-import { type CellComponentProp, CellComponents, getDefaultCheckStore } from '../utils';
+import { type CellComponentProp, CellComponents } from '../utils';
 
 const props = defineProps<{
   modelValue: LayoutDataItem
@@ -9,38 +8,28 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'update:model-value', value: LayoutDataItem): void
+  (e: 'update:model-value', value: LayoutDataItem): void,
+  (e: 'swap', key?: CellComponentProp | 'border'): void
 }>()
-
-const addedComponents = computed(() => CellComponents.filter(v => Boolean(props.modelValue[v.key])))
-const componentCheckStore = inject<Ref<Record<string, Record<CellComponentProp | 'border', boolean>>>>('componentCheckStore', ref({}))
-const componentChecked = computed({
-  get: () => componentCheckStore.value[props.modelValue.id] || getDefaultCheckStore(),
-  set: (v: Record<CellComponentProp | 'border', boolean>) => {
-    componentCheckStore.value[props.modelValue.id] = v
-  }
-})
 
 const allChecked = computed({
   get: () => {
-    const result = addedComponents.value.every(v => componentChecked.value[v.key])
+    const result = CellComponents.every(v => Boolean(props.modelValue[v.key]))
     if (props.modelValue.win.showBorder) {
-      return result && componentChecked.value.border
+      return result && Boolean(props.modelValue.win.showBorder)
     }
     return result
   },
   set: (v: boolean) => {
-    for (const comp of addedComponents.value) {
-      componentChecked.value = {
-        ...componentChecked.value,
-        [comp.key]: v
+    if (v) {
+      emit('swap')
+    } else {
+      const newVal: Partial<LayoutDataItem> = {}
+      for (const comp of CellComponents) {
+        newVal[comp.key] = null
       }
-    }
-    if (props.modelValue.win.showBorder) {
-      componentChecked.value = {
-        ...componentChecked.value,
-        border: v
-      }
+      newVal.win = { ...props.modelValue.win, showBorder: false }
+      emit('update:model-value', { ...props.modelValue, ...newVal })
     }
   }
 })
@@ -81,6 +70,19 @@ const winy = computed({
     }),
 })
 
+function toggleComponent(key: string, checked: boolean) {
+  if (checked) {
+    emit('swap', key as (CellComponentProp | 'border'))
+  } else {
+    if (key === 'border') {
+      emit('update:model-value', { ...props.modelValue, win: { ...props.modelValue.win, showBorder: false } })
+    } else {
+      emit('update:model-value', { ...props.modelValue, [key]: null })
+    }
+  }
+}
+
+
 </script>
 <template>
   <section class="layout-row">
@@ -112,29 +114,29 @@ const winy = computed({
   <section class="layout-row is-row-check">
     <div class="layout-row-inner is-head">
       <div class="layout-cell">
-        <div>显示全部组件</div>
+        <div>{{ allChecked ? '删除' : '使用' }}全部组件</div>
         <VCheckbox v-model="allChecked" color="primary" circle />
       </div>
     </div>
-    <div v-if="props.modelValue.win.showBorder" class="layout-row-inner">
+    <div class="layout-row-inner">
       <div class="layout-cell">
         <div>边框</div>
         <VCheckbox
-          :model-value="componentChecked.border"
+          :model-value="modelValue.win.showBorder"
           color="primary"
           circle
-          @update:model-value="v => componentChecked = { ...componentChecked, border: v }"
+          @update:model-value="v => toggleComponent('border', v)"
         />
       </div>
     </div>
-    <div v-for="comp in addedComponents" :key="comp.key" class="layout-row-inner">
+    <div v-for="comp in CellComponents" :key="comp.key" class="layout-row-inner">
       <div class="layout-cell">
         <div>{{ comp.name }}</div>
         <VCheckbox
-          :model-value="componentChecked[comp.key]"
+          :model-value="Boolean(modelValue[comp.key])"
           color="primary"
           circle
-          @update:model-value="v => componentChecked = { ...componentChecked, [comp.key]: v }"
+          @update:model-value="v => toggleComponent(comp.key, v)"
         />
       </div>
     </div>

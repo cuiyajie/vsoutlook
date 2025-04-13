@@ -91,9 +91,6 @@ func (tmpl *Tmpl) AsDetail() any {
 		"description":  tmpl.Description,
 		"listed":       tmpl.Listed,
 	}
-	if tmpl.Requirement.NicCount == 0 {
-		tmpl.Requirement.NicCount = 1
-	}
 	if tmpl.Requirement.NicConfig == nil {
 		tmpl.Requirement.NicConfig = []NicConfig{}
 	}

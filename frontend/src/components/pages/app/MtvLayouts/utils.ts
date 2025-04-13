@@ -1,4 +1,3 @@
-import { useUserSession } from '@src/stores/userSession'
 import { CLockDisplayType, DateDisplayType, TallyType, AlarmLang } from '@src/utils/enums'
 import parseRGB from '@src/utils/parse-rgb'
 import stringRGB from '@src/utils/string-rgb'
@@ -22,17 +21,6 @@ export const CellComponents: {
   { key: 'alarm', name: '报警', icon: 'bell', iconType: 'fas' },
   { key: 'meta', name: '视频信息', icon: 'file-video', iconType: 'fas' },
 ]
-
-export const getDefaultCheckStore = () => ({
-  border: true,
-  ...CellComponents.reduce(
-    (acc, v) => {
-      acc[v.key] = true
-      return acc
-    },
-    {} as Record<CellComponentProp, boolean>
-  ),
-})
 
 export const defaultWinColor = 'rgb(255, 255, 255)'
 export const draftWinBorder = (w: number, bound: LayoutDimension): LayoutWinBorder => {
@@ -120,6 +108,7 @@ export const draftTitle = (w: number, h: number, bound: LayoutDimension): Layout
   const { w: bw, h: bh } = bound
   const nw = (576 * w) / (1920 * bw)
   const nh = (162 * h) / (1080 * bh)
+  const tallyw = (288 * w) / (1920 * bw)
   const tallyb = (24 * w) / (1920 * bw)
   return {
     fontSize: (96 * w) / (1920 * bw),
@@ -132,6 +121,7 @@ export const draftTitle = (w: number, h: number, bound: LayoutDimension): Layout
     h: nh,
     isVertial: false,
     tallyType: TallyType.Text,
+    tallyWidth: tallyw,
     tallyBorderWidth: tallyb,
     tallyBorderColor: defaultTitleColor.TallyBorder,
     tallyBgColor: defaultTitleColor.Tally,
@@ -437,16 +427,11 @@ export function getFontFamily() {
 }
 
 const round = Math.round
-export function ds2db(
-  ds: LayoutDataItem[],
-  base: LayoutDimension,
-  checkStore: Record<string, Record<CellComponentProp | 'border', boolean>>
-) {
+export function ds2db(ds: LayoutDataItem[], base: LayoutDimension) {
   let delta = 0
   const labelIndexing: Record<number, string> = {}
   const contentData = ds
     .map((d, i) => {
-      const checked = checkStore[d.id || ''] || getDefaultCheckStore()
       if (d.timer) {
         const sharedProperties: any = {
           line_time_top: {
@@ -545,7 +530,7 @@ export function ds2db(
         const w = round(d.win.w * base.w)
         const h = round(d.win.h * base.h)
         const wb = {} as any
-        if (d.win.showBorder && d.win.border && checked.border) {
+        if (d.win.showBorder && d.win.border) {
           wb.window_border = {
             x: 0,
             y: 0,
@@ -556,12 +541,12 @@ export function ds2db(
             border_colour_1: parseRGB(d.win.border.color, true),
           }
         }
-        if (d.title && checked.title) {
+        if (d.title) {
           wb.tally_border = {
             border_width: round(d.title.tallyBorderWidth * base.w),
           }
         }
-        if (d.alarm && checked.alarm) {
+        if (d.alarm) {
           wb.alarm_border = {
             x: round(d.alarm.border.x * base.w),
             y: round(d.alarm.border.y * base.h),
@@ -588,7 +573,7 @@ export function ds2db(
         pos = { x, y }
         scaleRatio = Math.min(round(w / base.w), 1)
       }
-      if (d.title && checked.title) {
+      if (d.title) {
         rects.push({
           type: 1,
           description: 'text area',
@@ -598,14 +583,14 @@ export function ds2db(
           h: round(d.title.h * base.h),
           bg_color: parseRGB(d.title.bgColor),
           text_color: parseRGB(d.title.color),
-          w_tally: round(d.title.h * base.h),
+          w_tally: round(d.title.tallyWidth * base.w),
           tally_bg_color: parseRGB(d.title.tallyBgColor),
         })
         fontSize = round(d.title.fontSize * base.w)
         fontIsVertial = d.title.isVertial
         tallytype = d.title.tallyType
       }
-      if (d.vol && checked.vol) {
+      if (d.vol) {
         rects.push({
           type: 2,
           description: 'audio vu area',
@@ -624,7 +609,7 @@ export function ds2db(
             .slice(0, d.vol.len),
         })
       }
-      if (d.alarm && checked.alarm) {
+      if (d.alarm) {
         rects.push({
           type: 3,
           description: 'alarm text area',
@@ -638,7 +623,7 @@ export function ds2db(
         })
         lang = d.alarm.lang
       }
-      if (d.oscillogram && checked.oscillogram) {
+      if (d.oscillogram) {
         rects.push({
           type: 4,
           description: 'oscillogram area',
@@ -650,7 +635,7 @@ export function ds2db(
         })
         displayOscilloscope = true
       }
-      if (d.vector && checked.vector) {
+      if (d.vector) {
         rects.push({
           type: 5,
           description: 'vector area',
@@ -661,7 +646,7 @@ export function ds2db(
           a: round(d.vector.alpha * 100) / 100,
         })
       }
-      if (d.meta && checked.meta) {
+      if (d.meta) {
         rects.push({
           type: 6,
           description: 'meta info area',
@@ -850,6 +835,7 @@ export function db2ds(
           bgColor: title.bg_color ? stringRGB(title.bg_color) : defaultTitleColor.Bg,
           isVertial: d.font_is_vertical || false,
           tallyType: d.tallytype || TallyType.Light,
+          tallyWidth: title.w_tally / base.w || draft.tallyWidth,
           tallyBorderWidth: win?.tally_border?.border_width
             ? win.tally_border.border_width / base.w
             : draft.tallyBorderWidth,
@@ -922,4 +908,27 @@ export function db2ds(
       return result
     })
     .filter<LayoutDataItem>((v) => v)
+}
+
+export function draftComponent(
+  key: CellComponentProp,
+  w: number,
+  h: number,
+  bound: LayoutDimension
+) {
+  switch (key) {
+    case 'title':
+      return draftTitle(w, h, bound)
+    case 'vol':
+      return draftVol(w, h, bound)
+    case 'vector':
+      return draftVector(w, h, bound)
+    case 'oscillogram':
+      return draftOscillogram(w, h, bound)
+    case 'alarm':
+      return draftAlarm(w, h, bound)
+    case 'meta':
+      return draftMeta(w, h, bound)
+  }
+  return draftTitle(w, h, bound)
 }

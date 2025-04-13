@@ -340,6 +340,7 @@ interface LayoutTitle extends LayoutRect {
   color: string
   isVertial: boolean
   tallyType: import('@src/utils/enums').TallyType
+  tallyWidth: number
   tallyBorderWidth: number
   tallyBorderColor: string
   tallyBgColor: string

@@ -57,7 +57,7 @@ function viewTmpl() {
       </div>
       <div class="info-block-line">
         <h4 class="dark-inverted">
-          需要使用的网卡数量
+          需要使用DPDK的网卡数量
         </h4>
         <span>
           {{ tmpld.requirement.nicCount || '无' }}

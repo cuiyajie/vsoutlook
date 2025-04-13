@@ -6,7 +6,8 @@ import { type NicDetail, def_nic_detail } from './Consts_V1'
 const notyf = useNotyf();
 
 const props = defineProps<{
-  nics: NicInfo[]
+  nics: NicInfo[],
+  max: number
 }>()
 
 const mv = defineModel<NicDetail[]>({
@@ -15,6 +16,10 @@ const mv = defineModel<NicDetail[]>({
 })
 
 function add() {
+  if (mv.value.length >= props.max) {
+    notyf.error(`模板允许配置的网卡数量最多为 ${props.max}`)
+    return
+  }
   if (mv.value.length >= props.nics.length) {
     notyf.error('网卡数量已达上限')
     return

@@ -71,6 +71,11 @@ const tallyBorder = computed({
   set: (v: number) => emit('update:model-value', { ...props.modelValue, tallyBorderWidth: v / props.base.w })
 })
 
+const tallyWidth = computed({
+  get: () => Math.round(props.modelValue.tallyWidth * props.base.w),
+  set: (v: number) => emit('update:model-value', { ...props.modelValue, tallyWidth: v / props.base.w })
+})
+
 const pickerRef = useColorPickerRef()
 
 </script>
@@ -177,7 +182,7 @@ const pickerRef = useColorPickerRef()
       <div class="layout-row-inner">
         <div class="layout-cell fullwidth">
           <div>tally灯宽度</div>
-          <input id="tallyw" v-model="th" type="number" min="0" :max="base.h">
+          <input id="tallyw" v-model="tallyWidth" type="number" min="0" :max="base.w">
         </div>
       </div>
     </section>

@@ -292,7 +292,7 @@ defineExpose({
           </expand-transition>
         </div>
         <expand-transition>
-          <NicSection v-if="mv.used_signal_type !== 1" v-model="nicDetails" :nics="nics" />
+          <NicSection v-if="mv.used_signal_type !== 1" v-model="nicDetails" :nics="nics" :max="requiredment?.nicCount || 0" />
         </expand-transition>
         <div class="form-outer">
           <div class="form-header">

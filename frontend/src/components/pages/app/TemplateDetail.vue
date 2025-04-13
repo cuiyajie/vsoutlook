@@ -66,7 +66,7 @@ const specsData = ref<TmplRequirement & { description: string }>({
   maxRateMbpsByCore: 9000,
   receiveSessions: 18,
   shm: 0,
-  nicCount: 1,
+  nicCount: 0,
   nicConfig: [],
 })
 
@@ -99,7 +99,7 @@ async function save() {
     return
   }
   const dpdkCpu = specsData.value.nicConfig.reduce((acc, cur) => acc + cur.dpdkCpu, 0)
-  if (dpdkCpu === 0) {
+  if (dpdkCpu === 0 && specsData.value.nicCount > 0) {
     notyf.error('DPDK CPU 核心不能为 0')
     return
   }

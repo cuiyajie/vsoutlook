@@ -1,5 +1,5 @@
 import { type PlayerParams, type IndexedNicDetail, type IApiParams } from './Consts_V1'
-import { omit } from 'lodash'
+import omit from 'lodash-es/omit'
 
 export function changeProtocol(url: string, newProtocol: string): string {
   try {

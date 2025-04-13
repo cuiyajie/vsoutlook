@@ -104,14 +104,14 @@ watchNmosName(() => props.name, mv)
 
 function getValue() {
   const result = {
-    ...handle(mv.value),
+    ...handle(mv.value, true),
     ...(mv.value.tally_notify ? {tally_config: handleTally(tally.value)} : {}),
     api_params: handleApiParams(apiParams.value),
     panel_params: handleSwitchPanel(panel.value),
     videoformat_enum: videoFormatEnum.value.map(vfn => handleVideoFormat(vfn, videoFormats.value)).filter(v => v),
     input: wrap(handleSwitchInput(input.value, videoFormats.value), 'in_'),
     bus: handleSwitchBus(bus.value, mv.value.used_signal_type, 'nmswt'),
-    output: wrap(handleSwitchOut(out.value, videoFormats.value, mv.value.audio_workmode, 'nmswt'), 'out_'),
+    output: wrap(handleSwitchOut(out.value, videoFormats.value, mv.value.audio_workmode, mv.value.used_signal_type, 'nmswt'), 'out_'),
   }
   if (mv.value.audio_workmode !== 0) {
     result.audioformat_enum = audioFormatEnum.value.map(afn => handleAudioFormat(afn, audioFormats.value)).filter(a => a)
@@ -289,7 +289,7 @@ defineExpose({
           </expand-transition>
         </div>
         <expand-transition name="fade-slow">
-          <NicSection v-if="mv.used_signal_type !== 1" v-model="nicDetails" :nics="nics" />
+          <NicSection v-if="mv.used_signal_type !== 1" v-model="nicDetails" :nics="nics" :max="requiredment?.nicCount || 0" />
         </expand-transition>
         <div class="form-outer has-mt-20">
           <div class="form-header">

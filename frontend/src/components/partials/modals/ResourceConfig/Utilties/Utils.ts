@@ -153,7 +153,7 @@ export function watchModeVFormat(
   )
 }
 
-export function handle(mv: any) {
+export function handle(mv: any, ignoreIpService = false) {
   if (mv.ssm_address_range?.length > 0) {
     mv.ssm_address_range = mv.ssm_address_range.map((v: any, idx: number) => {
       v.index = idx
@@ -166,7 +166,9 @@ export function handle(mv: any) {
       return v
     })
   }
-  mv.ipservice = {}
+  if (!ignoreIpService) {
+    mv.ipservice = {}
+  }
   return mv
 }
 

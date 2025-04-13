@@ -217,6 +217,10 @@ onClickOutside(dragHandle, (event) => {
     background-color: var(--alarm-border-color);
     pointer-events: auto;
 
+    &:focus-visible {
+      outline: none;
+    }
+
     &.a-border-t {
       top: 0;
       left: 0;

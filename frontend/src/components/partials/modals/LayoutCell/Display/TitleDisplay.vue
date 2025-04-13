@@ -26,6 +26,7 @@ const bgColor = computed(() => mv.value.title?.bgColor || defaultTitleColor.Bg)
 const tallyBgColor = computed(() => mv.value.title?.tallyBgColor || defaultTitleColor.Tally)
 const tallyBorderColor = computed(() => mv.value.title?.tallyBorderColor || defaultTitleColor.TallyBorder)
 const tb = computed(() => (mv.value.title?.tallyBorderWidth || 8 / 1920) * ratiow.value)
+const tw = computed(() => (mv.value.title?.tallyWidth || 288 / 1920) * ratiow.value)
 const bl = computed(() => mv.value.win.border.left * ratiow.value)
 const br = computed(() => mv.value.win.border.right * ratiow.value)
 const bt = computed(() => mv.value.win.border.top * ratiow.value)
@@ -42,7 +43,7 @@ const bb = computed(() => mv.value.win.border.bottom * ratiow.value)
       top: `${mv.title.y * ratioh}px`,
       width: `${mv.title.w * ratiow}px`,
       height: `${mv.title.h * ratioh}px`,
-      '--tally-light-width': `${mv.title.h * ratioh}px`,
+      '--tally-light-width': `${tw}px`,
       '--tally-light-bg': tallyBgColor,
       '--tally-text-fz': `${mv.title.fontSize * ratiow}px`,
       '--tally-text-fa': `'${mv.title.fontFamily}'`,

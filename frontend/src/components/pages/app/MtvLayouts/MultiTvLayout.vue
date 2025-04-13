@@ -20,10 +20,13 @@ import {
   resizeAlarm,
   resizeMeta,
   resizeVector,
+  CellComponents,
+  draftComponent,
 } from './utils'
 import { useLayout } from '@src/stores/layout'
 import { LayoutSize } from '@src/utils/enums'
 import IsEqual from 'lodash-es/isEqual'
+import cloneDeep from 'lodash-es/cloneDeep'
 import { type WatchStopHandle } from 'vue'
 import { nanoid } from 'nanoid'
 
@@ -41,7 +44,6 @@ const layouts = computed(() => layoutStore.layouts)
 const router = useRouter()
 const route = useRoute()
 const currLayout = ref<Layout | null>(null)
-const originDataset = ref<LayoutDataItem[]>([])
 layoutStore.$fetchList().then(() => {
   if (route.query.layout) {
     currLayout.value = layouts.value.find((l) => l.id === route.query.layout) || null
@@ -89,9 +91,10 @@ const bounding = computed(() => {
 })
 const changed = ref(false)
 const dataset = ref<LayoutDataItem[]>([])
+const originDataset = ref<LayoutDataItem[]>([])
+const tempDataset = ref<LayoutDataItem[]>([])
+
 const indexDelta = computed(() => dataset.value.some(d => d.text) ? 1 : 0)
-const componentCheckStore = ref<Record<string, Record<CellComponentProp | 'border', boolean>>>({})
-provide('componentCheckStore', componentCheckStore)
 
 let unwatch: WatchStopHandle | null = null
 
@@ -133,6 +136,7 @@ function parseLayoutContent() {
     )
     dataset.value = JSON.parse(str)
     originDataset.value = JSON.parse(str)
+    tempDataset.value = JSON.parse(str)
     unwatch?.()
     changed.value = false
     activeCell.value = null
@@ -194,7 +198,9 @@ function redrawLayout() {
       dataset.value[index].title = draftTitle(width, height, bounding.value)
       dataset.value[index].vol = draftVol(width, height, bounding.value)
     })
-    originDataset.value = JSON.parse(JSON.stringify(dataset.value))
+    const jsonStr = JSON.stringify(dataset.value)
+    originDataset.value = JSON.parse(jsonStr)
+    tempDataset.value = JSON.parse(jsonStr)
   })
 }
 
@@ -301,6 +307,26 @@ function resetActiveCell() {
   const _ads = dataset.value[aidx]
   selectCell(_ads, aidx, !!_ads.timer)
   resizeTimerComponent(_ads)
+}
+
+function swapActiveCell(key?: CellComponentProp | 'border') {
+  if (!activeCell.value) return
+  const aidx = activeCell.value.index
+  const win = dataset.value[aidx].win
+  const winW = win.w * bounding.value.w
+  const winH = win.h * bounding.value.h
+  if (key) {
+    if (key === 'border') {
+      dataset.value[aidx].win.showBorder = true
+    } else {
+      dataset.value[aidx][key] = cloneDeep<any>(tempDataset.value[aidx][key]) || draftComponent(key, winW, winH, bounding.value)
+    }
+  } else {
+    dataset.value[aidx].win.showBorder = true
+    CellComponents.forEach(v => {
+      dataset.value[aidx][v.key] = cloneDeep<any>(tempDataset.value[aidx][v.key]) || draftComponent(v.key, winW, winH, bounding.value)
+    })
+  }
 }
 
 function handleActiveCell(x: number, y: number, pw: number, ph: number) {
@@ -440,6 +466,7 @@ function deleteCell(didx: number) {
   }
   dataset.value.splice(didx, 1)
   originDataset.value.splice(didx, 1)
+  tempDataset.value.splice(didx, 1)
 }
 
 function editCell(didx: number) {
@@ -448,6 +475,12 @@ function editCell(didx: number) {
     callbacks: {
       update: (v: LayoutDataItem) => {
         dataset.value[didx] = v
+        Object.keys(v).forEach(key => {
+          const kprop = key as LayoutProps
+          if (v[kprop] && tempDataset.value[didx]) {
+            tempDataset.value[didx][kprop] = cloneDeep<any>(v[kprop])
+          }
+        })
       },
     },
   })
@@ -486,6 +519,7 @@ function preCreateWin() {
 function postCreateWin(cell: LayoutDataItem) {
   dataset.value.push(cell)
   originDataset.value.push(cell)
+  tempDataset.value.push(cell)
   selectCell(cell, dataset.value.length - 1)
 }
 
@@ -514,6 +548,7 @@ function createTextWin() {
   const cell = createWinCell({ text: true })
   dataset.value.unshift(cell)
   originDataset.value.unshift(cell)
+  tempDataset.value.unshift(cell)
   selectCell(cell, 0)
 }
 
@@ -584,7 +619,7 @@ function deleteLayout(ly: Layout) {
 
 async function saveLayoutData() {
   if (!currLayout.value) return
-  const { contentData, labelIndexing } = ds2db(dataset.value, base.value, componentCheckStore.value)
+  const { contentData, labelIndexing } = ds2db(dataset.value, base.value)
   const labels: Record<number, string> = {}
   let idx = 0
   const rects = contentData.map((d: any) => {
@@ -1063,6 +1098,7 @@ onKeyStroke('Escape', (e) => {
             :base="base"
             @reset="resetActiveCell"
             @toggle-show-date="onShowDateToggle($event)"
+            @swap="swapActiveCell($event)"
           />
           <div v-else className="layout-panel is-sticky">
             <div class="layout-header mb-4">
@@ -1475,6 +1511,10 @@ onKeyStroke('Escape', (e) => {
   .layout-meta,
   .layout-alarm {
     z-index: 3;
+
+    &:focus-visible {
+      outline: none;
+    }
   }
 
   &.draggable {
