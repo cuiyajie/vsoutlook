@@ -141,18 +141,19 @@ func DeletePod(c *svcinfra.Context) {
 }
 
 func GetNodes(c *svcinfra.Context) {
-	// path := "/nodes"
-	// resp, _ := BuildProxyReq[[]ClusterListNode](c, "GET", path, nil, nil, "")
-	// if resp == nil {
-	// 	c.GeneralError("获取节点列表失败")
-	// 	return
-	// }
+	path := "/nodes"
+	resp, _ := BuildProxyReq[[]ClusterListNode](c, "GET", path, nil, nil, "")
+	if resp == nil {
+		c.GeneralError("获取节点列表失败")
+		return
+	}
 	// Mock code
-	resp := make([]ClusterNodeInfo, 0)
-	resp = append(resp, ClusterNodeInfo{
-		NodeName: "controlplane",
-		NodeIP:   "192.168.1.12",
-	})
+	// resp := make([]ClusterNodeInfo, 0)
+	// resp = append(resp, ClusterNodeInfo{
+	// 	NodeName: "controlplane",
+	// 	NodeIP:   "192.168.1.12",
+	// })
+	// end Mock code
 	c.Bye(gin.H{"code": 0, "data": resp})
 }
 
@@ -198,21 +199,25 @@ func GetNodeDetail(c *svcinfra.Context) {
 
 	data := make(map[string]interface{})
 
-	// path := "/node"
-	// query := map[string]interface{}{
-	// 	"node_name": req.ID,
-	// }
-	// resp, _ := BuildProxyReq[ClusterNodeDetail](c, "GET", path, &query, nil, "")
-	// if resp != nil {
-	// 	data["node"] = resp
-	// }
+	// Mock code
+	path := "/node"
+	query := map[string]interface{}{
+		"node_name": req.ID,
+	}
+	resp, _ := BuildProxyReq[ClusterNodeDetail](c, "GET", path, &query, nil, "")
+	if resp != nil {
+		data["node"] = resp
+	}
+	// end Mock code
 	devices := models.GetDevicesByNode(req.ID)
 	running := make([]string, 0)
 	stopped := make([]string, 0)
 	appMaps := make(map[string]bool)
-	// for _, app := range resp.Applications {
-	// 	appMaps[app] = true
-	// }
+	// Mock code
+	for _, app := range resp.Applications {
+		appMaps[app] = true
+	}
+	// end Mock code
 	for _, device := range devices {
 		if len(device.AppName) > 0 && appMaps[device.Name] {
 			running = append(running, device.Name)
