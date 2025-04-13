@@ -288,12 +288,12 @@ func SetInitialData() {
 		{Name: "多画面", Icon: "mv.svg", Category: "multiv", AppCategory: "mv", Deleted: 1},
 		{Name: "切换台", Icon: "switch.svg", Category: "swt", AppCategory: "swt", Deleted: 1},
 		{Name: "末级切换", Icon: "endswitch.svg", Category: "endswt", AppCategory: "swt", Deleted: 1},
-		{Name: "录放机", Icon: "recorder.svg", Category: "recorder", AppCategory: "rc"},
-		{Name: "全媒体网关", Icon: "media_gateway.svg", Category: "media_gateway", AppCategory: "mg"},
+		{Name: "录放机", Icon: "recorder.svg", Category: "recorder", AppCategory: "recoder"},
+		{Name: "全媒体网关", Icon: "media_gateway.svg", Category: "media_gateway", AppCategory: "media_gateway"},
 		{Name: "多画面", Icon: "mv.svg", Category: "mv", AppCategory: "mv"},
-		{Name: "播出切换台", Icon: "bcswitch.svg", Category: "bcswt", AppCategory: "swt"},
-		{Name: "制作切换台", Icon: "switch_v2.svg", Category: "makeswt", AppCategory: "swt"},
-		{Name: "新媒体切换台", Icon: "new_media.svg", Category: "nmswt", AppCategory: "swt"},
+		{Name: "播出切换台", Icon: "bcswitch.svg", Category: "bcswt", AppCategory: "switch-v2"},
+		{Name: "制作切换台", Icon: "switch_v2.svg", Category: "makeswt", AppCategory: "switch-v2"},
+		{Name: "新媒体切换台", Icon: "new_media.svg", Category: "nmswt", AppCategory: "switch-v2"},
 	}
 	for _, tmplType := range tmplTypes {
 		// 检查是否已存在, 以 Category 为主键, 使用 db_helpers.go 里面的 QueryOne
