@@ -12,7 +12,6 @@ defineProps<{
 }>()
 
 const opened = ref(false)
-const switchTypeCategory = inject('switch_type_category')
 
 function addPanelUrl() {
   if (mv.value.panel_type === 'panel_c1') {
@@ -47,7 +46,7 @@ function removePanelUrl(pidx: number) {
       </div>
     </div>
     <div v-show="opened" class="form-fieldset-nested-4">
-      <div class="columns is-multiline" style="margin-bottom: 0;">
+      <div class="columns is-multiline">
         <div class="column is-6">
           <VField>
             <VLabel>面板类型</VLabel>
@@ -59,11 +58,13 @@ function removePanelUrl(pidx: number) {
           </VField>
         </div>
       </div>
-      <div class="form-fieldset-nested-4">
+      <div
+        class="form-fieldset-nested-4 seperator-top"
+        :style="{ paddingTop: (mv.panel_type === 'panel_c1') ? '12px' : '0' }"
+      >
         <expand-transition>
-          <div v-if="mv.panel_type === 'panel_c1' || switchTypeCategory !== 'bcswt'" class="fieldset-heading collapse-header" style="height: 38px; margin-bottom: 0 !important;">
-            <h5 v-if="switchTypeCategory !== 'bcswt'">子面板通讯地址</h5>
-            <span v-else>&nbsp;</span>
+          <div v-if="mv.panel_type === 'panel_c1'" class="fieldset-heading collapse-header" style="height: 38px; margin-bottom: 0 !important;">
+            <span>&nbsp;</span>
             <VButton
               v-if="mv.panel_type === 'panel_c1'"
               class="is-rounded"

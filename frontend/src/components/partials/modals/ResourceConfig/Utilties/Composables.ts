@@ -1,5 +1,12 @@
+import { type WatchSource } from 'vue'
 import { type NicDetail, def_nic_detail } from './Consts_V1'
 import { type PlayerParams } from './Consts_V1'
+import {
+  def_switch_panel_params,
+  def_tally_config,
+  type SwitchPanel,
+  type TallyParams,
+} from '../SwitchShare/Consts'
 
 export function useNicList(props: { nics: NicInfo[]; requiredment?: TmplRequirement }) {
   const nicDetails = ref<NicDetail[]>([])
@@ -80,4 +87,51 @@ export function useUsedFormat() {
   }
 
   return [formatEnum, onSelected, onUnselected] as const
+}
+
+export function useTally(level: WatchSource<number>, tally: Ref<TallyParams>) {
+  watch(
+    level,
+    (nv) => {
+      const len = tally.value.length
+      if (nv > len) {
+        tally.value = Array.from(
+          { length: nv },
+          (_, i) => tally.value[i] || def_tally_config(i)
+        )
+      } else if (nv < len) {
+        tally.value = tally.value.slice(0, nv)
+      }
+    },
+    { immediate: true }
+  )
+}
+
+export function useSwitchPanel(level: WatchSource<number>, panel: Ref<SwitchPanel>) {
+  watch(
+    level,
+    (nv) => {
+      const len = panel.value.length
+      if (nv > len) {
+        panel.value = Array.from(
+          { length: nv },
+          (_, i) => panel.value[i] || def_switch_panel_params(i)
+        )
+      } else if (nv < len) {
+        panel.value = panel.value.slice(0, nv)
+      }
+    },
+    { immediate: true }
+  )
+}
+
+export function useSwitchBus() {
+  const busSet = ref<Set<string>>(new Set())
+  function onSelected(id: string) {
+    busSet.value.add(id)
+  }
+  function onUnselected(id: string) {
+    busSet.value.delete(id)
+  }
+  return [busSet, onSelected, onUnselected] as const
 }

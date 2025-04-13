@@ -375,17 +375,38 @@ export const resizeMeta = (meta: LayoutMeta, rw: number, rh: number): LayoutMeta
   }
 }
 
-export const DefaultLayouts: [number, number][][] = [
-  [[1, 1]],
-  [[2, 2]],
-  [[3, 3]],
-  [
-    [2, 1],
-    [4, 2],
-  ],
-  [[4, 3]],
-  [[4, 4]],
-  [[5, 5]],
+export const DefaultLayouts: LayoutSample[] = [
+  {
+    name: '1 画分',
+    value: [[1, 1]],
+  },
+  {
+    name: '4 画分',
+    value: [[2, 2]],
+  },
+  {
+    name: '9 画分',
+    value: [[3, 3]],
+  },
+  {
+    name: '10 画分',
+    value: [
+      [2, 1],
+      [4, 2],
+    ],
+  },
+  {
+    name: '12 画分',
+    value: [[4, 3]],
+  },
+  {
+    name: '16 画分',
+    value: [[4, 4]],
+  },
+  {
+    name: '25 画分',
+    value: [[5, 5]],
+  },
 ]
 
 export const draftLayoutItem = (

@@ -14,6 +14,22 @@ defineProps<{
 const opened = ref(false)
 const showSecondScreen = ref(false)
 
+function handlePgmChecked(screenidx: number, checked: boolean) {
+  if (checked) {
+    for (let idx = 0; idx < mv.value.screens.length; idx++) {
+      mv.value.screens[idx].pgm_checked = screenidx === idx
+    }
+  }
+}
+
+function handlePvwChecked(screenidx: number, checked: boolean) {
+  if (checked) {
+    for (let idx = 0; idx < mv.value.screens.length; idx++) {
+      mv.value.screens[idx].pvw_checked = screenidx === idx
+    }
+  }
+}
+
 </script>
 <template>
   <div
@@ -41,6 +57,8 @@ const showSecondScreen = ref(false)
         v-model="mv.screens[screenidx]"
         :index="screenidx"
         :is-last="screenidx === mv.screens.length - 1"
+        @pgm-checked="handlePgmChecked(screenidx, $event)"
+        @pvw-checked="handlePvwChecked(screenidx, $event)"
       />
       <div v-if="!showSecondScreen" class="form-action-buttons">
         <div class="left">

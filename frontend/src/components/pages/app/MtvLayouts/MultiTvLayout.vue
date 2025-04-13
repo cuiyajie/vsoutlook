@@ -28,7 +28,7 @@ import { type WatchStopHandle } from 'vue'
 import { nanoid } from 'nanoid'
 
 const notyf = useNotyf()
-const layoutSamples = ref<[number, number][][]>(DefaultLayouts)
+const layoutSamples = ref<LayoutSample[]>(DefaultLayouts)
 const currLayoutSample = ref<[number, number][] | null>(null)
 const cellCount = computed(() =>
   currLayoutSample.value
@@ -649,31 +649,36 @@ onKeyStroke('Escape', (e) => {
   <div>
     <Transition name="translate-page-y">
       <VCard v-if="currLayout" radius="rounded" class="tv-header-card">
-        <div class="layout-sample-container">
+        <div class="layout-sample-container scrollbar-hide">
           <div
             v-for="(ly, id1) in layoutSamples"
             :key="id1"
-            class="tv-tables mini"
-            role="button"
-            tabindex="-1"
-            @click.prevent="confirmSelectLayout(ly)"
-            @keyup.enter.prevent="selectLayoutSample(ly)"
+            class="layout-sample"
           >
             <div
-              v-for="(area, id2) in ly"
-              :key="id2"
-              class="tv-table"
-              :style="{
-                '--row': area[1],
-                '--column': area[0],
-                width: '100%',
-                height: `${100 / ly.length}%`,
-                borderTopWidth: id2 === 0 ? '1px' : '0px',
-              }"
+              class="tv-tables mini"
+              role="button"
+              tabindex="-1"
+              @click.prevent="confirmSelectLayout(ly.value)"
+              @keyup.enter.prevent="selectLayoutSample(ly.value)"
             >
-              <div v-for="(row, id3) in area[0] * area[1]" :key="id3" class="tv-cell" />
+              <div
+                v-for="(area, id2) in ly.value"
+                :key="id2"
+                class="tv-table"
+                :style="{
+                  '--row': area[1],
+                  '--column': area[0],
+                  width: '100%',
+                  height: `${100 / ly.value.length}%`,
+                  borderTopWidth: id2 === 0 ? '1px' : '0px',
+                }"
+              >
+                <div v-for="(row, id3) in area[0] * area[1]" :key="id3" class="tv-cell" />
+              </div>
+              <div class="add-mask"><i aria-hidden="true" class="fas fa-plus" /></div>
             </div>
-            <div class="add-mask"><i aria-hidden="true" class="fas fa-plus" /></div>
+            <div class="tv-title">{{ ly.name }}</div>
           </div>
         </div>
         <div class="area-sep" />
@@ -1088,7 +1093,7 @@ onKeyStroke('Escape', (e) => {
   margin-inline-start: -0.5rem;
   margin-inline-end: -0.5rem;
   margin-bottom: 1rem;
-  height: 8rem;
+  height: 10rem;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1136,6 +1141,12 @@ onKeyStroke('Escape', (e) => {
     &:hover {
       background: var(--dark-sidebar-light-2);
     }
+  }
+
+  .tv-title {
+    text-align: center;
+    margin-top: 6px;
+    font-weight: 500;
   }
 }
 

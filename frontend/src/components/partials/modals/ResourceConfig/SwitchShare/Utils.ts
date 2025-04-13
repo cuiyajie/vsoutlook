@@ -72,6 +72,9 @@ export function handleSwitchInputKey(params: SwitchInputKeyParams[], vfs: VideoF
     let result: any = {}
     if (p.key_type === 'ext_key') {
       result = handlePlayerParams(p, vfs)
+      if (result.smpte_params) {
+        delete result.smpte_params.nic_index
+      }
       delete result.audioformat_name
     }
     if (p.key_type !== 'int_key') {
@@ -97,6 +100,9 @@ export function handleSwitchInputVideo(
 ) {
   return params.map((p, pidx) => {
     const result = handlePlayerParams(p, vfs)
+    if (result.smpte_params) {
+      delete result.smpte_params.nic_index
+    }
     return {
       ...result,
       index: pidx,
@@ -177,7 +183,7 @@ export function handleSwitchBus(
   usedSignalType: number,
   category: string
 ) {
-  if (category === 'bcswitch') {
+  if (category === 'bcswt') {
     return {
       key_bus: handleBusKey(params.key_bus, usedSignalType),
       level_bus: handleBusLevel(params.level_bus),
@@ -194,14 +200,15 @@ export function handleSwitchBus(
 export function handleOutParams(
   params: SwitchOutParams[],
   vfs: VideoFormat[],
-  audioMode: number
+  audioMode: number,
+  category: string
 ) {
   return params.map((p, pidx) => {
     const result = handlePlayerParams(p, vfs)
     if (audioMode !== 0) {
       delete result.audioformat_name
     }
-    if (!result.mapping_checked) {
+    if (category === 'bcswt' || audioMode === 0 || !result.mapping_checked) {
       delete result.audio_mapping_name
     }
     delete result.mapping_checked
@@ -265,7 +272,8 @@ export function handleMVOutputParams(
 export function handleSwitchOut(
   params: SwitchOut,
   vfs: VideoFormat[],
-  audioMode: number
+  audioMode: number,
+  category: string
 ) {
   let showSmpte = false
   params.out_params.forEach((outParam) => {
@@ -275,7 +283,7 @@ export function handleSwitchOut(
   })
   return {
     out_number: params.out_number,
-    out_params: handleOutParams(params.out_params, vfs, audioMode),
+    out_params: handleOutParams(params.out_params, vfs, audioMode, category),
     ...(audioMode === 2
       ? {
           audio_output_params: handleAudioOutputParams(
@@ -304,13 +312,13 @@ export function checkSwitchData(
 ) {
   const tallyData = data.tally_config
   let _tally = def_tally(data.level)
-  if (data.tally_config) {
+  if (data.tally_config && data.tally_notify) {
     _tally = Array.from({ length: tallyData.length }, (_, idx) => {
       const screens = Array.from(
         { length: tallyData[idx].screens.length },
         (_, screenIdx) => {
           const screenData = tallyData[idx].screens[screenIdx]
-          const screen = merge(def_tally_screen(screenIdx), screenData)
+          const screen = merge(def_tally_screen(), screenData)
           screen.pgm_checked = screenData.pgm_tally_index !== undefined
           screen.pvw_checked = screenData.pvw_tally_index !== undefined
           return screen

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { type SwitchBusMeParams, type SwitchBusKeyParams } from "./Consts";
+import { type SwitchBusMeParams, type SwitchBusKeyParams, type InjectSwitchBusSelect, def_switch_bus_select } from "./Consts";
 
 const busId = defineModel<string>({
   default: "",
@@ -12,16 +12,22 @@ const props = defineProps<{
   busKeys: SwitchBusKeyParams[],
   busMes: SwitchBusMeParams[],
 }>();
+
+const { selectedBus, busSelected, busUnSelected } = inject<InjectSwitchBusSelect>('switch_bus_select', def_switch_bus_select())
+
 const options = computed(() => {
+  const isDisabled = (bid: string) => selectedBus.value.has(bid) && bid !== busId.value
   if (props.type === 'key_bus') {
     return props.busKeys.map(item => ({
       bus_name: item.bus_name,
-      bus_id: item.bus_id
+      bus_id: item.bus_id,
+      disabled: isDisabled(item.bus_id)
     }))
   } else if (props.type === 'me_bus') {
     return props.busMes.map(item => ({
       bus_name: item.bus_name,
-      bus_id: item.bus_id
+      bus_id: item.bus_id,
+      disabled: isDisabled(item.bus_id)
     }))
   }
   return []
@@ -30,6 +36,16 @@ const options = computed(() => {
 watch(() => props.type, () => {
   busId.value = ''
 })
+
+watch(busId, (nv, ov) => {
+  if (nv === ov) return
+  if (nv) {
+    busSelected(nv)
+  }
+  if (ov) {
+    busUnSelected(ov)
+  }
+}, { immediate: true })
 
 </script>
 <template>

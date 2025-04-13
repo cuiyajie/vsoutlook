@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useSwitchBus } from '../Utilties/Composables';
 import {
   type SwitchBus,
   def_switch_bus_me_params,
@@ -21,6 +22,8 @@ const props = defineProps<{
 }>()
 
 const switchTypeCategory = inject('switch_type_category')
+const [selectedBus, busSelected, busUnSelected] = useSwitchBus()
+provide('switch_bus_select', { selectedBus, busSelected, busUnSelected })
 
 const keyParams = computed({
   get: () => mv.value.key_bus,
@@ -66,7 +69,7 @@ function removeMeParam(idx: number) {
     <div class="form-header is-sticky">
       <div class="form-header-inner">
         <div class="left">
-          <h4>键总线设置 {{ keyParams.length > 0 ? `- ${keyParams.length} 级` : '' }}</h4>
+          <h4>键总线设置 {{ keyParams.length > 0 ? `- ${keyParams.length} 路` : '' }}</h4>
         </div>
         <button
           class="button is-circle is-dark-outlined"

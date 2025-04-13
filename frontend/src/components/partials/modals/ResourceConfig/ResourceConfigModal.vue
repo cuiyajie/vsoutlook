@@ -502,4 +502,16 @@ const tmplConfig = computed(() => {
     left: 138px;
   }
 }
+
+.is-dark {
+  .v-modal.resource-config-modal {
+    .modal-content {
+      .modal-card {
+        .modal-card-head {
+          border-color: var(--dark-sidebar-light-22);
+        }
+      }
+    }
+  }
+}
 </style>

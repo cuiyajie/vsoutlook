@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useSwitchBus } from '../Utilties/Composables';
 import {
   def_switch_out_params,
   type SwitchInputVideoParams,
@@ -34,6 +35,9 @@ watch(() => mv.value.out_number, (nv) => {
     )
   }
 }, { immediate: true })
+
+const [selectedBus, busSelected, busUnSelected] = useSwitchBus()
+provide('switch_bus_select', { selectedBus, busSelected, busUnSelected })
 
 const usedSignalType = inject<Ref<number>>('switch_used_signal_type', ref(0))
 

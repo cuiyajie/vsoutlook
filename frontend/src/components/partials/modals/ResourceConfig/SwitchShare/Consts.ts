@@ -63,24 +63,24 @@ export const switch_out_types = ['pgm', 'pvw', 'clean', 'aux']
 
 export const def_tally_signal = (index: number) => ({
   index,
-  level_input_index: index,
-  tally_index: index + 1,
+  level_input_index: index + 1,
+  tally_index: index,
 })
 
-export const def_tally_screen = (index: number) => ({
+export const def_tally_screen = () => ({
   screen_id: 1,
   address: '192.168.1.116:6001',
   pgm_tally_index: 0,
   pvw_tally_index: 1,
   signal_number: 4,
-  pgm_checked: index === 0,
-  pvw_checked: index === 1,
+  pgm_checked: false,
+  pvw_checked: false,
   signal_config: [] as TallySignalParams[],
 })
 
 export const def_tally_config = (index: number) => ({
   level: index,
-  screens: [def_tally_screen(0), def_tally_screen(1)],
+  screens: [def_tally_screen(), def_tally_screen()],
 })
 
 export const def_tally = (level: number) =>
@@ -298,6 +298,18 @@ export interface InjectSwitchTemplateToggle {
   audioUnSelected: (name: string) => void
   audioMappingSelected: (name: string) => void
   audioMappingUnSelected: (name: string) => void
+}
+
+export const def_switch_bus_select = () => ({
+  selectedBus: ref(new Set<string>()),
+  busSelected: () => {},
+  busUnSelected: () => {},
+})
+
+export interface InjectSwitchBusSelect {
+  selectedBus: Ref<Set<string>>
+  busSelected: (bus: string) => void
+  busUnSelected: (bus: string) => void
 }
 
 export interface InjectSwitchConfig {

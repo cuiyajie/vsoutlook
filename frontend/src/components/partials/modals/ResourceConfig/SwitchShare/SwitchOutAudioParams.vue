@@ -41,6 +41,7 @@ const showSmpte = computed(() => {
               :input-keys="[]"
               :input-videos="inputVideos"
               :bus-levels="[]"
+              :level-index="-1"
             />
           </VControl>
         </VField>

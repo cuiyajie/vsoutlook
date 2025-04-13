@@ -114,7 +114,12 @@ const opened = ref(false)
         </div>
         <expand-transition>
           <div v-if="mv.key_type === 'ext_key'">
-            <PlayerParamsForm v-model="mv" :nics="nics" :smpte="mv.key_type === 'ext_key' ? 'receive' : 'send'" />
+            <PlayerParamsForm
+              v-model="mv"
+              :nics="nics"
+              :show-nic="false"
+              :smpte="mv.key_type === 'ext_key' ? 'receive' : 'send'"
+            />
           </div>
         </expand-transition>
       </div>

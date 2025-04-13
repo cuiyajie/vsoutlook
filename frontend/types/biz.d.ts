@@ -257,6 +257,11 @@ interface Layout {
   updatedAt: number
 }
 
+interface LayoutSample {
+  name: string
+  value: [number, number][]
+}
+
 interface LayoutDimension {
   w: number
   h: number

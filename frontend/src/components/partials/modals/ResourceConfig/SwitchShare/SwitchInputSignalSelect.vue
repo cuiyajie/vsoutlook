@@ -16,33 +16,38 @@ const props = defineProps<{
   type: string,
   inputKeys: SwitchInputKeyParams[],
   inputVideos: SwitchInputVideoParams[],
-  busLevels: SwitchBusLevelParams[]
+  busLevels: SwitchBusLevelParams[],
+  levelIndex: number
 }>();
 
 const options = computed(() => {
   if (props.type === 'key') {
     return props.inputKeys.map(item => ({
       signal_name: item.signal_name,
-      signal_id: item.signal_id
+      signal_id: item.signal_id,
     }))
   } else if (props.type === 'video') {
     return props.inputVideos.map(item => ({
       signal_name: item.signal_name,
-      signal_id: item.signal_id
+      signal_id: item.signal_id,
     }))
   } else if (props.type === 'bus_output') {
     return props.busLevels.reduce((acc, item) => {
       item.pgm_bus.out_signal?.forEach(signal => {
-        acc.push({
-          signal_name: signal.signal_name,
-          signal_id: signal.signal_id
-        })
+        if (item.level !== props.levelIndex) {
+          acc.push({
+            signal_name: signal.signal_name,
+            signal_id: signal.signal_id,
+          })
+        }
       })
       item.pvw_bus.out_signal?.forEach(signal => {
-        acc.push({
-          signal_name: signal.signal_name,
-          signal_id: signal.signal_id
-        })
+        if (item.level !== props.levelIndex) {
+          acc.push({
+            signal_name: signal.signal_name,
+            signal_id: signal.signal_id,
+          })
+        }
       })
       return acc
     }, [] as { signal_name: string, signal_id: string }[])

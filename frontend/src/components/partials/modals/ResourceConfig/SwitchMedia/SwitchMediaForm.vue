@@ -14,7 +14,7 @@ import pick from 'lodash-es/pick'
 import nmswtData from '@src/data/vscomponent/nmswitch.json'
 import { useUserSession } from "@src/stores/userSession"
 import { levels } from './Consts';
-import { useUsedFormat, useNicList } from '../Utilties/Composables';
+import { useUsedFormat, useNicList, useTally, useSwitchPanel } from '../Utilties/Composables';
 import { def_switch_bus, def_switch_input, def_switch_out, def_switch_panel, def_tally } from '../SwitchShare/Consts';
 import { checkSwitchData, handleSwitchBus, handleSwitchInput, handleSwitchOut, handleSwitchPanel, handleTally } from '../SwitchShare/Utils';
 import { checkApiParams, checkNicDetails, handleApiParams, handleAudioFormat, handleAudioMapping, handleNicList, handleVideoFormat, wrap } from '../Utilties/Utils_V1';
@@ -91,23 +91,27 @@ provide('switch_used_signal_type', computed(() => mv.value.used_signal_type))
 provide('switch_audio_mode', computed(() => mv.value.audio_workmode))
 
 const tally = ref(def_tally(mv.value.level))
+useTally(() => mv.value.level, tally)
+
+const panel = ref(def_switch_panel(mv.value.level))
+useSwitchPanel(() => mv.value.level, panel)
+
 const input = ref(def_switch_input())
 const bus = ref(def_switch_bus(mv.value.level))
 const out = ref(def_switch_out(mv.value.level))
-const panel = ref(def_switch_panel(mv.value.level))
 
 watchNmosName(() => props.name, mv)
 
 function getValue() {
   const result = {
     ...handle(mv.value),
-    tally_config: handleTally(tally.value),
+    ...(mv.value.tally_notify ? {tally_config: handleTally(tally.value)} : {}),
     api_params: handleApiParams(apiParams.value),
     panel_params: handleSwitchPanel(panel.value),
     videoformat_enum: videoFormatEnum.value.map(vfn => handleVideoFormat(vfn, videoFormats.value)).filter(v => v),
     input: wrap(handleSwitchInput(input.value, videoFormats.value), 'in_'),
-    bus: handleSwitchBus(bus.value, mv.value.used_signal_type, 'bcswitch'),
-    output: wrap(handleSwitchOut(out.value, videoFormats.value, mv.value.audio_workmode), 'out_'),
+    bus: handleSwitchBus(bus.value, mv.value.used_signal_type, 'nmswt'),
+    output: wrap(handleSwitchOut(out.value, videoFormats.value, mv.value.audio_workmode, 'nmswt'), 'out_'),
   }
   if (mv.value.audio_workmode !== 0) {
     result.audioformat_enum = audioFormatEnum.value.map(afn => handleAudioFormat(afn, audioFormats.value)).filter(a => a)
@@ -211,18 +215,28 @@ defineExpose({
           </div>
         </div>
         <div class="form-fieldset form-outer">
-          <div class="fieldset-heading">
+          <div class="fieldset-heading flex-between with-switch" :class="!mv.tally_notify && 'border-none'">
             <h4>tally通讯设置</h4>
+            <VControl>
+              <VSwitchBlock
+                v-model="mv.tally_notify"
+                :label="mv.tally_notify ? '发送 tally 通知' : '不发送 tally 通知'"
+                thin
+                color="primary"
+              />
+            </VControl>
           </div>
-          <div class="form-body">
-            <TallyConfigParams
-              v-for="(tallyConfig, tidx) in tally"
-              :key="tidx"
-              v-model="tally[tidx]"
-              :index="tidx"
-              :is-last="tidx === tally.length - 1"
-            />
-          </div>
+          <expand-transition>
+            <div v-if="mv.tally_notify" class="form-body">
+              <TallyConfigParams
+                v-for="(tallyConfig, tidx) in tally"
+                :key="tidx"
+                v-model="tally[tidx]"
+                :index="tidx"
+                :is-last="tidx === tally.length - 1"
+              />
+            </div>
+          </expand-transition>
         </div>
         <div class="form-fieldset">
           <div class="fieldset-heading">

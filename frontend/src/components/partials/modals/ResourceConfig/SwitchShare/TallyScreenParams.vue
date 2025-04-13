@@ -12,7 +12,8 @@ defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'tally-checked'): void
+  (e: 'pgm-checked', value: boolean): void
+  (e: 'pvw-checked', value: boolean): void
 }>()
 
 watch(() => mv.value.signal_number, (nv) => {
@@ -67,7 +68,7 @@ watch(() => mv.value.signal_number, (nv) => {
                 v-model="mv.pgm_checked"
                 color="primary"
                 circle
-                @change="event => mv.pvw_checked = !Boolean((event.target as HTMLInputElement).value)"
+                @change="emit('pgm-checked', ($event.target as HTMLInputElement).checked)"
               />
             </VControl>
             <VControl>
@@ -82,7 +83,7 @@ watch(() => mv.value.signal_number, (nv) => {
                 v-model="mv.pvw_checked"
                 color="primary"
                 circle
-                @change="event => mv.pgm_checked = !Boolean((event.target as HTMLInputElement).value)"
+                @change="emit('pvw-checked', ($event.target as HTMLInputElement).checked)"
               />
             </VControl>
             <VControl>

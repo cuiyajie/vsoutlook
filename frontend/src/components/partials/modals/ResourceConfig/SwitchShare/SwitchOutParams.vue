@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type SwitchOutParams, switch_out_types, bus_signal_types_map, bus_signal_types, type SwitchInputVideoParams, type SwitchBusLevelParams } from './Consts'
+import { type SwitchOutParams, switch_out_types, bus_signal_types_map, bus_signal_types, type SwitchInputVideoParams, type SwitchBusLevelParams, bus_sub_types } from './Consts'
 import { type InjectSwitchTemplateToggle, def_switch_template_toggle } from '../SwitchShare/Consts'
 import { type IndexedNicDetail } from '../Utilties/Consts_V1'
 
@@ -26,6 +26,9 @@ const switchTypeCategory = inject('switch_type_category')
 const audioMode = inject<Ref<number>>('switch_audio_mode')
 
 const signalTypes = computed(() => {
+  if (mv.value.out_type !== 'aux') {
+    return bus_signal_types.filter(bst => bst.value === 'bus_output')
+  }
   return bus_signal_types.filter(bst => bst.value !== 'key')
 })
 
@@ -91,7 +94,7 @@ const opened = ref(false)
                 </VControl>
               </VField>
             </div>
-            <div v-if="switchTypeCategory !== 'nmswt'" class="column is-6">
+            <div v-if="switchTypeCategory !== 'nmswt' && audioMode !== 0" class="column is-6">
               <VField class="field-check" label="使用的音频映射模板">
                 <VControl raw subcontrol class="check-control">
                   <VCheckbox v-model="mv.mapping_checked" color="primary" circle />

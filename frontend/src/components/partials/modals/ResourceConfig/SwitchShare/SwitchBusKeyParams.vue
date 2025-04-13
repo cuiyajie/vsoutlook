@@ -37,7 +37,7 @@ const opened = ref(false)
       @keydown.space.prevent="opened = !opened"
       @click.prevent="opened = !opened"
     >
-      <h4>第 {{ index + 1 }} 级输出总线&nbsp;&nbsp;索引: {{ index }}</h4>
+      <h4>第 {{ index + 1 }} 路键总线&nbsp;&nbsp;索引: {{ index }}</h4>
       <div class="collapse-icons">
         <div
           class="collapse-icon is-close-hidden"
@@ -110,6 +110,7 @@ const opened = ref(false)
                     :input-keys="inputKeys"
                     :input-videos="inputVideos"
                     :bus-levels="busLevels"
+                    :level-index="-1"
                   />
                 </VControl>
               </VField>

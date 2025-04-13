@@ -16,8 +16,6 @@ const emit = defineEmits<{
   (e: 'remove'): void
 }>()
 
-const switchTypeCategory = inject('switch_type_category')
-
 </script>
 <template>
   <div class="form-fieldset-nested-5 collapse-form">
@@ -40,7 +38,6 @@ const switchTypeCategory = inject('switch_type_category')
       <div class="columns is-multiline">
         <div class="column is-12">
           <VField>
-            <VLabel v-if="switchTypeCategory !== 'bcswt'">子面板通讯地址</VLabel>
             <VControl>
               <VInput v-model="mv.url" />
             </VControl>

@@ -1,7 +1,7 @@
 import { audio_workmodes } from '../SwitchShare/Consts'
 import { used_signal_types } from '../Utilties/Consts_V1'
 
-export const makeswt_used_signal_types = used_signal_types.filter((v) => v.key === 0)
+export const makeswt_used_signal_types = [...used_signal_types]
 export const levels = [1, 2]
 
 export const makeswt_audio_workmodes = [...audio_workmodes]

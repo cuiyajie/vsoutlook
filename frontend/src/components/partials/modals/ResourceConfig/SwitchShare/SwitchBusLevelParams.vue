@@ -21,7 +21,10 @@ const props = defineProps<{
 const nics = inject<IndexedNicDetail[]>('switch_nics', [])
 
 const busSignalTypes = computed(() => {
-  return bus_signal_types.filter(bst => bst.value === 'video' || (bst.value === 'bus_output' && props.level === 2))
+  return bus_signal_types.filter(
+    bst => bst.value === 'video' ||
+    (bst.value === 'bus_output' && props.level === 2 && mv.value.level === 1)
+  )
 })
 
 watch(() => mv.value.bus_input_number, (nv) => {
@@ -144,6 +147,7 @@ const opened = ref(false)
                         :input-keys="inputKeys"
                         :input-videos="inputVideos"
                         :bus-levels="busLevels"
+                        :level-index="mv.level"
                       />
                     </VControl>
                   </VField>

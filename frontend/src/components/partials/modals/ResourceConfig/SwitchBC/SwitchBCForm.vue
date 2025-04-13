@@ -13,7 +13,7 @@ import { def_api_params } from './Consts';
 import pick from 'lodash-es/pick'
 import bcswtData from '@src/data/vscomponent/bcswitch.json'
 import { useUserSession } from "@src/stores/userSession"
-import { useUsedFormat, useNicList } from '../Utilties/Composables';
+import { useUsedFormat, useNicList, useSwitchPanel } from '../Utilties/Composables';
 import { def_switch_bus, def_switch_input, def_switch_out, def_switch_panel } from '../SwitchShare/Consts';
 import { checkApiParams, checkNicDetails, handleApiParams, handleAudioFormat, handleAudioMapping, handleNicList, handleVideoFormat, wrap } from '../Utilties/Utils_V1';
 import { checkSwitchData, handleSwitchBus, handleSwitchInput, handleSwitchOut, handleSwitchPanel } from '../SwitchShare/Utils';
@@ -89,10 +89,12 @@ provide('switch_nics', indexedNicDetails)
 provide('switch_used_signal_type', computed(() => mv.value.used_signal_type))
 provide('switch_audio_mode', computed(() => mv.value.audio_workmode))
 
+const panel = ref(def_switch_panel(mv.value.level))
+useSwitchPanel(() => mv.value.level, panel)
+
 const input = ref(def_switch_input())
 const bus = ref(def_switch_bus(mv.value.level))
 const out = ref(def_switch_out(mv.value.level))
-const panel = ref(def_switch_panel(mv.value.level))
 
 watchNmosName(() => props.name, mv)
 
@@ -103,8 +105,8 @@ function getValue() {
     panel_params: handleSwitchPanel(panel.value),
     videoformat_enum: videoFormatEnum.value.map(vfn => handleVideoFormat(vfn, videoFormats.value)).filter(v => v),
     input: wrap(handleSwitchInput(input.value, videoFormats.value), 'in_'),
-    bus: handleSwitchBus(bus.value, mv.value.used_signal_type, 'bcswitch'),
-    output: wrap(handleSwitchOut(out.value, videoFormats.value, mv.value.audio_workmode), 'out_'),
+    bus: handleSwitchBus(bus.value, mv.value.used_signal_type, 'bcswt'),
+    output: wrap(handleSwitchOut(out.value, videoFormats.value, mv.value.audio_workmode, 'bcswt'), 'out_'),
   }
   if (mv.value.audio_workmode !== 0) {
     result.audioformat_enum = audioFormatEnum.value.map(afn => handleAudioFormat(afn, audioFormats.value)).filter(a => a)
