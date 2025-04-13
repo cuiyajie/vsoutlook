@@ -92,8 +92,6 @@ function selectLayout(ly: Layout) {
     line-height: 1.35;
     font-size: 13px;
     position: relative;
-    margin-left: -1rem;
-    margin-right: -1rem;
     transition: all .2s ease-in-out;
     cursor: pointer;
 

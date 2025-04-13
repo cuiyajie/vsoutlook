@@ -133,9 +133,9 @@ onMounted(() => {
   <div class="columns is-multiline page-template">
     <div class="column is-2">
       <VCard radius="rounded" class="card-widget">
-        <div class="title-wrap mb-4">
+        <div class="title-wrap mb-4" style="align-items: center;">
           <h3>应用列表</h3>
-          <button class="button is-circle is-dark-outlined" @click="createNewTmpl">
+          <button class="button is-circle is-dark-outlined" style="width: 38px; height: 38px;" @click="createNewTmpl">
             <span class="icon is-small">
               <i aria-hidden="true" class="iconify" data-icon="feather:plus" />
             </span>

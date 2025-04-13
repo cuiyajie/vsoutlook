@@ -185,7 +185,8 @@ func preInstallation(c *svcinfra.Context, configStr string, tmpl *models.Tmpl, n
 	if err != nil {
 		return nil, nil, errors.New("设备配置文件格式错误")
 	}
-	fmt.Printf("configFile before handle: %v\n", configFile)
+
+	// fmt.Printf("configFile before handle: %v\n", configFile)
 
 	var coreMap = make(map[string][]uint32)
 	var dmaMap = make(map[string][]string)
@@ -342,6 +343,10 @@ func preInstallation(c *svcinfra.Context, configStr string, tmpl *models.Tmpl, n
 	configJson := utils.MapToString(configFile)
 	data["configFile"] = configJson
 	device.Config = configJson
+
+	// print request data in json format
+	jsonStr, _ := json.Marshal(data)
+	fmt.Printf("install request data: %s\n", jsonStr)
 
 	resp2, err := cluster.BuildProxyReq[struct {
 		Name string `json:"name"`

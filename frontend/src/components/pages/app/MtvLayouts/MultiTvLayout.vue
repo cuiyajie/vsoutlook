@@ -29,6 +29,7 @@ import IsEqual from 'lodash-es/isEqual'
 import cloneDeep from 'lodash-es/cloneDeep'
 import { type WatchStopHandle } from 'vue'
 import { nanoid } from 'nanoid'
+import downloadJsonFile from '@src/utils/download-json'
 
 const notyf = useNotyf()
 const layoutSamples = ref<LayoutSample[]>(DefaultLayouts)
@@ -672,6 +673,57 @@ function publish(ly: Layout) {
   })
 }
 
+const layoutInput = ref<HTMLInputElement | null>(null)
+function upload() {
+  confirm({
+    title: '上传布局',
+    content: '确认上传该布局替换现有布局么？',
+    size: 'small',
+    onConfirm: async (hide) => {
+      hide()
+      layoutInput.value?.click()
+    },
+  })
+}
+
+function onLayoutImported(e: Event) {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = async (e) => {
+    const jsonStr = e.target?.result
+    if (jsonStr) {
+      try {
+        const val = JSON.parse(jsonStr as string)
+        if (currLayout.value) {
+          currLayout.value.content = val
+          const res = await layoutStore.$updateContent(currLayout.value.id, val)
+          if (res) {
+            notyf.success('导入成功')
+            currLayout.value = res
+            parseLayoutContent()
+          } else {
+            notyf.error(res || '导入失败')
+          }
+        }
+      } catch (err) {
+        console.log(err)
+        notyf.error('解析文件格式错误')
+      }
+      return
+    } else {
+      notyf.error('导入配置失败')
+    }
+  }
+  reader.readAsText(file)
+}
+
+function download(ly: Layout) {
+  const fileName = `${ly.name}_${ly.size === LayoutSize.FK ? '4k' : 'HD'}.json`
+  downloadJsonFile(ly.content, fileName)
+}
+
+
 onKeyStroke('Escape', (e) => {
   if (!e.target) return
   const targetEl = e.target as HTMLElement
@@ -763,8 +815,11 @@ onKeyStroke('Escape', (e) => {
       :style="{ height: `calc(100vh - ${top}px)` }"
     >
       <div class="column is-2">
-        <VCard radius="rounded">
-          <h3 class="title is-5 mb-4">布局列表</h3>
+        <VCard radius="rounded" class="tv-sidebar">
+          <h3 class="title is-5 mb-4">
+            布局列表
+            <VIconButton v-tooltip.rounded.primary="'新建布局'" color="primary" outlined circle icon="fas fa-plus" @click="createLayout" />
+          </h3>
           <layout-list
             :curr-layout="currLayout"
             :layouts="layouts"
@@ -790,37 +845,14 @@ onKeyStroke('Escape', (e) => {
             </span>
             <div class="buttons">
               <VButtons>
-                <VButton color="primary" raised @click="createLayout">
-                  <span class="icon">
-                    <i aria-hidden="true" class="fas fa-plus" />
-                  </span>
-                  <span>新建布局</span>
-                </VButton>
                 <template v-if="currLayout">
-                  <VButton color="primary" raised @click="saveAs">
-                    <span class="icon">
-                      <i aria-hidden="true" class="fas fa-copy" />
-                    </span>
-                    <span>复制</span>
-                  </VButton>
-                  <VButton color="primary" raised @click="publish(currLayout)">
-                    <span class="icon">
-                      <i class="fas fa-cloud-upload-alt" aria-hidden="true" />
-                    </span>
-                    <span>推送</span>
-                  </VButton>
-                  <VButton
-                    v-if="dataset.length > 0"
-                    class="is-final"
-                    color="info"
-                    raised
-                    @click="saveLayoutData"
-                  >
-                    <span class="icon">
-                      <i aria-hidden="true" class="fas fa-save" />
-                    </span>
-                    <span>保存设置</span>
-                  </VButton>
+                  <VIconButton v-tooltip.rounded.primary="'复制布局'" color="primary" outlined circle raised icon="fas fa-copy" @click="saveAs" />
+                  <VIconButton v-tooltip.rounded.primary="'推送布局'" color="primary" outlined circle raised icon="fas fa-cloud-upload-alt" @click="publish(currLayout)" />
+                  <div class="seperator" />
+                  <VIconButton v-tooltip.rounded.warning="'下载布局'" color="warning" outlined circle raised icon="fas fa-download" @click="download(currLayout)" />
+                  <VIconButton v-tooltip.rounded.warning="'上传布局'" color="warning" outlined circle raised icon="fas fa-upload" @click="upload" />
+                  <div class="seperator" />
+                  <VIconButton v-if="dataset.length > 0" v-tooltip.rounded.info="'保存设置'" color="info" outlined circle raised icon="fas fa-save" @click="saveLayoutData" />
                 </template>
               </VButtons>
             </div>
@@ -1111,6 +1143,13 @@ onKeyStroke('Escape', (e) => {
     <NewLayoutModal />
     <LayoutSaveModal />
     <LayoutCellModal :index="activeCell?.index || 0" :parent="bounding" :base="base" />
+    <input
+      ref="layoutInput"
+      type="file"
+      accept=".json"
+      style="width: 0; height: 0; opacity: 0; position: absolute; top: -100px; left: -100px; z-index: -1;"
+      @change="onLayoutImported"
+    >
   </div>
 </template>
 <style lang="scss">
@@ -1292,6 +1331,18 @@ onKeyStroke('Escape', (e) => {
   }
 }
 
+.tv-sidebar {
+  padding: 12px 4px;
+
+  .title {
+    padding-left: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+}
+
 .layouts-middle {
   display: flex;
   flex-direction: column;
@@ -1318,6 +1369,13 @@ onKeyStroke('Escape', (e) => {
 
     .button.is-final {
       margin-left: 16px;
+    }
+
+    .seperator {
+      width: 1px;
+      height: 24px;
+      margin-right: 8px;
+      background-color: var(--dark-sidebar-light-22);
     }
   }
 }
