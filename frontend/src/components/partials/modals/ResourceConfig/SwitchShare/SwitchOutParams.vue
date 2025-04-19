@@ -86,7 +86,7 @@ const opened = ref(false)
                 </VControl>
               </VField>
             </div>
-            <div v-if="audioMode === 1" class="column is-6">
+            <div v-if="audioMode !== 0" class="column is-6">
               <VField>
                 <VLabel>输出音频格式名称</VLabel>
                 <VControl>
@@ -147,7 +147,7 @@ const opened = ref(false)
             </div>
           </div>
         </div>
-        <PlayerParamsForm v-model="mv" :nics="nics" />
+        <PlayerParamsForm v-model="mv" :nics="nics" :show-audio="audioMode !== 0" />
       </div>
     </expand-transition>
   </div>

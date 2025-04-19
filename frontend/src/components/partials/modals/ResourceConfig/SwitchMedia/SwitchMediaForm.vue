@@ -49,6 +49,7 @@ const mv = defineModel<{
   },
   local: true,
 })
+const fullOpened = ref(true)
 const advanceOpened = ref(false)
 
 const usStore = useUserSession()
@@ -159,209 +160,220 @@ defineExpose({
     class="form-layout device-form"
   >
     <div class="form-outer">
-      <div class="form-header">
-        <div class="form-header-inner">
+      <div class="form-header" :class="!fullOpened && 'border-b-none'">
+        <div
+          class="form-header-inner collapse-control-header"
+          role="button"
+          @keydown.space.prevent="fullOpened = !fullOpened"
+          @click.prevent="fullOpened = !fullOpened"
+          :open="fullOpened || undefined"
+        >
           <div class="left">
             <h3>设备参数</h3>
           </div>
+          <div class="collapse-icon">
+            <VIcon icon="feather:chevron-down" />
+          </div>
         </div>
       </div>
-      <div class="form-body is-nested">
-        <!--Fieldset-->
-        <div class="form-fieldset">
-          <div class="fieldset-heading">
-            <h4>通用参数</h4>
+      <expand-transition>
+        <div v-show="fullOpened" class="form-body is-nested">
+          <!--Fieldset-->
+          <div class="form-fieldset">
+            <div class="fieldset-heading">
+              <h4>通用参数</h4>
+            </div>
+            <div class="columns is-multiline">
+              <div class="column is-6">
+                <VField>
+                  <VLabel>需要使用的信号类型</VLabel>
+                  <VControl>
+                    <VSelect
+                      v-model="mv.used_signal_type"
+                      class="is-rounded"
+                    >
+                      <VOption v-for="ust in nmswt_used_signal_types" :key="ust.key" :value="ust.key">{{ ust.label }}</VOption>
+                    </VSelect>
+                  </VControl>
+                </VField>
+              </div>
+              <div class="column is-2">
+                <VField>
+                  <VLabel>切换台级数</VLabel>
+                  <VControl>
+                    <VSelect
+                      v-model="mv.level"
+                      class="is-rounded"
+                    >
+                      <VOption v-for="level in levels" :key="level" :value="level">{{ level }}</VOption>
+                    </VSelect>
+                  </VControl>
+                </VField>
+              </div>
+              <div class="column is-4">
+                <VField>
+                  <VLabel>音频处理模式</VLabel>
+                  <VControl>
+                    <VSelect
+                      v-model="mv.audio_workmode"
+                      class="is-rounded"
+                    >
+                      <VOption v-for="workmode in nmswt_audio_workmodes" :key="workmode.key" :value="workmode.key">{{ workmode.label }}</VOption>
+                    </VSelect>
+                  </VControl>
+                </VField>
+              </div>
+            </div>
           </div>
-          <div class="columns is-multiline">
-            <div class="column is-6">
-              <VField>
-                <VLabel>需要使用的信号类型</VLabel>
-                <VControl>
-                  <VSelect
-                    v-model="mv.used_signal_type"
-                    class="is-rounded"
-                  >
-                    <VOption v-for="ust in nmswt_used_signal_types" :key="ust.key" :value="ust.key">{{ ust.label }}</VOption>
-                  </VSelect>
-                </VControl>
-              </VField>
+          <div class="form-fieldset form-outer">
+            <div class="fieldset-heading flex-between with-switch" :class="!mv.tally_notify && 'border-none'">
+              <h4>tally通讯设置</h4>
+              <VControl>
+                <VSwitchBlock
+                  v-model="mv.tally_notify"
+                  :label="mv.tally_notify ? '发送 tally 通知' : '不发送 tally 通知'"
+                  thin
+                  color="primary"
+                />
+              </VControl>
             </div>
-            <div class="column is-2">
-              <VField>
-                <VLabel>切换台级数</VLabel>
-                <VControl>
-                  <VSelect
-                    v-model="mv.level"
-                    class="is-rounded"
-                  >
-                    <VOption v-for="level in levels" :key="level" :value="level">{{ level }}</VOption>
-                  </VSelect>
-                </VControl>
-              </VField>
+            <expand-transition>
+              <div v-if="mv.tally_notify" class="form-body">
+                <TallyConfigParams
+                  v-for="(tallyConfig, tidx) in tally"
+                  :key="tidx"
+                  v-model="tally[tidx]"
+                  :index="tidx"
+                  :is-last="tidx === tally.length - 1"
+                />
+              </div>
+            </expand-transition>
+          </div>
+          <div class="form-fieldset">
+            <div class="fieldset-heading">
+              <h4>接口设置</h4>
             </div>
-            <div class="column is-4">
-              <VField>
-                <VLabel>音频处理模式</VLabel>
-                <VControl>
-                  <VSelect
-                    v-model="mv.audio_workmode"
-                    class="is-rounded"
-                  >
-                    <VOption v-for="workmode in nmswt_audio_workmodes" :key="workmode.key" :value="workmode.key">{{ workmode.label }}</VOption>
-                  </VSelect>
-                </VControl>
-              </VField>
+            <div class="columns is-multiline">
+              <div v-for="(apiParam, apiIndex) in apiParams" :key="apiParam.api_name" class="column is-6">
+                <ApiParamsCheck
+                  v-model="apiParams[apiIndex]"
+                  :label="apiParam.label"
+                />
+              </div>
             </div>
           </div>
-        </div>
-        <div class="form-fieldset form-outer">
-          <div class="fieldset-heading flex-between with-switch" :class="!mv.tally_notify && 'border-none'">
-            <h4>tally通讯设置</h4>
-            <VControl>
-              <VSwitchBlock
-                v-model="mv.tally_notify"
-                :label="mv.tally_notify ? '发送 tally 通知' : '不发送 tally 通知'"
-                thin
-                color="primary"
+          <div class="form-fieldset form-outer">
+            <div class="fieldset-heading">
+              <h4>操作面板设置</h4>
+            </div>
+            <div class="form-body">
+              <SwitchPanel
+                v-for="(panelConfig, pidx) in panel"
+                :key="pidx"
+                v-model="panel[pidx]"
+                :index="pidx"
+                :is-last="pidx === panel.length - 1"
               />
-            </VControl>
-          </div>
-          <expand-transition>
-            <div v-if="mv.tally_notify" class="form-body">
-              <TallyConfigParams
-                v-for="(tallyConfig, tidx) in tally"
-                :key="tidx"
-                v-model="tally[tidx]"
-                :index="tidx"
-                :is-last="tidx === tally.length - 1"
-              />
-            </div>
-          </expand-transition>
-        </div>
-        <div class="form-fieldset">
-          <div class="fieldset-heading">
-            <h4>接口设置</h4>
-          </div>
-          <div class="columns is-multiline">
-            <div v-for="(apiParam, apiIndex) in apiParams" :key="apiParam.api_name" class="column is-6">
-              <ApiParamsCheck
-                v-model="apiParams[apiIndex]"
-                :label="apiParam.label"
-              />
             </div>
           </div>
-        </div>
-        <div class="form-fieldset form-outer">
-          <div class="fieldset-heading">
-            <h4>操作面板设置</h4>
-          </div>
-          <div class="form-body">
-            <SwitchPanel
-              v-for="(panelConfig, pidx) in panel"
-              :key="pidx"
-              v-model="panel[pidx]"
-              :index="pidx"
-              :is-last="pidx === panel.length - 1"
-            />
-          </div>
-        </div>
-        <div
-          class="form-fieldset collapse-form form-outer"
-          :open="advanceOpened || undefined"
-        >
           <div
-            class="fieldset-heading collapse-header"
-            tabindex="0"
-            role="button"
-            @keydown.space.prevent="advanceOpened = !advanceOpened"
-            @click.prevent="advanceOpened = !advanceOpened"
+            class="form-fieldset collapse-form form-outer"
+            :open="advanceOpened || undefined"
           >
-            <h4>高级配置</h4>
-            <div class="collapse-icon">
-              <VIcon icon="feather:chevron-down" />
+            <div
+              class="fieldset-heading collapse-header"
+              tabindex="0"
+              role="button"
+              @keydown.space.prevent="advanceOpened = !advanceOpened"
+              @click.prevent="advanceOpened = !advanceOpened"
+            >
+              <h4>高级配置</h4>
+              <div class="collapse-icon">
+                <VIcon icon="feather:chevron-down" />
+              </div>
             </div>
+            <expand-transition>
+              <div v-show="advanceOpened" class="form-body">
+                <NMosConfig v-model="mv.nmos" class="seperator" />
+                <SSMAddressRange v-model="mv.ssm_address_range" />
+              </div>
+            </expand-transition>
           </div>
-          <expand-transition>
-            <div v-show="advanceOpened" class="form-body">
-              <NMosConfig v-model="mv.nmos" class="seperator" />
-              <SSMAddressRange v-model="mv.ssm_address_range" />
-            </div>
+          <expand-transition name="fade-slow">
+            <NicSection v-if="mv.used_signal_type !== 1" v-model="nicDetails" :nics="nics" :max="requiredment?.nicCount || 0" />
           </expand-transition>
-        </div>
-        <expand-transition name="fade-slow">
-          <NicSection v-if="mv.used_signal_type !== 1" v-model="nicDetails" :nics="nics" :max="requiredment?.nicCount || 0" />
-        </expand-transition>
-        <div class="form-outer has-mt-20">
-          <div class="form-header">
-            <div class="form-header-inner">
-              <div class="left">
-                <h4>使用的视频格式列表</h4>
+          <div class="form-outer has-mt-20">
+            <div class="form-header">
+              <div class="form-header-inner">
+                <div class="left">
+                  <h4>使用的视频格式列表</h4>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="form-body">
-            <VTags v-if="videoFormatEnum.length > 0" class="format-item-container">
-              <VideoFormatTooltip v-for="vformat in videoFormatEnum" :key="vformat" :name="vformat">
-                <VTag color="blue" :label="vformat" curved outlined />
-              </VideoFormatTooltip>
-            </VTags>
-            <div v-else class="is-empty-list">暂时还没有选择视频格式</div>
-          </div>
-        </div>
-        <div v-if="mv.audio_workmode !== 0" class="form-outer">
-          <div class="form-header">
-            <div class="form-header-inner">
-              <div class="left">
-                <h4>使用的音频格式列表</h4>
-              </div>
+            <div class="form-body">
+              <VTags v-if="videoFormatEnum.length > 0" class="format-item-container">
+                <VideoFormatTooltip v-for="vformat in videoFormatEnum" :key="vformat" :name="vformat">
+                  <VTag color="blue" :label="vformat" curved outlined />
+                </VideoFormatTooltip>
+              </VTags>
+              <div v-else class="is-empty-list">暂时还没有选择视频格式</div>
             </div>
           </div>
-          <div class="form-body">
-            <VTags v-if="audioFormatEnum.length > 0" class="format-item-container">
-              <AudioFormatTooltip v-for="aformat in audioFormatEnum" :key="aformat" :name="aformat">
-                <VTag color="green" :label="aformat" curved outlined />
-              </AudioFormatTooltip>
-            </VTags>
-            <div v-else class="is-empty-list">暂时还没有选择音频格式</div>
-          </div>
-        </div>
-        <div class="form-outer">
-          <div class="form-header">
-            <div class="form-header-inner">
-              <div class="left">
-                <h4>输入信源参数</h4>
+          <div v-if="mv.audio_workmode !== 0" class="form-outer">
+            <div class="form-header">
+              <div class="form-header-inner">
+                <div class="left">
+                  <h4>使用的音频格式列表</h4>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="form-body">
-            <SwitchInput v-model="input" />
-          </div>
-        </div>
-        <div class="form-outer">
-          <div class="form-header">
-            <div class="form-header-inner">
-              <div class="left">
-                <h4>总线设置</h4>
-              </div>
+            <div class="form-body">
+              <VTags v-if="audioFormatEnum.length > 0" class="format-item-container">
+                <AudioFormatTooltip v-for="aformat in audioFormatEnum" :key="aformat" :name="aformat">
+                  <VTag color="green" :label="aformat" curved outlined />
+                </AudioFormatTooltip>
+              </VTags>
+              <div v-else class="is-empty-list">暂时还没有选择音频格式</div>
             </div>
           </div>
-          <div class="form-body">
-            <SwitchBus v-model="bus" :input-keys="input.key" :input-videos="input.video" :level="mv.level" />
-          </div>
-        </div>
-        <div class="form-outer">
-          <div class="form-header">
-            <div class="form-header-inner">
-              <div class="left">
-                <h4>输出设置</h4>
+          <div class="form-outer">
+            <div class="form-header">
+              <div class="form-header-inner">
+                <div class="left">
+                  <h4>输入信源参数</h4>
+                </div>
               </div>
             </div>
+            <div class="form-body">
+              <SwitchInput v-model="input" />
+            </div>
           </div>
-          <div class="form-body">
-            <SwitchOut v-model="out" :level="mv.level" :input-videos="input.video" :bus-levels="bus.level_bus" />
+          <div class="form-outer">
+            <div class="form-header">
+              <div class="form-header-inner">
+                <div class="left">
+                  <h4>总线设置</h4>
+                </div>
+              </div>
+            </div>
+            <div class="form-body">
+              <SwitchBus v-model="bus" :input-keys="input.key" :input-videos="input.video" :level="mv.level" />
+            </div>
+          </div>
+          <div class="form-outer">
+            <div class="form-header">
+              <div class="form-header-inner">
+                <div class="left">
+                  <h4>输出设置</h4>
+                </div>
+              </div>
+            </div>
+            <div class="form-body">
+              <SwitchOut v-model="out" :level="mv.level" :input-videos="input.video" :bus-levels="bus.level_bus" />
+            </div>
           </div>
         </div>
-      </div>
+      </expand-transition>
     </div>
   </form>
 </template>

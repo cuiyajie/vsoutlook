@@ -63,6 +63,7 @@ declare module 'vue' {
     FontSelect: typeof import('./../src/components/pages/app/MtvLayouts/FontSelect.vue')['default']
     GeneralConfig: typeof import('./../src/components/partials/forms/GeneralConfig.vue')['default']
     HubCard: typeof import('./../src/components/partials/panels/HubCard.vue')['default']
+    KeyFillPlayerParamsForm: typeof import('./../src/components/partials/modals/ResourceConfig/SwitchShare/KeyFillPlayerParamsForm.vue')['default']
     LandingLayout: typeof import('./../src/layouts/LandingLayout.vue')['default']
     LanguageDropdown: typeof import('./../src/components/LanguageDropdown.vue')['default']
     LanguagesPanel: typeof import('./../src/components/partials/panels/LanguagesPanel.vue')['default']

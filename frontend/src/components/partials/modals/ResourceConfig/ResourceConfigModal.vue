@@ -260,6 +260,10 @@ function saveSetting(config?: string, name?: string) {
   }
 }
 
+const nodeNics = computed(() => {
+  return (node.value?.nics || []).toSorted((a, b) => a.position - b.position)
+})
+
 const compRef = ref<InstanceType<typeof CodecForm> | null>(null)
 const tmplConfig = computed(() => {
   switch (tmpl.value?.typeCategory) {
@@ -426,7 +430,7 @@ const tmplConfig = computed(() => {
           ref="compRef"
           :name="deviceName"
           :requiredment="tmpl?.requirement"
-          :nics="node?.nics || []"
+          :nics="nodeNics"
         />
         <input
           ref="fileInput"
@@ -486,7 +490,7 @@ const tmplConfig = computed(() => {
   }
 
   .modal-card-body {
-    min-height: 400px;
+    // min-height: 400px;
   }
 
   .btn-setting-import,

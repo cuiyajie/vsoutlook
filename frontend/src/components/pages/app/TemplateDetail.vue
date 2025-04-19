@@ -63,6 +63,7 @@ const specsData = ref<TmplRequirement & { description: string }>({
   recvAVFrameNodeCount: 2,
   sendAVFrameNodeCount: 2,
   recvFrameCount: 2,
+  imageTag: '',
   maxRateMbpsByCore: 9000,
   receiveSessions: 18,
   shm: 0,

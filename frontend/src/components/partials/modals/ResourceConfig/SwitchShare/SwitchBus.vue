@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useSwitchBus } from '../Utilties/Composables';
+import { useSwitchBus, useSwitchKeySignal } from '../Utilties/Composables';
 import {
   type SwitchBus,
   def_switch_bus_me_params,
@@ -22,8 +22,12 @@ const props = defineProps<{
 }>()
 
 const switchTypeCategory = inject('switch_type_category')
+
 const [selectedBus, busSelected, busUnSelected] = useSwitchBus()
 provide('switch_bus_select', { selectedBus, busSelected, busUnSelected })
+
+const [selectedKeySignal, keySignalSelected, keySignalUnSelected] = useSwitchKeySignal()
+provide('switch_key_signal_select', { selectedKeySignal, keySignalSelected, keySignalUnSelected })
 
 const keyParams = computed({
   get: () => mv.value.key_bus,

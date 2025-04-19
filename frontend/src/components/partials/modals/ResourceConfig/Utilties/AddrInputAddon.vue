@@ -12,7 +12,7 @@ const host = computed({
 })
 
 const port = computed({
-  get: () => parseInt(addr.value.split(":")[1]),
+  get: () => parseInt(addr.value.split(":")[1] || '30000'),
   set: (value: number) => {
     addr.value = `${host.value}:${value}`
   }

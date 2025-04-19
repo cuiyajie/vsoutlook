@@ -43,6 +43,7 @@ type TmplRequirement struct {
 	RecvAVFrameNodeCount int         `json:"recvAVFrameNodeCount"`
 	SendAVFrameNodeCount int         `json:"sendAVFrameNodeCount"`
 	RecvframeCount       int         `json:"recvFrameCount"`
+	ImageTag             string      `json:"imageTag"`
 	MaxRateMbpsByCore    int         `json:"maxRateMbpsByCore"`
 	ReceiveSessions      int         `json:"receiveSessions"`
 	NicCount             int         `json:"nicCount"`

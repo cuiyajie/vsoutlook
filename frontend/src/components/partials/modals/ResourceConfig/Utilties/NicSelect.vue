@@ -76,6 +76,12 @@ watch(() => mv.value.id, (nv) => {
 
 const selected = computed(() => mv.value.nicIndex !== -1)
 
+onMounted(() => {
+  if (mv.value.id) {
+    selectRef.value?.select(mv.value.id)
+  }
+})
+
 </script>
 <template>
   <div
@@ -108,7 +114,6 @@ const selected = computed(() => mv.value.nicIndex !== -1)
             <VControl>
               <Multiselect
                 ref="selectRef"
-                v-model="mv.id"
                 class="tippy-select"
                 placeholder="选择网卡"
                 no-options-text="该节点没有配置网卡"

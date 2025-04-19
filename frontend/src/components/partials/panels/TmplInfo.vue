@@ -145,6 +145,14 @@ function viewTmpl() {
           {{ tmpld.requirement.recvFrameCount || '无' }}
         </span>
       </div>
+      <div class="info-block-line">
+        <h4 class="dark-inverted">
+          Image Tag
+        </h4>
+        <span>
+          {{ tmpld.requirement.imageTag || '无' }}
+        </span>
+      </div>
       <!-- <div class="info-block-line">
         <h4 class="dark-inverted">
           Chart包名

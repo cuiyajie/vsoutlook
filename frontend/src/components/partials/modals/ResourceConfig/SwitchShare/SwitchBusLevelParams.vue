@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { useSwitchInputSignal } from '../Utilties/Composables';
 import { type IndexedNicDetail } from '../Utilties/Consts_V1';
 import { type SwitchBusLevelParams, bus_signal_types, bus_signal_types_map, type SwitchInputKeyParams, type SwitchInputVideoParams, def_switch_bus_level_input_params, type SwitchBusKeyParams, type SwitchBusMeParams, def_switch_bus_level_sub_params } from './Consts'
 
@@ -27,16 +28,19 @@ const busSignalTypes = computed(() => {
   )
 })
 
-watch(() => mv.value.bus_input_number, (nv) => {
-  const len = mv.value.bus_input.length
+watch(() => mv.value.bus_input.bus_input_number, (nv) => {
+  const len = mv.value.bus_input.input_list.length
   if (nv < len) {
-    mv.value.bus_input = mv.value.bus_input.slice(0, nv)
+    mv.value.bus_input.input_list = mv.value.bus_input.input_list.slice(0, nv)
   } else if (nv > len) {
-    mv.value.bus_input = mv.value.bus_input.concat(
+    mv.value.bus_input.input_list = mv.value.bus_input.input_list.concat(
       Array.from({ length: nv - len }, (_, i) => def_switch_bus_level_input_params(i + len))
     )
   }
 }, { immediate: true })
+
+const [selectedSignal, signalSelected, signalUnSelected] = useSwitchInputSignal()
+provide('switch_input_signal_select', { selectedSignal, signalSelected, signalUnSelected })
 
 function addPgmSubBus() {
   mv.value.pgm_bus.sub_bus.push(def_switch_bus_level_sub_params(mv.value.pgm_bus.sub_bus.length))
@@ -85,7 +89,7 @@ const opened = ref(false)
               <VField>
                 <VLabel>输入信源数量</VLabel>
                 <VControl>
-                  <VInputNumber v-model="mv.bus_input_number" centered :min="0" :step="1" />
+                  <VInputNumber v-model="mv.bus_input.bus_input_number" centered :min="0" :step="1" />
                 </VControl>
               </VField>
             </div>
@@ -93,14 +97,14 @@ const opened = ref(false)
               <VField>
                 <VLabel>使用的网卡序号</VLabel>
                 <VControl>
-                  <NicDetailSelect v-model="mv.nic_index" :nics="nics" />
+                  <NicDetailSelect v-model="mv.bus_input.nic_index" :nics="nics" />
                 </VControl>
               </VField>
             </div>
           </div>
           <transition-group name="list">
             <div
-              v-for="(bipt, bidx) in mv.bus_input"
+              v-for="(bipt, bidx) in mv.bus_input.input_list"
               :key="bidx"
               :class="{
                 'form-fieldset-nested-4': bidx === 0,
@@ -148,6 +152,9 @@ const opened = ref(false)
                         :input-videos="inputVideos"
                         :bus-levels="busLevels"
                         :level-index="mv.level"
+                        :emit-signal="true"
+                        :unique-key-signal="true"
+                        :unique-signal="true"
                       />
                     </VControl>
                   </VField>

@@ -43,9 +43,8 @@ const zodSchema = z.object({
       "请输入合法的隔离核心列表"
     ),
   dmaList: z
-    .string({ required_error: "请输入DMA通道列表" })
-    .trim()
-    .nonempty("请输入DMA通道列表"),
+    .string()
+    .trim(),
   vfCount: z.number().optional(),
 });
 const validationSchema = toTypedSchema(zodSchema);

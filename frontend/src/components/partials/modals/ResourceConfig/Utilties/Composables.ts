@@ -135,3 +135,25 @@ export function useSwitchBus() {
   }
   return [busSet, onSelected, onUnselected] as const
 }
+
+export function useSwitchInputSignal() {
+  const signalSet = ref<Set<string>>(new Set())
+  function onSelected(id: string) {
+    signalSet.value.add(id)
+  }
+  function onUnselected(id: string) {
+    signalSet.value.delete(id)
+  }
+  return [signalSet, onSelected, onUnselected] as const
+}
+
+export function useSwitchKeySignal() {
+  const keySignalSet = ref<Set<string>>(new Set())
+  function onSelected(id: string) {
+    keySignalSet.value.add(id)
+  }
+  function onUnselected(id: string) {
+    keySignalSet.value.delete(id)
+  }
+  return [keySignalSet, onSelected, onUnselected] as const
+}

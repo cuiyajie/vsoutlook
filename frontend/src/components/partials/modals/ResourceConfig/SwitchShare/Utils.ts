@@ -15,6 +15,7 @@ import {
   type SwitchOutAudioParams,
   type SwitchOutMvParams,
   type TallyParams,
+  type KeyFillPlayerParams,
   def_switch_bus,
   def_switch_bus_key_params,
   def_switch_bus_level_input_params,
@@ -67,21 +68,34 @@ export function handleSwitchPanel(params: SwitchPanel) {
   }))
 }
 
+function handleKeyFillParams(params: KeyFillPlayerParams, vfs: VideoFormat[]) {
+  const { videoformat_name, smpte_params, stream_params, ...rest } =
+    params
+  const vf = vfs.find((v) => v.name === videoformat_name)
+  const result = { videoformat_name, ...rest } as any
+  if (!vf?.protocol) return result
+  const showParams = ['st2110-20', 'st2110-22'].includes(vf.protocol)
+  if (showParams) {
+    result.smpte_params = smpte_params
+  } else {
+    result.stream_params = stream_params
+  }
+  return result
+}
+
 export function handleSwitchInputKey(params: SwitchInputKeyParams[], vfs: VideoFormat[]) {
   return params.map((p, pidx) => {
     let result: any = {}
     if (p.key_type === 'ext_key') {
-      result = handlePlayerParams(p, vfs)
-      if (result.smpte_params) {
-        delete result.smpte_params.nic_index
-      }
-      delete result.audioformat_name
-    }
-    if (p.key_type !== 'int_key') {
+      result = handleKeyFillParams(p, vfs)
       delete result.file_name
-    }
-    if (p.key_type !== 'h5_key') {
       delete result.url
+    }
+    if (p.key_type === 'int_key') {
+      result.file_name = p.file_name
+    }
+    if (p.key_type === 'h5_key') {
+      result.url = p.url
     }
     return {
       key_type: p.key_type,
@@ -133,6 +147,7 @@ export function handleBusKey(params: SwitchBusKeyParams[], usedSignalType: numbe
       bus_name: p.bus_name,
       bus_input: busInput,
       key_params: keyParams,
+      out_signal: p.out_signal,
     }
   })
 }
@@ -146,7 +161,7 @@ export function handleBusMe(params: SwitchBusMeParams[]) {
 
 export function handleBusLevel(params: SwitchBusLevelParams[]) {
   return params.map((p, pidx) => {
-    const { nic_index, bus_input_number, bus_input, pgm_bus, pvw_bus } = p
+    const { bus_input, pgm_bus, pvw_bus } = p
     const pgm_sub_bus = pgm_bus.sub_bus.map((s, sidx) => ({
       bus_type: s.bus_type,
       bus_id: s.bus_id,
@@ -158,14 +173,15 @@ export function handleBusLevel(params: SwitchBusLevelParams[]) {
       index: sidx,
     }))
     return {
-      nic_index,
-      bus_input_number,
       level: pidx,
-      bus_input: bus_input.map((b, bidx) => ({
-        ...b,
-        index: bidx,
-        input_index: bidx + 1,
-      })),
+      bus_input: {
+        ...bus_input,
+        input_list: bus_input.input_list.map((b, bidx) => ({
+          ...b,
+          index: bidx,
+          input_index: bidx + 1,
+        }))
+      },
       pgm_bus: {
         ...pgm_bus,
         sub_bus: pgm_sub_bus,
@@ -197,6 +213,25 @@ export function handleSwitchBus(
   }
 }
 
+function omitAudioParams<
+  T extends {
+    ipstream_master: PlayerParams['smpte_params']['ipstream_master']
+    ipstream_backup: PlayerParams['smpte_params']['ipstream_backup']
+  },
+>(params: T) {
+  return {
+    ...params,
+    ipstream_master: {
+      v_dst_address: params.ipstream_master.v_dst_address,
+      v_src_address: params.ipstream_master.v_src_address,
+    },
+    ipstream_backup: {
+      v_dst_address: params.ipstream_backup.v_dst_address,
+      v_src_address: params.ipstream_backup.v_src_address,
+    },
+  }
+}
+
 export function handleOutParams(
   params: SwitchOutParams[],
   vfs: VideoFormat[],
@@ -205,8 +240,11 @@ export function handleOutParams(
 ) {
   return params.map((p, pidx) => {
     const result = handlePlayerParams(p, vfs)
-    if (audioMode !== 0) {
+    if (audioMode === 0) {
       delete result.audioformat_name
+      if (result.smpte_params) {
+        result.smpte_params = omitAudioParams(result.smpte_params)
+      }
     }
     if (category === 'bcswt' || audioMode === 0 || !result.mapping_checked) {
       delete result.audio_mapping_name
@@ -310,6 +348,14 @@ export function checkAudioMapping(params: any, afs: AudioMapping[]) {
   return params
 }
 
+export function checkKeyFillParams(params: any, vfs: VideoFormat[]) {
+  const vf = vfs.find((v) => v.name === params.videoformat_name)
+  if (!vf) {
+    params.videoformat_name = ''
+  }
+  return params
+}
+
 export function checkSwitchData(
   data: typeof bcswtData,
   vfs: VideoFormat[],
@@ -348,7 +394,7 @@ export function checkSwitchData(
   const inputData = unwrap(data.input, 'in_')
   const _input = def_switch_input()
   _input.key = Array.from({ length: inputData.key.length }, (_, idx) => {
-    const _inputKeyAt = checkPlayerParams(inputData.key[idx], vfs, afs)
+    const _inputKeyAt = checkKeyFillParams(inputData.key[idx], vfs)
     return merge(def_switch_input_key_params(idx), _inputKeyAt)
   })
   _input.video = Array.from({ length: inputData.video.length }, (_, idx) => {
@@ -373,10 +419,10 @@ export function checkSwitchData(
       def_switch_bus_level_params(lidx, data.level),
       levelBusData
     ) as SwitchBusLevelParams
-    levelBus.bus_input = Array.from(
-      { length: levelBusData.bus_input.length },
+    levelBus.bus_input.input_list = Array.from(
+      { length: levelBusData.bus_input.input_list.length },
       (_, idx) => {
-        return merge(def_switch_bus_level_input_params(idx), levelBusData.bus_input[idx])
+        return merge(def_switch_bus_level_input_params(idx), levelBusData.bus_input.input_list[idx])
       }
     )
     levelBus.pgm_bus.sub_bus = Array.from(

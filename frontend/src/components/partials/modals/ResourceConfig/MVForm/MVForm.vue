@@ -46,6 +46,7 @@ const mv = defineModel<{
   },
   local: true,
 })
+const fullOpened = ref(true)
 const advanceOpened = ref(false)
 
 const usStore = useUserSession()
@@ -215,208 +216,219 @@ defineExpose({
   <!-- prettier-ignore -->
   <form method="post" novalidate class="form-layout device-form">
     <div class="form-outer">
-      <div class="form-header">
-        <div class="form-header-inner">
+      <div class="form-header" :class="!fullOpened && 'border-b-none'">
+        <div
+          class="form-header-inner collapse-control-header"
+          role="button"
+          @keydown.space.prevent="fullOpened = !fullOpened"
+          @click.prevent="fullOpened = !fullOpened"
+          :open="fullOpened || undefined"
+        >
           <div class="left">
             <h3>设备参数</h3>
           </div>
+          <div class="collapse-icon">
+            <VIcon icon="feather:chevron-down" />
+          </div>
         </div>
       </div>
-      <div class="form-body is-nested">
-        <!--Fieldset-->
-        <div class="form-fieldset">
-          <div class="fieldset-heading">
-            <h4>通用参数</h4>
-          </div>
-          <div class="columns is-multiline">
-            <div class="column is-6">
-              <VField>
-                <VLabel>需要使用的信号类型</VLabel>
-                <VControl>
-                  <VSelect v-model="mv.used_signal_type" class="is-rounded">
-                    <VOption v-for="ust in used_signal_types" :key="ust.key" :value="ust.key">{{ ust.label }}</VOption>
-                  </VSelect>
-                </VControl>
-              </VField>
+      <expand-transition>
+        <div v-show="fullOpened" class="form-body is-nested">
+          <!--Fieldset-->
+          <div class="form-fieldset">
+            <div class="fieldset-heading">
+              <h4>通用参数</h4>
             </div>
-            <div class="column is-6">
-              <VField>
-                <VLabel>输入信号数量</VLabel>
-                <VControl>
-                  <VInputNumber
-                    v-model="mv.input_number"
-                    centered
-                    :min="0"
-                    :max="36"
-                    :step="1"
-                  />
-                </VControl>
-              </VField>
-            </div>
-          </div>
-        </div>
-        <div class="form-fieldset">
-          <div class="fieldset-heading">
-            <h4>接口设置</h4>
-          </div>
-          <div class="columns is-multiline">
-            <div class="column is-6">
-              <ApiParamsCheck
-                v-model="apiParams[0]"
-                label="tally通知接口"
-              />
-            </div>
-            <div class="column is-6">
-              <ApiParamsCheck
-                v-model="apiParams[1]"
-                label="动态控制接口"
-              />
+            <div class="columns is-multiline">
+              <div class="column is-6">
+                <VField>
+                  <VLabel>需要使用的信号类型</VLabel>
+                  <VControl>
+                    <VSelect v-model="mv.used_signal_type" class="is-rounded">
+                      <VOption v-for="ust in used_signal_types" :key="ust.key" :value="ust.key">{{ ust.label }}</VOption>
+                    </VSelect>
+                  </VControl>
+                </VField>
+              </div>
+              <div class="column is-6">
+                <VField>
+                  <VLabel>输入信号数量</VLabel>
+                  <VControl>
+                    <VInputNumber
+                      v-model="mv.input_number"
+                      centered
+                      :min="0"
+                      :max="36"
+                      :step="1"
+                    />
+                  </VControl>
+                </VField>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="form-fieldset collapse-form form-outer" :open="advanceOpened || undefined">
-          <div
-            class="fieldset-heading collapse-header" tabindex="0" role="button"
-            @keydown.space.prevent="advanceOpened = !advanceOpened" @click.prevent="advanceOpened = !advanceOpened"
-          >
-            <h4>高级配置</h4>
-            <div class="collapse-icon">
-              <VIcon icon="feather:chevron-down" />
+          <div class="form-fieldset">
+            <div class="fieldset-heading">
+              <h4>接口设置</h4>
             </div>
+            <div class="columns is-multiline">
+              <div class="column is-6">
+                <ApiParamsCheck
+                  v-model="apiParams[0]"
+                  label="tally通知接口"
+                />
+              </div>
+              <div class="column is-6">
+                <ApiParamsCheck
+                  v-model="apiParams[1]"
+                  label="动态控制接口"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="form-fieldset collapse-form form-outer" :open="advanceOpened || undefined">
+            <div
+              class="fieldset-heading collapse-header" tabindex="0" role="button"
+              @keydown.space.prevent="advanceOpened = !advanceOpened" @click.prevent="advanceOpened = !advanceOpened"
+            >
+              <h4>高级配置</h4>
+              <div class="collapse-icon">
+                <VIcon icon="feather:chevron-down" />
+              </div>
+            </div>
+            <expand-transition>
+              <div v-show="advanceOpened" class="form-body">
+                <NMosConfig v-model="mv.nmos" class="seperator" />
+                <SSMAddressRange v-model="mv.ssm_address_range" />
+              </div>
+            </expand-transition>
           </div>
           <expand-transition>
-            <div v-show="advanceOpened" class="form-body">
-              <NMosConfig v-model="mv.nmos" class="seperator" />
-              <SSMAddressRange v-model="mv.ssm_address_range" />
-            </div>
+            <NicSection v-if="mv.used_signal_type !== 1" v-model="nicDetails" :nics="nics" :max="requiredment?.nicCount || 0" />
           </expand-transition>
-        </div>
-        <expand-transition>
-          <NicSection v-if="mv.used_signal_type !== 1" v-model="nicDetails" :nics="nics" :max="requiredment?.nicCount || 0" />
-        </expand-transition>
-        <div class="form-outer">
-          <div class="form-header">
-            <div class="form-header-inner">
-              <div class="left">
-                <h4>使用的视频格式列表</h4>
+          <div class="form-outer">
+            <div class="form-header">
+              <div class="form-header-inner">
+                <div class="left">
+                  <h4>使用的视频格式列表</h4>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="form-body">
-            <VTags v-if="videoFormatEnum.length > 0" class="format-item-container">
-              <VideoFormatTooltip v-for="vformat in videoFormatEnum" :key="vformat" :name="vformat">
-                <VTag color="blue" :label="vformat" curved outlined />
-              </VideoFormatTooltip>
-            </VTags>
-            <div v-else class="is-empty-list">暂时还没有选择视频格式</div>
-          </div>
-        </div>
-        <div class="form-outer">
-          <div class="form-header">
-            <div class="form-header-inner">
-              <div class="left">
-                <h4>使用的音频格式列表</h4>
-              </div>
+            <div class="form-body">
+              <VTags v-if="videoFormatEnum.length > 0" class="format-item-container">
+                <VideoFormatTooltip v-for="vformat in videoFormatEnum" :key="vformat" :name="vformat">
+                  <VTag color="blue" :label="vformat" curved outlined />
+                </VideoFormatTooltip>
+              </VTags>
+              <div v-else class="is-empty-list">暂时还没有选择视频格式</div>
             </div>
           </div>
-          <div class="form-body">
-            <VTags v-if="audioFormatEnum.length > 0" class="format-item-container">
-              <AudioFormatTooltip v-for="aformat in audioFormatEnum" :key="aformat" :name="aformat">
-                <VTag color="green" :label="aformat" curved outlined />
-              </AudioFormatTooltip>
-            </VTags>
-            <div v-else class="is-empty-list">暂时还没有选择音频格式</div>
-          </div>
-        </div>
-        <div class="form-outer">
-          <div class="form-header">
-            <div class="form-header-inner">
-              <div class="left">
-                <h4>使用的技审模板列表</h4>
+          <div class="form-outer">
+            <div class="form-header">
+              <div class="form-header-inner">
+                <div class="left">
+                  <h4>使用的音频格式列表</h4>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="form-body">
-            <VTags v-if="avTmplEnum.length > 0" class="format-item-container">
-              <TechReviewTooltip v-for="tmpl in avTmplEnum" :key="tmpl" :name="tmpl">
-                <VTag color="orange" :label="tmpl" curved outlined />
-              </TechReviewTooltip>
-            </VTags>
-            <div v-else class="is-empty-list">暂时还没有选择技审模板</div>
-          </div>
-        </div>
-        <div class="form-outer">
-          <div class="form-header">
-            <div class="form-header-inner">
-              <div class="left">
-                <h4>使用的报警规则列表</h4>
-              </div>
+            <div class="form-body">
+              <VTags v-if="audioFormatEnum.length > 0" class="format-item-container">
+                <AudioFormatTooltip v-for="aformat in audioFormatEnum" :key="aformat" :name="aformat">
+                  <VTag color="green" :label="aformat" curved outlined />
+                </AudioFormatTooltip>
+              </VTags>
+              <div v-else class="is-empty-list">暂时还没有选择音频格式</div>
             </div>
           </div>
-          <div class="form-body">
-            <VTags v-if="auditRuleEnum.length > 0" class="format-item-container">
-              <AuditAlarmRuleTooltip v-for="rule in auditRuleEnum" :key="rule" :name="rule">
-                <VTag color="danger" :label="rule" curved outlined />
-              </AuditAlarmRuleTooltip>
-            </VTags>
-            <div v-else class="is-empty-list">暂时还没有选择报警规则</div>
-          </div>
-        </div>
-        <div class="form-outer">
-          <div class="form-header">
-            <div class="form-header-inner">
-              <div class="left">
-                <h4>输入参数</h4>
+          <div class="form-outer">
+            <div class="form-header">
+              <div class="form-header-inner">
+                <div class="left">
+                  <h4>使用的技审模板列表</h4>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="form-body">
-            <MVInput
-              v-for="(ipt, idx) in inputs"
-              :key="idx"
-              v-model="ipt.value"
-              :index="ipt.index"
-              :is-last="idx === inputs.length - 1"
-              :nics="indexedNicDetails"
-              :used-signal-type="mv.used_signal_type"
-              @video-selected="videoSelected"
-              @video-unselected="videoUnSelected"
-              @audio-selected="audioSelected"
-              @audio-unselected="audioUnSelected"
-              @audit-rule-selected="auditRuleSelected"
-              @audit-rule-unselected="auditRuleUnSelected"
-              @av-tmpl-selected="avTmplSelected"
-              @av-tmpl-unselected="avTmplUnSelected"
-            />
-          </div>
-        </div>
-        <div class="form-outer">
-          <div class="form-header">
-            <div class="form-header-inner">
-              <div class="left">
-                <h4>输出参数</h4>
-              </div>
+            <div class="form-body">
+              <VTags v-if="avTmplEnum.length > 0" class="format-item-container">
+                <TechReviewTooltip v-for="tmpl in avTmplEnum" :key="tmpl" :name="tmpl">
+                  <VTag color="orange" :label="tmpl" curved outlined />
+                </TechReviewTooltip>
+              </VTags>
+              <div v-else class="is-empty-list">暂时还没有选择技审模板</div>
             </div>
           </div>
-          <div class="form-body">
-            <MVOutput
-              v-for="(otp, idx) in outputs"
-              ref="outputRefs"
-              :key="idx"
-              v-model="otp.value"
-              :index="otp.index"
-              :is-last="idx === outputs.length - 1"
-              :nics="indexedNicDetails"
-              :used-signal-type="mv.used_signal_type"
-              :pips-number="mv.input_number"
-              @video-selected="videoSelected"
-              @video-unselected="videoUnSelected"
-              @audio-selected="audioSelected"
-              @audio-unselected="audioUnSelected"
-            />
+          <div class="form-outer">
+            <div class="form-header">
+              <div class="form-header-inner">
+                <div class="left">
+                  <h4>使用的报警规则列表</h4>
+                </div>
+              </div>
+            </div>
+            <div class="form-body">
+              <VTags v-if="auditRuleEnum.length > 0" class="format-item-container">
+                <AuditAlarmRuleTooltip v-for="rule in auditRuleEnum" :key="rule" :name="rule">
+                  <VTag color="danger" :label="rule" curved outlined />
+                </AuditAlarmRuleTooltip>
+              </VTags>
+              <div v-else class="is-empty-list">暂时还没有选择报警规则</div>
+            </div>
+          </div>
+          <div class="form-outer">
+            <div class="form-header">
+              <div class="form-header-inner">
+                <div class="left">
+                  <h4>输入参数</h4>
+                </div>
+              </div>
+            </div>
+            <div class="form-body">
+              <MVInput
+                v-for="(ipt, idx) in inputs"
+                :key="idx"
+                v-model="ipt.value"
+                :index="ipt.index"
+                :is-last="idx === inputs.length - 1"
+                :nics="indexedNicDetails"
+                :used-signal-type="mv.used_signal_type"
+                @video-selected="videoSelected"
+                @video-unselected="videoUnSelected"
+                @audio-selected="audioSelected"
+                @audio-unselected="audioUnSelected"
+                @audit-rule-selected="auditRuleSelected"
+                @audit-rule-unselected="auditRuleUnSelected"
+                @av-tmpl-selected="avTmplSelected"
+                @av-tmpl-unselected="avTmplUnSelected"
+              />
+            </div>
+          </div>
+          <div class="form-outer">
+            <div class="form-header">
+              <div class="form-header-inner">
+                <div class="left">
+                  <h4>输出参数</h4>
+                </div>
+              </div>
+            </div>
+            <div class="form-body">
+              <MVOutput
+                v-for="(otp, idx) in outputs"
+                ref="outputRefs"
+                :key="idx"
+                v-model="otp.value"
+                :index="otp.index"
+                :is-last="idx === outputs.length - 1"
+                :nics="indexedNicDetails"
+                :used-signal-type="mv.used_signal_type"
+                :pips-number="mv.input_number"
+                @video-selected="videoSelected"
+                @video-unselected="videoUnSelected"
+                @audio-selected="audioSelected"
+                @audio-unselected="audioUnSelected"
+              />
+            </div>
           </div>
         </div>
-      </div>
+      </expand-transition>
     </div>
   </form>
 </template>

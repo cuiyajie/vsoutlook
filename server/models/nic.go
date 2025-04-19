@@ -20,6 +20,7 @@ type Nic struct {
 	VFCount       uint32         `gorm:"type:integer;default:4"`
 	NodeID        string         `gorm:"type:varchar"`
 	Deleted       uint8          `gorm:"default:0"`
+	Position      int64          `gorm:"default:nextval('nic_order_seq')"`
 }
 
 type NicInfo struct {
@@ -32,6 +33,7 @@ type NicInfo struct {
 	CoreList      string `json:"coreList"`
 	DMAList       string `json:"dmaList"`
 	VFCount       uint32 `json:"vfCount"`
+	Position      int64  `json:"position"`
 }
 
 type NicAsBasic struct {
@@ -57,6 +59,7 @@ func (nic *Nic) AsBasic() NicAsBasic {
 	result.AllocatedDMA = nic.AllocatedDMA
 	result.VFCount = nic.VFCount
 	result.NodeID = nic.NodeID
+	result.Position = nic.Position
 	return result
 }
 

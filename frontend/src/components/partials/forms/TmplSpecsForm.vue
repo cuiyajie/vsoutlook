@@ -21,6 +21,7 @@ const modelValue = defineModel<TmplRequirement & { description: string }>({
     recvAVFrameNodeCount: 2,
     sendAVFrameNodeCount: 2,
     recvFrameCount: 2,
+    imageTag: '',
     maxRateMbpsByCore: 9000,
     receiveSessions: 18,
     shm: 0,
@@ -154,6 +155,14 @@ const onNicCountChange = (e: Event) => {
             </div>
             <div class="column is-4">
               <VField>
+                <VLabel>Image Tag</VLabel>
+                <VControl>
+                  <VInput v-model="modelValue.imageTag" />
+                </VControl>
+              </VField>
+            </div>
+            <div class="column is-4">
+              <VField>
                 <VLabel>需要使用DPDK的网卡数量</VLabel>
                 <VControl>
                   <VSelect v-model="modelValue.nicCount" class="is-rounded" @change="onNicCountChange">
@@ -164,7 +173,7 @@ const onNicCountChange = (e: Event) => {
                 </VControl>
               </VField>
             </div>
-            <div class="column is-8" />
+            <div class="column is-4" />
             <template v-for="(config, cidx) in modelValue.nicConfig" :key="cidx">
               <div class="column is-2">
                 <VField>

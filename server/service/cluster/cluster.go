@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"vsoutlook.com/vsoutlook/infra/config"
 	"vsoutlook.com/vsoutlook/models"
 	"vsoutlook.com/vsoutlook/models/db"
@@ -153,6 +154,10 @@ func GetNodes(c *svcinfra.Context) {
 	// 	NodeName: "controlplane",
 	// 	NodeIP:   "192.168.1.12",
 	// })
+	// resp = append(resp, ClusterNodeInfo{
+	// 	NodeName: "node4",
+	// 	NodeIP:   "192.168.1.13",
+	// })
 	// end Mock code
 	c.Bye(gin.H{"code": 0, "data": resp})
 }
@@ -248,6 +253,53 @@ func GetNodeNics(c *svcinfra.Context) {
 	c.Bye(gin.H{"code": 0, "data": result})
 }
 
+func ReorderNodeNics(c *svcinfra.Context) {
+	var req struct {
+		ID       string `json:"id"`
+		Position int64  `json:"position"`
+	}
+	c.ShouldBindJSON(&req)
+	movedNic := models.ActiveNic(req.ID)
+	if movedNic == nil {
+		c.GeneralError("网卡不存在")
+		return
+	}
+	tx := db.DB.Begin()
+	oldPosition := movedNic.Position
+	if req.Position == oldPosition {
+		tx.Commit()
+		c.Bye(gin.H{"code": 0})
+		return
+	}
+	movedNic.Position = req.Position
+	if req.Position > oldPosition {
+		if err := tx.Model(&models.Nic{}).Where("node_id = ? and position > ? and position <= ?", movedNic.NodeID, oldPosition, req.Position).UpdateColumn("position", gorm.Expr("position - 1")).Error; err != nil {
+			tx.Rollback()
+			c.GeneralError("更新网卡位置失败")
+			return
+		}
+	} else {
+		if err := tx.Model(&models.Nic{}).Where("node_id = ? and position < ? and position >= ?", movedNic.NodeID, oldPosition, req.Position).UpdateColumn("position", gorm.Expr("position + 1")).Error; err != nil {
+			tx.Rollback()
+			c.GeneralError("更新网卡位置失败")
+			return
+		}
+	}
+	if err := tx.Save(movedNic).Error; err != nil {
+		tx.Rollback()
+		c.GeneralError("更新网卡位置失败")
+		return
+	}
+	tx.Commit()
+	var nics []models.Nic
+	db.DB.Model(&models.Nic{}).Where("node_id=? and deleted=0", movedNic.NodeID).Order("position asc").Find(&nics)
+	result := make([]models.NicAsBasic, 0, len(nics))
+	for _, t := range nics {
+		result = append(result, t.AsBasic())
+	}
+	c.Bye(gin.H{"code": 0, "data": result})
+}
+
 func CreateNic(c *svcinfra.Context) {
 	var req struct {
 		NodeID string `json:"nodeId"`
@@ -263,10 +315,11 @@ func CreateNic(c *svcinfra.Context) {
 		c.GeneralError("网卡未设置核心")
 		return
 	}
-	if len(req.DMAList) == 0 {
-		c.GeneralError("网卡未设置DMA通道")
-		return
-	}
+
+	// Get the maximum position for the node's NICs
+	var maxPosition int64
+	db.DB.Model(&models.Nic{}).Where("node_id = ? AND deleted = 0", node.ID).Select("COALESCE(MAX(position), 0)").Scan(&maxPosition)
+
 	nic := models.Nic{
 		NodeID:        node.ID,
 		NicNameMain:   req.NicNameMain,
@@ -278,6 +331,7 @@ func CreateNic(c *svcinfra.Context) {
 		CoreList:      req.CoreList,
 		DMAList:       req.DMAList,
 		VFCount:       req.VFCount,
+		Position:      maxPosition + 1, // Set position to be one more than the current maximum
 	}
 	db.DB.Create(&nic)
 	c.Bye(gin.H{"code": 0, "data": nic.AsBasic()})
@@ -296,10 +350,6 @@ func UpdateNic(c *svcinfra.Context) {
 	}
 	if len(req.CoreList) == 0 {
 		c.GeneralError("网卡未设置核心")
-		return
-	}
-	if len(req.DMAList) == 0 {
-		c.GeneralError("网卡未设置DMA通道")
 		return
 	}
 	if len(nic.AllocatedCore) == 0 {

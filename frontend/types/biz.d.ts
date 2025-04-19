@@ -31,6 +31,7 @@ interface TmplRequirement {
   recvAVFrameNodeCount: number
   sendAVFrameNodeCount: number
   recvFrameCount: number
+  imageTag: string
   maxRateMbpsByCore: number
   receiveSessions: number
   nicCount: number
@@ -149,6 +150,7 @@ interface NicInfo {
   coreList: string
   dmaList: string
   vfCount: number
+  position: number
 }
 
 interface ClustNode {

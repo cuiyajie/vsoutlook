@@ -36,6 +36,6 @@ func ActiveNode(id string) *Node {
 // get nics by node id
 func (node *Node) Nics() []Nic {
 	var nics []Nic
-	db.DB.Where("node_id=? and deleted=0", node.ID).Find(&nics)
+	db.DB.Model(&Nic{}).Where("node_id=? and deleted=0", node.ID).Order("position asc").Find(&nics)
 	return nics
 }

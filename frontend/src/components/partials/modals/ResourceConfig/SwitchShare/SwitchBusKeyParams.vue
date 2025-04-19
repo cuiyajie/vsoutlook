@@ -111,6 +111,7 @@ const opened = ref(false)
                     :input-videos="inputVideos"
                     :bus-levels="busLevels"
                     :level-index="-1"
+                    :emit-key-signal="true"
                   />
                 </VControl>
               </VField>

@@ -14,6 +14,46 @@ func Migrate(env string) {
 	m := gormigrate.New(db.DB, gormigrate.DefaultOptions, []*gormigrate.Migration{
 		// 添加新的migration, 参考 https://github.com/go-gormigrate/gormigrate
 		{
+			ID: "20250417-2155",
+			Migrate: func(tx *gorm.DB) error {
+				// Create sequence for nic position ordering
+				tx.Exec("CREATE SEQUENCE IF NOT EXISTS nic_order_seq START 1")
+
+				// Add position field to Nic table
+				type Nic struct {
+					Position int64 `gorm:"default:nextval('nic_order_seq')"`
+				}
+				if err := tx.AutoMigrate(&Nic{}); err != nil {
+					return err
+				}
+
+				// Update existing records with sequential position values grouped by node_id
+				tx.Exec(`
+					WITH ranked AS (
+						SELECT id, ROW_NUMBER() OVER (PARTITION BY node_id ORDER BY auto_id) as row_num
+						FROM nics
+					WHERE deleted = 0
+					)
+					UPDATE nics
+					SET position = ranked.row_num
+					FROM ranked
+					WHERE nics.id = ranked.id
+				`)
+
+				return nil
+			},
+			Rollback: func(tx *gorm.DB) error {
+				// Drop position column
+				if err := tx.Migrator().DropColumn(&Nic{}, "position"); err != nil {
+					return err
+				}
+
+				// Drop the sequence
+				tx.Exec("DROP SEQUENCE IF EXISTS nic_order_seq")
+				return nil
+			},
+		},
+		{
 			ID: "20250315-1742",
 			Migrate: func(tx *gorm.DB) error {
 				// 为 tmpl_type增加 deleted 字段
@@ -268,6 +308,7 @@ func Migrate(env string) {
 			&Node{},
 			&Settings{},
 			&Layout{},
+			&Nic{},
 		)
 		if err != nil {
 			return err
@@ -288,12 +329,12 @@ func SetInitialData() {
 		{Name: "多画面", Icon: "mv.svg", Category: "multiv", AppCategory: "mv", Deleted: 1},
 		{Name: "切换台", Icon: "switch.svg", Category: "swt", AppCategory: "swt", Deleted: 1},
 		{Name: "末级切换", Icon: "endswitch.svg", Category: "endswt", AppCategory: "swt", Deleted: 1},
-		{Name: "录放机", Icon: "recorder.svg", Category: "recorder", AppCategory: "recoder"},
-		{Name: "全媒体网关", Icon: "media_gateway.svg", Category: "media_gateway", AppCategory: "media_gateway"},
-		{Name: "多画面", Icon: "mv.svg", Category: "mv", AppCategory: "mv"},
-		{Name: "播出切换台", Icon: "bcswitch.svg", Category: "bcswt", AppCategory: "switch-v2"},
-		{Name: "制作切换台", Icon: "switch_v2.svg", Category: "makeswt", AppCategory: "switch-v2"},
-		{Name: "新媒体切换台", Icon: "new_media.svg", Category: "nmswt", AppCategory: "switch-v2"},
+		{Name: "录放机", Icon: "recorder.svg", Category: "recorder", AppCategory: "udx"},
+		{Name: "全媒体网关", Icon: "media_gateway.svg", Category: "media_gateway", AppCategory: "udx"},
+		{Name: "多画面", Icon: "mv.svg", Category: "mv", AppCategory: "multiv"},
+		{Name: "播出切换台", Icon: "bcswitch.svg", Category: "bcswt", AppCategory: "endswt"},
+		{Name: "制作切换台", Icon: "switch_v2.svg", Category: "makeswt", AppCategory: "endswt"},
+		{Name: "新媒体切换台", Icon: "new_media.svg", Category: "nmswt", AppCategory: "endswt"},
 	}
 	for _, tmplType := range tmplTypes {
 		// 检查是否已存在, 以 Category 为主键, 使用 db_helpers.go 里面的 QueryOne

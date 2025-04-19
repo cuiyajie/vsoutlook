@@ -75,6 +75,21 @@ export const useClustNode = defineStore('clustNode', () => {
     return res
   }
 
+  async function $reorderNic(nodeId: string, id: string, position: number) {
+    const res = await $fetch('/api/cluster/nic.reorder', {
+      body: { id, position },
+    })
+    if (res?.code === 0) {
+      if (res.data && res.data.length > 0) {
+        const tnode = nodes.value.find((node) => node.id === nodeId)
+        if (tnode) {
+          tnode.nics = res.data as NicInfo[]
+        }
+      }
+    }
+    return res
+  }
+
   async function $deleteNic(id: string, nodeId: string) {
     const res = await $fetch('/api/cluster/nic.delete', {
       body: { id },
@@ -168,6 +183,7 @@ export const useClustNode = defineStore('clustNode', () => {
     $createNic,
     $updateNic,
     $deleteNic,
+    $reorderNic,
   } as const
 })
 

@@ -736,7 +736,7 @@ onKeyStroke('Escape', (e) => {
   <div>
     <Transition name="translate-page-y">
       <VCard v-if="currLayout" radius="rounded" class="tv-header-card">
-        <div class="layout-sample-container scrollbar-hide">
+        <div class="layout-sample-container">
           <div
             v-for="(ly, id1) in layoutSamples"
             :key="id1"

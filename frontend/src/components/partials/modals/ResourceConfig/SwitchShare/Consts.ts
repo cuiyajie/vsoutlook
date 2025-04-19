@@ -110,7 +110,7 @@ export const def_switch_input_key_params = (index: number) => ({
   key_type: 'int_key',
   signal_id: `key-${idGen(8)}`,
   signal_name: `input-key-${index}`,
-  ...def_player_params(),
+  ...def_keyfill_player_params(),
   file_name: '',
   url: 'http://index.html',
 })
@@ -184,11 +184,13 @@ export const def_switch_bus_level_sub_params = (index: number) => ({
 
 export const def_switch_bus_level_params = (index: number, level: number) => ({
   level: index,
+  bus_input: {
   nic_index: -1,
   bus_input_number: level,
-  bus_input: Array.from({ length: level }, (_, i) =>
+    input_list: Array.from({ length: level }, (_, i) =>
     def_switch_bus_level_input_params(i)
-  ),
+  )
+  },
   pgm_bus: {
     sub_bus: [def_switch_bus_level_sub_params(0)] as SwitchBusLevelSubParams[],
     out_signal: [
@@ -249,6 +251,43 @@ export const def_switch_out = (level: number) => ({
   },
 })
 
+export const def_keyfill_player_params = () => {
+  const playerParams = def_player_params()
+  return {
+    videoformat_name: '',
+    smpte_params: {
+      key_params: {
+        ipstream_master: {
+          ...playerParams.smpte_params.ipstream_master
+        },
+        ipstream_backup: {
+          ...playerParams.smpte_params.ipstream_backup
+        },
+      },
+      fill_params: {
+        ipstream_master: {
+          ...playerParams.smpte_params.ipstream_master
+        },
+        ipstream_backup: {
+          ...playerParams.smpte_params.ipstream_backup
+        },
+      },
+    },
+    stream_params: {
+      key_params: {
+        url: playerParams.stream_params.url,
+        codec_dev: playerParams.stream_params.codec_dev,
+        codec_dev_index: playerParams.stream_params.codec_dev_index,
+      },
+      fill_params: {
+        url: playerParams.stream_params.url,
+        codec_dev: playerParams.stream_params.codec_dev,
+        codec_dev_index: playerParams.stream_params.codec_dev_index,
+      }
+    }
+  }
+}
+
 export type SignalParams = {
   signal_id: string
   signal_name: string
@@ -267,6 +306,7 @@ export type SwitchPanel = ReturnType<typeof def_switch_panel>
 export type SwitchInput = ReturnType<typeof def_switch_input>
 export type SwitchInputKeyParams = ReturnType<typeof def_switch_input_key_params>
 export type SwitchInputVideoParams = ReturnType<typeof def_switch_input_video_params>
+export type KeyFillPlayerParams = ReturnType<typeof def_keyfill_player_params>
 
 export type SwitchBus = ReturnType<typeof def_switch_bus>
 export type SwitchBusKeyParams = ReturnType<typeof def_switch_bus_key_params>
@@ -310,6 +350,30 @@ export interface InjectSwitchBusSelect {
   selectedBus: Ref<Set<string>>
   busSelected: (bus: string) => void
   busUnSelected: (bus: string) => void
+}
+
+export const def_switch_input_signal_select = () => ({
+  selectedSignal: ref(new Set<string>()),
+  signalSelected: () => {},
+  signalUnSelected: () => {},
+})
+
+export interface InjectSwitchInputSignalSelect {
+  selectedSignal: Ref<Set<string>>
+  signalSelected: (signal: string) => void
+  signalUnSelected: (signal: string) => void
+}
+
+export const def_switch_key_signal_select = () => ({
+  selectedKeySignal: ref(new Set<string>()),
+  keySignalSelected: () => {},
+  keySignalUnSelected: () => {},
+})
+
+export interface InjectSwitchKeySignalSelect {
+  selectedKeySignal: Ref<Set<string>>
+  keySignalSelected: (signal: string) => void
+  keySignalUnSelected: (signal: string) => void
 }
 
 export interface InjectSwitchConfig {

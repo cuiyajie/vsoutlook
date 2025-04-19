@@ -20,12 +20,16 @@ const beforeEnter = (_el: Element) => {
 const enter = (_el: Element, done: () => void) => {
   const el = _el as HTMLElement;
   const fullHeight = el.scrollHeight;
-  const duration = Math.min(props.maxDuration, Math.max(props.minDuration, Math.round((fullHeight / props.speed) * 1000)));
-  el.style.transition = `height ${duration}ms ease`;
-  el.style.height = `${fullHeight}px`
-  el.addEventListener('transitionend', () => {
+  if (fullHeight > 0) {
+    const duration = Math.min(props.maxDuration, Math.max(props.minDuration, Math.round((fullHeight / props.speed) * 1000)));
+    el.style.transition = `height ${duration}ms ease`;
+    el.style.height = `${fullHeight}px`
+    el.addEventListener('transitionend', () => {
+      done()
+    }, { once: true });
+  } else {
     done()
-  }, { once: true });
+  }
 };
 
 const afterEnter = (_el: Element) => {
@@ -46,11 +50,15 @@ const leave = (_el: Element, done: () => void) => {
   el.style.height = `${el.scrollHeight}px`;
   const duration = Math.min(props.maxDuration, Math.max(props.minDuration, Math.round((el.scrollHeight / props.speed) * 1000)));
   requestAnimationFrame(() => {
-    el.style.transition = `height ${duration}ms linear`;
-    el.style.height = '0';
-    el.addEventListener('transitionend', () => {
+    if (el.scrollHeight > 0) {
+      el.style.transition = `height ${duration}ms linear`;
+      el.style.height = '0';
+      el.addEventListener('transitionend', () => {
+        done()
+      }, { once: true });
+    } else {
       done()
-    }, { once: true });
+    }
   })
 };
 
@@ -65,6 +73,7 @@ const afterLeave = (_el: Element) => {
 <template>
   <transition
     :css="false"
+    appear
     @before-enter="beforeEnter"
     @enter="enter"
     @after-enter="afterEnter"

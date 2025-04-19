@@ -2,6 +2,7 @@
 import { confirm } from "@src/utils/dialog";
 import { useClustNode } from "@src/stores/node";
 import { useNotyf } from "@src/composable/useNotyf";
+import Draggable from "vuedraggable";
 
 const opened = ref(false);
 const node = ref<ClustNode | null>(null);
@@ -64,6 +65,18 @@ function edit(idx: number) {
   });
 }
 
+let snapshot: NicInfo[] = [];
+function getSnapshot() {
+  if (!node.value) return;
+  snapshot = [...node.value.nics];
+}
+
+function recorder({ oldIndex, newIndex }: { oldIndex: number; newIndex: number }) {
+  if (!node.value) return;
+  const target = snapshot[oldIndex]
+  nodeStore.$reorderNic(node.value.id, target.id, snapshot[newIndex].position)
+}
+
 useListener(Signal.OpenNodeResourceList, async (_node: ClustNode) => {
   opened.value = true;
   node.value = _node;
@@ -93,6 +106,7 @@ useListener(Signal.OpenNodeResourceList, async (_node: ClustNode) => {
           <div class="table-container">
             <table class="table datatable-table is-fullwidth">
               <thead>
+                <th></th>
                 <th align="center">序号</th>
                 <th align="center">主路网口</th>
                 <th align="center">收发开关</th>
@@ -103,59 +117,75 @@ useListener(Signal.OpenNodeResourceList, async (_node: ClustNode) => {
                 <th align="center">VF</th>
                 <th>操作</th>
               </thead>
-              <tbody>
-                <tr v-for="(nic, cidx) in node.nics" :key="cidx">
-                  <td>{{ cidx }}</td>
-                  <td>{{ nic.nicNameMain }}</td>
-                  <td>
-                    <div class="is-list">
-                      <VControl subcontrol class="switch-2">
-                        <VSwitchBlock
-                          :model-value="nic.receiveMain"
-                          color="info"
-                          label="收"
-                        />
-                      </VControl>
-                      <VControl subcontrol class="switch-2">
-                        <VSwitchBlock
-                          :model-value="nic.sendMain"
-                          color="danger"
-                          label="发"
-                        />
-                      </VControl>
-                    </div>
-                  </td>
-                  <td>{{ nic.nicNameBackup }}</td>
-                  <td>
-                    <div class="is-list">
-                      <VControl subcontrol class="switch-2">
-                        <VSwitchBlock
-                          :model-value="nic.receiveBackup"
-                          color="info"
-                          label="收"
-                        />
-                      </VControl>
-                      <VControl subcontrol class="switch-2">
-                        <VSwitchBlock
-                          :model-value="nic.sendBackup"
-                          color="danger"
-                          label="发"
-                        />
-                      </VControl>
-                    </div>
-                  </td>
-                  <td>{{ nic.coreList }}</td>
-                  <td>{{ nic.dmaList }}</td>
-                  <td>{{ nic.vfCount }}</td>
-                  <td>
-                    <PresetListDropdown
-                      @add="create"
-                      @edit="edit(cidx)"
-                      @remove="remove(cidx)"
-                    />
-                  </td>
-                </tr>
-              </tbody>
+              <Draggable
+                v-model="node.nics"
+                tag="tbody"
+                handle=".drag-area"
+                ghost-class="row-ghost"
+                chosen-class="row-chosen"
+                item-key="id"
+                @start="getSnapshot"
+                @end="recorder"
+              >
+                <template #item="{ element: nic, index: cidx }: { element: NicInfo, index: number }">
+                  <tr>
+                    <td>
+                      <div class="drag-area">
+                        <VIconButton icon="feather:menu" circle />
+                      </div>
+                    </td>
+                    <td>{{ cidx }}</td>
+                    <td>{{ nic.nicNameMain }}</td>
+                    <td>
+                      <div class="is-list">
+                        <VControl subcontrol class="switch-2">
+                          <VSwitchBlock
+                            :model-value="nic.receiveMain"
+                            color="info"
+                            label="收"
+                          />
+                        </VControl>
+                        <VControl subcontrol class="switch-2">
+                          <VSwitchBlock
+                            :model-value="nic.sendMain"
+                            color="danger"
+                            label="发"
+                          />
+                        </VControl>
+                      </div>
+                    </td>
+                    <td>{{ nic.nicNameBackup }}</td>
+                    <td>
+                      <div class="is-list">
+                        <VControl subcontrol class="switch-2">
+                          <VSwitchBlock
+                            :model-value="nic.receiveBackup"
+                            color="info"
+                            label="收"
+                          />
+                        </VControl>
+                        <VControl subcontrol class="switch-2">
+                          <VSwitchBlock
+                            :model-value="nic.sendBackup"
+                            color="danger"
+                            label="发"
+                          />
+                        </VControl>
+                      </div>
+                    </td>
+                    <td>{{ nic.coreList }}</td>
+                    <td>{{ nic.dmaList }}</td>
+                    <td>{{ nic.vfCount }}</td>
+                    <td>
+                      <PresetListDropdown
+                        @add="create"
+                        @edit="edit(cidx)"
+                        @remove="remove(cidx)"
+                      />
+                    </td>
+                  </tr>
+                </template>
+              </Draggable>
             </table>
           </div>
           <VPlaceholderPage
@@ -212,6 +242,18 @@ useListener(Signal.OpenNodeResourceList, async (_node: ClustNode) => {
 
         th:last-child {
           width: 80px;
+        }
+      }
+
+      tr {
+        &.row-ghost {
+          background: var(--dark-sidebar-light-8) !important;
+        }
+
+        &.row-chosen {
+          background: var(--dark-sidebar-light-2);
+          border: 1px solid var(--dark-sidebar-light-12);
+          border-radius: 0.75rem;
         }
       }
     }

@@ -277,6 +277,7 @@ func preInstallation(c *svcinfra.Context, configStr string, tmpl *models.Tmpl, n
 	data["applicationCategory"] = tmplType.AppCategory
 	data["sendAVFrameNodeCount"] = tmpl.Requirement.SendAVFrameNodeCount
 	data["recvFrameCount"] = tmpl.Requirement.RecvframeCount
+	data["imageTag"] = tmpl.Requirement.ImageTag
 	data["coreList"] = coreListStr
 	data["DMAList"] = dmaListStr
 	data["dpdkinterfaces"] = dpdkinterfaces

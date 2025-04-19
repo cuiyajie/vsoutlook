@@ -81,6 +81,7 @@ func SetupRouter() *gin.Engine {
 		post(member, "cluster/nic.create", cluster.CreateNic)
 		post(member, "cluster/nic.update", cluster.UpdateNic)
 		post(member, "cluster/nic.delete", cluster.DeleteNic)
+		post(member, "cluster/nic.reorder", cluster.ReorderNodeNics)
 		post(member, "cluster/nmos", cluster.GetNMosNodes)
 	}
 

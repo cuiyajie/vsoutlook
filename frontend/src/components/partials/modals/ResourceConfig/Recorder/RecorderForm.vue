@@ -44,6 +44,7 @@ const mv = defineModel<{
   },
   local: true,
 })
+const fullOpened = ref(true)
 const advanceOpened = ref(false)
 
 const usStore = useUserSession()
@@ -114,154 +115,165 @@ defineExpose({
     class="form-layout device-form"
   >
     <div class="form-outer">
-      <div class="form-header">
-        <div class="form-header-inner">
+      <div class="form-header" :class="!fullOpened && 'border-b-none'">
+        <div
+          class="form-header-inner collapse-control-header"
+          role="button"
+          @keydown.space.prevent="fullOpened = !fullOpened"
+          @click.prevent="fullOpened = !fullOpened"
+          :open="fullOpened || undefined"
+        >
           <div class="left">
             <h3>设备参数</h3>
           </div>
+          <div class="collapse-icon">
+            <VIcon icon="feather:chevron-down" />
+          </div>
         </div>
       </div>
-      <div class="form-body is-nested">
-        <!--Fieldset-->
-        <div class="form-fieldset">
-          <div class="fieldset-heading">
-            <h4>通用参数</h4>
-          </div>
-          <div class="columns is-multiline">
-            <div class="column is-6">
-              <VField>
-                <VLabel>需要使用的信号类型</VLabel>
-                <VControl>
-                  <VSelect
-                    v-model="mv.used_signal_type"
-                    class="is-rounded"
-                  >
-                    <VOption v-for="ust in used_signal_types" :key="ust.key" :value="ust.key">{{ ust.label }}</VOption>
-                  </VSelect>
-                </VControl>
-              </VField>
+      <expand-transition>
+        <div v-show="fullOpened" class="form-body is-nested">
+          <!--Fieldset-->
+          <div class="form-fieldset">
+            <div class="fieldset-heading">
+              <h4>通用参数</h4>
+            </div>
+            <div class="columns is-multiline">
+              <div class="column is-6">
+                <VField>
+                  <VLabel>需要使用的信号类型</VLabel>
+                  <VControl>
+                    <VSelect
+                      v-model="mv.used_signal_type"
+                      class="is-rounded"
+                    >
+                      <VOption v-for="ust in used_signal_types" :key="ust.key" :value="ust.key">{{ ust.label }}</VOption>
+                    </VSelect>
+                  </VControl>
+                </VField>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="form-fieldset">
-          <div class="fieldset-heading">
-            <h4>接口设置</h4>
-          </div>
-          <div class="columns is-multiline">
-            <div v-for="(apiParam, apiIndex) in apiParams" :key="apiParam.api_name" class="column is-6">
-              <ApiParamsCheck v-model="apiParams[apiIndex]" :label="apiParam.label" />
+          <div class="form-fieldset">
+            <div class="fieldset-heading">
+              <h4>接口设置</h4>
+            </div>
+            <div class="columns is-multiline">
+              <div v-for="(apiParam, apiIndex) in apiParams" :key="apiParam.api_name" class="column is-6">
+                <ApiParamsCheck v-model="apiParams[apiIndex]" :label="apiParam.label" />
+              </div>
             </div>
           </div>
-        </div>
-        <div
-          class="form-fieldset collapse-form form-outer"
-          :open="advanceOpened || undefined"
-        >
           <div
-            class="fieldset-heading collapse-header"
-            tabindex="0"
-            role="button"
-            @keydown.space.prevent="advanceOpened = !advanceOpened"
-            @click.prevent="advanceOpened = !advanceOpened"
+            class="form-fieldset collapse-form form-outer"
+            :open="advanceOpened || undefined"
           >
-            <h4>高级配置</h4>
-            <div class="collapse-icon">
-              <VIcon icon="feather:chevron-down" />
+            <div
+              class="fieldset-heading collapse-header"
+              tabindex="0"
+              role="button"
+              @keydown.space.prevent="advanceOpened = !advanceOpened"
+              @click.prevent="advanceOpened = !advanceOpened"
+            >
+              <h4>高级配置</h4>
+              <div class="collapse-icon">
+                <VIcon icon="feather:chevron-down" />
+              </div>
             </div>
+            <expand-transition>
+              <div v-show="advanceOpened" class="form-body">
+                <NMosConfig v-model="mv.nmos" class="seperator" />
+                <SSMAddressRange v-model="mv.ssm_address_range" />
+              </div>
+            </expand-transition>
           </div>
           <expand-transition>
-            <div v-show="advanceOpened" class="form-body">
-              <NMosConfig v-model="mv.nmos" class="seperator" />
-              <SSMAddressRange v-model="mv.ssm_address_range" />
-            </div>
+            <NicSection v-if="mv.used_signal_type !== 1" v-model="nicDetails" class="has-mb-20" :nics="nics" :max="requiredment?.nicCount || 0" />
           </expand-transition>
-        </div>
-        <expand-transition>
-          <NicSection v-if="mv.used_signal_type !== 1" v-model="nicDetails" class="has-mb-20" :nics="nics" :max="requiredment?.nicCount || 0" />
-        </expand-transition>
-        <div class="form-fieldset">
-          <div class="fieldset-heading">
-            <h4>录制参数</h4>
-          </div>
-          <div class="columns is-multiline">
-            <div class="column is-6">
-              <VField>
-                <VLabel>smpte收流网卡序号</VLabel>
-                <VControl>
-                  <NicDetailSelect v-model="mv.recoder_params.in_nic_index" :nics="indexedNicDetails" />
-                </VControl>
-              </VField>
+          <div class="form-fieldset">
+            <div class="fieldset-heading">
+              <h4>录制参数</h4>
             </div>
-          </div>
-        </div>
-        <div class="form-outer has-mt-20">
-          <div class="form-header">
-            <div class="form-header-inner">
-              <div class="left">
-                <h4>使用的视频格式列表</h4>
+            <div class="columns is-multiline">
+              <div class="column is-6">
+                <VField>
+                  <VLabel>smpte收流网卡序号</VLabel>
+                  <VControl>
+                    <NicDetailSelect v-model="mv.recoder_params.in_nic_index" :nics="indexedNicDetails" />
+                  </VControl>
+                </VField>
               </div>
             </div>
           </div>
-          <div class="form-body">
-            <VTags v-if="videoFormatEnum.length > 0" class="format-item-container">
-              <VideoFormatTooltip v-for="vformat in videoFormatEnum" :key="vformat" :name="vformat">
-                <VTag color="blue" :label="vformat" curved outlined />
-              </VideoFormatTooltip>
-            </VTags>
-            <div v-else class="is-empty-list">暂时还没有选择视频格式</div>
-          </div>
-        </div>
-        <div class="form-outer">
-          <div class="form-header">
-            <div class="form-header-inner">
-              <div class="left">
-                <h4>使用的音频格式列表</h4>
-              </div>
-            </div>
-          </div>
-          <div class="form-body">
-            <VTags v-if="audioFormatEnum.length > 0" class="format-item-container">
-              <AudioFormatTooltip v-for="aformat in audioFormatEnum" :key="aformat" :name="aformat">
-                <VTag color="green" :label="aformat" curved outlined />
-              </AudioFormatTooltip>
-            </VTags>
-            <div v-else class="is-empty-list">暂时还没有选择音频格式</div>
-          </div>
-        </div>
-        <div class="form-outer">
-          <div class="form-header">
-            <div class="form-header-inner">
-              <div class="left">
-                <h4>播放参数</h4>
-              </div>
-            </div>
-          </div>
-          <div class="form-body">
-            <!--Fieldset-->
-            <div class="form-fieldset seperator">
-              <div class="columns is-multiline">
-                <div class="column is-6">
-                  <VField>
-                    <VLabel>输出视频格式名称</VLabel>
-                    <VControl>
-                      <VideoFormatSelect v-model="playerParams.videoformat_name" :used-signal-type="mv.used_signal_type" @video-selected="videoSelected" @video-unselected="videoUnSelected" />
-                    </VControl>
-                  </VField>
-                </div>
-                <div class="column is-6">
-                  <VField>
-                    <VLabel>输出音频格式名称</VLabel>
-                    <VControl>
-                      <AudioFormatSelect v-model="playerParams.audioformat_name" :videoformat="playerParams.videoformat_name" @audio-selected="audioSelected" @audio-unselected="audioUnSelected" />
-                    </VControl>
-                  </VField>
+          <div class="form-outer has-mt-20">
+            <div class="form-header">
+              <div class="form-header-inner">
+                <div class="left">
+                  <h4>使用的视频格式列表</h4>
                 </div>
               </div>
             </div>
-            <PlayerParamsForm v-model="playerParams" :nics="indexedNicDetails" />
+            <div class="form-body">
+              <VTags v-if="videoFormatEnum.length > 0" class="format-item-container">
+                <VideoFormatTooltip v-for="vformat in videoFormatEnum" :key="vformat" :name="vformat">
+                  <VTag color="blue" :label="vformat" curved outlined />
+                </VideoFormatTooltip>
+              </VTags>
+              <div v-else class="is-empty-list">暂时还没有选择视频格式</div>
+            </div>
+          </div>
+          <div class="form-outer">
+            <div class="form-header">
+              <div class="form-header-inner">
+                <div class="left">
+                  <h4>使用的音频格式列表</h4>
+                </div>
+              </div>
+            </div>
+            <div class="form-body">
+              <VTags v-if="audioFormatEnum.length > 0" class="format-item-container">
+                <AudioFormatTooltip v-for="aformat in audioFormatEnum" :key="aformat" :name="aformat">
+                  <VTag color="green" :label="aformat" curved outlined />
+                </AudioFormatTooltip>
+              </VTags>
+              <div v-else class="is-empty-list">暂时还没有选择音频格式</div>
+            </div>
+          </div>
+          <div class="form-outer">
+            <div class="form-header">
+              <div class="form-header-inner">
+                <div class="left">
+                  <h4>播放参数</h4>
+                </div>
+              </div>
+            </div>
+            <div class="form-body">
+              <!--Fieldset-->
+              <div class="form-fieldset seperator">
+                <div class="columns is-multiline">
+                  <div class="column is-6">
+                    <VField>
+                      <VLabel>输出视频格式名称</VLabel>
+                      <VControl>
+                        <VideoFormatSelect v-model="playerParams.videoformat_name" :used-signal-type="mv.used_signal_type" @video-selected="videoSelected" @video-unselected="videoUnSelected" />
+                      </VControl>
+                    </VField>
+                  </div>
+                  <div class="column is-6">
+                    <VField>
+                      <VLabel>输出音频格式名称</VLabel>
+                      <VControl>
+                        <AudioFormatSelect v-model="playerParams.audioformat_name" :videoformat="playerParams.videoformat_name" @audio-selected="audioSelected" @audio-unselected="audioUnSelected" />
+                      </VControl>
+                    </VField>
+                  </div>
+                </div>
+              </div>
+              <PlayerParamsForm v-model="playerParams" :nics="indexedNicDetails" />
+            </div>
           </div>
         </div>
-      </div>
+      </expand-transition>
     </div>
   </form>
 </template>
