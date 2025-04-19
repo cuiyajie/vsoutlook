@@ -3980,7 +3980,8 @@ code {
   background: rgb(230, 41, 100);
 }
 
-.device-form.form-layout .collapse-header .collapse-icon {
+.device-form.form-layout .collapse-header .collapse-icon,
+.device-form.form-layout .collapse-control-header .collapse-icon {
   background: rgb(255, 255, 255);
 }
 
