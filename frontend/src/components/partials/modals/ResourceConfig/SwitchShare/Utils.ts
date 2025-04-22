@@ -427,14 +427,14 @@ export function checkSwitchData(
     )
     levelBus.pgm_bus.sub_bus = Array.from(
       { length: levelBusData.pgm_bus.sub_bus.length },
-      (subBusData: any, idx) => {
-        return merge(def_switch_bus_level_sub_params(idx), subBusData)
+      (_: any, idx) => {
+        return merge(def_switch_bus_level_sub_params(idx), levelBusData.pgm_bus.sub_bus[idx])
       }
     )
     levelBus.pvw_bus.sub_bus = Array.from(
       { length: levelBusData.pvw_bus.sub_bus.length },
-      (subBusData: any, idx) => {
-        return merge(def_switch_bus_level_sub_params(idx), subBusData)
+      (_: any, idx) => {
+        return merge(def_switch_bus_level_sub_params(idx), levelBusData.pvw_bus.sub_bus[idx])
       }
     )
     return levelBus

@@ -7,6 +7,7 @@ import {
   type SwitchPanel,
   type TallyParams,
 } from '../SwitchShare/Consts'
+import { ensurePortSuffix } from "./Utils_V1";
 
 export function useNicList(props: { nics: NicInfo[]; requiredment?: TmplRequirement }) {
   const nicDetails = ref<NicDetail[]>([])
@@ -49,10 +50,10 @@ export function useNicList(props: { nics: NicInfo[]; requiredment?: TmplRequirem
 export function useSmpteParams(params: Ref<PlayerParams>, nicDetails: Ref<NicDetail[]>) {
   const sync = (p: PlayerParams, nic: NicDetail) => {
     if (nic) {
-      p.smpte_params.ipstream_master.v_src_address = nic['2110-7_m_local_ip']
-      p.smpte_params.ipstream_master.a_src_address = nic['2110-7_m_local_ip']
-      p.smpte_params.ipstream_backup.v_src_address = nic['2110-7_b_local_ip']
-      p.smpte_params.ipstream_backup.a_src_address = nic['2110-7_b_local_ip']
+      p.smpte_params.ipstream_master.v_src_address = ensurePortSuffix(nic['2110-7_m_local_ip'])
+      p.smpte_params.ipstream_master.a_src_address = ensurePortSuffix(nic['2110-7_m_local_ip'])
+      p.smpte_params.ipstream_backup.v_src_address = ensurePortSuffix(nic['2110-7_b_local_ip'])
+      p.smpte_params.ipstream_backup.a_src_address = ensurePortSuffix(nic['2110-7_b_local_ip'])
     }
   }
   watch(

@@ -21,7 +21,7 @@ import { useClustNode } from '@src/stores/node'
 import { useUserSession } from '@src/stores/userSession'
 import dayjs from 'dayjs'
 import BCSwitchFormV1 from './BCSwitch_V1/BCSwitchForm_V1.vue'
-import { handleJsonData } from './Utilties/Utils_V1'
+import { checkFormValue, processFormValue, handleJsonData } from './Utilties/Utils_V1'
 
 const tmplStore = useTemplate()
 const deviceStore = useDevices()
@@ -87,7 +87,7 @@ useListener(
         node: node.value?.id || null,
       })
       if (p?.device?.config) {
-        const val = JSON.parse(p.device.config)
+        const val = checkFormValue(JSON.parse(p.device.config))
         compRef.value?.setValue(val)
       }
     })
@@ -172,7 +172,7 @@ const addInstance = handleSubmit(async () => {
     size: 'medium',
     onConfirm: async (hide) => {
       hide()
-      const params = compRef.value?.getValue()
+      const params = processFormValue(compRef.value?.getValue())
       if (!params || !checkRequestParams(params)) return
       loading.value = true
       let pro: Promise<any>
@@ -218,7 +218,7 @@ function onFileImported(e: Event) {
       const res = e.target?.result
       if (res) {
         try {
-          const val = JSON.parse(res as string)
+          const val = checkFormValue(JSON.parse(res as string))
           compRef.value?.setValue(val)
           notyf.success('导入配置成功')
         } catch (err) {
@@ -248,7 +248,7 @@ function exportSetting() {
 }
 
 function saveSetting(config?: string, name?: string) {
-  const val = handleJsonData(config || compRef.value?.getValue())
+  const val = processFormValue(handleJsonData(config || compRef.value?.getValue()))
   const fileName =
     name ||
     `${tmpl.value?.name}_${deviceName.value || '未命名'}_${dayjs().format(

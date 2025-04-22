@@ -175,3 +175,71 @@ export function handleJsonData(data: any) {
   }
   return data
 }
+
+export function processFormValue(data: any) {
+  data = replaceKeyInObject(data, 'smpte_params', 'smpte-params')
+  data = replaceKeyInObject(data, 'sub_bus', 'sub-bus')
+  return data
+}
+
+export function checkFormValue(data: any) {
+  data = replaceKeyInObject(data, 'smpte-params', 'smpte_params')
+  data = replaceKeyInObject(data, 'sub-bus', 'sub_bus')
+  console.log(data)
+  return data
+}
+
+/**
+ * Recursively replaces a specific key with a new key in a nested object
+ * @param obj The object to process
+ * @param oldKey The key to replace
+ * @param newKey The new key to use
+ * @returns A new object with the replaced keys
+ */
+export function replaceKeyInObject(obj: any, oldKey: string, newKey: string): any {
+  // Handle null or undefined
+  if (obj === null || obj === undefined) {
+    return obj;
+  }
+
+  // Handle arrays
+  if (Array.isArray(obj)) {
+    return obj.map(item => replaceKeyInObject(item, oldKey, newKey));
+  }
+
+  // Handle objects
+  if (typeof obj === 'object') {
+    const result: any = {};
+
+    for (const key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        // If the current key matches the old key, use the new key instead
+        const newKeyName = key === oldKey ? newKey : key;
+        // Recursively process the value
+        result[newKeyName] = replaceKeyInObject(obj[key], oldKey, newKey);
+      }
+    }
+
+    return result;
+  }
+
+  // Return primitive values as is
+  return obj;
+}
+
+/**
+ * Checks if a string ends with a pattern like ':number' and adds ':30000' if it doesn't
+ * @param str The string to check
+ * @returns The string with ':30000' appended if it doesn't already end with ':number'
+ */
+export function ensurePortSuffix(str: string, defaultPort = 30000): string {
+  // Check if the string already ends with :[number]
+  const portPattern = /:\d+$/;
+
+  if (portPattern.test(str)) {
+    return str; // Already has a port number
+  }
+
+  // Add the default port
+  return `${str}:${defaultPort}`;
+}
