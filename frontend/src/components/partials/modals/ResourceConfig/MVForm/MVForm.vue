@@ -193,9 +193,9 @@ function setValue(data: typeof mvData) {
   nextTick(() => {
     outputs.value.forEach((optv, idx) => {
       optv.value = checkPlayerParams(
-        merge(def_mv_output_param(), _opData.params[idx]),
+        merge(def_mv_output_param(), _opData.params?.[idx]),
         videoFormats.value,
-        audioFormats.value
+        audioFormats.value,
       )
       if (
         optv.value.out_mv_template &&
@@ -220,9 +220,10 @@ defineExpose({
         <div
           class="form-header-inner collapse-control-header"
           role="button"
+          tabindex="0"
+          :open="fullOpened || undefined"
           @keydown.space.prevent="fullOpened = !fullOpened"
           @click.prevent="fullOpened = !fullOpened"
-          :open="fullOpened || undefined"
         >
           <div class="left">
             <h3>设备参数</h3>

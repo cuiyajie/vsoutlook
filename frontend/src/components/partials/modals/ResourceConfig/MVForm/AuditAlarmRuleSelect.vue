@@ -47,9 +47,11 @@ watch<string>(() => mv.value, (nv, ov) => {
     :options="alarmRules"
   >
     <template #singlelabel="{ value }">
-      <span class="select-label-text">
-        {{ value.rule_name }}
-      </span>
+      <div class="multiselect-single-label">
+        <span class="select-label-text">
+          {{ value.rule_name }}
+        </span>
+      </div>
     </template>
     <template #option="{ option }">
       <span class="select-option-text">

@@ -1,5 +1,6 @@
 import { type PlayerParams, type IndexedNicDetail, type IApiParams } from './Consts_V1'
 import omit from 'lodash-es/omit'
+import merge from 'lodash-es/merge'
 
 export function changeProtocol(url: string, newProtocol: string): string {
   try {
@@ -18,10 +19,13 @@ export function handleApiParams(params: IApiParams[]) {
 }
 
 export function checkApiParams(params: IApiParams[], apiParams: any[]) {
-  return params.map((p) => ({
-    ...p,
-    checked: apiParams.some((ap) => ap.api_name === p.api_name),
-  }))
+  return params.map((p) => {
+    const included = apiParams.find((ap) => ap.api_name === p.api_name)
+    return {
+      ...merge(p, included),
+      checked: !!included,
+    }
+  })
 }
 
 export function handleVideoFormat(name: string, vfs: VideoFormat[]) {
@@ -185,7 +189,6 @@ export function processFormValue(data: any) {
 export function checkFormValue(data: any) {
   data = replaceKeyInObject(data, 'smpte-params', 'smpte_params')
   data = replaceKeyInObject(data, 'sub-bus', 'sub_bus')
-  console.log(data)
   return data
 }
 

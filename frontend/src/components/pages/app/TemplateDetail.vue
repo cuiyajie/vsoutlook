@@ -5,7 +5,6 @@ import { useTemplateType } from "@src/stores/templateType";
 import { useNotyf } from "@src/composable/useNotyf";
 
 const route = useRoute();
-const params = route.params as { id: string }
 const tmplTypeStore = useTemplateType();
 const tmplStore = useTemplate();
 const { toObject } = useVueFlow();
@@ -74,7 +73,7 @@ const specsData = ref<TmplRequirement & { description: string }>({
 tmplTypeStore.$fetchList();
 tmplStore.$fetchList();
 
-watch(() => params?.id, async (nv, ov) => {
+watch(() => (route.params as { id: string })?.id, async (nv, ov) => {
   if (nv && nv !== ov) {
     tmpl.value = await tmplStore.$getTmplById(nv)
     if (tmpl.value) {
@@ -123,6 +122,7 @@ async function save() {
 }
 
 onMounted(() => {
+  const params = route.params as { id: string }
   if (!params?.id) {
     locked.value = false
     createNewTmpl()

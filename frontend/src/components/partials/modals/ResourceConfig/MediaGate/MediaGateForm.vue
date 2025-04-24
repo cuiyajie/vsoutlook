@@ -124,9 +124,9 @@ defineExpose({
         <div
           class="form-header-inner collapse-control-header"
           role="button"
+          :open="fullOpened || undefined"
           @keydown.space.prevent="fullOpened = !fullOpened"
           @click.prevent="fullOpened = !fullOpened"
-          :open="fullOpened || undefined"
         >
           <div class="left">
             <h3>设备参数</h3>

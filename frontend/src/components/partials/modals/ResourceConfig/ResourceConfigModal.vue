@@ -234,6 +234,9 @@ function onFileImported(e: Event) {
   } else {
     notyf.error('导入配置失败')
   }
+  if (fileInput.value) {
+    fileInput.value.value = ''
+  }
 }
 
 function exportSetting() {

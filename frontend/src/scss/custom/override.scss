@@ -7,3 +7,9 @@ a:focus-visible {
     margin-top: 5px;
   }
 }
+
+.is-dark {
+  .multiselect .multiselect-single-label .select-label-text {
+    color: var(--light-text);
+  }
+}

@@ -144,7 +144,7 @@ useListener(Signal.OpenNewTechReview, (payload: { _callback?: any; index?: numbe
     title="视音频技审模版"
     actions="right"
     cancel-label="取消"
-    dialog-class="preset-modal is-overflow-visible tech-review-modal"
+    dialog-class="preset-modal tech-review-modal"
     @submit.prevent="handleCommit"
     @close="opened = false"
   >

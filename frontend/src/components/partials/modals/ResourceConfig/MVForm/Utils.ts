@@ -24,7 +24,7 @@ export function checkInputParam(
 ) {
   const result = checkPlayerParams(params, vfs, afs)
   const rule = rules.find(
-    (r) => r.av_alarm.audit_template_name === result.audit_alarm_rule_name
+    (r) => r.rule_name === result.audit_alarm_rule_name
   )
   if (!rule) {
     params.audit_alarm_rule_name = ''

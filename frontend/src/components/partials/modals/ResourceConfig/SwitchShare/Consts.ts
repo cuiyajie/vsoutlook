@@ -81,6 +81,7 @@ export const def_tally_screen = () => ({
 export const def_tally_config = (index: number) => ({
   level: index,
   screens: [def_tally_screen(), def_tally_screen()],
+  show_second_screen: false,
 })
 
 export const def_tally = (level: number) =>

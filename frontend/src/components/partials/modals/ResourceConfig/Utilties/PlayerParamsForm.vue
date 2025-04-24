@@ -23,7 +23,9 @@ const props = withDefaults(defineProps<{
 
 const nicsRef = computed(() => props.nics)
 
-useSmpteParams(mv, nicsRef)
+if (props.smpte === 'send') {
+  useSmpteParams(mv, nicsRef)
+}
 
 const usStore = useUserSession()
 const videoFormats = computed(() => usStore.settings.video_formats || [])

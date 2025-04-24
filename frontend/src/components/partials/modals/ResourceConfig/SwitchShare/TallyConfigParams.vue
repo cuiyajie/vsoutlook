@@ -12,7 +12,6 @@ defineProps<{
 }>()
 
 const opened = ref(false)
-const showSecondScreen = ref(false)
 
 function handlePgmChecked(screenidx: number, checked: boolean) {
   if (checked) {
@@ -52,7 +51,7 @@ function handlePvwChecked(screenidx: number, checked: boolean) {
     </div>
     <div v-show="opened" class="form-fieldset-nested-4">
       <TallyScreenParams
-        v-for="(screenParam, screenidx) in mv.screens.slice(0, showSecondScreen ? 2 : 1)"
+        v-for="(screenParam, screenidx) in mv.screens.slice(0, mv.show_second_screen ? 2 : 1)"
         :key="`input-screen-${screenidx}`"
         v-model="mv.screens[screenidx]"
         :index="screenidx"
@@ -60,13 +59,13 @@ function handlePvwChecked(screenidx: number, checked: boolean) {
         @pgm-checked="handlePgmChecked(screenidx, $event)"
         @pvw-checked="handlePvwChecked(screenidx, $event)"
       />
-      <div v-if="!showSecondScreen" class="form-action-buttons">
+      <div v-if="!mv.show_second_screen" class="form-action-buttons">
         <div class="left">
           <VButton
             class="is-rounded"
             color="primary"
             raised
-            @click="showSecondScreen = !showSecondScreen"
+            @click="mv.show_second_screen = !mv.show_second_screen"
           >
             添加第2个画面
           </VButton>

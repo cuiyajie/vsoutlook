@@ -51,7 +51,7 @@ export function handleTally(params: TallyParams) {
       return rest
     })
     return {
-      screens,
+      screens: screens.slice(0, p.show_second_screen ? 2 : 1),
       level: pidx,
     }
   })
@@ -379,6 +379,7 @@ export function checkSwitchData(
       return {
         level: tallyData[idx].level,
         screens,
+        show_second_screen: tallyData[idx].screens.length > 1,
       }
     })
   }
