@@ -240,7 +240,7 @@ func GetNodeNics(c *svcinfra.Context) {
 		ID string `json:"id"`
 	}
 	c.ShouldBindJSON(&req)
-	node := models.ActiveNode(req.ID)
+	node := models.EnsureNode(req.ID)
 	if node == nil {
 		c.GeneralError("节点不存在")
 		return
@@ -306,11 +306,8 @@ func CreateNic(c *svcinfra.Context) {
 		models.NicInfo
 	}
 	c.ShouldBindJSON(&req)
-	node := models.ActiveNode(req.NodeID)
-	if node == nil {
-		c.GeneralError("节点不存在")
-		return
-	}
+	node := models.EnsureNode(req.NodeID)
+
 	if len(req.CoreList) == 0 {
 		c.GeneralError("网卡未设置核心")
 		return

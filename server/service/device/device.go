@@ -411,12 +411,7 @@ func StartDevice(c *svcinfra.Context) {
 		c.GeneralError("设备类型不存在")
 		return
 	}
-	node := models.ActiveNode(device.Node)
-	if node == nil {
-		node = &models.Node{
-			ID: device.Node,
-		}
-	}
+	node := models.EnsureNode(device.Node)
 
 	cores, dmas, err := preInstallation(c, device.Config, tmpl, node, device)
 	if err != nil {
@@ -656,12 +651,7 @@ func CreateDevice(c *svcinfra.Context) {
 		c.GeneralError("设备类型不存在")
 		return
 	}
-	node := models.ActiveNode(req.Node)
-	if node == nil {
-		node = &models.Node{
-			ID: req.Node,
-		}
-	}
+	node := models.EnsureNode(req.Node)
 
 	newDevice := models.Device{
 		Name: req.Name,

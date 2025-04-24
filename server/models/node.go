@@ -33,6 +33,18 @@ func ActiveNode(id string) *Node {
 	return &node
 }
 
+func EnsureNode(id string) *Node {
+	var node Node
+	if err := db.DB.Where("id = ?", id).First(&node).Error; err != nil {
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			log.Printf("QueryOne err %s\n", err)
+		}
+		node.ID = id
+		db.DB.Save(&node)
+	}
+	return &node
+}
+
 // get nics by node id
 func (node *Node) Nics() []Nic {
 	var nics []Nic
