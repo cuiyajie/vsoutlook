@@ -96,29 +96,24 @@ function resetCell() {
 
 function deleteCell() {
   if (!activeType.value || !data.value || activeType.value === 'win') return
-  data.value[activeType.value] = null
-  activeComponent(null)
-  displayRef.value?.clearComponent()
+  const lc = lcControls.find(lc => lc.key === activeType.value)!
+  confirm({
+    title: "删除组件",
+    content: `确定要删除 ${lc.name} 组件吗？`,
+    onConfirm: (hide) => {
+      if (!activeType.value || !data.value || activeType.value === 'win') return
+      data.value[activeType.value] = null
+      activeComponent(null)
+      displayRef.value?.clearComponent()
+      hide()
+    },
+  })
 }
 
-function toggleComponent(type: Exclude<LayoutProps, 'win' | 'text' | 'timer'>) {
+function onComponentClick(type: Exclude<LayoutProps, 'win' | 'text' | 'timer'>) {
   const lcControl = lcControls.find(lc => lc.key === type)
   if (!lcControl) return
-  if (data.value?.[type]) {
-    confirm({
-      title: "删除组件",
-      content: `确定要删除 ${lcControl.name} 组件吗？`,
-      onConfirm: (hide) => {
-        if (!data.value) return
-        data.value[type] = null
-        if (activeType.value === type) {
-          activeComponent(null)
-          displayRef.value?.clearComponent()
-        }
-        hide()
-      },
-    });
-  } else {
+  if (!data.value?.[type]) {
     confirm({
       title: "添加组件",
       content: `确定要添加 ${lcControl.name} 组件吗？`,
@@ -143,6 +138,13 @@ function toggleComponent(type: Exclude<LayoutProps, 'win' | 'text' | 'timer'>) {
         hide()
       },
     });
+  } else {
+    if (activeType.value === type) {
+      displayRef.value?.clearComponent()
+      activeComponent(null)
+    } else {
+      displayRef.value?.selectComponent(type, 0)
+    }
   }
 }
 
@@ -165,6 +167,7 @@ onKeyStroke('Escape', (e) => {
   <VModal
     id="layout-cell-modal"
     size="big"
+    noscroll
     noclose
     :open="opened"
     :title="`窗口序号${index}`"
@@ -180,17 +183,16 @@ onKeyStroke('Escape', (e) => {
               v-for="lc in lcControls"
               :key="lc.key"
               class="lc-control"
-              :class="data?.[lc.key] && 'selected'"
+              :class="[data?.[lc.key] && 'added', activeType === lc.key && 'selected']"
               role="button"
               tabindex="-1"
-              @click.prevent="toggleComponent(lc.key)"
-              @keyup.enter.prevent="toggleComponent(lc.key)"
+              @click.prevent="onComponentClick(lc.key)"
+              @keyup.enter.prevent="onComponentClick(lc.key)"
             >
               <i v-if="lc.iconType === 'feather'" class="iconify" :data-icon="`feather:${lc.icon}`" aria-hidden="true" />
               <i v-else :class="`fas fa-${lc.icon}`" aria-hidden="true" />
               {{ lc.name }}
               <div v-if="!data?.[lc.key]" class="add-mask"><i aria-hidden="true" class="fas fa-plus" /></div>
-              <div v-else class="add-mask"><i aria-hidden="true" class="fas fa-times" /></div>
             </div>
           </div>
           <div v-else :style="{ height: `${PADDING}px` }" />
@@ -282,9 +284,14 @@ onKeyStroke('Escape', (e) => {
             }
           }
 
-          &.selected {
+          &.added {
             background-color: var(--primary);
             color: var(--primary--light-color);
+          }
+
+          &.selected {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
           }
         }
       }

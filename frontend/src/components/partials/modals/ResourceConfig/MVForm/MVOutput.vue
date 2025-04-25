@@ -32,8 +32,9 @@ const opened = ref(false)
 
 const pips = ref<IndexedType<MVPipParams>[]>([])
 
-watch([() => props.pipsNumber, () => mv.value.pip_params], ([newNumber, newParams]) => {
+watch(() => props.pipsNumber, (newNumber) => {
   const len = pips.value.length
+  const newParams = mv.value.pip_params
   if (newNumber < len) {
     pips.value = pips.value.slice(0, newNumber)
   } else if (newNumber > len) {
@@ -46,6 +47,17 @@ watch([() => props.pipsNumber, () => mv.value.pip_params], ([newNumber, newParam
     ]
   }
 }, { immediate: true })
+
+watch(
+  () => mv.value.pip_params,
+  (newParams) => {
+    pips.value = newParams.map((v, i) => ({
+      index: i + 1,
+      value: reactive(v),
+    }))
+  },
+  { immediate: true }
+)
 
 defineExpose({
   getValue() {

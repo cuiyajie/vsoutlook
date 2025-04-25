@@ -193,7 +193,7 @@ function setValue(data: typeof mvData) {
   nextTick(() => {
     outputs.value.forEach((optv, idx) => {
       optv.value = checkPlayerParams(
-        merge(def_mv_output_param(), _opData.params?.[idx]),
+        merge(def_mv_output_param(), _opData.out_params?.[idx]),
         videoFormats.value,
         audioFormats.value,
       )

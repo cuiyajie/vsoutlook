@@ -169,7 +169,8 @@ const dragHandle = ref<HTMLElement | null>(null)
 onClickOutside(dragHandle, (event) => {
   if (!activeComponent.value || isResizing.value) return
   const target = event.target as HTMLElement
-  if (target.closest('.vdr, [data-role=LayoutSetting], .vc-colorpicker')) return
+  if (target.closest('.vdr, [data-role=LayoutSetting], .vc-colorpicker, .lc-control')) return
+  if (document.activeElement && document.activeElement.closest('[data-role=LayoutSetting]')) return
   selectComponent('win')
 })
 
@@ -182,7 +183,7 @@ function selectComponent(type: LayoutProps, componentIndex = 0) {
 
 const resizeHandles = computed(() => {
   const ac = activeComponent.value
-  if (!ac || ac.type === 'win') return []
+  if (!ac || ac.type === 'win' || ac.rotated) return []
   if (ac.type === 'vol') return ['tm', 'bm']
   if (ac.type === 'vector') return ['tl', 'tr', 'br', 'bl']
   return ['tl', 'tm', 'tr', 'mr', 'br', 'bm', 'bl', 'ml']

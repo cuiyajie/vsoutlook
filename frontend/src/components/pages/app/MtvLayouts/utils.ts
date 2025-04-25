@@ -815,7 +815,7 @@ export function db2ds(
             }))
             .concat(draft.vols.slice(vus.length - 4)),
           len: vus.length || 1,
-          alpha: vus[0]?.a || 1.0,
+          alpha: vus[0]?.a ?? 1.0,
         }
       }
       if (title) {
@@ -834,7 +834,7 @@ export function db2ds(
           color: title.text_color ? stringRGB(title.text_color) : defaultTitleColor.Text,
           bgColor: title.bg_color ? stringRGB(title.bg_color) : defaultTitleColor.Bg,
           isVertial: d.font_is_vertical || false,
-          tallyType: d.tallytype || TallyType.Light,
+          tallyType: d.tallytype ?? TallyType.Light,
           tallyWidth: title.w_tally / base.w || draft.tallyWidth,
           tallyBorderWidth: win?.tally_border?.border_width
             ? win.tally_border.border_width / base.w
@@ -851,10 +851,10 @@ export function db2ds(
           y: alarm.y / base.h - pos.y,
           w: alarm.w / base.w,
           h: alarm.h / base.h,
-          fontSize,
+          fontSize: alarm.font_size / base.w,
           color: alarm.text_color ? stringRGB(alarm.text_color) : defaultAlarmColor.Text,
           bgColor: alarm.bg_color ? stringRGB(alarm.bg_color) : defaultAlarmColor.Bg,
-          lang: d.language_ch || AlarmLang.English,
+          lang: d.language_ch ?? AlarmLang.English,
           border: draftAlarmBorder(
             bounding.w * (result.win.w || 0.5),
             bounding.h * (result.win.h || 0.5),
@@ -882,7 +882,7 @@ export function db2ds(
           y: oscillogram.y / base.h - pos.y,
           w: oscillogram.w / base.w,
           h: oscillogram.h / base.h,
-          alpha: oscillogram.a || 0.9,
+          alpha: oscillogram.a ?? 0.9,
         }
       }
       if (vector) {
@@ -891,7 +891,7 @@ export function db2ds(
           y: vector.y / base.h - pos.y,
           w: vector.w / base.w,
           h: vector.h / base.h,
-          alpha: vector.a || 0.9,
+          alpha: vector.a ?? 0.9,
         }
       }
       if (meta) {

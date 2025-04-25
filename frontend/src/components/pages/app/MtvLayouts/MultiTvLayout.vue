@@ -73,7 +73,7 @@ const base = computed(() => {
 })
 
 const contentRef = ref<HTMLElement | null>(null)
-const { top, update: updateBounding } = useElementBounding(contentRef)
+const { top, update: updateBounding } = useElementBounding(contentRef, { windowScroll: false })
 const layoutsRef = ref<HTMLElement | null>(null)
 const { width: containerW, height: containerH } = useElementSize(layoutsRef)
 const bounding = computed(() => {
@@ -486,6 +486,22 @@ function editCell(didx: number) {
     },
   })
 }
+
+useEventListener(window, 'resize', () => {
+  if (activeCell.value) {
+    requestAnimationFrame(() => {
+      if (!activeCell.value) return
+      const _ads = dataset.value[activeCell.value.index]
+      activeCell.value = {
+        ...activeCell.value,
+        w: _ads.win.w * bounding.value.w,
+        h: _ads.win.h * bounding.value.h,
+        x: _ads.win.x * bounding.value.w,
+        y: _ads.win.y * bounding.value.h,
+      }
+    })
+  }
+})
 
 // const dragHandle = ref<HTMLElement | null>(null)
 // onClickOutside(dragHandle, (event) => {
