@@ -9,16 +9,16 @@ import {
   type IApiParams,
   used_signal_types,
   def_player_params,
+  def_recoder_params,
 } from '../Utilties/Consts_V1'
 import { handle, watchNmosName } from '../Utilties/Utils';
 import pick from 'lodash-es/pick'
 import merge from 'lodash-es/merge'
 import rcData from '@src/data/vscomponent/recorder.json'
-import { useUsedFormat, useNicList, useSmpteParams } from '../Utilties/Composables';
+import { useUsedFormat, useNicList, useSmpteParams, useSmpteFill } from '../Utilties/Composables';
 import { useUserSession } from "@src/stores/userSession"
 import { handleVideoFormat, handleAudioFormat, handlePlayerParams, handleNicList, unwrap, wrap, checkPlayerParams, handleApiParams, checkApiParams, checkNicDetails } from '../Utilties/Utils_V1';
 import { def_api_params } from './Consts';
-
 
 const props = defineProps<{
   name: string,
@@ -46,7 +46,7 @@ const mv = defineModel<{
     used_signal_type: 0,
     nmos: { ...nmos_config },
     ssm_address_range: [{ ...ssm_address }],
-    recoder_params: { in_nic_index: -1, v_core: 'rx#-1', a_core: 'rx#-1' },
+    recoder_params: def_recoder_params(),
   },
   local: true,
 })
@@ -69,6 +69,15 @@ mv.value = pick(rcData, [
 ])
 
 const { nicDetails, indexedNicDetails } = useNicList(props)
+watch(
+  indexedNicDetails,
+  (nv) => {
+    if (nv.length === 1 && mv.value.recoder_params.in_nic_index === -1) {
+      mv.value.recoder_params.in_nic_index = 0
+    }
+  },
+  { immediate: true }
+)
 
 const apiParams = ref<IApiParams[]>(def_api_params())
 const playerParams = ref(def_player_params())
@@ -95,6 +104,8 @@ function getValue() {
   }
   if (mv.value.used_signal_type !== 1) {
     result.nic_list = handleNicList(indexedNicDetails.value)
+  } else {
+    delete result.recoder_params
   }
   return result
 }
@@ -110,6 +121,8 @@ function setValue(data: typeof rcData) {
     'authorization_service',
     'recoder_params'
   ])
+  mv.value.recoder_params = merge(def_recoder_params(), data.recoder_params)
+  mv.value.nmos.rds_server_url = usStore.settings.rds_server_url || ''
   apiParams.value = checkApiParams(def_api_params(), data.api_params)
   const _playerParams = unwrap(data.player_params, 'out_')
   playerParams.value = checkPlayerParams(merge(def_player_params(), _playerParams), videoFormats.value, audioFormats.value)
@@ -218,21 +231,23 @@ defineExpose({
           <expand-transition>
             <NicSection v-if="mv.used_signal_type !== 1" v-model="nicDetails" class="has-mb-20" :nics="nics" :max="requiredment?.nicCount || 0" />
           </expand-transition>
-          <div class="form-fieldset">
-            <div class="fieldset-heading">
-              <h4>录制参数</h4>
-            </div>
-            <div class="columns is-multiline">
-              <div class="column is-6">
-                <VField>
-                  <VLabel>smpte收流网卡序号</VLabel>
-                  <VControl>
-                    <NicDetailSelect v-model="mv.recoder_params.in_nic_index" :nics="indexedNicDetails" />
-                  </VControl>
-                </VField>
+          <expand-transition>
+            <div v-if="mv.used_signal_type !== 1" class="form-fieldset">
+              <div class="fieldset-heading">
+                <h4>录制参数</h4>
+              </div>
+              <div class="columns is-multiline">
+                <div class="column is-6">
+                  <VField>
+                    <VLabel>smpte收流网卡序号</VLabel>
+                    <VControl>
+                      <NicDetailSelect v-model="mv.recoder_params.in_nic_index" :nics="indexedNicDetails" />
+                    </VControl>
+                  </VField>
+                </div>
               </div>
             </div>
-          </div>
+          </expand-transition>
           <div class="form-outer has-mt-20">
             <div class="form-header">
               <div class="form-header-inner">

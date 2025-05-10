@@ -89,6 +89,18 @@
     }
   }
 
+  .control.flex-with-button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .button.is-rotating {
+      .icon {
+        animation: rotating 1s linear infinite;
+      }
+    }
+  }
+
   .form-outer {
     .form-body {
       padding: 0 20px;
@@ -300,7 +312,6 @@
   }
 
   .collapse-control-header {
-
     &[open] {
       .collapse-icon {
         transform: rotate(calc(var(--transform-direction) * 180deg));

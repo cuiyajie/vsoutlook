@@ -407,29 +407,38 @@ func preInstallation(c *svcinfra.Context, configStr string, tmpl *models.Tmpl, n
 	if len(device.SeedID) == 0 {
 		device.SeedID = generateDeviceSeedID()
 	}
+	externalPorts := make([]int, 0)
 	if _, ok := configFile["nmos"]; ok {
 		nmos := configFile["nmos"].(map[string]interface{})
 		if externalAddress, ok := nmos["host_addresses"].(string); ok {
 			if len(externalAddress) > 0 {
 				data["externalAddress"] = externalAddress
-				externalPorts := make([]int, 0)
-				if httpPort, ok1 := nmos["http_port"].(float64); ok1 {
-					externalPorts = append(externalPorts, int(httpPort))
-				}
-				if tallyPort, ok2 := configFile["tally_port"].(float64); ok2 {
-					externalPorts = append(externalPorts, int(tallyPort))
-				}
-				if apiServerPort, ok3 := configFile["api_server_port"].(float64); ok3 {
-					externalPorts = append(externalPorts, int(apiServerPort))
-				}
-				fmt.Printf("externalPorts: %v\n", externalPorts)
-				if len(externalPorts) > 0 {
-					data["externalPorts"] = externalPorts
-				}
 			}
+		}
+		if httpPort, ok1 := nmos["http_port"].(float64); ok1 {
+			externalPorts = append(externalPorts, int(httpPort))
 		}
 		nmos["seed_id"] = device.SeedID
 	}
+	// Add service ports from api_params to externalPorts
+	if apiParams, ok := configFile["api_params"]; ok && apiParams != nil {
+		if apiParamsArray, ok := apiParams.([]interface{}); ok {
+			for _, param := range apiParamsArray {
+				if paramMap, ok := param.(map[string]interface{}); ok {
+					if servicePort, ok := paramMap["service_port"]; ok {
+						if portNum, ok := servicePort.(float64); ok {
+							externalPorts = append(externalPorts, int(portNum))
+						}
+					}
+				}
+			}
+		}
+	}
+	if len(externalPorts) > 0 {
+		fmt.Printf("externalPorts: %v\n", externalPorts)
+		data["externalPorts"] = externalPorts
+	}
+
 	if asJsonStr, ok := settings["authorization_services"]; ok {
 		var authServices []AuthService
 		err := json.Unmarshal([]byte(asJsonStr), &authServices)
@@ -617,10 +626,25 @@ func StopDevice(c *svcinfra.Context) {
 	if node != nil {
 		nics := node.Nics()
 		for _, nic := range nics {
-			delete(nic.AllocatedCore, device.ID)
-			delete(nic.AllocatedDMA, device.ID)
+			modified := false
+			if _, exists := nic.AllocatedCore[device.ID]; exists {
+				delete(nic.AllocatedCore, device.ID)
+				modified = true
+			}
+			if _, exists := nic.AllocatedDMA[device.ID]; exists {
+				delete(nic.AllocatedDMA, device.ID)
+				modified = true
+			}
+			if _, exists := nic.AllocatedTxRx[device.ID]; exists {
+				delete(nic.AllocatedTxRx, device.ID)
+				modified = true
+			}
+			if modified {
+				c.Save(&nic)
+			}
 		}
 	}
+
 	c.Save(&device)
 	c.Bye(gin.H{"result": "ok"})
 }
@@ -907,8 +931,22 @@ func DeleteDevice(c *svcinfra.Context) {
 	if node != nil {
 		nics := node.Nics()
 		for _, nic := range nics {
-			delete(nic.AllocatedCore, device.ID)
-			delete(nic.AllocatedDMA, device.ID)
+			modified := false
+			if _, exists := nic.AllocatedCore[device.ID]; exists {
+				delete(nic.AllocatedCore, device.ID)
+				modified = true
+			}
+			if _, exists := nic.AllocatedDMA[device.ID]; exists {
+				delete(nic.AllocatedDMA, device.ID)
+				modified = true
+			}
+			if _, exists := nic.AllocatedTxRx[device.ID]; exists {
+				delete(nic.AllocatedTxRx, device.ID)
+				modified = true
+			}
+			if modified {
+				c.Save(&nic)
+			}
 		}
 	}
 

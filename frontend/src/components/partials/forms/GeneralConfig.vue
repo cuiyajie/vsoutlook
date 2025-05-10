@@ -224,7 +224,7 @@ const vBlurOnEnter = {
 
 const testing = ref(false)
 function testRds() {
-  if (!settings.value.rds_server_url || !/^https?:\/\/(?:(?:([a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6})|(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))(?::(?:[0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]))?(?<!\/)$/.test(settings.value.rds_server_url)) {
+  if (!settings.value.rds_server_url || !/^((?:([a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6})|(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))(?::(?:[0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]))?(?<!\/)$/.test(settings.value.rds_server_url)) {
     notyf.error('RDS服务地址格式不正确')
     return
   }
@@ -308,7 +308,7 @@ function saveBasicSendReceiveConfig() {
                   v-model="settings.rds_server_url"
                   v-blur-on-enter
                   type="url"
-                  placeholder="http://192.168.1.112:8010"
+                  placeholder="192.168.1.112:8010"
                   inputmode="url"
                   data-key="rds_server_url"
                 />
@@ -316,7 +316,7 @@ function saveBasicSendReceiveConfig() {
               <VButton color="primary" raised class="btn-test-rds" :loading="testing" @click="testRds">
                 <span>测试</span>
               </VButton>
-              <VLabel class="font-test-label">示例: http://192.168.1.1</VLabel>
+              <VLabel class="font-test-label">示例: 192.168.1.1:8080</VLabel>
             </VField>
           </div>
         </div>

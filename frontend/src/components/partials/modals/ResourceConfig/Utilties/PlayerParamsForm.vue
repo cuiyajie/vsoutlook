@@ -3,7 +3,7 @@ import { useUserSession } from "@src/stores/userSession";
 import { type PlayerParams, def_player_params, type IndexedNicDetail, codec_dev_types, quality_types } from './Consts_V1';
 import { VideoFormatPrefixMap } from '@src/components/partials/modals/PresetConfig/Consts';
 import { changeProtocol } from './Utils_V1';
-import { useSmpteParams } from "./Composables";
+import { useSmpteParams, useSmpteFill } from "./Composables";
 
 const mv = defineModel<PlayerParams>({
   default: def_player_params(),
@@ -22,10 +22,12 @@ const props = withDefaults(defineProps<{
 })
 
 const nicsRef = computed(() => props.nics)
+const smpteLabel = computed(() => props.smpte === 'send' ? '发流' : '收流')
 
 if (props.smpte === 'send') {
   useSmpteParams(mv, nicsRef)
 }
+useSmpteFill(mv, nicsRef)
 
 watch(() => mv.value.smpte_params.nic_index, () => {
   const prefix = props.smpte === 'send' ? 'tx' : 'rx'
@@ -58,14 +60,14 @@ watch(() => mv.value.videoformat_name, (nv) => {
   <expand-transition>
     <div v-if="mv.videoformat_name && showParams" class="form-fieldset">
       <div class="fieldset-heading">
-        <h4>smpte{{ smpte === 'send' ? '发流' : '收流' }}参数</h4>
+        <h4>smpte{{ smpteLabel }}参数</h4>
       </div>
       <div v-if="showNic" class="form-fieldset-nested-3">
         <div class="form-fieldset-nested-3 seperator">
           <div class="columns is-multiline">
             <div class="column is-6">
               <VField>
-                <VLabel>{{ smpte === 'send' ? '发流' : '收流' }}网卡序号</VLabel>
+                <VLabel>{{ smpteLabel }}网卡序号</VLabel>
                 <VControl>
                   <NicDetailSelect v-model="mv.smpte_params.nic_index" :nics="nics" />
                 </VControl>
@@ -133,15 +135,15 @@ watch(() => mv.value.videoformat_name, (nv) => {
   <expand-transition>
     <div v-if="mv.videoformat_name && !showParams" class="form-fieldset">
       <div class="fieldset-heading">
-        <h4>深压缩流发流参数</h4>
+        <h4>深压缩流{{ smpteLabel }}参数</h4>
       </div>
       <div class="columns is-multiline">
         <div class="column is-4">
-          <AddrAddonPrefix v-model="mv.stream_params.url" label="发流地址" placeholder="请输入发流地址" />
+          <AddrAddonPrefix v-model="mv.stream_params.url" label="流地址" placeholder="请输入流地址" />
         </div>
         <div class="column is-4">
           <VField>
-            <VLabel>编码设备类型</VLabel>
+            <VLabel>{{ smpte === 'send' ? '编码' : '解码' }}设备类型</VLabel>
             <VControl>
               <VSelect
                 v-model="mv.stream_params.codec_dev"
@@ -152,7 +154,7 @@ watch(() => mv.value.videoformat_name, (nv) => {
             </VControl>
           </VField>
         </div>
-        <div class="column is-4">
+        <div v-if="smpte === 'send'" class="column is-4">
           <VField>
             <VLabel>编码质量</VLabel>
             <VControl>

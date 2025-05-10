@@ -12,6 +12,15 @@ const usStore = useUserSession()
 watch(() => usStore.settings.rds_server_url, (nv) => {
   mv.value.rds_server_url = nv || '未设置 RDS 服务地址'
 }, { immediate: true })
+
+const syncing = ref(false)
+function syncRds() {
+  syncing.value = true
+  setTimeout(() => {
+    syncing.value = false
+    mv.value.rds_server_url = usStore.settings.rds_server_url || '未设置 RDS 服务地址'
+  }, 1000)
+}
 </script>
 <template>
   <div class="form-fieldset">
@@ -31,8 +40,9 @@ watch(() => usStore.settings.rds_server_url, (nv) => {
       <div class="column is-6">
         <VField>
           <VLabel>RDS服务地址(含端口)</VLabel>
-          <VControl>
+          <VControl class="flex-with-button">
             <VInput v-model="mv.rds_server_url" readonly />
+            <VIconButton :class="{ 'is-rotating': syncing }" icon="feather:refresh-cw" color="success" @click="syncRds" />
           </VControl>
         </VField>
       </div>

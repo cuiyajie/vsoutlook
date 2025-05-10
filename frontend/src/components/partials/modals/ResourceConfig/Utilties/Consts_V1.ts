@@ -26,6 +26,12 @@ export const def_nic_detail = () => ({
   id: '',
 })
 
+export const def_recoder_params = () => ({
+  in_nic_index: -1,
+  v_core: 'rx#-1',
+  a_core: 'rx#-1',
+})
+
 export const def_player_params = () => ({
   videoformat_name: '',
   audioformat_name: '',

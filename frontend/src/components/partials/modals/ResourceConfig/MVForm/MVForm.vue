@@ -176,6 +176,7 @@ function setValue(data: typeof mvData) {
     'authorization_service',
   ])
   mv.value.output_number = 1
+  mv.value.nmos.rds_server_url = usStore.settings.rds_server_url || ''
 
   apiParams.value = checkApiParams(def_api_params(), data.api_params)
 
@@ -196,8 +197,10 @@ function setValue(data: typeof mvData) {
   const _opData = unwrap(data.output, 'out_')
   nextTick(() => {
     outputs.value.forEach((optv, idx) => {
+      outputRefs.value[idx]?.reset()
+      const _opParam = _opData.out_params?.[idx]
       optv.value = checkPlayerParams(
-        merge(def_mv_output_param(), _opData.out_params?.[idx]),
+        merge(def_mv_output_param(), _opParam),
         videoFormats.value,
         audioFormats.value,
       )

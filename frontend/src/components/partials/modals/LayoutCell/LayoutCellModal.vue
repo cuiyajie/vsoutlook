@@ -97,12 +97,13 @@ function resetCell() {
 function deleteCell() {
   if (!activeType.value || !data.value || activeType.value === 'win') return
   const lc = lcControls.find(lc => lc.key === activeType.value)!
+  const atv = activeType.value
   confirm({
     title: "删除组件",
     content: `确定要删除 ${lc.name} 组件吗？`,
     onConfirm: (hide) => {
-      if (!activeType.value || !data.value || activeType.value === 'win') return
-      data.value[activeType.value] = null
+      if (!atv || !data.value) return
+      data.value[atv] = null
       activeComponent(null)
       displayRef.value?.clearComponent()
       hide()

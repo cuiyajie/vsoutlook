@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -181,8 +182,12 @@ func GetNMosNodes(c *svcinfra.Context) {
 	}
 
 	if host == "" {
-		c.GeneralError("NMOS_HOST not set")
+		c.GeneralError("RDS服务地址未设置")
 		return
+	}
+	// prefix host with http://
+	if !strings.HasPrefix(host, "http://") && !strings.HasPrefix(host, "https://") {
+		host = "http://" + host
 	}
 	query := map[string]interface{}{
 		"paging.order": req.Order,

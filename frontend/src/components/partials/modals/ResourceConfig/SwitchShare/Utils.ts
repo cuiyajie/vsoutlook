@@ -112,7 +112,7 @@ export function handleSwitchInputVideo(
   vfs: VideoFormat[]
 ) {
   return params.map((p, pidx) => {
-    const result = handlePlayerParams(p, vfs)
+    const result = handlePlayerParams(p, vfs, 'receive')
     if (result.smpte_params) {
       delete result.smpte_params.nic_index
     }

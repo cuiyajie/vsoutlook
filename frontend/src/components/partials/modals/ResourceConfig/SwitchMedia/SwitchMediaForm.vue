@@ -141,6 +141,7 @@ function setValue(data: typeof nmswtData) {
     'ssm_address_range',
     'authorization_service',
   ])
+  mv.value.nmos.rds_server_url = usStore.settings.rds_server_url || ''
   apiParams.value = checkApiParams(def_api_params(), data.api_params)
   nicDetails.value = checkNicDetails(data.nic_list, props.nics)
   const _data = checkSwitchData(data, videoFormats.value, audioFormats.value, audioMappings.value)

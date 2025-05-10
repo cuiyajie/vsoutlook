@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { type MVPipParams, type MVOutputItemParam, def_mv_pip_params } from './Consts'
+import { type MVPipParams, type MVOutputItemParam, def_mv_pip_params } from './Consts';
 import { type IndexedType, type IndexedNicDetail } from '../Utilties/Consts_V1'
 import { useUserSession } from '@src/stores/userSession'
 
@@ -32,9 +32,8 @@ const opened = ref(false)
 
 const pips = ref<IndexedType<MVPipParams>[]>([])
 
-watch(() => props.pipsNumber, (newNumber) => {
+watch([() => props.pipsNumber, () => mv.value.pip_params], ([newNumber, newParams]) => {
   const len = pips.value.length
-  const newParams = mv.value.pip_params
   if (newNumber < len) {
     pips.value = pips.value.slice(0, newNumber)
   } else if (newNumber > len) {
@@ -48,17 +47,6 @@ watch(() => props.pipsNumber, (newNumber) => {
   }
 }, { immediate: true })
 
-watch(
-  () => mv.value.pip_params,
-  (newParams) => {
-    pips.value = newParams.map((v, i) => ({
-      index: i + 1,
-      value: reactive(v),
-    }))
-  },
-  { immediate: true }
-)
-
 defineExpose({
   getValue() {
     return {
@@ -66,6 +54,9 @@ defineExpose({
       pip_params: pips.value.map((v) => v.value),
     }
   },
+  reset() {
+    pips.value = []
+  }
 })
 </script>
 <template>

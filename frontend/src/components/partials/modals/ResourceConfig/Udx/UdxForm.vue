@@ -161,6 +161,7 @@ function setValue(data: typeof udxData) {
     'authorization_service',
   ])
   input.value = merge(def_udx_input(), unwrap(data.input, 'in_'))
+  mv.value.nmos.rds_server_url = usStore.settings.rds_server_url || ''
   inputFormat.value = getFormat(input.value)
 
   const _opData = unwrap(data.output, 'out_')

@@ -101,6 +101,7 @@ function setValue(data: typeof mgData) {
     'ssm_address_range',
     'authorization_service',
   ])
+  mv.value.nmos.rds_server_url = usStore.settings.rds_server_url || ''
   const _input = unwrap(data.input, 'in_')
   inputParams.value = checkPlayerParams(merge(def_mg_player_params(), _input), videoFormats.value, audioFormats.value)
   const _output = unwrap(data.output, 'out_')

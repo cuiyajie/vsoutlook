@@ -112,9 +112,10 @@ syncForm()
 const subTypes = computed(() => {
   if (form.value.compression_format === 'speedhq') {
     return VideoCompressionSubtypes.slice(-2)
-  } else {
-    return VideoCompressionSubtypes.slice(0, -2)
+  } else if (form.value.protocol === 'ndi' && form.value.compression_format === 'h264') {
+    return ['high']
   }
+  return VideoCompressionSubtypes.slice(0, -2)
 })
 
 watch(() => form.value.compression_format, () => {
@@ -122,9 +123,14 @@ watch(() => form.value.compression_format, () => {
   if (form.value.compression_format === 'speedhq' && !isSpeedHqSubTypes) {
     setFieldValue('compression_subtype', '')
     form.value.compression_subtype = ''
-  } else if (form.value.compression_format !== 'speedhq' && isSpeedHqSubTypes) {
-    setFieldValue('compression_subtype', '')
-    form.value.compression_subtype = ''
+  } else if (form.value.compression_format !== 'speedhq') {
+    if (isSpeedHqSubTypes) {
+      setFieldValue('compression_subtype', '')
+      form.value.compression_subtype = ''
+    } else if (form.value.protocol === 'ndi' && form.value.compression_format === 'h264') {
+      setFieldValue('compression_subtype', 'high')
+      form.value.compression_subtype = 'high'
+    }
   }
 })
 
@@ -347,7 +353,7 @@ useListener(Signal.OpenNewVideoFormat, (payload: { _callback?: any; index?: numb
             </div>
           </expand-transition>
           <expand-transition>
-            <div v-if="showAdditionalOptions" class="column is-4">
+            <div v-if="showAdditionalOptions && form.protocol !== 'ndi'" class="column is-4">
               <VField id="gop_b_frames" v-slot="{ field }">
                 <VLabel>B帧数量</VLabel>
                 <VControl>
@@ -360,7 +366,7 @@ useListener(Signal.OpenNewVideoFormat, (payload: { _callback?: any; index?: numb
             </div>
           </expand-transition>
           <expand-transition>
-            <div v-if="showAdditionalOptions" class="column is-4">
+            <div v-if="showAdditionalOptions && form.protocol !== 'ndi'" class="column is-4">
               <VField id="gop_length" v-slot="{ field }">
                 <VLabel>GOP长度</VLabel>
                 <VControl>

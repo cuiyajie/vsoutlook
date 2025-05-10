@@ -70,7 +70,8 @@ export function handleAudioFormat(name: string, afs: AudioFormat[]) {
 
 export function handlePlayerParams<T extends PlayerParams>(
   params: T,
-  vfs: VideoFormat[]
+  vfs: VideoFormat[],
+  smpte: 'send' | 'receive' = 'send'
 ) {
   const { videoformat_name, audioformat_name, smpte_params, stream_params, ...rest } =
     params
@@ -82,6 +83,9 @@ export function handlePlayerParams<T extends PlayerParams>(
     result.smpte_params = smpte_params
   } else {
     result.stream_params = stream_params
+    if (smpte === 'receive') {
+      delete result.stream_params.quality
+    }
   }
   return result
 }
@@ -238,16 +242,24 @@ export function replaceKeyInObject(obj: any, oldKey: string, newKey: string): an
 }
 
 /**
- * Checks if a string ends with a pattern like ':number' and adds ':30000' if it doesn't
+ * Ensures a string has a port suffix
  * @param str The string to check
- * @returns The string with ':30000' appended if it doesn't already end with ':number'
+ * @param src A source string that might contain a port to use
+ * @param defaultPort The default port to use if no port is found
+ * @returns The string with appropriate port appended
  */
-export function ensurePortSuffix(str: string, defaultPort = 30000): string {
+export function ensurePortSuffix(str: string, src: string, defaultPort = 30000): string {
   // Check if the string already ends with :[number]
   const portPattern = /:\d+$/
 
   if (portPattern.test(str)) {
     return str // Already has a port number
+  }
+
+  // Check if src has a port number we can extract
+  const srcPortMatch = src.match(/:(\d+)$/)
+  if (srcPortMatch) {
+    return `${str}:${srcPortMatch[1]}`
   }
 
   // Add the default port

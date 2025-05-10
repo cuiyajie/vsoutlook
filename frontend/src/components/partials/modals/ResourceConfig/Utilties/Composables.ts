@@ -51,16 +51,28 @@ export function useSmpteParams(params: Ref<PlayerParams>, nicDetails: Ref<NicDet
   const sync = (p: PlayerParams, nic: NicDetail) => {
     if (nic) {
       p.smpte_params.ipstream_master.v_src_address = ensurePortSuffix(
-        nic['2110-7_m_local_ip']
+        nic['2110-7_m_local_ip'],
+        p.smpte_params.ipstream_master.v_src_address
       )
       p.smpte_params.ipstream_master.a_src_address = ensurePortSuffix(
-        nic['2110-7_m_local_ip']
+        nic['2110-7_m_local_ip'],
+        p.smpte_params.ipstream_master.a_src_address
+      )
+      p.smpte_params.ipstream_master['40_src_address'] = ensurePortSuffix(
+        nic['2110-7_m_local_ip'],
+        p.smpte_params.ipstream_master['40_src_address']
       )
       p.smpte_params.ipstream_backup.v_src_address = ensurePortSuffix(
-        nic['2110-7_b_local_ip']
+        nic['2110-7_b_local_ip'],
+        p.smpte_params.ipstream_backup.v_src_address
       )
       p.smpte_params.ipstream_backup.a_src_address = ensurePortSuffix(
-        nic['2110-7_b_local_ip']
+        nic['2110-7_b_local_ip'],
+        p.smpte_params.ipstream_backup.a_src_address
+      )
+      p.smpte_params.ipstream_backup['40_src_address'] = ensurePortSuffix(
+        nic['2110-7_b_local_ip'],
+        p.smpte_params.ipstream_backup['40_src_address']
       )
     }
   }
@@ -77,6 +89,18 @@ export function useSmpteParams(params: Ref<PlayerParams>, nicDetails: Ref<NicDet
       sync(params.value, nv[params.value.smpte_params.nic_index])
     },
     { immediate: true, deep: true }
+  )
+}
+
+export function useSmpteFill(params: Ref<PlayerParams>, nicDetails: Ref<NicDetail[]>) {
+  watch(
+    nicDetails,
+    (nv) => {
+      if (nv.length === 1 && params.value.smpte_params.nic_index === -1) {
+        params.value.smpte_params.nic_index = 0
+      }
+    },
+    { immediate: true }
   )
 }
 

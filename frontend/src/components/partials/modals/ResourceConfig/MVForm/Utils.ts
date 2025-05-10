@@ -23,9 +23,7 @@ export function checkInputParam(
   rules: AuditAlarmRule[]
 ) {
   const result = checkPlayerParams(params, vfs, afs)
-  const rule = rules.find(
-    (r) => r.rule_name === result.audit_alarm_rule_name
-  )
+  const rule = rules.find((r) => r.rule_name === result.audit_alarm_rule_name)
   if (!rule) {
     params.audit_alarm_rule_name = ''
   }
@@ -37,7 +35,7 @@ export function handleInputParams(
   vfs: VideoFormat[],
   index: number
 ) {
-  const result = handlePlayerParams(input, vfs)
+  const result = handlePlayerParams(input, vfs, 'receive')
   result.index = index
   return result
 }
