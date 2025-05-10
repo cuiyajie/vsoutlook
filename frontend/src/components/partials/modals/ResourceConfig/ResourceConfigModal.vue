@@ -153,8 +153,8 @@ function checkRequestParams(params: any) {
     }
   }
   const nicCount = tmpl.value?.requirement.nicCount || 0
-  if (nicCount > 0) {
-    const nics = params?.nic_list || []
+  if (nicCount > 0 && params?.nic_list) {
+    const nics = params.nic_list || []
     if (nics.length !== nicCount) {
       notyf.error(`${tmpl.value?.name} 需要配置 ${nicCount} 个网卡`)
       return false

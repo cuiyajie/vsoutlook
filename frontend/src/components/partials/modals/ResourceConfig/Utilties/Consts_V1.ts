@@ -14,7 +14,6 @@ export const used_signal_types = [
 ]
 
 export const def_nic_detail = () => ({
-  numa_id: -1,
   '2110-7_m_local_ip': '10.1.1.61',
   nic_name_m: 'ens01',
   '2110-7_m_receive': true,
@@ -24,7 +23,7 @@ export const def_nic_detail = () => ({
   '2110-7_b_receive': true,
   '2110-7_b_send': true,
   nicIndex: -1,
-  id: 'nicid',
+  id: '',
 })
 
 export const def_player_params = () => ({
@@ -32,26 +31,29 @@ export const def_player_params = () => ({
   audioformat_name: '',
   smpte_params: {
     nic_index: -1,
+    v_core: 'rx#-1',
+    a_core: 'rx#-1',
     ipstream_master: {
       v_src_address: '10.1.1.64:30000',
       v_dst_address: '232.0.64.1:30000',
       a_src_address: '10.1.1.64:30000',
       a_dst_address: '232.1.64.1:30000',
+      '40_src_address': '10.1.1.64:30000',
+      '40_dst_address': '232.1.64.1:30000',
     },
     ipstream_backup: {
       v_src_address: '10.1.101.64:30000',
       v_dst_address: '232.0.164.1:30000',
       a_src_address: '10.1.101.64:30000',
       a_dst_address: '232.1.164.1:30000',
+      '40_src_address': '10.1.101.64:30000',
+      '40_dst_address': '232.1.164.1:30000',
     },
   },
   stream_params: {
     url: 'SRT://192.168.1.64:1234',
     codec_dev: 'gpu',
-    codec_dev_index: 0,
     quality: 2,
-    video_enc_driver: 0,
-    audio_enc_driver: 0,
   },
 })
 

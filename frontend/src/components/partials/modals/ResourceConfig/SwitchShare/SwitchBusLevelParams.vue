@@ -39,6 +39,14 @@ watch(() => mv.value.bus_input.bus_input_number, (nv) => {
   }
 }, { immediate: true })
 
+watch(() => mv.value.bus_input.nic_index, () => {
+  const core = `rx#${mv.value.bus_input.nic_index}`
+  mv.value.pgm_bus.v_core = core
+  mv.value.pgm_bus.a_core = core
+  mv.value.pvw_bus.v_core = core
+  mv.value.pvw_bus.a_core = core
+}, { immediate: true })
+
 const [selectedSignal, signalSelected, signalUnSelected] = useSwitchInputSignal()
 provide('switch_input_signal_select', { selectedSignal, signalSelected, signalUnSelected })
 

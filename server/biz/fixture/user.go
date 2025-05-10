@@ -51,9 +51,4 @@ func CreateUsers() {
 		}
 		models.Save(&u)
 	}
-
-	projIDs := strings.Fields("proj1 proj2 proj3")
-	for _, id := range projIDs {
-		models.Save(&models.Project{ID: id})
-	}
 }

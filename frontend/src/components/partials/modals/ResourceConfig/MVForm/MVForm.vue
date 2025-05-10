@@ -29,6 +29,7 @@ const props = defineProps<{
 const mv = defineModel<{
   moudle: string
   av_log_level: number
+  gpu_index: number
   input_number: number
   output_number: number
   used_signal_type: number
@@ -38,6 +39,7 @@ const mv = defineModel<{
   default: {
     moudle: 'mv',
     av_log_level: 5,
+    gpu_index: 0,
     input_number: 4,
     output_number: 1,
     used_signal_type: 0,
@@ -60,6 +62,7 @@ mv.value = pick(mvData, [
   'input_number',
   'output_number',
   'av_log_level',
+  'gpu_index',
   'used_signal_type',
   'nmos',
   'ssm_address_range',
@@ -166,6 +169,7 @@ function setValue(data: typeof mvData) {
     'input_number',
     'output_number',
     'av_log_level',
+    'gpu_index',
     'used_signal_type',
     'nmos',
     'ssm_address_range',
@@ -241,6 +245,19 @@ defineExpose({
               <h4>通用参数</h4>
             </div>
             <div class="columns is-multiline">
+              <div class="column is-3">
+                <VField>
+                  <VLabel>使用的显卡序号</VLabel>
+                  <VControl>
+                    <VInputNumber
+                      v-model="mv.gpu_index"
+                      centered
+                      :min="0"
+                      :step="1"
+                    />
+                  </VControl>
+                </VField>
+              </div>
               <div class="column is-6">
                 <VField>
                   <VLabel>需要使用的信号类型</VLabel>
@@ -251,7 +268,7 @@ defineExpose({
                   </VControl>
                 </VField>
               </div>
-              <div class="column is-6">
+              <div class="column is-3">
                 <VField>
                   <VLabel>输入信号数量</VLabel>
                   <VControl>

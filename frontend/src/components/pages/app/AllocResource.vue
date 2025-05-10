@@ -74,6 +74,11 @@ tmplStore.$fetchList();
         margin-inline-start: 12px;
         padding: 8px 12px;
         height: 32px;
+
+        &.is-active {
+          color: var(--primary);
+          font-weight: 500;
+        }
       }
     }
 

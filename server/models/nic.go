@@ -15,6 +15,8 @@ type Nic struct {
 	SendBackup    bool           `gorm:"type:boolean"`
 	CoreList      string         `gorm:"type:varchar"`
 	AllocatedCore MapUint32Slice `gorm:"type:jsonb"`
+	TxRxCoreList  string         `gorm:"type:varchar"`
+	AllocatedTxRx MapUint32Slice `gorm:"type:jsonb"`
 	DMAList       string         `gorm:"type:varchar"`
 	AllocatedDMA  MapStringSlice `gorm:"type:jsonb"`
 	VFCount       uint32         `gorm:"type:integer;default:4"`
@@ -31,6 +33,7 @@ type NicInfo struct {
 	SendMain      bool   `json:"sendMain"`
 	SendBackup    bool   `json:"sendBackup"`
 	CoreList      string `json:"coreList"`
+	TxRxCoreList  string `json:"txRxCoreList"`
 	DMAList       string `json:"dmaList"`
 	VFCount       uint32 `json:"vfCount"`
 	Position      int64  `json:"position"`
@@ -40,6 +43,7 @@ type NicAsBasic struct {
 	ID string `json:"id"`
 	NicInfo
 	AllocatedCore MapUint32Slice `json:"allocatedCore"`
+	AllocatedTxRx MapUint32Slice `json:"allocatedTxRx"`
 	AllocatedDMA  MapStringSlice `json:"allocatedDMA"`
 	NodeID        string         `json:"nodeId"`
 }
@@ -55,6 +59,8 @@ func (nic *Nic) AsBasic() NicAsBasic {
 	result.SendBackup = nic.SendBackup
 	result.CoreList = nic.CoreList
 	result.AllocatedCore = nic.AllocatedCore
+	result.TxRxCoreList = nic.TxRxCoreList
+	result.AllocatedTxRx = nic.AllocatedTxRx
 	result.DMAList = nic.DMAList
 	result.AllocatedDMA = nic.AllocatedDMA
 	result.VFCount = nic.VFCount

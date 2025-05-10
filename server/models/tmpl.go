@@ -8,6 +8,7 @@ import (
 
 type NicConfig struct {
 	DPDKCpu int `json:"dpdkCpu"`
+	SDKCpu  int `json:"sdkCpu"`
 	DMA     int `json:"dma"`
 }
 
@@ -49,7 +50,12 @@ type TmplRequirement struct {
 	NicCount             int         `json:"nicCount"`
 	NicConfig            []NicConfig `json:"nicConfig"`
 	Shm                  int         `json:"shm"`
+	CoreType             string      `json:"coreType"`
+	TxShare              int         `json:"txShare"`
+	RxShare              int         `json:"rxShare"`
 }
+
+// coreType: txrx, dpdk, none
 
 type TmplAsBasic struct {
 	ID           string `json:"id"`
@@ -94,6 +100,9 @@ func (tmpl *Tmpl) AsDetail() any {
 	}
 	if tmpl.Requirement.NicConfig == nil {
 		tmpl.Requirement.NicConfig = []NicConfig{}
+	}
+	if tmpl.Requirement.CoreType == "" {
+		tmpl.Requirement.CoreType = "txrx"
 	}
 	result["requirement"] = tmpl.Requirement
 	result["flow"] = tmpl.Flow

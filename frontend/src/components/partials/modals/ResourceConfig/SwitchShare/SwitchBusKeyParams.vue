@@ -18,6 +18,12 @@ defineProps<{
 const usedSignalType = inject<Ref<number>>('switch_used_signal_type', ref(0))
 const nics = inject<IndexedNicDetail[]>('switch_nics', [])
 
+watch(() => mv.value.bus_input.nic_index, () => {
+  const core = `rx#${mv.value.bus_input.nic_index}`
+  mv.value.bus_input.v_core = core
+  mv.value.bus_input.a_core = core
+}, { immediate: true })
+
 const emit = defineEmits<{
   (e: 'remove'): void
 }>()

@@ -326,6 +326,7 @@ func CreateNic(c *svcinfra.Context) {
 		SendMain:      req.SendMain,
 		SendBackup:    req.SendBackup,
 		CoreList:      req.CoreList,
+		TxRxCoreList:  req.TxRxCoreList,
 		DMAList:       req.DMAList,
 		VFCount:       req.VFCount,
 		Position:      maxPosition + 1, // Set position to be one more than the current maximum
@@ -372,6 +373,7 @@ func UpdateNic(c *svcinfra.Context) {
 	nic.SendMain = req.SendMain
 	nic.SendBackup = req.SendBackup
 	nic.CoreList = req.CoreList
+	nic.TxRxCoreList = req.TxRxCoreList
 	nic.DMAList = req.DMAList
 	nic.VFCount = req.VFCount
 	db.DB.Save(nic)

@@ -145,18 +145,7 @@ onMounted(() => {
             </VControl>
           </VField>
         </div>
-        <div class="column is-4">
-          <VField>
-            <VLabel>Numa Id</VLabel>
-            <VControl>
-              <VInputNumber
-                v-model="mv.numa_id"
-                centered
-                :step="1"
-              />
-            </VControl>
-          </VField>
-        </div>
+        <div class="column is-4" />
         <expand-transition>
           <div v-show="selected" class="column is-4">
             <VField>

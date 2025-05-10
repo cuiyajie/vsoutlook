@@ -14,6 +14,29 @@ func Migrate(env string) {
 	m := gormigrate.New(db.DB, gormigrate.DefaultOptions, []*gormigrate.Migration{
 		// 添加新的migration, 参考 https://github.com/go-gormigrate/gormigrate
 		{
+			ID: "20250505-1340",
+			Migrate: func(tx *gorm.DB) error {
+				// Add txRxCoreList and AllocatedTxRx fields to Nic table
+				type Nic struct {
+					TxRxCoreList  string         `gorm:"type:varchar"`
+					AllocatedTxRx MapUint32Slice `gorm:"type:jsonb"`
+				}
+				return tx.AutoMigrate(&Nic{})
+			},
+			Rollback: func(tx *gorm.DB) error {
+				// Drop the new columns
+				if err := tx.Migrator().DropColumn(&Nic{}, "tx_rx_core_list"); err != nil {
+					log.Printf("DropColumn tx_rx_core_list err %s\n", err)
+					return err
+				}
+				if err := tx.Migrator().DropColumn(&Nic{}, "allocated_tx_rx"); err != nil {
+					log.Printf("DropColumn allocated_tx_rx err %s\n", err)
+					return err
+				}
+				return nil
+			},
+		},
+		{
 			ID: "20250417-2155",
 			Migrate: func(tx *gorm.DB) error {
 				// Create sequence for nic position ordering

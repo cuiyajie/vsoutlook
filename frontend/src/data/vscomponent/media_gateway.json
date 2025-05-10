@@ -1,11 +1,11 @@
 {
   "moudle": "media_gateway",
   "av_log_level": 5,
+  "gpu_index": 0,
   "used_signal_type": 0,
   "nic_list": [
     {
       "index": 0,
-      "numa_id": -1,
       "2110-7_m_local_ip": "10.1.1.61",
       "nic_name_m": "ens01",
       "2110-7_m_receive": true,
@@ -71,8 +71,7 @@
     },
     "stream-params": {
       "url": "SRT://192.168.1.64:1234",
-      "codec_dev": "cpu",
-      "codec_dev_index": 0
+      "codec_dev": "cpu"
     },
     "rec_params": {
       "is_rec": false,
@@ -110,10 +109,7 @@
         "stream-params": {
           "url": "SRT://192.168.1.64:1234",
           "codec_dev": "gpu",
-          "codec_dev_index": 0,
-          "quality": 5,
-          "video_enc_driver": 0,
-          "audio_enc_driver": 0
+          "quality": 5
         }
       },
       {
@@ -144,10 +140,7 @@
         "stream-params": {
           "url": "SRT://192.168.1.64:1234",
           "codec_dev": "gpu",
-          "codec_dev_index": 0,
-          "quality": 5,
-          "video_enc_driver": 0,
-          "audio_enc_driver": 0
+          "quality": 5
         }
       }
     ]

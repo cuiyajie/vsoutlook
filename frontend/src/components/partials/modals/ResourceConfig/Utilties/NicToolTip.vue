@@ -60,10 +60,18 @@ const tippyAppendTo = () => document.body
           </div>
           <div class="info-block-line">
             <h4 class="dark-inverted">
-              CPU 隔离核
+              DPDK核心列表
             </h4>
             <span>
               {{ nic.coreList }}
+            </span>
+          </div>
+          <div class="info-block-line">
+            <h4 class="dark-inverted">
+              应用收发流核心列表
+            </h4>
+            <span>
+              {{ nic.txRxCoreList }}
             </span>
           </div>
           <div class="info-block-line">

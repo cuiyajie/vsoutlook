@@ -1,6 +1,7 @@
 {
   "moudle": "recoder",
   "av_log_level": 5,
+  "gpu_index": 0,
   "used_signal_type": 0,
   "api_params": [
     {
@@ -40,7 +41,9 @@
   "videoformat_enum": [],
   "audioformat_enum": [],
   "recoder_params": {
-    "in_nic_index": -1
+    "in_nic_index": -1,
+    "v_core": "rx#-1",
+    "a_core": "rx#-1"
   },
   "player_params": {
     "videoformat_name": "4K50P-SRT-AVS+",
@@ -63,10 +66,7 @@
     "stream_params": {
       "url": "SRT://192.168.1.64:1234",
       "codec_dev": "gpu",
-      "codec_dev_index": 0,
-      "quality": 5,
-      "video_enc_driver": 0,
-      "audio_enc_driver": 0
+      "quality": 5
     }
   }
 }

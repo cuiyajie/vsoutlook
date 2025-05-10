@@ -191,6 +191,10 @@ func FormatUint32Array(arr []uint32) string {
 		return arr[i] < arr[j]
 	})
 
+	if len(arr) == 0 {
+		return ""
+	}
+
 	// 2. 遍历数组，生成 chunk
 	var chunks []string
 	start := arr[0]

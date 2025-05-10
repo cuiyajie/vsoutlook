@@ -29,18 +29,24 @@ const props = defineProps<{
 const mv = defineModel<{
   moudle: string
   av_log_level: number
+  gpu_index: number
   used_signal_type: number
   nmos: NMosConfigType
   ssm_address_range: SSMAddressType[]
-  recoder_params: { in_nic_index: number },
+  recoder_params: {
+    in_nic_index: number
+    v_core: string
+    a_core: string
+  },
 }>({
   default: {
     moudle: 'recorder',
     av_log_level: 5,
+    gpu_index: 0,
     used_signal_type: 0,
     nmos: { ...nmos_config },
     ssm_address_range: [{ ...ssm_address }],
-    recoder_params: { in_nic_index: -1 },
+    recoder_params: { in_nic_index: -1, v_core: 'rx#-1', a_core: 'rx#-1' },
   },
   local: true,
 })
@@ -54,6 +60,7 @@ const audioFormats = computed(() => usStore.settings.audio_formats || [])
 mv.value = pick(rcData, [
   'moudle',
   'av_log_level',
+  'gpu_index',
   'used_signal_type',
   'nmos',
   'ssm_address_range',
@@ -71,6 +78,12 @@ const [videoFormatEnum, videoSelected, videoUnSelected] = useUsedFormat()
 const [audioFormatEnum, audioSelected, audioUnSelected] = useUsedFormat()
 
 watchNmosName(() => props.name, mv)
+
+watch(() => mv.value.recoder_params.in_nic_index, () => {
+  const core = `rx#${mv.value.recoder_params.in_nic_index}`
+  mv.value.recoder_params.v_core = core
+  mv.value.recoder_params.a_core = core
+}, { immediate: true })
 
 function getValue() {
   const result = {
@@ -90,6 +103,7 @@ function setValue(data: typeof rcData) {
   mv.value = pick(data, [
     'moudle',
     'av_log_level',
+    'gpu_index',
     'used_signal_type',
     'nmos',
     'ssm_address_range',
@@ -99,7 +113,7 @@ function setValue(data: typeof rcData) {
   apiParams.value = checkApiParams(def_api_params(), data.api_params)
   const _playerParams = unwrap(data.player_params, 'out_')
   playerParams.value = checkPlayerParams(merge(def_player_params(), _playerParams), videoFormats.value, audioFormats.value)
-  nicDetails.value = checkNicDetails(data.nic_list, props.nics)
+  nicDetails.value = checkNicDetails(data.nic_list || [], props.nics)
 }
 
 defineExpose({
@@ -119,9 +133,10 @@ defineExpose({
         <div
           class="form-header-inner collapse-control-header"
           role="button"
+          tabindex="-1"
+          :open="fullOpened || undefined"
           @keydown.space.prevent="fullOpened = !fullOpened"
           @click.prevent="fullOpened = !fullOpened"
-          :open="fullOpened || undefined"
         >
           <div class="left">
             <h3>设备参数</h3>
@@ -139,6 +154,19 @@ defineExpose({
               <h4>通用参数</h4>
             </div>
             <div class="columns is-multiline">
+              <div class="column is-6">
+                <VField>
+                  <VLabel>使用的显卡序号</VLabel>
+                  <VControl>
+                    <VInputNumber
+                      v-model="mv.gpu_index"
+                      centered
+                      :min="0"
+                      :step="1"
+                    />
+                  </VControl>
+                </VField>
+              </div>
               <div class="column is-6">
                 <VField>
                   <VLabel>需要使用的信号类型</VLabel>

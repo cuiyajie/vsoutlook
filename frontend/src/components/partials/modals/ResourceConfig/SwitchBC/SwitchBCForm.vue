@@ -27,6 +27,7 @@ const props = defineProps<{
 const mv = defineModel<{
   moudle: string
   av_log_level: number
+  gpu_index: number
   in_copy_thr_count: number
   used_signal_type: number
   level: number
@@ -38,6 +39,7 @@ const mv = defineModel<{
   default: {
     moudle: 'switch-v2',
     av_log_level: 5,
+    gpu_index: 0,
     in_copy_thr_count: 8,
     used_signal_type: 0,
     level: 1,
@@ -59,6 +61,7 @@ const audioMappings = computed(() => usStore.settings.audio_mappings || [])
 mv.value = pick(bcswtData, [
   'moudle',
   'av_log_level',
+  'gpu_index',
   'used_signal_type',
   'in_copy_thr_count',
   'level',
@@ -123,6 +126,7 @@ function setValue(data: typeof bcswtData) {
   mv.value = pick(data, [
     'moudle',
     'av_log_level',
+    'gpu_index',
     'used_signal_type',
     'in_copy_thr_count',
     'level',
@@ -157,10 +161,11 @@ defineExpose({
       <div class="form-header is-h1" :class="!fullOpened && 'border-b-none'">
         <div
           class="form-header-inner collapse-control-header"
+          tabindex="-1"
           role="button"
+          :open="fullOpened || undefined"
           @keydown.space.prevent="fullOpened = !fullOpened"
           @click.prevent="fullOpened = !fullOpened"
-          :open="fullOpened || undefined"
         >
           <div class="left">
             <h3>设备参数</h3>
@@ -173,6 +178,26 @@ defineExpose({
       <expand-transition>
         <div v-show="fullOpened" class="form-body is-nested">
           <!--Fieldset-->
+          <div class="form-fieldset">
+            <div class="fieldset-heading">
+              <h4>通用参数</h4>
+            </div>
+            <div class="columns is-multiline">
+              <div class="column is-6">
+                <VField>
+                  <VLabel>使用的显卡序号</VLabel>
+                  <VControl>
+                    <VInputNumber
+                      v-model="mv.gpu_index"
+                      centered
+                      :min="0"
+                      :step="1"
+                    />
+                  </VControl>
+                </VField>
+              </div>
+            </div>
+          </div>
           <div class="form-fieldset">
             <div class="fieldset-heading">
               <h4>接口设置</h4>

@@ -2,7 +2,7 @@
 import { useUserSession } from "@src/stores/userSession";
 import { VideoFormatPrefixMap } from '@src/components/partials/modals/PresetConfig/Consts';
 import { changeProtocol } from '../Utilties/Utils_V1';
-import { codec_dev_types, quality_types } from "../Utilties/Consts_V1";
+import { codec_dev_types } from "../Utilties/Consts_V1";
 import { def_keyfill_player_params, type KeyFillPlayerParams } from "./Consts";
 
 const mv = defineModel<KeyFillPlayerParams>({
@@ -65,10 +65,10 @@ const subSections: {
                 <AddrInputAddon v-model="mv.smpte_params[sec.key].ipstream_master.v_dst_address" label="视频组播地址（含端口）" />
               </div>
               <div class="column is-6">
-                <AddrInputAddon v-model="mv.smpte_params[sec.key].ipstream_master.a_src_address" label="音频源地址（含端口）" />
+                <AddrInputAddon v-model="mv.smpte_params[sec.key].ipstream_master['40_src_address']" label="辅助数据源地址（含端口）" />
               </div>
               <div class="column is-6">
-                <AddrInputAddon v-model="mv.smpte_params[sec.key].ipstream_master.a_dst_address" label="音频组播地址（含端口）" />
+                <AddrInputAddon v-model="mv.smpte_params[sec.key].ipstream_master['40_dst_address']" label="辅助数据组播地址（含端口）" />
               </div>
             </div>
           </div>
@@ -86,10 +86,10 @@ const subSections: {
                 <AddrInputAddon v-model="mv.smpte_params[sec.key].ipstream_backup.v_dst_address" label="视频组播地址（含端口）" />
               </div>
               <div class="column is-6">
-                <AddrInputAddon v-model="mv.smpte_params[sec.key].ipstream_backup.a_src_address" label="音频源地址（含端口）" />
+                <AddrInputAddon v-model="mv.smpte_params[sec.key].ipstream_backup['40_src_address']" label="辅助数据源地址（含端口）" />
               </div>
               <div class="column is-6">
-                <AddrInputAddon v-model="mv.smpte_params[sec.key].ipstream_backup.a_dst_address" label="音频组播地址（含端口）" />
+                <AddrInputAddon v-model="mv.smpte_params[sec.key].ipstream_backup['40_dst_address']" label="辅助数据组播地址（含端口）" />
               </div>
             </div>
           </div>
@@ -110,7 +110,7 @@ const subSections: {
           <div class="column is-6">
             <AddrAddonPrefix v-model="mv.stream_params[sec.key].url" label="发流地址" placeholder="请输入发流地址" />
           </div>
-          <div class="column is-3">
+          <div class="column is-6">
             <VField>
               <VLabel>编码设备类型</VLabel>
               <VControl>
@@ -120,19 +120,6 @@ const subSections: {
                 >
                   <VOption v-for="cdt in codec_dev_types" :key="cdt" :value="cdt">{{ cdt }}</VOption>
                 </VSelect>
-              </VControl>
-            </VField>
-          </div>
-          <div class="column is-3">
-            <VField>
-              <VLabel>编码设备索引</VLabel>
-              <VControl>
-                <VInputNumber
-                  v-model="mv.stream_params[sec.key].codec_dev_index"
-                  centered
-                  :min="0"
-                  :step="1"
-                />
               </VControl>
             </VField>
           </div>

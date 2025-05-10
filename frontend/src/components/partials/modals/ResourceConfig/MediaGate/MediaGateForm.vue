@@ -30,6 +30,7 @@ const props = defineProps<{
 const mv = defineModel<{
   moudle: string
   av_log_level: number
+  gpu_index: number
   used_signal_type: number
   nmos: NMosConfigType
   ssm_address_range: SSMAddressType[]
@@ -37,6 +38,7 @@ const mv = defineModel<{
   default: {
     moudle: 'media_gateway',
     av_log_level: 5,
+    gpu_index: 0,
     used_signal_type: 0,
     nmos: { ...nmos_config },
     ssm_address_range: [{ ...ssm_address }],
@@ -53,6 +55,7 @@ const audioFormats = computed(() => usStore.settings.audio_formats || [])
 mv.value = pick(mgData, [
   'moudle',
   'av_log_level',
+  'gpu_index',
   'used_signal_type',
   'nmos',
   'ssm_address_range',
@@ -92,6 +95,7 @@ function setValue(data: typeof mgData) {
   mv.value = pick(data, [
     'moudle',
     'av_log_level',
+    'gpu_index',
     'used_signal_type',
     'nmos',
     'ssm_address_range',
@@ -124,6 +128,7 @@ defineExpose({
         <div
           class="form-header-inner collapse-control-header"
           role="button"
+          tabindex="-1"
           :open="fullOpened || undefined"
           @keydown.space.prevent="fullOpened = !fullOpened"
           @click.prevent="fullOpened = !fullOpened"
@@ -144,6 +149,19 @@ defineExpose({
               <h4>通用参数</h4>
             </div>
             <div class="columns is-multiline">
+              <div class="column is-6">
+                <VField>
+                  <VLabel>使用的显卡序号</VLabel>
+                  <VControl>
+                    <VInputNumber
+                      v-model="mv.gpu_index"
+                      centered
+                      :min="0"
+                      :step="1"
+                    />
+                  </VControl>
+                </VField>
+              </div>
               <div class="column is-6">
                 <VField>
                   <VLabel>需要使用的信号类型</VLabel>

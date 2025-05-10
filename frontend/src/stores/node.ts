@@ -46,7 +46,10 @@ export const useClustNode = defineStore('clustNode', () => {
     return null
   }
 
-  async function $createNic(nic: Omit<NicInfo, 'id' | 'nodeId'>, nodeId: string) {
+  async function $createNic(
+    nic: Omit<NicInfo, 'id' | 'nodeId' | 'position'>,
+    nodeId: string
+  ) {
     const res = await $fetch('/api/cluster/nic.create', {
       body: { nodeId, ...nic },
     })

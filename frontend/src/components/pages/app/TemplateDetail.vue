@@ -68,6 +68,9 @@ const specsData = ref<TmplRequirement & { description: string }>({
   shm: 0,
   nicCount: 0,
   nicConfig: [],
+  coreType: 'txrx',
+  txShare: 1,
+  rxShare: 1,
 })
 
 tmplTypeStore.$fetchList();
@@ -80,7 +83,7 @@ watch(() => (route.params as { id: string })?.id, async (nv, ov) => {
       const requirement = tmpl.value.requirement as TmplRequirement
       if (requirement.nicCount && requirement.nicConfig) {
         if (requirement.nicConfig.length < requirement.nicCount) {
-          requirement.nicConfig = Array.from({ length: requirement.nicCount }, () => ({ dpdkCpu: 1, dma: 1 }))
+          requirement.nicConfig = Array.from({ length: requirement.nicCount }, () => ({ dpdkCpu: 1, sdkCpu: 1, dma: 1 }))
         } else {
           requirement.nicCount = requirement.nicConfig.length
         }
@@ -103,8 +106,13 @@ async function save() {
     notyf.error('DPDK CPU 核心不能为 0')
     return
   }
-  if (specsData.value.cpuNum <= dpdkCpu) {
-    notyf.error('CPU 总核心数不能小于等于 DPDK CPU 核心')
+  const sdkCpu = specsData.value.nicConfig.reduce((acc, cur) => acc + cur.sdkCpu, 0)
+  if (sdkCpu === 0 && specsData.value.nicCount > 0) {
+    notyf.error('SDK CPU 核心不能为 0')
+    return
+  }
+  if (specsData.value.cpuNum <= dpdkCpu + sdkCpu) {
+    notyf.error('CPU 总核心数不能小于等于 DPDK CPU和 SDK CPU 核心数之和')
     return
   }
   if (tmpl.value?.id) {
@@ -134,9 +142,13 @@ onMounted(() => {
   <div class="columns is-multiline page-template">
     <div class="column is-2">
       <VCard radius="rounded" class="card-widget">
-        <div class="title-wrap mb-4" style="align-items: center;">
+        <div class="title-wrap mb-4" style="align-items: center">
           <h3>应用列表</h3>
-          <button class="button is-circle is-dark-outlined" style="width: 38px; height: 38px;" @click="createNewTmpl">
+          <button
+            class="button is-circle is-dark-outlined"
+            style="width: 38px; height: 38px"
+            @click="createNewTmpl"
+          >
             <span class="icon is-small">
               <i aria-hidden="true" class="iconify" data-icon="feather:plus" />
             </span>
@@ -217,9 +229,7 @@ onMounted(() => {
               <div v-if="activeValue === 'module'" class="flow-container">
                 <AbilityFlow :flow="flowObject" />
               </div>
-              <p v-else-if="activeValue === 'resource'">
-                <TmplSpecsForm v-model="specsData" />
-              </p>
+              <TmplSpecsForm v-else-if="activeValue === 'resource'" v-model="specsData" />
             </KeepAlive>
           </template>
         </VTabs>
@@ -299,9 +309,10 @@ onMounted(() => {
 }
 
 .page-template {
-  min-height: calc(100vh - 150px);
+  height: calc(100vh - 200px);
   .column {
     padding: 0.25rem;
+    height: 100%;
 
     .l-card {
       height: 100%;

@@ -69,8 +69,7 @@ export function handleSwitchPanel(params: SwitchPanel) {
 }
 
 function handleKeyFillParams(params: KeyFillPlayerParams, vfs: VideoFormat[]) {
-  const { videoformat_name, smpte_params, stream_params, ...rest } =
-    params
+  const { videoformat_name, smpte_params, stream_params, ...rest } = params
   const vf = vfs.find((v) => v.name === videoformat_name)
   const result = { videoformat_name, ...rest } as any
   if (!vf?.protocol) return result
@@ -180,7 +179,7 @@ export function handleBusLevel(params: SwitchBusLevelParams[]) {
           ...b,
           index: bidx,
           input_index: bidx + 1,
-        }))
+        })),
       },
       pgm_bus: {
         ...pgm_bus,
@@ -224,10 +223,14 @@ function omitAudioParams<
     ipstream_master: {
       v_dst_address: params.ipstream_master.v_dst_address,
       v_src_address: params.ipstream_master.v_src_address,
+      '40_dst_address': params.ipstream_master['40_dst_address'],
+      '40_src_address': params.ipstream_master['40_src_address'],
     },
     ipstream_backup: {
       v_dst_address: params.ipstream_backup.v_dst_address,
       v_src_address: params.ipstream_backup.v_src_address,
+      '40_dst_address': params.ipstream_backup['40_dst_address'],
+      '40_src_address': params.ipstream_backup['40_src_address'],
     },
   }
 }
@@ -423,19 +426,28 @@ export function checkSwitchData(
     levelBus.bus_input.input_list = Array.from(
       { length: levelBusData.bus_input.input_list.length },
       (_, idx) => {
-        return merge(def_switch_bus_level_input_params(idx), levelBusData.bus_input.input_list[idx])
+        return merge(
+          def_switch_bus_level_input_params(idx),
+          levelBusData.bus_input.input_list[idx]
+        )
       }
     )
     levelBus.pgm_bus.sub_bus = Array.from(
       { length: levelBusData.pgm_bus.sub_bus.length },
       (_: any, idx) => {
-        return merge(def_switch_bus_level_sub_params(idx), levelBusData.pgm_bus.sub_bus[idx])
+        return merge(
+          def_switch_bus_level_sub_params(idx),
+          levelBusData.pgm_bus.sub_bus[idx]
+        )
       }
     )
     levelBus.pvw_bus.sub_bus = Array.from(
       { length: levelBusData.pvw_bus.sub_bus.length },
       (_: any, idx) => {
-        return merge(def_switch_bus_level_sub_params(idx), levelBusData.pvw_bus.sub_bus[idx])
+        return merge(
+          def_switch_bus_level_sub_params(idx),
+          levelBusData.pvw_bus.sub_bus[idx]
+        )
       }
     )
     return levelBus

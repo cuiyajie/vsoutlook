@@ -125,7 +125,14 @@ export function wrap(src: any, prefix: string) {
   for (const key in src) {
     let wrapKey = key
     if (
-      ['v_src_address', 'v_dst_address', 'a_src_address', 'a_dst_address'].includes(key)
+      [
+        'v_src_address',
+        'v_dst_address',
+        'a_src_address',
+        'a_dst_address',
+        '40_src_address',
+        '40_dst_address',
+      ].includes(key)
     ) {
       wrapKey = `${prefix}${key}`
     }
@@ -202,32 +209,32 @@ export function checkFormValue(data: any) {
 export function replaceKeyInObject(obj: any, oldKey: string, newKey: string): any {
   // Handle null or undefined
   if (obj === null || obj === undefined) {
-    return obj;
+    return obj
   }
 
   // Handle arrays
   if (Array.isArray(obj)) {
-    return obj.map(item => replaceKeyInObject(item, oldKey, newKey));
+    return obj.map((item) => replaceKeyInObject(item, oldKey, newKey))
   }
 
   // Handle objects
   if (typeof obj === 'object') {
-    const result: any = {};
+    const result: any = {}
 
     for (const key in obj) {
       if (Object.prototype.hasOwnProperty.call(obj, key)) {
         // If the current key matches the old key, use the new key instead
-        const newKeyName = key === oldKey ? newKey : key;
+        const newKeyName = key === oldKey ? newKey : key
         // Recursively process the value
-        result[newKeyName] = replaceKeyInObject(obj[key], oldKey, newKey);
+        result[newKeyName] = replaceKeyInObject(obj[key], oldKey, newKey)
       }
     }
 
-    return result;
+    return result
   }
 
   // Return primitive values as is
-  return obj;
+  return obj
 }
 
 /**
@@ -237,12 +244,12 @@ export function replaceKeyInObject(obj: any, oldKey: string, newKey: string): an
  */
 export function ensurePortSuffix(str: string, defaultPort = 30000): string {
   // Check if the string already ends with :[number]
-  const portPattern = /:\d+$/;
+  const portPattern = /:\d+$/
 
   if (portPattern.test(str)) {
-    return str; // Already has a port number
+    return str // Already has a port number
   }
 
   // Add the default port
-  return `${str}:${defaultPort}`;
+  return `${str}:${defaultPort}`
 }

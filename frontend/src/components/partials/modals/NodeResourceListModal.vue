@@ -112,7 +112,8 @@ useListener(Signal.OpenNodeResourceList, async (_node: ClustNode) => {
                 <th align="center">收发开关</th>
                 <th align="center">备路网口</th>
                 <th align="center">收发开关</th>
-                <th align="center">CPU 隔离核</th>
+                <th align="center">DPDK<br />核心</th>
+                <th align="center">应用收发流<br />核心</th>
                 <th align="center">DMA</th>
                 <th align="center">VF</th>
                 <th>操作</th>
@@ -173,9 +174,10 @@ useListener(Signal.OpenNodeResourceList, async (_node: ClustNode) => {
                         </VControl>
                       </div>
                     </td>
-                    <td>{{ nic.coreList }}</td>
-                    <td>{{ nic.dmaList }}</td>
-                    <td>{{ nic.vfCount }}</td>
+                    <td>{{ nic.coreList || '-' }}</td>
+                    <td>{{ nic.txRxCoreList || '-' }}</td>
+                    <td>{{ nic.dmaList || '-' }}</td>
+                    <td>{{ nic.vfCount || '-' }}</td>
                     <td>
                       <PresetListDropdown
                         @add="create"
@@ -237,9 +239,14 @@ useListener(Signal.OpenNodeResourceList, async (_node: ClustNode) => {
     .datatable-table {
       thead {
         th:first-child {
-          width: 80;
+          width: 80px;
         }
-
+        th:nth-child(2) {
+          width: 80px;
+        }
+        th:nth-child(10) {
+          width: 60px;
+        }
         th:last-child {
           width: 80px;
         }
@@ -248,6 +255,11 @@ useListener(Signal.OpenNodeResourceList, async (_node: ClustNode) => {
       tr {
         &.row-ghost {
           background: var(--dark-sidebar-light-8) !important;
+        }
+
+        td:nth-child(9) {
+          max-width: 120px;
+          overflow-wrap: break-word;
         }
 
         &.row-chosen {

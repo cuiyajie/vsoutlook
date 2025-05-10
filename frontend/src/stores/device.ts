@@ -9,13 +9,13 @@
 
 import { ref } from 'vue'
 import { acceptHMRUpdate, defineStore } from 'pinia'
-import { useFetch } from "@src/composable/useFetch"
-import * as dic from "@src/utils/enums-dic"
-import { valert } from "../utils/dialog"
+import { useFetch } from '@src/composable/useFetch'
+import * as dic from '@src/utils/enums-dic'
+import { valert } from '../utils/dialog'
 
 export const useDevices = defineStore('device', () => {
   const devices = ref<DeviceDetail[]>([])
-  const $fetch  = useFetch()
+  const $fetch = useFetch()
 
   function handleDevice(d: any): DeviceDetail {
     if (d.targetNode === 'unknown') {
@@ -26,9 +26,15 @@ export const useDevices = defineStore('device', () => {
       d.status = dic.DeviceStatus.Terminated
     } else if (d.podsStatus.every((p: any) => p.status === dic.DeviceStatus.Running)) {
       d.status = dic.DeviceStatus.Running
-    } else if (d.podsStatus.every((p: any) => [dic.DeviceStatus.Pending, dic.DeviceStatus.Running].includes(p.status))) {
+    } else if (
+      d.podsStatus.every((p: any) =>
+        [dic.DeviceStatus.Pending, dic.DeviceStatus.Running].includes(p.status)
+      )
+    ) {
       d.status = dic.DeviceStatus.Pending
-    } else if (d.podsStatus.some((p: any) => p.status === dic.DeviceStatus.CrashLoopBackOff)) {
+    } else if (
+      d.podsStatus.some((p: any) => p.status === dic.DeviceStatus.CrashLoopBackOff)
+    ) {
       d.status = dic.DeviceStatus.CrashLoopBackOff
     } else if (d.podsStatus.some((p: any) => p.status === dic.DeviceStatus.Terminating)) {
       d.status = dic.DeviceStatus.Terminating
@@ -54,8 +60,8 @@ export const useDevices = defineStore('device', () => {
         name,
         tmpl,
         node,
-        body: JSON.stringify(body)
-      }
+        body: JSON.stringify(body),
+      },
     })
     if (res && res.device) {
       return { result: 'success', data: res.device }
@@ -69,8 +75,8 @@ export const useDevices = defineStore('device', () => {
       body: {
         name,
         deviceId,
-        body: JSON.stringify(body)
-      }
+        body: JSON.stringify(body),
+      },
     })
     if (res && res.device) {
       return { result: 'success', data: res.device }
@@ -81,22 +87,22 @@ export const useDevices = defineStore('device', () => {
 
   async function $remove(id: string, node: string) {
     return await $fetch('/api/device/delete', {
-      body: { id, node }
+      body: { id, node },
     })
   }
 
   async function $showContainer(device: DeviceDetail) {
     const res = await $fetch('/api/cluster/podPhase', {
-      body: { device: device.name }
+      body: { device: device.name },
     })
     if (res && res.code === 0) {
       if (typeof res.data === 'object') {
-        const podKey = Object.keys(res.data).find(k => k.includes(device.name))
+        const podKey = Object.keys(res.data).find((k) => k.includes(device.name))
         console.log(podKey)
         if (podKey) {
           valert({
             title: '容器信息',
-            content: podKey
+            content: podKey,
           })
         }
       }
@@ -105,20 +111,20 @@ export const useDevices = defineStore('device', () => {
 
   async function $reboot(device: DeviceDetail) {
     const res = await $fetch('/api/cluster/podPhase', {
-      body: { device: device.name }
+      body: { device: device.name },
     })
     if (res && res.code === 0) {
       if (typeof res.data === 'object') {
-        const podKey = Object.keys(res.data).find(k => k.includes(device.name))
+        const podKey = Object.keys(res.data).find((k) => k.includes(device.name))
         if (podKey) {
           const pod = res.data[podKey]
           if (pod === 'Running') {
             const res = await $fetch('/api/cluster/pod.delete', {
               body: {
-                pod: podKey
-              }
+                pod: podKey,
+              },
             }).catch(() => {
-              return { code: 500, error: "重启设备失败" }
+              return { code: 500, error: '重启设备失败' }
             })
             if (res && res.code === 0) {
               return { result: 'success' }
@@ -137,27 +143,27 @@ export const useDevices = defineStore('device', () => {
 
   async function $stop(id: string) {
     return await $fetch('/api/device/stop', {
-      body: { id }
+      body: { id },
     })
   }
 
   async function $start(id: string) {
     return await $fetch('/api/device/start', {
-      body: { id }
+      body: { id },
     })
   }
 
   async function $getById(id: string) {
-    let device = devices.value.find(d => d.id === id)
+    let device = devices.value.find((d) => d.id === id)
     if (device?.config) {
       return device
     }
     const res = await $fetch('/api/device/detail', {
-      body: { id }
+      body: { id },
     })
     if (res && res.device) {
       device = handleDevice(res.device)
-      const idx = devices.value.findIndex(d => d.id === id)
+      const idx = devices.value.findIndex((d) => d.id === id)
       if (idx !== -1) {
         devices.value.splice(idx, 1, device)
       }
@@ -166,7 +172,7 @@ export const useDevices = defineStore('device', () => {
   }
 
   function getById(id: string) {
-    return devices.value.find(d => d.id === id)
+    return devices.value.find((d) => d.id === id)
   }
 
   return {
@@ -180,7 +186,7 @@ export const useDevices = defineStore('device', () => {
     $updateConfig,
     $remove,
     $reboot,
-    $showContainer
+    $showContainer,
   } as const
 })
 

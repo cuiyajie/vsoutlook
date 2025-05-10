@@ -28,6 +28,7 @@ const props = defineProps<{
 const mv = defineModel<{
   moudle: string
   av_log_level: number
+  gpu_index: number
   in_copy_thr_count: number
   used_signal_type: number
   level: number
@@ -39,6 +40,7 @@ const mv = defineModel<{
   default: {
     moudle: 'switch-v2',
     av_log_level: 5,
+    gpu_index: 0,
     in_copy_thr_count: 8,
     used_signal_type: 1,
     level: 1,
@@ -60,6 +62,7 @@ const audioMappings = computed(() => usStore.settings.audio_mappings || [])
 mv.value = pick(nmswtData, [
   'moudle',
   'av_log_level',
+  'gpu_index',
   'used_signal_type',
   'in_copy_thr_count',
   'level',
@@ -128,6 +131,7 @@ function setValue(data: typeof nmswtData) {
   mv.value = pick(data, [
     'moudle',
     'av_log_level',
+    'gpu_index',
     'used_signal_type',
     'in_copy_thr_count',
     'level',
@@ -164,9 +168,10 @@ defineExpose({
         <div
           class="form-header-inner collapse-control-header"
           role="button"
+          tabindex="-1"
+          :open="fullOpened || undefined"
           @keydown.space.prevent="fullOpened = !fullOpened"
           @click.prevent="fullOpened = !fullOpened"
-          :open="fullOpened || undefined"
         >
           <div class="left">
             <h3>设备参数</h3>
@@ -184,6 +189,32 @@ defineExpose({
               <h4>通用参数</h4>
             </div>
             <div class="columns is-multiline">
+              <div class="column is-3">
+                <VField>
+                  <VLabel>使用的显卡序号</VLabel>
+                  <VControl>
+                    <VInputNumber
+                      v-model="mv.gpu_index"
+                      centered
+                      :min="0"
+                      :step="1"
+                    />
+                  </VControl>
+                </VField>
+              </div>
+              <div class="column is-3">
+                <VField>
+                  <VLabel>切换台级数</VLabel>
+                  <VControl>
+                    <VSelect
+                      v-model="mv.level"
+                      class="is-rounded"
+                    >
+                      <VOption v-for="level in levels" :key="level" :value="level">{{ level }}</VOption>
+                    </VSelect>
+                  </VControl>
+                </VField>
+              </div>
               <div class="column is-6">
                 <VField>
                   <VLabel>需要使用的信号类型</VLabel>
@@ -197,20 +228,7 @@ defineExpose({
                   </VControl>
                 </VField>
               </div>
-              <div class="column is-2">
-                <VField>
-                  <VLabel>切换台级数</VLabel>
-                  <VControl>
-                    <VSelect
-                      v-model="mv.level"
-                      class="is-rounded"
-                    >
-                      <VOption v-for="level in levels" :key="level" :value="level">{{ level }}</VOption>
-                    </VSelect>
-                  </VControl>
-                </VField>
-              </div>
-              <div class="column is-4">
+              <div class="column is-6">
                 <VField>
                   <VLabel>音频处理模式</VLabel>
                   <VControl>

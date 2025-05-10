@@ -8,6 +8,7 @@ interface TemplateType {
 
 interface TmplNicConfig {
   dpdkCpu: number
+  sdkCpu: number
   dma: number
 }
 
@@ -37,6 +38,9 @@ interface TmplRequirement {
   nicCount: number
   nicConfig: TmplNicConfig[]
   shm: number
+  coreType: string
+  rxShare: number
+  txShare: number
 }
 
 interface TemplateData {
@@ -148,6 +152,7 @@ interface NicInfo {
   sendMain: boolean
   sendBackup: boolean
   coreList: string
+  txRxCoreList: string
   dmaList: string
   vfCount: number
   position: number
@@ -226,6 +231,7 @@ type Settings = {
   audio_mappings: AudioMapping[]
   tech_reviews: TechReview[]
   audit_alarm_rules: AuditAlarmRule[]
+  basic_send_receive_stream_config: string
 }
 
 type SettingAuthService = {

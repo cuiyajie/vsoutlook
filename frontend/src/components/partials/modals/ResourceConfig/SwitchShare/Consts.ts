@@ -1,5 +1,6 @@
 import idGen from '@src/utils/id-gen'
 import { def_player_params } from '../Utilties/Consts_V1'
+import omit from 'lodash-es/omit'
 
 export const audio_workmodes = [
   {
@@ -140,6 +141,8 @@ export const def_switch_bus_key_params = (index: number) => ({
   bus_name: `key-${index}`,
   bus_input: {
     nic_index: -1,
+    v_core: 'rx#-1',
+    a_core: 'rx#-1',
     signal_type: 'video',
     signal_id: '',
     signal_name: '',
@@ -186,13 +189,15 @@ export const def_switch_bus_level_sub_params = (index: number) => ({
 export const def_switch_bus_level_params = (index: number, level: number) => ({
   level: index,
   bus_input: {
-  nic_index: -1,
-  bus_input_number: level,
+    nic_index: -1,
+    bus_input_number: level,
     input_list: Array.from({ length: level }, (_, i) =>
-    def_switch_bus_level_input_params(i)
-  )
+      def_switch_bus_level_input_params(i)
+    ),
   },
   pgm_bus: {
+    v_core: 'rx#-1',
+    a_core: 'rx#-1',
     sub_bus: [def_switch_bus_level_sub_params(0)] as SwitchBusLevelSubParams[],
     out_signal: [
       {
@@ -210,6 +215,8 @@ export const def_switch_bus_level_params = (index: number, level: number) => ({
     ],
   },
   pvw_bus: {
+    v_core: 'rx#-1',
+    a_core: 'rx#-1',
     sub_bus: [def_switch_bus_level_sub_params(0)] as SwitchBusLevelSubParams[],
     out_signal: [
       {
@@ -259,18 +266,34 @@ export const def_keyfill_player_params = () => {
     smpte_params: {
       key_params: {
         ipstream_master: {
-          ...playerParams.smpte_params.ipstream_master
+          ...omit(
+            playerParams.smpte_params.ipstream_master,
+            'a_src_address',
+            'a_dst_address'
+          ),
         },
         ipstream_backup: {
-          ...playerParams.smpte_params.ipstream_backup
+          ...omit(
+            playerParams.smpte_params.ipstream_backup,
+            'a_src_address',
+            'a_dst_address'
+          ),
         },
       },
       fill_params: {
         ipstream_master: {
-          ...playerParams.smpte_params.ipstream_master
+          ...omit(
+            playerParams.smpte_params.ipstream_master,
+            'a_src_address',
+            'a_dst_address'
+          ),
         },
         ipstream_backup: {
-          ...playerParams.smpte_params.ipstream_backup
+          ...omit(
+            playerParams.smpte_params.ipstream_backup,
+            'a_src_address',
+            'a_dst_address'
+          ),
         },
       },
     },
@@ -278,14 +301,12 @@ export const def_keyfill_player_params = () => {
       key_params: {
         url: playerParams.stream_params.url,
         codec_dev: playerParams.stream_params.codec_dev,
-        codec_dev_index: playerParams.stream_params.codec_dev_index,
       },
       fill_params: {
         url: playerParams.stream_params.url,
         codec_dev: playerParams.stream_params.codec_dev,
-        codec_dev_index: playerParams.stream_params.codec_dev_index,
-      }
-    }
+      },
+    },
   }
 }
 

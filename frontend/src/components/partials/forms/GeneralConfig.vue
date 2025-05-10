@@ -4,6 +4,9 @@ import { useUserSession } from "@src/stores/userSession";
 import { confirm } from "@src/utils/dialog";
 import { useNotyf } from "@src/composable/useNotyf";
 import { defaultMvFont } from "@src/utils/constants/config";
+import JsonEditorVue from 'json-editor-vue'
+import { Mode } from 'vanilla-jsoneditor'
+import 'vanilla-jsoneditor/themes/jse-theme-dark.css'
 
 const usStore = useUserSession();
 const nodeStore = useClustNode();
@@ -168,7 +171,7 @@ function removeScaleName(idx: number, key: 'lut_upscale_names' | 'lut_downscale_
 
 /* ----------------------------------------------------------------- */
 
-function updateProp(key: string, value?: string) {
+function updateProp(key: keyof Settings, value?: string) {
   if (key === 'authorization_services') {
     usStore.$updateSettings({ key, value: JSON.stringify(authServices.value) })
   } else if (key === 'mv_template_list') {
@@ -199,7 +202,7 @@ const vBlurOnEnter = {
       const target = event.target as HTMLInputElement;
       const key = target.dataset.key;
       if (key) {
-        updateProp(key, target.value)
+        updateProp(key as keyof Settings, target.value)
       }
     }
 
@@ -237,6 +240,19 @@ function testRds() {
     testing.value = false
   })
 }
+
+function saveBasicSendReceiveConfig() {
+  const config = settings.value.basic_send_receive_stream_config || ''
+  try {
+    JSON.parse(config)
+    updateProp('basic_send_receive_stream_config', config)
+    notyf.success('保存成功')
+  } catch (e) {
+    notyf.error('JSON格式不正确, 请检查后保存')
+    return
+  }
+}
+
 
 </script>
 
@@ -668,6 +684,27 @@ function testRds() {
           </div>
           <div v-if="lutUpscaleNames.length === 0" class="form-empty">暂时没有添加下变换LUT表名称</div>
         </div>
+
+        <div class="form-section is-grey">
+          <div class="form-section-header" style="margin-bottom: 0; border-bottom: none;">
+            <div class="left">
+              <h3>基础收发流配置</h3>
+            </div>
+            <VButton color="primary" raised @click="saveBasicSendReceiveConfig">
+              <span>保存</span>
+            </VButton>
+          </div>
+
+          <div class="form-section-inner">
+            <json-editor-vue
+              v-model="settings.basic_send_receive_stream_config"
+              class="jse-theme-dark json-editor"
+              :mode="Mode.text"
+              :main-menu-bar="false"
+              stringified
+            />
+          </div>
+        </div>
       </div>
     </div>
   </form>
@@ -1063,6 +1100,40 @@ function testRds() {
         }
       }
     }
+  }
+}
+
+.json-editor {
+  height: 540px;
+
+  div {
+    color: var(--white);
+  }
+
+  .jse-message.jse-error.svelte-czprfx {
+    background-color: var(--danger);
+  }
+
+  .jse-message.jse-success.svelte-czprfx {
+    background-color: var(--info);
+  }
+
+  .jse-text-centered {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .jse-message.svelte-czprfx .jse-actions:where(.svelte-czprfx) button.jse-action:where(.svelte-czprfx) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 8px;
+  }
+
+  .jse-message.svelte-czprfx .jse-text.jse-clickable:where(.svelte-czprfx):hover {
+    background-color: transparent;
   }
 }
 </style>

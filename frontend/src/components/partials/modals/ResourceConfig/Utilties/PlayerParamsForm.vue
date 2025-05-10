@@ -27,6 +27,13 @@ if (props.smpte === 'send') {
   useSmpteParams(mv, nicsRef)
 }
 
+watch(() => mv.value.smpte_params.nic_index, () => {
+  const prefix = props.smpte === 'send' ? 'tx' : 'rx'
+  const core = `${prefix}#${mv.value.smpte_params.nic_index}`
+  mv.value.smpte_params.v_core = core
+  mv.value.smpte_params.a_core = core
+}, { immediate: true })
+
 const usStore = useUserSession()
 const videoFormats = computed(() => usStore.settings.video_formats || [])
 
@@ -85,6 +92,12 @@ watch(() => mv.value.videoformat_name, (nv) => {
             <div v-if="showAudio" class="column is-6">
               <AddrInputAddon v-model="mv.smpte_params.ipstream_master.a_dst_address" label="音频组播地址（含端口）" />
             </div>
+            <div class="column is-6">
+              <AddrInputAddon v-model="mv.smpte_params.ipstream_master['40_src_address']" label="辅助数据源地址（含端口）" />
+            </div>
+            <div class="column is-6">
+              <AddrInputAddon v-model="mv.smpte_params.ipstream_master['40_dst_address']" label="辅助数据组播地址（含端口）" />
+            </div>
           </div>
         </div>
       </div>
@@ -106,6 +119,12 @@ watch(() => mv.value.videoformat_name, (nv) => {
             <div v-if="showAudio" class="column is-6">
               <AddrInputAddon v-model="mv.smpte_params.ipstream_backup.a_dst_address" label="音频组播地址（含端口）" />
             </div>
+            <div class="column is-6">
+              <AddrInputAddon v-model="mv.smpte_params.ipstream_backup['40_src_address']" label="辅助数据源地址（含端口）" />
+            </div>
+            <div class="column is-6">
+              <AddrInputAddon v-model="mv.smpte_params.ipstream_backup['40_dst_address']" label="辅助数据组播地址（含端口）" />
+            </div>
           </div>
         </div>
       </div>
@@ -117,10 +136,10 @@ watch(() => mv.value.videoformat_name, (nv) => {
         <h4>深压缩流发流参数</h4>
       </div>
       <div class="columns is-multiline">
-        <div class="column is-6">
+        <div class="column is-4">
           <AddrAddonPrefix v-model="mv.stream_params.url" label="发流地址" placeholder="请输入发流地址" />
         </div>
-        <div class="column is-6">
+        <div class="column is-4">
           <VField>
             <VLabel>编码设备类型</VLabel>
             <VControl>
@@ -133,20 +152,7 @@ watch(() => mv.value.videoformat_name, (nv) => {
             </VControl>
           </VField>
         </div>
-        <div class="column is-6">
-          <VField>
-            <VLabel>编码设备索引</VLabel>
-            <VControl>
-              <VInputNumber
-                v-model="mv.stream_params.codec_dev_index"
-                centered
-                :min="0"
-                :step="1"
-              />
-            </VControl>
-          </VField>
-        </div>
-        <div class="column is-6">
+        <div class="column is-4">
           <VField>
             <VLabel>编码质量</VLabel>
             <VControl>

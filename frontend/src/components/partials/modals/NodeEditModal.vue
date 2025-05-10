@@ -5,7 +5,7 @@ import { useClustNode } from "@src/stores/node";
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
 
-type NicInfoForm = Omit<NicInfo, "id" | "nodeId">;
+type NicInfoForm = Omit<NicInfo, "id" | "nodeId" | "position">;
 
 const defNicInfo = (): NicInfoForm => ({
   nicNameMain: "",
@@ -15,6 +15,7 @@ const defNicInfo = (): NicInfoForm => ({
   sendMain: true,
   sendBackup: true,
   coreList: "",
+  txRxCoreList: "",
   dmaList: "",
   vfCount: 4,
 });
@@ -36,11 +37,18 @@ const zodSchema = z.object({
   receiveBackup: z.boolean().optional(),
   sendBackup: z.boolean().optional(),
   coreList: z
-    .string({ required_error: "请输入隔离核心列表" })
-    .nonempty("请输入隔离核心列表")
+    .string({ required_error: "请输入DPDK核心列表" })
+    .nonempty("请输入DPDK核心列表")
     .refine(
       (val) => /^(\d+|(\d+-\d+))(,(\d+|(\d+-\d+)))*$/.test(val),
-      "请输入合法的隔离核心列表"
+      "请输入合法的DPDK核心列表"
+    ),
+  txRxCoreList: z
+    .string({ required_error: "请输入应用收发流核心列表" })
+    .nonempty("请输入应用收发流核心列表")
+    .refine(
+      (val) => /^(\d+|(\d+-\d+))(,(\d+|(\d+-\d+)))*$/.test(val),
+      "请输入合法的应用收发流核心列表"
     ),
   dmaList: z
     .string()
@@ -69,6 +77,7 @@ const handleEdit = handleSubmit(async () => {
       ...form.value,
       id: nic.id,
       nodeId: node.value.id,
+      position: nic.position,
     });
   }
   const res = await pro;
@@ -112,6 +121,7 @@ useListener(
         sendMain: nic.sendMain,
         sendBackup: nic.sendBackup,
         coreList: nic.coreList,
+        txRxCoreList: nic.txRxCoreList,
         dmaList: nic.dmaList,
         vfCount: nic.vfCount,
       };
@@ -191,7 +201,7 @@ useListener(
             </VField>
           </div>
           <div class="column is-6">
-            <VField id="coreList" v-slot="{ field }" label="”隔离核心列表 *">
+            <VField id="coreList" v-slot="{ field }" label="DPDK核心列表">
               <VControl>
                 <VInput v-model="form.coreList" type="text" placeholder="例如: 2-31,32" />
                 <expand-transition>
@@ -203,7 +213,19 @@ useListener(
             </VField>
           </div>
           <div class="column is-6">
-            <VField id="dmaList" v-slot="{ field }" label="DMA通道列表 *">
+            <VField id="txRxCoreList" v-slot="{ field }" label="应用收发流核心列表">
+              <VControl>
+                <VInput v-model="form.txRxCoreList" type="text" placeholder="例如: 2-31,32" />
+                <expand-transition>
+                  <p v-if="field?.errorMessage" class="help is-danger mt-3">
+                    {{ field.errorMessage }}
+                  </p>
+                </expand-transition>
+              </VControl>
+            </VField>
+          </div>
+          <div class="column is-6">
+            <VField id="dmaList" v-slot="{ field }" label="DMA通道列表">
               <VControl>
                 <VInput
                   v-model="form.dmaList"
@@ -218,7 +240,7 @@ useListener(
               </VControl>
             </VField>
           </div>
-          <div class="column is-4">
+          <div class="column is-6">
             <VField label="VF数量">
               <VControl>
                 <VInputNumber v-model="form.vfCount" centered :min="1" :step="1" />
